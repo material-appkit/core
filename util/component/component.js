@@ -28,10 +28,11 @@ export function decorateErrors(rootComponent, errorMap) {
     if (child.props.name) {
       const errorMessages = errorMap[child.props.name];
       if (errorMessages) {
-        const errorProps = { error: true };
-        if (child.props.select === false) {
-          errorProps.helperText = errorMessages;
-        }
+        const errorProps = {
+          error: true,
+          helperText: errorMessages,
+        };
+
         return React.cloneElement(child, errorProps);
       }
     }
