@@ -1,0 +1,152 @@
+import cookie from 'js-cookie';
+import request from 'superagent';
+
+class ServiceAgent {
+  static get accessToken() {
+    const cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
+    return cookie.get(cookieName);
+  }
+  static set accessToken(value) {
+    const cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
+    if (value) {
+      cookie.set(cookieName, value);
+    } else {
+      cookie.remove(cookieName);
+    }
+  }
+
+  static get refreshToken() {
+    const cookieName = process.env.REACT_APP_REFRESH_TOKEN_COOKIE_NAME;
+    return cookie.get(cookieName);
+  }
+  static set refreshToken(value) {
+    const cookieName = process.env.REACT_APP_REFRESH_TOKEN_COOKIE_NAME;
+    if (value) {
+      cookie.set(cookieName, value);
+    } else {
+      cookie.remove(cookieName);
+    }
+  }
+
+
+  static async refreshAccessToken() {
+    const refreshToken = this.refreshToken;
+    if (!refreshToken) {
+      throw new Error('No refresh token available!');
+    }
+
+    try {
+      // If a refresh token is present, attempt to refresh the access token
+      const refreshTokenEndpoint =  process.env.REACT_APP_REFRESH_TOKEN_ENDPOINT;
+      const params = { refresh: refreshToken };
+      const res = await this._request('POST', refreshTokenEndpoint, params);
+
+      cookie.set('accessToken', res.body.access);
+      cookie.set('refreshToken', res.body.refresh);
+
+      return res;
+    } catch (err) {
+      cookie.remove('accessToken');
+      cookie.remove('refreshToken');
+      throw new Error('Access token refresh failed');
+    }
+  }
+
+  static _request(method, endpoint, params, context) {
+    // Construct the AJAX request with the given params
+    let requestURL = process.env.REACT_APP_SERVICE_AGENT_REQUEST_URL_BASE + endpoint;
+
+    if (typeof params === 'function') {
+      params = params();
+    }
+    const requestParams = params || {};
+
+    let req = null;
+    switch (method) {
+      case 'GET':
+        req = request.get(requestURL).query(requestParams);
+        break;
+      case 'POST':
+        req = request.post(requestURL).send(requestParams);
+        break;
+      case 'PUT':
+        req = request.put(requestURL).send(requestParams);
+        break;
+      case 'PATCH':
+        req = request.patch(requestURL).send(requestParams);
+        break;
+      case 'DELETE':
+        req = request.del(requestURL).send(requestParams);
+        break;
+      case 'OPTIONS':
+        req = request.options(requestURL).send(requestParams);
+        break;
+      case 'HEAD':
+        req = request.head(requestURL).send(requestParams);
+        break;
+      default:
+        throw new Error(`Unsupported request method: ${method}`);
+    }
+    req.accept('application/json');
+    const accessToken = this.accessToken;
+    if (accessToken) {
+      req.set('Authorization', `Bearer ${accessToken}`);
+    }
+
+    const csrfToken = cookie.get('csrftoken');
+    if (csrfToken) {
+      req.set('X-CSRFToken', csrfToken);
+    }
+
+    if (context) {
+      context.request = req;
+    }
+    return req;
+  }
+
+  static async request(method, endpoint, params, context) {
+    try {
+      return await this._request(method, endpoint, params, context);
+    } catch (err) {
+      // If a requests fails for ANY reason, attempt to refresh the access
+      // token then re-issue.
+      this.accessToken = null;
+      try {
+        await this.refreshAccessToken();
+        return await this._request(method, endpoint, params, context);
+      } catch (tokenRefreshError) {
+        throw err;
+      }
+    }
+  }
+
+  static get(endpoint, params, context) {
+    return this.request('GET', endpoint, params, context);
+  }
+
+  static post(endpoint, params, context) {
+    return this.request('POST', endpoint, params, context);
+  }
+
+  static put(endpoint, params, context) {
+    return this.request('PUT', endpoint, params, context);
+  }
+
+  static patch(endpoint, params, context) {
+    return this.request('PATCH', endpoint, params, context);
+  }
+
+  static delete(endpoint, params, context) {
+    return this.request('DELETE', endpoint, params, context);
+  }
+
+  static options(endpoint, params, context) {
+    return this.request('OPTIONS', endpoint, params, context);
+  }
+
+  static head(endpoint, params, context) {
+    return this.request('HEAD', endpoint, params, context);
+  }
+}
+
+export default ServiceAgent;
