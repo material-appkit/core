@@ -9,4 +9,11 @@ Object.defineProperty(exports, "reverse", {
   },
 });
 
+Object.defineProperty(exports, "matchesForPath", {
+  enumerable: true,
+  get: function get() {
+    return _urls.matchesForPath;
+  },
+});
+
 const _urls = _interopRequireDefault(require("./urls"));

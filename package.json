@@ -23,9 +23,11 @@
     "superagent": "latest"
   },
   "devDependencies": {
-    "react": "^16.7.0"
+    "react": "^16.7.0",
+    "react-router-dom": "^4.3.1"
   },
   "peerDependencies": {
-    "react": "^16.7.0"
+    "react": "^16.7.0",
+    "react-router-dom": "^4.3.1"
   }
 }
