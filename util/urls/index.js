@@ -2,11 +2,11 @@
 
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, "ServiceAgent", {
+Object.defineProperty(exports, "reverse", {
   enumerable: true,
   get: function get() {
-    return _ServiceAgent.default;
+    return _urls.reverse;
   },
 });
 
-const _ServiceAgent = _interopRequireDefault(require("./ServiceAgent"));
+const _urls = _interopRequireDefault(require("./urls"));
