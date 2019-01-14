@@ -54,7 +54,11 @@ class ServiceAgent {
 
   static _request(method, endpoint, params, context) {
     // Construct the AJAX request with the given params
-    let requestURL = process.env.REACT_APP_SERVICE_AGENT_REQUEST_URL_BASE + endpoint;
+    let requestURL = process.env.REACT_APP_API_URL;
+    if (!endpoint.startsWith('/')) {
+      requestURL += process.env.REACT_APP_API_ENDPOINT_PREFIX;
+    };
+    requestURL += endpoint;
 
     if (typeof params === 'function') {
       params = params();
