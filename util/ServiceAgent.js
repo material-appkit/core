@@ -57,8 +57,12 @@ class ServiceAgent {
     let requestURL = process.env.REACT_APP_API_URL;
     if (!endpoint.startsWith('/')) {
       requestURL += process.env.REACT_APP_API_ENDPOINT_PREFIX;
-    };
+    }
     requestURL += endpoint;
+
+    if (process.env.REACT_APP_API_XDEBUG_KEY) {
+      requestURL = `${requestURL}?XDEBUG_SESSION_START=${process.env.REACT_APP_API_XDEBUG_KEY}`;
+    }
 
     if (typeof params === 'function') {
       params = params();
