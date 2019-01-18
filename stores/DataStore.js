@@ -35,6 +35,11 @@ class DataStore {
     }
     this.items[recordIndex] = record;
   }
+
+  append(record) {
+    this.items.push(record);
+    this.totalLength = this.items.length;
+  }
 }
 
 decorate(DataStore, {
