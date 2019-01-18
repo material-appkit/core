@@ -18,24 +18,6 @@ class DataStore {
     return this.items.length === this.totalLength;
   }
 
-  indexOf(record) {
-    for (let index = 0; index < this.items.length; ++index) {
-      const item = this.items[index];
-      if (item && item.id === record.id) {
-        return index;
-      }
-    }
-
-    return -1;
-  }
-
-  set(recordIndex, record) {
-    if (recordIndex < 0 || recordIndex > this.items.length - 1) {
-      throw new Error(`Index out of range: ${recordIndex}`);
-    }
-    this.items[recordIndex] = record;
-  }
-
   append(record) {
     this.items.push(record);
     this.totalLength = this.items.length;
