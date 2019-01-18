@@ -43,7 +43,7 @@ class DataStore {
 }
 
 decorate(DataStore, {
-  items: observable,
+  items: observable.shallow,
   totalLength: observable,
   isLoaded: computed,
 });
