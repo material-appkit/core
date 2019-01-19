@@ -2,7 +2,7 @@
  * @param map
  * @returns Return the first object in the map's value set.
  */
-export function firstObject() {
+export function firstObject(map) {
   if (map.size === 0) {
     return null;
   }

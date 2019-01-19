@@ -5,14 +5,14 @@ const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDef
 Object.defineProperty(exports, "firstObject", {
   enumerable: true,
   get: function get() {
-    return _path.firstObject;
+    return _map.firstObject;
   },
 });
 
 Object.defineProperty(exports, "indexOfKey", {
   enumerable: true,
   get: function get() {
-    return _path.indexOfKey;
+    return _map.indexOfKey;
   },
 });
 
