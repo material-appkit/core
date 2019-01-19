@@ -13,13 +13,14 @@ import VirtualizedList from './VirtualizedList';
 import { indexOfKey } from '../util/map';
 
 
-class ListView extends React.Component {
+class ListView extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    this.initializeTabList();
+    this.initializeTabConfigList();
 
     this.state = {
+      redirectUrl: null,
       selectedTabIndex : null,
     };
   }
@@ -30,21 +31,25 @@ class ListView extends React.Component {
 
   componentDidUpdate() {
     if (this.subsetArrangement) {
-      const tabIndex = indexOfKey(this.subsetKey, this.subsetArrangement);
-      if (tabIndex !== this.state.selectedTabIndex) {
-        this.setState({ selectedTabIndex: tabIndex });
+      let tabIndex = indexOfKey(this.subsetKey, this.subsetArrangement);
+      if (tabIndex === -1) {
+        this.setState({ selectedTabIndex: 0 });
+      } else {
+        if (tabIndex !== this.state.selectedTabIndex) {
+          this.setState({ selectedTabIndex: tabIndex });
+        }
       }
     }
 
     this.props.store.update(this.filterParams);
   }
 
-  initializeTabList() {
+  initializeTabConfigList() {
     this.subsetArrangement = null;
-    this.tabList = null;
+    this.tabConfigList = null;
 
     if (this.props.subsetArrangement) {
-      const tabs = [];
+      const tabConfigList = [];
       const subsetArrangement = this.props.subsetArrangement;
       subsetArrangement.forEach((subset) => {
         let url = this.props.location.pathname;
@@ -55,22 +60,19 @@ class ListView extends React.Component {
         }
         subset[1].url = url;
 
-        tabs.push(
-          <Tab
-            component={Link}
-            className={this.props.classes.tab}
-            key={subsetName}
-            label={subset[1].tabLabel}
-            to={url}
-          />);
+        tabConfigList.push({
+          subsetName,
+          label: subset[1].tabLabel,
+          url,
+        });
       });
-      this.tabList = tabs;
+      this.tabConfigList = tabConfigList;
       this.subsetArrangement = new Map(subsetArrangement);
     }
   }
 
   get tabs() {
-    if (!this.tabList || this.state.selectedTabIndex === null) {
+    if (!this.tabConfigList || this.state.selectedTabIndex === null) {
       return null;
     }
 
@@ -83,7 +85,15 @@ class ListView extends React.Component {
         value={this.state.selectedTabIndex}
         variant="scrollable"
       >
-        {this.tabList}
+        {this.tabConfigList.map((tabConfig) => (
+          <Tab
+            component={Link}
+            className={this.props.classes.tab}
+            key={tabConfig.subsetName}
+            label={tabConfig.label}
+            to={tabConfig.url}
+          />
+        ))}
       </Tabs>
     );
   }

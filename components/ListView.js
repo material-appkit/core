@@ -50,8 +50,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var ListView = function (_React$Component) {
-  _inherits(ListView, _React$Component);
+var ListView = function (_React$PureComponent) {
+  _inherits(ListView, _React$PureComponent);
 
   function ListView(props) {
     var _this2 = this;
@@ -87,9 +87,10 @@ var ListView = function (_React$Component) {
     }));
 
 
-    _this.initializeTabList();
+    _this.initializeTabConfigList();
 
     _this.state = {
+      redirectUrl: null,
       selectedTabIndex: null
     };
     return _this;
@@ -105,23 +106,27 @@ var ListView = function (_React$Component) {
     value: function componentDidUpdate() {
       if (this.subsetArrangement) {
         var tabIndex = (0, _map.indexOfKey)(this.subsetKey, this.subsetArrangement);
-        if (tabIndex !== this.state.selectedTabIndex) {
-          this.setState({ selectedTabIndex: tabIndex });
+        if (tabIndex === -1) {
+          this.setState({ selectedTabIndex: 0 });
+        } else {
+          if (tabIndex !== this.state.selectedTabIndex) {
+            this.setState({ selectedTabIndex: tabIndex });
+          }
         }
       }
 
       this.props.store.update(this.filterParams);
     }
   }, {
-    key: 'initializeTabList',
-    value: function initializeTabList() {
+    key: 'initializeTabConfigList',
+    value: function initializeTabConfigList() {
       var _this3 = this;
 
       this.subsetArrangement = null;
-      this.tabList = null;
+      this.tabConfigList = null;
 
       if (this.props.subsetArrangement) {
-        var tabs = [];
+        var tabConfigList = [];
         var subsetArrangement = this.props.subsetArrangement;
         subsetArrangement.forEach(function (subset) {
           var url = _this3.props.location.pathname;
@@ -132,15 +137,13 @@ var ListView = function (_React$Component) {
           }
           subset[1].url = url;
 
-          tabs.push(_react2.default.createElement(_Tab2.default, {
-            component: _reactRouterDom.Link,
-            className: _this3.props.classes.tab,
-            key: subsetName,
+          tabConfigList.push({
+            subsetName: subsetName,
             label: subset[1].tabLabel,
-            to: url
-          }));
+            url: url
+          });
         });
-        this.tabList = tabs;
+        this.tabConfigList = tabConfigList;
         this.subsetArrangement = new Map(subsetArrangement);
       }
     }
@@ -160,7 +163,9 @@ var ListView = function (_React$Component) {
   }, {
     key: 'tabs',
     get: function get() {
-      if (!this.tabList || this.state.selectedTabIndex === null) {
+      var _this4 = this;
+
+      if (!this.tabConfigList || this.state.selectedTabIndex === null) {
         return null;
       }
 
@@ -174,7 +179,15 @@ var ListView = function (_React$Component) {
           value: this.state.selectedTabIndex,
           variant: 'scrollable'
         },
-        this.tabList
+        this.tabConfigList.map(function (tabConfig) {
+          return _react2.default.createElement(_Tab2.default, {
+            component: _reactRouterDom.Link,
+            className: _this4.props.classes.tab,
+            key: tabConfig.subsetName,
+            label: tabConfig.label,
+            to: tabConfig.url
+          });
+        })
       );
     }
   }, {
@@ -206,7 +219,7 @@ var ListView = function (_React$Component) {
   }]);
 
   return ListView;
-}(_react2.default.Component);
+}(_react2.default.PureComponent);
 
 ListView.propTypes = {
   classes: _propTypes2.default.object,
