@@ -37,6 +37,11 @@ var ViewController = function (_React$PureComponent) {
       this.props.onMount(this, this.props.mountPath);
     }
   }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      this.props.onUpdate(this, this.props.mountPath);
+    }
+  }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       this.props.onUnmount(this, this.props.mountPath);
@@ -54,6 +59,7 @@ var ViewController = function (_React$PureComponent) {
 ViewController.propTypes = {
   children: _propTypes2.default.any,
   onMount: _propTypes2.default.func.isRequired,
+  onUpdate: _propTypes2.default.func.isRequired,
   onUnmount: _propTypes2.default.func.isRequired,
   mountPath: _propTypes2.default.string
 };

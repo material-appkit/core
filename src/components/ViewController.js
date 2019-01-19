@@ -6,6 +6,10 @@ class ViewController extends React.PureComponent {
     this.props.onMount(this, this.props.mountPath);
   }
 
+  componentDidUpdate() {
+    this.props.onUpdate(this, this.props.mountPath);
+  }
+
   componentWillUnmount() {
     this.props.onUnmount(this, this.props.mountPath);
   }
@@ -18,6 +22,7 @@ class ViewController extends React.PureComponent {
 ViewController.propTypes = {
   children: PropTypes.any,
   onMount: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
   onUnmount: PropTypes.func.isRequired,
   mountPath: PropTypes.string,
 };
