@@ -25,10 +25,6 @@ const FIELD_TYPE_MAP = {
   'string': 'text',
 };
 
-const styles = (theme) => {
-  return theme.form;
-};
-
 class Form extends React.Component {
   constructor(props) {
     super(props);
@@ -260,6 +256,6 @@ Form.defaultProps = {
   entityType: '',
 };
 
-export default withStyles(styles)(
-  observer(Form)
-);
+export default withStyles((theme) => {
+  return theme.form;
+})(observer(Form));

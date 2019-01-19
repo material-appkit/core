@@ -58,10 +58,6 @@ var FIELD_TYPE_MAP = {
   'string': 'text'
 };
 
-var styles = function styles(theme) {
-  return theme.form;
-};
-
 var Form = function (_React$Component) {
   _inherits(Form, _React$Component);
 
@@ -374,4 +370,6 @@ Form.defaultProps = {
   entityType: ''
 };
 
-exports.default = (0, _withStyles2.default)(styles)((0, _mobxReact.observer)(Form));
+exports.default = (0, _withStyles2.default)(function (theme) {
+  return theme.form;
+})((0, _mobxReact.observer)(Form));

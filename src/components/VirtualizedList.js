@@ -1,26 +1,13 @@
 import { observer } from 'mobx-react';
 
 import PropTypes from 'prop-types';
-import React from "react";
+import React from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-
-// @material-ui/core components
-import withStyles from "@material-ui/core/styles/withStyles";
-
-const styles = (theme) => ({
-  root: {
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
-  },
-
-  loadProgressListItem: {
-    justifyContent: 'center',
-  },
-});
+import withStyles from '@material-ui/core/styles/withStyles';
 
 
 const VirtualizedList = (props) => {
@@ -64,4 +51,13 @@ VirtualizedList.propTypes = {
   store: PropTypes.object,
 };
 
-export default withStyles(styles)(observer(VirtualizedList));
+export default withStyles((theme) => ({
+  root: {
+    width: '100%',
+    backgroundColor: theme.palette.background.paper,
+  },
+
+  loadProgressListItem: {
+    justifyContent: 'center',
+  },
+}))(observer(VirtualizedList));

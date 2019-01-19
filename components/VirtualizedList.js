@@ -36,22 +36,6 @@ var _withStyles2 = _interopRequireDefault(_withStyles);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var styles = function styles(theme) {
-  return {
-    root: {
-      width: '100%',
-      backgroundColor: theme.palette.background.paper
-    },
-
-    loadProgressListItem: {
-      justifyContent: 'center'
-    }
-  };
-};
-
-// @material-ui/core components
-
-
 var VirtualizedList = function VirtualizedList(props) {
   var classes = props.classes;
 
@@ -96,4 +80,15 @@ VirtualizedList.propTypes = {
   store: _propTypes2.default.object
 };
 
-exports.default = (0, _withStyles2.default)(styles)((0, _mobxReact.observer)(VirtualizedList));
+exports.default = (0, _withStyles2.default)(function (theme) {
+  return {
+    root: {
+      width: '100%',
+      backgroundColor: theme.palette.background.paper
+    },
+
+    loadProgressListItem: {
+      justifyContent: 'center'
+    }
+  };
+})((0, _mobxReact.observer)(VirtualizedList));
