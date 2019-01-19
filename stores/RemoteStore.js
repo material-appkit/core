@@ -1,3 +1,5 @@
+import { diff } from 'deep-object-diff';
+
 import { decorate, observable } from 'mobx';
 import { ServiceAgent } from '../util';
 
@@ -94,6 +96,20 @@ class RemoteStore extends DataStore {
   async loadMore(page) {
     return this._load(page);
   }
+
+  async update(params) {
+    if (!params) {
+      return;
+    }
+
+    const paramDiff = diff(params, this.params);
+    if (!Object.keys(paramDiff).length) {
+      return;
+    }
+
+    this.load(params);
+  }
+
 
   unload() {
     this.params = null;
