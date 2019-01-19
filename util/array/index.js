@@ -5,7 +5,7 @@ const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDef
 Object.defineProperty(exports, "arrayToObject", {
   enumerable: true,
   get: function get() {
-    return _object.arrayToObject;
+    return _array.arrayToObject;
   },
 });
 
