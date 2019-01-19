@@ -19,6 +19,7 @@
   "dependencies": {
     "js-cookie": "latest",
     "path-to-regexp": "latest",
+    "react-infinite-scroller": "^1.2.4",
     "react-tabs": "^3.0.0",
     "superagent": "latest"
   },
