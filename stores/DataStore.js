@@ -17,10 +17,15 @@ class DataStore {
 
     return this.items.length === this.totalLength;
   }
+
+  append(record) {
+    this.items.push(record);
+    this.totalLength = this.items.length;
+  }
 }
 
 decorate(DataStore, {
-  items: observable,
+  items: observable.shallow,
   totalLength: observable,
   isLoaded: computed,
 });

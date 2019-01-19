@@ -126,6 +126,7 @@ export default class NotificationCenter {
    * When null, the receiver does not use notification senders as criteria for removal.
    */
   removeObserver(notificationObserver, notificationName, notificationSender) {
+    notificationName = notificationName || null;
     notificationSender = notificationSender || null;
     if (!this._notificationSenders[notificationSender]) {
       throw new Error(`No notifications have been registered for the given sender: ${notificationSender}`);

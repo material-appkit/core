@@ -24,9 +24,6 @@ class RemoteStore extends DataStore {
     throw new Error('Store must specify its endpoint!');
   }
 
-  /**
-   * Typically a store loads all its records in a single request.
-   */
   _getPageCount(responseData) {
     if (responseData.count === 0) {
       return 0;
@@ -108,7 +105,6 @@ class RemoteStore extends DataStore {
 
 decorate(RemoteStore, {
   isLoading: observable,
-  pageCount: observable,
 });
 
 export default RemoteStore;
