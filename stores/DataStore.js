@@ -22,6 +22,11 @@ class DataStore {
     this.items.push(record);
     this.totalLength = this.items.length;
   }
+
+  remove(record) {
+    this.items.remove(record);
+    this.totalLength = this.items.length;
+  }
 }
 
 decorate(DataStore, {
