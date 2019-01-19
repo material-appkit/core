@@ -17,6 +17,7 @@
   "author": "Allan Hart",
   "license": "MIT",
   "dependencies": {
+    "deep-object-diff": "^1.1.0",
     "js-cookie": "latest",
     "path-to-regexp": "latest",
     "react-infinite-scroller": "^1.2.4",
