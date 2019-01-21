@@ -145,7 +145,7 @@ class SnackbarManager extends React.Component {
       if (this.state.isOpen) {
         // immediately begin dismissing current message
         // to start showing new one
-        this.setState({isOpen: false });
+        this.setState({ isOpen: false });
       } else {
         this.processQueue();
       }
