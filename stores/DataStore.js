@@ -18,6 +18,11 @@ class DataStore {
     return this.items.length === this.totalLength;
   }
 
+  prepend(record) {
+    this.items.unshift(record);
+    this.totalLength = this.items.length;
+  }
+
   append(record) {
     this.items.push(record);
     this.totalLength = this.items.length;
