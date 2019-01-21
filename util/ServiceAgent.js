@@ -2,11 +2,11 @@ import cookie from 'js-cookie';
 import request from 'superagent';
 
 class ServiceAgent {
-  static get accessToken() {
+  static getAccessToken() {
     const cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
     return cookie.get(cookieName);
   }
-  static set accessToken(value) {
+  static setAccessToken(value) {
     const cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
     if (value) {
       cookie.set(cookieName, value);
@@ -15,11 +15,11 @@ class ServiceAgent {
     }
   }
 
-  static get refreshToken() {
+  static getRefreshToken() {
     const cookieName = process.env.REACT_APP_REFRESH_TOKEN_COOKIE_NAME;
     return cookie.get(cookieName);
   }
-  static set refreshToken(value) {
+  static setRefreshToken(value) {
     const cookieName = process.env.REACT_APP_REFRESH_TOKEN_COOKIE_NAME;
     if (value) {
       cookie.set(cookieName, value);
@@ -30,7 +30,7 @@ class ServiceAgent {
 
 
   static async refreshAccessToken() {
-    const refreshToken = this.refreshToken;
+    const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
       throw new Error('No refresh token available!');
     }
@@ -41,13 +41,13 @@ class ServiceAgent {
       const params = { refresh: refreshToken };
       const res = await this._request('POST', refreshTokenEndpoint, params);
 
-      cookie.set('accessToken', res.body.access);
-      cookie.set('refreshToken', res.body.refresh);
+      this.setAccessToken(res.body.access);
+      this.setRefreshToken(res.body.refresh);
 
       return res;
     } catch (err) {
-      cookie.remove('accessToken');
-      cookie.remove('refreshToken');
+      this.setAccessToken(null);
+      this.setRefreshToken(null);
       throw new Error('Access token refresh failed');
     }
   }
@@ -96,7 +96,7 @@ class ServiceAgent {
         throw new Error(`Unsupported request method: ${method}`);
     }
     req.accept('application/json');
-    const accessToken = this.accessToken;
+    const accessToken = this.getAccessToken();
     if (accessToken) {
       req.set('Authorization', `Bearer ${accessToken}`);
     }
@@ -118,7 +118,9 @@ class ServiceAgent {
     } catch (err) {
       // If a requests fails for ANY reason, attempt to refresh the access
       // token then re-issue.
-      this.accessToken = null;
+      // TODO: Distinguish requests that failed due to an invalid token.
+      // Only THEN do we want to clear the stored accessToken
+      // this.setAccessToken(null);
       try {
         await this.refreshAccessToken();
         return await this._request(method, endpoint, params, context);
