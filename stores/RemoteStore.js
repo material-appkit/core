@@ -89,8 +89,11 @@ class RemoteStore extends DataStore {
 
   async load(params, page) {
     this.unload();
+    if (!params) {
+      return;
+    }
 
-    this.params = filterEmptyValues(params || {});
+    this.params = filterEmptyValues(params);
     return this._load(page || 1);
   }
 
@@ -103,10 +106,15 @@ class RemoteStore extends DataStore {
       return;
     }
 
-    const updatedParams = filterEmptyValues(params);
-    const paramDiff = diff(updatedParams, this.params);
-    if (!Object.keys(paramDiff).length) {
-      return;
+    let updatedParams = null;
+    if (this.params) {
+      const updatedParams = filterEmptyValues(params);
+      const paramDiff = diff(updatedParams, this.params);
+      if (!Object.keys(paramDiff).length) {
+        return;
+      }
+    } else {
+      updatedParams = params;
     }
 
     this.load(updatedParams);

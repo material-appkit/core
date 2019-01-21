@@ -11,6 +11,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import VirtualizedList from './VirtualizedList';
 
 import { indexOfKey } from '../util/map';
+import { filterByKeys } from '../util/object';
 
 
 class ListView extends React.PureComponent {
@@ -26,10 +27,16 @@ class ListView extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.props.store.load(this.filterParams, 0);
+    this.props.store.update(this.filterParams);
   }
 
   componentDidUpdate() {
+    if (this.props.location.pathname !== this.props.mountPath) {
+      // Since this component may be mounted in the background, only respond
+      // to location changes when it is "active"
+      return;
+    }
+
     if (this.subsetArrangement) {
       let tabIndex = indexOfKey(this.subsetKey, this.subsetArrangement);
       if (tabIndex === -1) {
@@ -98,9 +105,12 @@ class ListView extends React.PureComponent {
     );
   }
 
+  get qsParams() {
+    return qs.parse(this.props.location.search);
+  }
+
   get subsetKey() {
-    const qsParams = qs.parse(this.props.location.search);
-    return qsParams.subset || '';
+    return this.qsParams.subset || '';
   }
 
   get activeTabArrangement() {
@@ -112,7 +122,7 @@ class ListView extends React.PureComponent {
   }
 
   get filterParams() {
-    const filterParams = this.props.filterParams ? {...this.props.filterParams} : {};
+    const filterParams = filterByKeys(this.qsParams, this.props.qsFilterParamNames);
     const arrangementInfo = this.activeTabArrangement;
     if (arrangementInfo) {
       Object.assign(filterParams, arrangementInfo.apiQueryParams);
@@ -149,14 +159,16 @@ ListView.propTypes = {
   listItemComponent: PropTypes.func.isRequired,
   store: PropTypes.object.isRequired,
   entityType: PropTypes.string,
-  location: PropTypes.object.isRequired,
   filterParams: PropTypes.object,
+  location: PropTypes.object.isRequired,
+  mountPath: PropTypes.string,
+  qsFilterParamNames: PropTypes.array,
   subsetArrangement: PropTypes.array,
   topbarTitle: PropTypes.string,
 };
 
 ListView.defaultProps = {
-  filterParams: {},
+  qsFilterParamNames: [],
 };
 
 export default withStyles((theme) => ({

@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _queryString = require('query-string');
@@ -39,6 +37,8 @@ var _VirtualizedList = require('./VirtualizedList');
 var _VirtualizedList2 = _interopRequireDefault(_VirtualizedList);
 
 var _map = require('../util/map');
+
+var _object = require('../util/object');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -99,11 +99,17 @@ var ListView = function (_React$PureComponent) {
   _createClass(ListView, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.props.store.load(this.filterParams, 0);
+      this.props.store.update(this.filterParams);
     }
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
+      if (this.props.location.pathname !== this.props.mountPath) {
+        // Since this component may be mounted in the background, only respond
+        // to location changes when it is "active"
+        return;
+      }
+
       if (this.subsetArrangement) {
         var tabIndex = (0, _map.indexOfKey)(this.subsetKey, this.subsetArrangement);
         if (tabIndex === -1) {
@@ -192,10 +198,14 @@ var ListView = function (_React$PureComponent) {
       );
     }
   }, {
+    key: 'qsParams',
+    get: function get() {
+      return _queryString2.default.parse(this.props.location.search);
+    }
+  }, {
     key: 'subsetKey',
     get: function get() {
-      var qsParams = _queryString2.default.parse(this.props.location.search);
-      return qsParams.subset || '';
+      return this.qsParams.subset || '';
     }
   }, {
     key: 'activeTabArrangement',
@@ -209,7 +219,7 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'filterParams',
     get: function get() {
-      var filterParams = this.props.filterParams ? _extends({}, this.props.filterParams) : {};
+      var filterParams = (0, _object.filterByKeys)(this.qsParams, this.props.qsFilterParamNames);
       var arrangementInfo = this.activeTabArrangement;
       if (arrangementInfo) {
         Object.assign(filterParams, arrangementInfo.apiQueryParams);
@@ -228,14 +238,16 @@ ListView.propTypes = {
   listItemComponent: _propTypes2.default.func.isRequired,
   store: _propTypes2.default.object.isRequired,
   entityType: _propTypes2.default.string,
-  location: _propTypes2.default.object.isRequired,
   filterParams: _propTypes2.default.object,
+  location: _propTypes2.default.object.isRequired,
+  mountPath: _propTypes2.default.string,
+  qsFilterParamNames: _propTypes2.default.array,
   subsetArrangement: _propTypes2.default.array,
   topbarTitle: _propTypes2.default.string
 };
 
 ListView.defaultProps = {
-  filterParams: {}
+  qsFilterParamNames: []
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {
