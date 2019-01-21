@@ -63,7 +63,8 @@ var VirtualizedList = function VirtualizedList(props) {
       props.store.items.map(function (item) {
         return _react2.default.createElement(props.componentForItem, {
           key: item.id,
-          item: item
+          item: item,
+          location: props.location
         });
       })
     ) : _react2.default.createElement(
@@ -75,9 +76,10 @@ var VirtualizedList = function VirtualizedList(props) {
 };
 
 VirtualizedList.propTypes = {
-  classes: _propTypes2.default.object,
+  classes: _propTypes2.default.object.isRequired,
   componentForItem: _propTypes2.default.func.isRequired,
-  store: _propTypes2.default.object
+  location: _propTypes2.default.object.isRequired,
+  store: _propTypes2.default.object.isRequired
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

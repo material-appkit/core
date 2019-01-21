@@ -135,6 +135,7 @@ class ListView extends React.PureComponent {
         {this.tabs}
         <VirtualizedList
           componentForItem={this.props.listItemComponent}
+          location={this.props.location}
           store={this.props.store}
         />
       </React.Fragment>

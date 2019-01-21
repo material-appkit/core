@@ -33,6 +33,7 @@ const VirtualizedList = (props) => {
             <props.componentForItem
               key={item.id}
               item={item}
+              location={props.location}
             />
           ))}
         </InfiniteScroll>
@@ -46,9 +47,10 @@ const VirtualizedList = (props) => {
 };
 
 VirtualizedList.propTypes = {
-  classes: PropTypes.object,
+  classes: PropTypes.object.isRequired,
   componentForItem: PropTypes.func.isRequired,
-  store: PropTypes.object,
+  location: PropTypes.object.isRequired,
+  store: PropTypes.object.isRequired,
 };
 
 export default withStyles((theme) => ({

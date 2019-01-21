@@ -156,6 +156,7 @@ var ListView = function (_React$PureComponent) {
         this.tabs,
         _react2.default.createElement(_VirtualizedList2.default, {
           componentForItem: this.props.listItemComponent,
+          location: this.props.location,
           store: this.props.store
         })
       );
