@@ -2,10 +2,17 @@
 
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, "filterObjectByKeys", {
+Object.defineProperty(exports, "filterByKeys", {
   enumerable: true,
   get: function get() {
-    return _object.filterObjectByKeys;
+    return _object.filterByKeys;
+  },
+});
+
+Object.defineProperty(exports, "filterEmptyValues", {
+  enumerable: true,
+  get: function get() {
+    return _object.filterEmptyValues;
   },
 });
 

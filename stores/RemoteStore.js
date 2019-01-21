@@ -2,6 +2,7 @@ import { diff } from 'deep-object-diff';
 
 import { decorate, observable } from 'mobx';
 import { ServiceAgent } from '../util';
+import { filterEmptyValues } from '../util/object';
 
 import DataStore from './DataStore';
 
@@ -89,7 +90,7 @@ class RemoteStore extends DataStore {
   async load(params, page) {
     this.unload();
 
-    this.params = params || {};
+    this.params = filterEmptyValues(params || {});
     return this._load(page || 1);
   }
 
@@ -102,12 +103,13 @@ class RemoteStore extends DataStore {
       return;
     }
 
-    const paramDiff = diff(params, this.params);
+    const updatedParams = filterEmptyValues(params);
+    const paramDiff = diff(updatedParams, this.params);
     if (!Object.keys(paramDiff).length) {
       return;
     }
 
-    this.load(params);
+    this.load(updatedParams);
   }
 
 

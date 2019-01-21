@@ -2,7 +2,7 @@
  * Given an object, return a new object with only the keys
  * contained in the given `keys` array
  */
-export function filterObjectByKeys(object, keys) {
+export function filterByKeys(object, keys) {
   const filteredObject = {};
   Object.keys(object).forEach((key) => {
     if (keys.indexOf(key) !== -1) {
@@ -12,6 +12,21 @@ export function filterObjectByKeys(object, keys) {
   return filteredObject;
 }
 
+
+/**
+ * Return a new object containing only those key/value pairs
+ * that have a non-falsy value.
+ * @param object
+ */
+export function filterEmptyValues(object) {
+  const filteredObject = {};
+  for (const key in object) {
+    if (object[key]) {
+      filteredObject[key] = object[key];
+    }
+  }
+  return filteredObject;
+}
 
 /**
  * Helper function to convert an object of key:value pairs into an array
