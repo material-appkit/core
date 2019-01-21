@@ -163,7 +163,7 @@ class Form extends React.Component {
           label: fieldInfo.label,
           margin: "dense",
           name: fieldName,
-          defaultValue: this.state.originalObject[fieldName],
+          defaultValue: this.state.originalObject[fieldName] || '',
           variant: "outlined",
         };
 

@@ -293,7 +293,7 @@ var Form = function (_React$Component) {
             label: fieldInfo.label,
             margin: "dense",
             name: fieldName,
-            defaultValue: _this3.state.originalObject[fieldName],
+            defaultValue: _this3.state.originalObject[fieldName] || '',
             variant: "outlined"
           };
 
