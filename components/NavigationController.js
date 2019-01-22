@@ -26,6 +26,46 @@ var _AppBar = require('@material-ui/core/AppBar');
 
 var _AppBar2 = _interopRequireDefault(_AppBar);
 
+var _Button = require('@material-ui/core/Button');
+
+var _Button2 = _interopRequireDefault(_Button);
+
+var _ClickAwayListener = require('@material-ui/core/ClickAwayListener');
+
+var _ClickAwayListener2 = _interopRequireDefault(_ClickAwayListener);
+
+var _Grow = require('@material-ui/core/Grow');
+
+var _Grow2 = _interopRequireDefault(_Grow);
+
+var _Icon = require('@material-ui/core/Icon');
+
+var _Icon2 = _interopRequireDefault(_Icon);
+
+var _ListItemIcon = require('@material-ui/core/ListItemIcon');
+
+var _ListItemIcon2 = _interopRequireDefault(_ListItemIcon);
+
+var _ListItemText = require('@material-ui/core/ListItemText');
+
+var _ListItemText2 = _interopRequireDefault(_ListItemText);
+
+var _MenuItem = require('@material-ui/core/MenuItem');
+
+var _MenuItem2 = _interopRequireDefault(_MenuItem);
+
+var _MenuList = require('@material-ui/core/MenuList');
+
+var _MenuList2 = _interopRequireDefault(_MenuList);
+
+var _Paper = require('@material-ui/core/Paper');
+
+var _Paper2 = _interopRequireDefault(_Paper);
+
+var _Popper = require('@material-ui/core/Popper');
+
+var _Popper2 = _interopRequireDefault(_Popper);
+
 var _Toolbar = require('@material-ui/core/Toolbar');
 
 var _Toolbar2 = _interopRequireDefault(_Toolbar);
@@ -48,6 +88,82 @@ var NavigationController = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (NavigationController.__proto__ || Object.getPrototypeOf(NavigationController)).call(this, props));
 
+    _this.createContextMenu = function (topbarConfig) {
+      if (!(topbarConfig && topbarConfig.contextMenuItems)) {
+        return null;
+      }
+
+      return _react2.default.createElement(
+        _Popper2.default,
+        {
+          open: _this.state.contextMenuIsOpen,
+          anchorEl: _this.state.contextMenuAnchorEl,
+          transition: true,
+          disablePortal: true
+        },
+        function (_ref) {
+          var TransitionProps = _ref.TransitionProps,
+              placement = _ref.placement;
+          return _react2.default.createElement(
+            _Grow2.default,
+            _extends({}, TransitionProps, {
+              style: { transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }
+            }),
+            _react2.default.createElement(
+              _Paper2.default,
+              null,
+              _react2.default.createElement(
+                _ClickAwayListener2.default,
+                { onClickAway: _this.handleContextMenuClose },
+                _react2.default.createElement(
+                  _MenuList2.default,
+                  null,
+                  topbarConfig.contextMenuItems.map(_this.createContextMenuItem)
+                )
+              )
+            )
+          );
+        }
+      );
+    };
+
+    _this.createContextMenuItem = function (itemConfig) {
+      var classes = _this.props.classes;
+
+      var menuItemProps = {
+        className: classes.contextMenuItem,
+        key: itemConfig.key,
+        onClick: function onClick() {
+          _this.handleContextMenuClick(itemConfig);
+        }
+      };
+      if (itemConfig.link) {
+        menuItemProps.to = itemConfig.link;
+        menuItemProps.component = _reactRouterDom.Link;
+      }
+      return _react2.default.createElement(
+        _MenuItem2.default,
+        menuItemProps,
+        itemConfig.icon && _react2.default.createElement(
+          _ListItemIcon2.default,
+          { className: classes.contextMenuIcon },
+          _react2.default.createElement(itemConfig.icon, null)
+        ),
+        _react2.default.createElement(_ListItemText2.default, { primary: itemConfig.title })
+      );
+    };
+
+    _this.handleContextMenuClick = function (menuItemConfig) {
+      if (menuItemConfig.onClick) {
+        menuItemConfig.onClick(menuItemConfig);
+      }
+      _this.handleContextMenuClose();
+    };
+
+    _this.handleContextMenuClose = function () {
+      _this.setState({ contextMenuAnchorEl: null, contextMenuIsOpen: false });
+    };
+
     _this.viewControllerDidMount = function (viewController, path) {
       _this.topbarConfigMap.set(path, {});
       _this.updateTopbarConfig(viewController.props, path);
@@ -63,6 +179,11 @@ var NavigationController = function (_React$Component) {
     };
 
     _this.topbarConfigMap = new Map();
+
+    _this.state = {
+      contextMenuAnchorEl: null,
+      contextMenuIsOpen: false
+    };
     return _this;
   }
 
@@ -73,7 +194,8 @@ var NavigationController = function (_React$Component) {
 
       var newTopbarConfig = {
         title: viewControllerProps.title,
-        rightBarItem: viewControllerProps.rightBarItem
+        rightBarItem: viewControllerProps.rightBarItem,
+        contextMenuItems: viewControllerProps.contextMenuItems
       };
 
       if (Object.keys((0, _deepObjectDiff.diff)(newTopbarConfig, topbarConfig)).length) {
@@ -105,7 +227,7 @@ var NavigationController = function (_React$Component) {
             { className: classes.toolBar, disableGutters: true },
             _react2.default.createElement(
               _reactTabs.TabList,
-              null,
+              { className: classes.tabList },
               this.tabs
             ),
             this.rightBarItem
@@ -152,24 +274,46 @@ var NavigationController = function (_React$Component) {
         }
 
         var tabComponent = null;
+        var contextMenu = null;
+
         if (i < matches.length - 1) {
           tabComponent = _react2.default.createElement(
-            _reactRouterDom.Link,
-            { to: match.url },
-            title
+            _react2.default.Fragment,
+            null,
+            _react2.default.createElement(
+              _Button2.default,
+              { component: _reactRouterDom.Link, to: match.url },
+              title
+            ),
+            _react2.default.createElement(
+              _Icon2.default,
+              { className: classes.tabDivider },
+              'keyboard_arrow_right'
+            )
           );
         } else {
+          var tabButtonProps = {};
+          if (topbarConfig) {
+            contextMenu = _this3.createContextMenu(topbarConfig);
+            tabButtonProps.onClick = function (e) {
+              _this3.setState({
+                contextMenuAnchorEl: e.target,
+                contextMenuIsOpen: true
+              });
+            };
+          }
           tabComponent = _react2.default.createElement(
-            'span',
-            { className: classes.activeTitle },
+            _Button2.default,
+            tabButtonProps,
             title
           );
         }
 
         return _react2.default.createElement(
           _reactTabs.Tab,
-          { key: match.path, className: _this3.props.classes.tab },
-          tabComponent
+          { key: match.path, className: classes.tab },
+          tabComponent,
+          contextMenu
         );
       });
     }

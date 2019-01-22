@@ -8,7 +8,15 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
 import Icon from '@material-ui/core/Icon';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -17,6 +25,11 @@ class NavigationController extends React.Component {
     super(props);
 
     this.topbarConfigMap = new Map();
+
+    this.state = {
+      contextMenuAnchorEl: null,
+      contextMenuIsOpen: false,
+    };
   }
 
   get tabs() {
@@ -31,6 +44,8 @@ class NavigationController extends React.Component {
       }
 
       let tabComponent = null;
+      let contextMenu = null;
+
       if (i < matches.length - 1) {
         tabComponent = (
           <React.Fragment>
@@ -39,12 +54,23 @@ class NavigationController extends React.Component {
           </React.Fragment>
         );
       } else {
-        tabComponent = <Button>{title}</Button>;
+        const tabButtonProps = {};
+        if (topbarConfig) {
+          contextMenu = this.createContextMenu(topbarConfig);
+          tabButtonProps.onClick = (e) => {
+            this.setState({
+              contextMenuAnchorEl: e.target,
+              contextMenuIsOpen: true,
+            });
+          };
+        }
+        tabComponent = <Button {...tabButtonProps}>{title}</Button>;
       }
 
       return (
         <Tab key={match.path} className={classes.tab}>
           {tabComponent}
+          {contextMenu}
         </Tab>
       );
     });
@@ -62,12 +88,78 @@ class NavigationController extends React.Component {
     return null;
   }
 
+  createContextMenu = (topbarConfig) => {
+    if (!(topbarConfig && topbarConfig.contextMenuItems)) {
+      return null;
+    }
+
+    return (
+      <Popper
+        open={this.state.contextMenuIsOpen}
+        anchorEl={this.state.contextMenuAnchorEl}
+        transition
+        disablePortal
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={this.handleContextMenuClose}>
+                <MenuList>
+                  {topbarConfig.contextMenuItems.map(this.createContextMenuItem)}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+
+    )
+  };
+
+  createContextMenuItem = (itemConfig) => {
+    const { classes } = this.props;
+    const menuItemProps = {
+      className: classes.contextMenuItem,
+      key: itemConfig.key,
+      onClick: () => { this.handleContextMenuClick(itemConfig); },
+    };
+    if (itemConfig.link) {
+      menuItemProps.to = itemConfig.link;
+      menuItemProps.component = Link;
+    }
+    return (
+      <MenuItem {...menuItemProps}>
+        {itemConfig.icon &&
+          <ListItemIcon className={classes.contextMenuIcon}>
+            <itemConfig.icon />
+          </ListItemIcon>
+        }
+        <ListItemText primary={itemConfig.title} />
+      </MenuItem>
+    );
+  };
+
+  handleContextMenuClick = (menuItemConfig) => {
+    if (menuItemConfig.onClick) {
+      menuItemConfig.onClick(menuItemConfig);
+    }
+    this.handleContextMenuClose();
+  };
+
+  handleContextMenuClose = () => {
+    this.setState({ contextMenuAnchorEl: null, contextMenuIsOpen: false });
+  };
+
   updateTopbarConfig(viewControllerProps, path) {
     const topbarConfig = this.topbarConfigMap.get(path);
 
     const newTopbarConfig = {
       title: viewControllerProps.title,
       rightBarItem: viewControllerProps.rightBarItem,
+      contextMenuItems: viewControllerProps.contextMenuItems,
     };
 
     if (Object.keys(diff(newTopbarConfig, topbarConfig)).length) {
