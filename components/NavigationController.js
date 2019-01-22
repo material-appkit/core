@@ -174,7 +174,7 @@ var NavigationController = function (_React$Component) {
           { className: classes.contextMenuIcon },
           _react2.default.createElement(itemConfig.icon, null)
         ),
-        _react2.default.createElement(_ListItemText2.default, { primary: itemConfig.title })
+        _react2.default.createElement(_ListItemText2.default, { primary: itemConfig.title, className: classes.contextMenuText })
       );
     };
 

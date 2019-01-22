@@ -138,7 +138,7 @@ class NavigationController extends React.Component {
             <itemConfig.icon />
           </ListItemIcon>
         }
-        <ListItemText primary={itemConfig.title} />
+        <ListItemText primary={itemConfig.title} className={classes.contextMenuText} />
       </MenuItem>
     );
   };
