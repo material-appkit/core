@@ -7,6 +7,8 @@ import { diff } from 'deep-object-diff';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -30,13 +32,18 @@ class NavigationController extends React.Component {
 
       let tabComponent = null;
       if (i < matches.length - 1) {
-        tabComponent = <Link to={match.url}>{title}</Link>;
+        tabComponent = (
+          <React.Fragment>
+            <Button component={Link} to={match.url}>{title}</Button>
+            <Icon className={classes.tabDivider}>keyboard_arrow_right</Icon>
+          </React.Fragment>
+        );
       } else {
-        tabComponent = <span className={classes.activeTitle}>{title}</span>;
+        tabComponent = <Button>{title}</Button>;
       }
 
       return (
-        <Tab key={match.path} className={this.props.classes.tab}>
+        <Tab key={match.path} className={classes.tab}>
           {tabComponent}
         </Tab>
       );
@@ -95,7 +102,7 @@ class NavigationController extends React.Component {
       >
         <AppBar color="default" position="fixed" className={classes.appBar}>
           <Toolbar className={classes.toolBar} disableGutters>
-            <TabList>{this.tabs}</TabList>
+            <TabList className={classes.tabList}>{this.tabs}</TabList>
             {this.rightBarItem}
           </Toolbar>
         </AppBar>
