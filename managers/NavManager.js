@@ -35,11 +35,6 @@ var NavManager = function () {
      */
 
   }, {
-    key: 'goBack',
-    value: function goBack() {
-      this.routerStore.history.goBack();
-    }
-  }, {
     key: 'reloadWindow',
     value: function reloadWindow() {
       window.location.reload();
@@ -97,6 +92,22 @@ var NavManager = function () {
       });
 
       this.setUrlParams(params, null, replace);
+    }
+
+    /**
+     * Unlike the underlying setUrlParams method, this method will clear the
+     * querystring params if qsParams is unset.
+     */
+
+  }, {
+    key: 'navigate',
+    value: function navigate(path, qsParams, replace) {
+      this.setUrlParams(qsParams || {}, path, replace);
+    }
+  }, {
+    key: 'goBack',
+    value: function goBack() {
+      this.routerStore.history.goBack();
     }
   }, {
     key: 'qsParams',

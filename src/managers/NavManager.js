@@ -25,10 +25,6 @@ class NavManager {
     return this.routerStore.location;
   }
 
-  static goBack() {
-    this.routerStore.history.goBack();
-  }
-
   static reloadWindow() {
     window.location.reload();
   }
@@ -79,6 +75,18 @@ class NavManager {
     });
 
     this.setUrlParams(params, null, replace);
+  }
+
+  /**
+   * Unlike the underlying setUrlParams method, this method will clear the
+   * querystring params if qsParams is unset.
+   */
+  static navigate(path, qsParams, replace) {
+    this.setUrlParams(qsParams || {}, path, replace);
+  }
+
+  static goBack() {
+    this.routerStore.history.goBack();
   }
 }
 
