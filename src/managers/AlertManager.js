@@ -22,9 +22,18 @@ import withStyles from '@material-ui/core/styles/withStyles';
 class AlertManager extends React.Component {
   static queue = observable.map();
 
-  static alert(alertInfo) {
+  static alert(alertInfo, type) {
+    alertInfo.ALERT_TYPE = type;
     const key = new Date().getTime();
     this.queue.set(key, alertInfo);
+  }
+
+  static info(alertInfo) {
+    this.alert(alertInfo, 'info');
+  }
+
+  static confirm(alertInfo) {
+    this.alert(alertInfo, 'confirm');
   }
 
   static async dismiss(key, flag) {
@@ -53,9 +62,11 @@ class AlertManager extends React.Component {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => { AlertManager.dismiss(key, false); }}>
-              Cancel
-            </Button>
+            {alertInfo.ALERT_TYPE === 'confirm' &&
+              <Button onClick={() => { AlertManager.dismiss(key, false); }}>
+                Cancel
+              </Button>
+            }
             <Button onClick={() => { AlertManager.dismiss(key, true); }} color="primary">
               OK
             </Button>

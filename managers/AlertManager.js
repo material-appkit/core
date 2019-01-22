@@ -111,7 +111,7 @@ var AlertManager = function (_React$Component) {
           _react2.default.createElement(
             _DialogActions2.default,
             null,
-            _react2.default.createElement(
+            alertInfo.ALERT_TYPE === 'confirm' && _react2.default.createElement(
               _Button2.default,
               { onClick: function onClick() {
                   AlertManager.dismiss(key, false);
@@ -132,9 +132,20 @@ var AlertManager = function (_React$Component) {
     }
   }], [{
     key: 'alert',
-    value: function alert(alertInfo) {
+    value: function alert(alertInfo, type) {
+      alertInfo.ALERT_TYPE = type;
       var key = new Date().getTime();
       this.queue.set(key, alertInfo);
+    }
+  }, {
+    key: 'info',
+    value: function info(alertInfo) {
+      this.alert(alertInfo, 'info');
+    }
+  }, {
+    key: 'confirm',
+    value: function confirm(alertInfo) {
+      this.alert(alertInfo, 'confirm');
     }
   }, {
     key: 'dismiss',
