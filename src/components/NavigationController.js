@@ -10,7 +10,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
-import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -18,7 +18,10 @@ import MenuList from '@material-ui/core/MenuList';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
 class NavigationController extends React.Component {
   constructor(props) {
@@ -50,27 +53,21 @@ class NavigationController extends React.Component {
         tabComponent = (
           <React.Fragment>
             <Button component={Link} to={match.url}>{title}</Button>
-            <Icon className={classes.tabDivider}>keyboard_arrow_right</Icon>
+            <KeyboardArrowRightIcon/>
           </React.Fragment>
         );
       } else {
-        const tabButtonProps = {};
-        if (topbarConfig) {
-          contextMenu = this.createContextMenu(topbarConfig);
-          tabButtonProps.onClick = (e) => {
-            this.setState({
-              contextMenuAnchorEl: e.target,
-              contextMenuIsOpen: true,
-            });
-          };
-        }
-        tabComponent = <Button {...tabButtonProps}>{title}</Button>;
+        tabComponent = (
+          <React.Fragment>
+            <Typography className={classes.activeBreadCrumb}>{title}</Typography>
+            {this.createContextMenu(topbarConfig)}
+          </React.Fragment>
+        );
       }
 
       return (
         <Tab key={match.path} className={classes.tab}>
           {tabComponent}
-          {contextMenu}
         </Tab>
       );
     });
@@ -94,29 +91,33 @@ class NavigationController extends React.Component {
     }
 
     return (
-      <Popper
-        open={this.state.contextMenuIsOpen}
-        anchorEl={this.state.contextMenuAnchorEl}
-        transition
-        disablePortal
-      >
-        {({ TransitionProps, placement }) => (
-          <Grow
-            {...TransitionProps}
-            style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-          >
-            <Paper>
-              <ClickAwayListener onClickAway={this.handleContextMenuClose}>
-                <MenuList>
-                  {topbarConfig.contextMenuItems.map(this.createContextMenuItem)}
-                </MenuList>
-              </ClickAwayListener>
-            </Paper>
-          </Grow>
-        )}
-      </Popper>
-
-    )
+      <React.Fragment>
+        <IconButton onClick={(e) => { this.toggleContextMenu(e.target); }}>
+          <MoreHorizIcon />
+        </IconButton>
+        <Popper
+          open={this.state.contextMenuIsOpen}
+          anchorEl={this.state.contextMenuAnchorEl}
+          transition
+          disablePortal
+        >
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={() => { this.toggleContextMenu(false); }}>
+                  <MenuList>
+                    {topbarConfig.contextMenuItems.map(this.createContextMenuItem)}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </React.Fragment>
+    );
   };
 
   createContextMenuItem = (itemConfig) => {
@@ -146,11 +147,15 @@ class NavigationController extends React.Component {
     if (menuItemConfig.onClick) {
       menuItemConfig.onClick(menuItemConfig);
     }
-    this.handleContextMenuClose();
+    this.toggleContextMenu(false);
   };
 
-  handleContextMenuClose = () => {
-    this.setState({ contextMenuAnchorEl: null, contextMenuIsOpen: false });
+  toggleContextMenu = (anchor) => {
+    if (anchor) {
+      this.setState({ contextMenuAnchorEl: anchor, contextMenuIsOpen: true });
+    } else {
+      this.setState({ contextMenuAnchorEl: null, contextMenuIsOpen: false });
+    }
   };
 
   updateTopbarConfig(viewControllerProps, path) {
