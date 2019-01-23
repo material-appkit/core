@@ -35,7 +35,7 @@ class NavManager {
    * @param pathname Path to set on location. If undefined, use the current pathname.
    * @param replace If set, replace the topmost URL in the history stack. Else push a new one.
    */
-  static setUrlParams(params, pathname, replace) {
+  static setUrlParams(params, pathname, replace, state) {
     const qsParams = params || qs.parse(this.routerStore.location.search);
 
     // Filter out any parameters with unset values
@@ -52,9 +52,9 @@ class NavManager {
     const url = `${pathname || currentPathname}?${querystring}`;
 
     if (replace) {
-      this.routerStore.replace(url);
+      this.routerStore.history.replace(url, state);
     } else {
-      this.routerStore.push(url);
+      this.routerStore.history.push(url, state);
     }
   }
 
@@ -81,8 +81,8 @@ class NavManager {
    * Unlike the underlying setUrlParams method, this method will clear the
    * querystring params if qsParams is unset.
    */
-  static navigate(path, qsParams, replace) {
-    this.setUrlParams(qsParams || {}, path, replace);
+  static navigate(path, qsParams, replace, state) {
+    this.setUrlParams(qsParams || {}, path, replace, state);
   }
 
   static goBack() {

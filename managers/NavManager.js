@@ -49,7 +49,7 @@ var NavManager = function () {
 
   }, {
     key: 'setUrlParams',
-    value: function setUrlParams(params, pathname, replace) {
+    value: function setUrlParams(params, pathname, replace, state) {
       var qsParams = params || _queryString2.default.parse(this.routerStore.location.search);
 
       // Filter out any parameters with unset values
@@ -66,9 +66,9 @@ var NavManager = function () {
       var url = (pathname || currentPathname) + '?' + querystring;
 
       if (replace) {
-        this.routerStore.replace(url);
+        this.routerStore.history.replace(url, state);
       } else {
-        this.routerStore.push(url);
+        this.routerStore.history.push(url, state);
       }
     }
 
@@ -101,8 +101,8 @@ var NavManager = function () {
 
   }, {
     key: 'navigate',
-    value: function navigate(path, qsParams, replace) {
-      this.setUrlParams(qsParams || {}, path, replace);
+    value: function navigate(path, qsParams, replace, state) {
+      this.setUrlParams(qsParams || {}, path, replace, state);
     }
   }, {
     key: 'goBack',
