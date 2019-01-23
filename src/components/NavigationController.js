@@ -204,7 +204,7 @@ class NavigationController extends React.Component {
           </Toolbar>
         </AppBar>
 
-        <main className={classes.main}>
+        <div className={classes.tabPanelContainer}>
           {this.props.matches.map((match) => (
             <TabPanel key={match.path}>
               <Route
@@ -224,7 +224,7 @@ class NavigationController extends React.Component {
               />
             </TabPanel>
           ))}
-        </main>
+        </div>
       </Tabs>
     );
   }

@@ -263,8 +263,8 @@ var NavigationController = function (_React$Component) {
           )
         ),
         _react2.default.createElement(
-          'main',
-          { className: classes.main },
+          'div',
+          { className: classes.tabPanelContainer },
           this.props.matches.map(function (match) {
             return _react2.default.createElement(
               _reactTabs.TabPanel,
