@@ -77,11 +77,11 @@ class Form extends React.Component {
 
     let originalObject = this.props.originalObject;
 
-    const optionsRequest = ServiceAgent.options(this.detailUrl || this.props.apiCreateUrlPath);
+    const optionsRequest = this.props.serviceAgent.options(this.detailUrl || this.props.apiCreateUrlPath);
     const requests = [optionsRequest];
 
     if (!this.props.originalObject && this.detailUrl) {
-      requests.push(ServiceAgent.get(this.detailUrl));
+      requests.push(this.props.serviceAgent.get(this.detailUrl));
     }
 
     let responses = await(Promise.all(requests));
@@ -121,9 +121,9 @@ class Form extends React.Component {
     let saveRequest = null;
     if (this.detailUrl) {
       const pendingChanges = updatedDiff(this.state.originalObject, formData);
-      saveRequest = ServiceAgent.patch(this.detailUrl, pendingChanges);
+      saveRequest = this.props.serviceAgent.patch(this.detailUrl, pendingChanges);
     } else {
-      saveRequest = ServiceAgent.post(this.props.apiCreateUrlPath, formData);
+      saveRequest = this.props.serviceAgent.post(this.props.apiCreateUrlPath, formData);
     }
 
     try {
@@ -249,11 +249,13 @@ Form.propTypes = {
   onSave: PropTypes.func,
   onError: PropTypes.func,
   loadingIndicator: PropTypes.node,
+  serviceAgent: PropTypes.object,
 };
 
 Form.defaultProps = {
   defaultValues: {},
   entityType: '',
+  serviceAgent: new ServiceAgent(),
 };
 
 export default withStyles((theme) => {

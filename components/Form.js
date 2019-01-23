@@ -77,12 +77,12 @@ var Form = function (_React$Component) {
               _this.setState({ loading: true });
 
               originalObject = _this.props.originalObject;
-              optionsRequest = _util.ServiceAgent.options(_this.detailUrl || _this.props.apiCreateUrlPath);
+              optionsRequest = _this.props.serviceAgent.options(_this.detailUrl || _this.props.apiCreateUrlPath);
               requests = [optionsRequest];
 
 
               if (!_this.props.originalObject && _this.detailUrl) {
-                requests.push(_util.ServiceAgent.get(_this.detailUrl));
+                requests.push(_this.props.serviceAgent.get(_this.detailUrl));
               }
 
               _context.next = 7;
@@ -145,9 +145,9 @@ var Form = function (_React$Component) {
                 if (_this.detailUrl) {
                   pendingChanges = (0, _deepObjectDiff.updatedDiff)(_this.state.originalObject, formData);
 
-                  saveRequest = _util.ServiceAgent.patch(_this.detailUrl, pendingChanges);
+                  saveRequest = _this.props.serviceAgent.patch(_this.detailUrl, pendingChanges);
                 } else {
-                  saveRequest = _util.ServiceAgent.post(_this.props.apiCreateUrlPath, formData);
+                  saveRequest = _this.props.serviceAgent.post(_this.props.apiCreateUrlPath, formData);
                 }
 
                 _context2.prev = 4;
@@ -362,12 +362,14 @@ Form.propTypes = {
   onLoad: _propTypes2.default.func,
   onSave: _propTypes2.default.func,
   onError: _propTypes2.default.func,
-  loadingIndicator: _propTypes2.default.node
+  loadingIndicator: _propTypes2.default.node,
+  serviceAgent: _propTypes2.default.object
 };
 
 Form.defaultProps = {
   defaultValues: {},
-  entityType: ''
+  entityType: '',
+  serviceAgent: new _util.ServiceAgent()
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {
