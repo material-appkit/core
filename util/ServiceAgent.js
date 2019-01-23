@@ -75,32 +75,57 @@ class ServiceAgent {
     return req;
   }
 
+  request(method, endpoint, params, context) {
+    return this.constructor.request(method, endpoint, params, context);
+  }
+
 
   static get(endpoint, params, context) {
+    return this.request('GET', endpoint, params, context);
+  }
+  get(endpoint, params, context) {
     return this.request('GET', endpoint, params, context);
   }
 
   static post(endpoint, params, context) {
     return this.request('POST', endpoint, params, context);
   }
+  post(endpoint, params, context) {
+    return this.request('POST', endpoint, params, context);
+  }
 
   static put(endpoint, params, context) {
+    return this.request('PUT', endpoint, params, context);
+  }
+  put(endpoint, params, context) {
     return this.request('PUT', endpoint, params, context);
   }
 
   static patch(endpoint, params, context) {
     return this.request('PATCH', endpoint, params, context);
   }
+  patch(endpoint, params, context) {
+    return this.request('PATCH', endpoint, params, context);
+  }
 
   static delete(endpoint, params, context) {
+    return this.request('DELETE', endpoint, params, context);
+  }
+  delete(endpoint, params, context) {
     return this.request('DELETE', endpoint, params, context);
   }
 
   static options(endpoint, params, context) {
     return this.request('OPTIONS', endpoint, params, context);
   }
+  options(endpoint, params, context) {
+    return this.request('OPTIONS', endpoint, params, context);
+  }
 
   static head(endpoint, params, context) {
+    return this.request('HEAD', endpoint, params, context);
+  }
+  head(endpoint, params, context) {
     return this.request('HEAD', endpoint, params, context);
   }
 }
