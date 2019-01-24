@@ -25,9 +25,9 @@ var NavManager = function () {
 
   _createClass(NavManager, null, [{
     key: 'initialize',
-    value: function initialize() {
+    value: function initialize(options) {
       this.routerStore = new _mobxReactRouter.RouterStore();
-      this.history = (0, _mobxReactRouter.syncHistoryWithStore)((0, _history.createBrowserHistory)({ basename: process.env.REACT_APP_URL_BASENAME }), this.routerStore);
+      this.history = (0, _mobxReactRouter.syncHistoryWithStore)((0, _history.createBrowserHistory)({ basename: options.basename || process.env.REACT_APP_URL_BASENAME }), this.routerStore);
     }
 
     /**
@@ -126,4 +126,5 @@ var NavManager = function () {
 
 NavManager.routerStore = null;
 NavManager.history = null;
+NavManager.basename = null;
 exports.default = NavManager;

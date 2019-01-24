@@ -6,10 +6,10 @@ class NavManager {
   static routerStore = null;
   static history = null;
 
-  static initialize() {
+  static initialize(options) {
     this.routerStore = new RouterStore();
     this.history = syncHistoryWithStore(
-      createBrowserHistory({ basename: process.env.REACT_APP_URL_BASENAME }),
+      createBrowserHistory({ basename: options.basename || process.env.REACT_APP_URL_BASENAME }),
       this.routerStore
     );
   }
