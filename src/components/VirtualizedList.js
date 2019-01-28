@@ -33,7 +33,7 @@ const VirtualizedList = (props) => {
             <props.componentForItem
               key={item.id}
               item={item}
-              location={props.location}
+              contextProvider={props.itemContextProvider}
             />
           ))}
         </InfiniteScroll>
@@ -49,7 +49,7 @@ const VirtualizedList = (props) => {
 VirtualizedList.propTypes = {
   classes: PropTypes.object.isRequired,
   componentForItem: PropTypes.func.isRequired,
-  location: PropTypes.object.isRequired,
+  itemContextProvider: PropTypes.func,
   store: PropTypes.object.isRequired,
 };
 

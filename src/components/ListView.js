@@ -145,8 +145,8 @@ class ListView extends React.PureComponent {
         {this.tabs}
         <VirtualizedList
           componentForItem={this.props.listItemComponent}
-          location={this.props.location}
           store={this.props.store}
+          itemContextProvider={this.props.itemContextProvider}
         />
       </React.Fragment>
     );
@@ -160,6 +160,7 @@ ListView.propTypes = {
   store: PropTypes.object.isRequired,
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
+  itemContextProvider: PropTypes.func,
   location: PropTypes.object.isRequired,
   mountPath: PropTypes.string,
   qsFilterParamNames: PropTypes.array,
