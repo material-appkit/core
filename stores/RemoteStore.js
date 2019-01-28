@@ -126,6 +126,12 @@ class RemoteStore extends DataStore {
       this.requestContext = null;
 
       const responseData = res.body;
+
+      // Notify subscribers
+      this.subscribers.forEach((callback) => {
+        callback(responseData, 'load`');
+      });
+
       const loadedItems = this._transformResponseData(responseData);
 
       // Initialize the list of pages now that we know how many there are.
@@ -138,11 +144,6 @@ class RemoteStore extends DataStore {
       }
 
       this.isLoading = false;
-
-      // Notify subscribers
-      this.subscribers.forEach((callback) => {
-        callback(responseData, 'load`');
-      });
 
       return responseData;
     }).catch((err) => {
