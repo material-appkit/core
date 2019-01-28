@@ -147,6 +147,7 @@ class ListView extends React.PureComponent {
           componentForItem={this.props.listItemComponent}
           store={this.props.store}
           itemContextProvider={this.props.itemContextProvider}
+          onItemClick={this.props.onItemClick}
         />
       </React.Fragment>
     );
@@ -161,6 +162,7 @@ ListView.propTypes = {
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
   itemContextProvider: PropTypes.func,
+  onItemClick: PropTypes.func,
   location: PropTypes.object.isRequired,
   mountPath: PropTypes.string,
   qsFilterParamNames: PropTypes.array,

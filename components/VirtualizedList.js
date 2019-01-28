@@ -64,6 +64,7 @@ var VirtualizedList = function VirtualizedList(props) {
         return _react2.default.createElement(props.componentForItem, {
           key: item.id,
           item: item,
+          onItemClick: props.onItemClick,
           contextProvider: props.itemContextProvider
         });
       })
@@ -79,6 +80,7 @@ VirtualizedList.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   componentForItem: _propTypes2.default.func.isRequired,
   itemContextProvider: _propTypes2.default.func,
+  onItemClick: _propTypes2.default.func,
   store: _propTypes2.default.object.isRequired
 };
 

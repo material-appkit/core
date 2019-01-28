@@ -9,7 +9,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-
 const VirtualizedList = (props) => {
   const { classes } = props;
 
@@ -33,6 +32,7 @@ const VirtualizedList = (props) => {
             <props.componentForItem
               key={item.id}
               item={item}
+              onItemClick={props.onItemClick}
               contextProvider={props.itemContextProvider}
             />
           ))}
@@ -50,6 +50,7 @@ VirtualizedList.propTypes = {
   classes: PropTypes.object.isRequired,
   componentForItem: PropTypes.func.isRequired,
   itemContextProvider: PropTypes.func,
+  onItemClick: PropTypes.func,
   store: PropTypes.object.isRequired,
 };
 

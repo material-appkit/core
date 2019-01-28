@@ -163,7 +163,8 @@ var ListView = function (_React$PureComponent) {
         _react2.default.createElement(_VirtualizedList2.default, {
           componentForItem: this.props.listItemComponent,
           store: this.props.store,
-          itemContextProvider: this.props.itemContextProvider
+          itemContextProvider: this.props.itemContextProvider,
+          onItemClick: this.props.onItemClick
         })
       );
     }
@@ -240,6 +241,7 @@ ListView.propTypes = {
   entityType: _propTypes2.default.string,
   filterParams: _propTypes2.default.object,
   itemContextProvider: _propTypes2.default.func,
+  onItemClick: _propTypes2.default.func,
   location: _propTypes2.default.object.isRequired,
   mountPath: _propTypes2.default.string,
   qsFilterParamNames: _propTypes2.default.array,
