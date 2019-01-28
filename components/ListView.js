@@ -164,7 +164,8 @@ var ListView = function (_React$PureComponent) {
           componentForItem: this.props.listItemComponent,
           store: this.props.store,
           itemContextProvider: this.props.itemContextProvider,
-          onItemClick: this.props.onItemClick
+          onItemClick: this.props.onItemClick,
+          selectionMode: this.props.selectionMode
         })
       );
     }
@@ -245,6 +246,7 @@ ListView.propTypes = {
   location: _propTypes2.default.object.isRequired,
   mountPath: _propTypes2.default.string,
   qsFilterParamNames: _propTypes2.default.array,
+  selectionMode: _propTypes2.default.oneOf(['single', 'multiple']),
   subsetArrangement: _propTypes2.default.array,
   topbarTitle: _propTypes2.default.string
 };

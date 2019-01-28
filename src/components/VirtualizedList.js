@@ -18,7 +18,19 @@ class VirtualizedList extends React.Component {
         <CircularProgress color="primary" size={30} thickness={5} />
       </ListItem>
     );
+
+    this.state = {
+      selection: null,
+    }
   }
+
+  handleSelectControlClick = (item) => {
+    if (this.state.selection === item.id) {
+      this.setState({ selection: null });
+    } else {
+      this.setState({ selection: item.id });
+    }
+  };
 
   render() {
     const { classes } = this.props;
@@ -35,10 +47,13 @@ class VirtualizedList extends React.Component {
           >
             {this.props.store.items.map((item) => (
               <this.props.componentForItem
+                contextProvider={this.props.itemContextProvider}
                 key={item.id}
                 item={item}
                 onItemClick={this.props.onItemClick}
-                contextProvider={this.props.itemContextProvider}
+                onSelectControlClick={this.handleSelectControlClick}
+                selected={item.id === this.state.selection}
+                selectionMode={this.props.selectionMode}
               />
             ))}
           </InfiniteScroll>

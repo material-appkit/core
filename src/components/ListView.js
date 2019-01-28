@@ -148,6 +148,7 @@ class ListView extends React.PureComponent {
           store={this.props.store}
           itemContextProvider={this.props.itemContextProvider}
           onItemClick={this.props.onItemClick}
+          selectionMode={this.props.selectionMode}
         />
       </React.Fragment>
     );
@@ -166,6 +167,7 @@ ListView.propTypes = {
   location: PropTypes.object.isRequired,
   mountPath: PropTypes.string,
   qsFilterParamNames: PropTypes.array,
+  selectionMode: PropTypes.oneOf(['single', 'multiple']),
   subsetArrangement: PropTypes.array,
   topbarTitle: PropTypes.string,
 };

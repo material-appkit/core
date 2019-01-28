@@ -52,11 +52,23 @@ var VirtualizedList = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (VirtualizedList.__proto__ || Object.getPrototypeOf(VirtualizedList)).call(this, props));
 
+    _this.handleSelectControlClick = function (item) {
+      if (_this.state.selection === item.id) {
+        _this.setState({ selection: null });
+      } else {
+        _this.setState({ selection: item.id });
+      }
+    };
+
     _this.loadMoreProgressIndicator = _react2.default.createElement(
       _ListItem2.default,
       { className: props.classes.loadProgressListItem, key: 'loadMoreProgressIndicator' },
       _react2.default.createElement(_CircularProgress2.default, { color: 'primary', size: 30, thickness: 5 })
     );
+
+    _this.state = {
+      selection: null
+    };
     return _this;
   }
 
@@ -84,10 +96,13 @@ var VirtualizedList = function (_React$Component) {
           },
           this.props.store.items.map(function (item) {
             return _react2.default.createElement(_this2.props.componentForItem, {
+              contextProvider: _this2.props.itemContextProvider,
               key: item.id,
               item: item,
               onItemClick: _this2.props.onItemClick,
-              contextProvider: _this2.props.itemContextProvider
+              onSelectControlClick: _this2.handleSelectControlClick,
+              selected: item.id === _this2.state.selection,
+              selectionMode: _this2.props.selectionMode
             });
           })
         ) : _react2.default.createElement(
