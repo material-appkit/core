@@ -20,7 +20,7 @@ const VirtualizedList = (props) => {
   );
 
   return (
-    <List className={classes.root}>
+    <List className={classes.list}>
       {(props.store && props.store.items) ? (
         <InfiniteScroll
           initialLoad={false}
@@ -54,10 +54,7 @@ VirtualizedList.propTypes = {
 };
 
 export default withStyles((theme) => ({
-  root: {
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
-  },
+  list: theme.listView.list,
 
   loadProgressListItem: {
     justifyContent: 'center',

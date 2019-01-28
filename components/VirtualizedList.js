@@ -48,7 +48,7 @@ var VirtualizedList = function VirtualizedList(props) {
 
   return _react2.default.createElement(
     _List2.default,
-    { className: classes.root },
+    { className: classes.list },
     props.store && props.store.items ? _react2.default.createElement(
       _reactInfiniteScroller2.default,
       {
@@ -84,10 +84,7 @@ VirtualizedList.propTypes = {
 
 exports.default = (0, _withStyles2.default)(function (theme) {
   return {
-    root: {
-      width: '100%',
-      backgroundColor: theme.palette.background.paper
-    },
+    list: theme.listView.list,
 
     loadProgressListItem: {
       justifyContent: 'center'
