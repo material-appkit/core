@@ -18,6 +18,9 @@ class RemoteStore extends DataStore {
 
     this.options = options || {};
     this._endpoint = this.options.endpoint;
+
+    // List of objects to receive callback when data is loaded
+    this.subscribers = [];
   }
 
   get endpoint() {
@@ -27,6 +30,62 @@ class RemoteStore extends DataStore {
 
     throw new Error('Store must specify its endpoint!');
   }
+
+  async load(params, page) {
+    this.unload();
+    if (!params) {
+      return;
+    }
+
+    this.params = filterEmptyValues(params);
+    return this._load(page || 1);
+  }
+
+  async loadMore(page) {
+    return this._load(page);
+  }
+
+  async update(params) {
+    if (!params) {
+      return;
+    }
+
+    let updatedParams = null;
+    if (this.params) {
+      const updatedParams = filterEmptyValues(params);
+      const paramDiff = diff(updatedParams, this.params);
+      if (!Object.keys(paramDiff).length) {
+        return;
+      }
+    } else {
+      updatedParams = params;
+    }
+
+    this.load(updatedParams);
+  }
+
+
+  unload() {
+    this.params = null;
+    this.items = null;
+    this.totalLength = null;
+    this.pageCount = null;
+  }
+
+  subscribe(callback) {
+    const self = this;
+
+    this.subscribers.push(callback);
+
+    return function() {
+      const index = self.subscribers.indexOf(callback);
+      if (index === -1) {
+        throw new Error('Could not locate callback index!');
+      }
+      self.subscribers.splice(1, index);
+    }
+  }
+
 
   _getPageCount(responseData) {
     if (responseData.count === 0) {
@@ -80,53 +139,17 @@ class RemoteStore extends DataStore {
 
       this.isLoading = false;
 
+      // Notify subscribers
+      this.subscribers.forEach((callback) => {
+        callback(responseData, 'load`');
+      });
+
       return responseData;
     }).catch((err) => {
       if (err.code !== 'ABORTED') {
         throw err;
       }
     });
-  }
-
-  async load(params, page) {
-    this.unload();
-    if (!params) {
-      return;
-    }
-
-    this.params = filterEmptyValues(params);
-    return this._load(page || 1);
-  }
-
-  async loadMore(page) {
-    return this._load(page);
-  }
-
-  async update(params) {
-    if (!params) {
-      return;
-    }
-
-    let updatedParams = null;
-    if (this.params) {
-      const updatedParams = filterEmptyValues(params);
-      const paramDiff = diff(updatedParams, this.params);
-      if (!Object.keys(paramDiff).length) {
-        return;
-      }
-    } else {
-      updatedParams = params;
-    }
-
-    this.load(updatedParams);
-  }
-
-
-  unload() {
-    this.params = null;
-    this.items = null;
-    this.totalLength = null;
-    this.pageCount = null;
   }
 }
 
