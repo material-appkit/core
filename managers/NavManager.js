@@ -126,5 +126,4 @@ var NavManager = function () {
 
 NavManager.routerStore = null;
 NavManager.history = null;
-NavManager.basename = null;
 exports.default = NavManager;
