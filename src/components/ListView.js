@@ -122,7 +122,9 @@ class ListView extends React.PureComponent {
   }
 
   get filterParams() {
-    const filterParams = filterByKeys(this.qsParams, this.props.qsFilterParamNames);
+    const filterParams = this.props.filterParams || {};
+    Object.assign(filterParams, filterByKeys(this.qsParams, this.props.qsFilterParamNames));
+
     const arrangementInfo = this.activeTabArrangement;
     if (arrangementInfo) {
       Object.assign(filterParams, arrangementInfo.apiQueryParams);

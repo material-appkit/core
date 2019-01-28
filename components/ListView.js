@@ -222,7 +222,9 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'filterParams',
     get: function get() {
-      var filterParams = (0, _object.filterByKeys)(this.qsParams, this.props.qsFilterParamNames);
+      var filterParams = this.props.filterParams || {};
+      Object.assign(filterParams, (0, _object.filterByKeys)(this.qsParams, this.props.qsFilterParamNames));
+
       var arrangementInfo = this.activeTabArrangement;
       if (arrangementInfo) {
         Object.assign(filterParams, arrangementInfo.apiQueryParams);
