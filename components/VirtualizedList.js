@@ -53,10 +53,14 @@ var VirtualizedList = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (VirtualizedList.__proto__ || Object.getPrototypeOf(VirtualizedList)).call(this, props));
 
     _this.handleSelectControlClick = function (item) {
-      if (_this.state.selection === item.id) {
-        _this.setState({ selection: null });
-      } else {
-        _this.setState({ selection: item.id });
+      var newSelection = null;
+      if (_this.state.selection !== item.id) {
+        newSelection = item.id;
+      }
+      _this.setState({ selection: newSelection });
+
+      if (_this.props.onSelectionChange) {
+        _this.props.onSelectionChange(newSelection);
       }
     };
 
@@ -122,12 +126,9 @@ VirtualizedList.propTypes = {
   componentForItem: _propTypes2.default.func.isRequired,
   itemContextProvider: _propTypes2.default.func,
   onItemClick: _propTypes2.default.func,
+  onSelectionChange: _propTypes2.default.func,
   selectionMode: _propTypes2.default.oneOf(['single', 'multiple']),
   store: _propTypes2.default.object.isRequired
-};
-
-VirtualizedList.defaultProps = {
-  selectionMode: 'single'
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

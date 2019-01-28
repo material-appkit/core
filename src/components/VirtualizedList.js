@@ -25,10 +25,14 @@ class VirtualizedList extends React.Component {
   }
 
   handleSelectControlClick = (item) => {
-    if (this.state.selection === item.id) {
-      this.setState({ selection: null });
-    } else {
-      this.setState({ selection: item.id });
+    let newSelection = null;
+    if (this.state.selection !== item.id) {
+      newSelection = item.id;
+    }
+    this.setState({ selection: newSelection });
+
+    if (this.props.onSelectionChange) {
+      this.props.onSelectionChange(newSelection);
     }
   };
 
@@ -72,12 +76,9 @@ VirtualizedList.propTypes = {
   componentForItem: PropTypes.func.isRequired,
   itemContextProvider: PropTypes.func,
   onItemClick: PropTypes.func,
+  onSelectionChange: PropTypes.func,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   store: PropTypes.object.isRequired,
-};
-
-VirtualizedList.defaultProps = {
-  selectionMode: 'single',
 };
 
 export default withStyles((theme) => ({
