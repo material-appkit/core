@@ -26,8 +26,8 @@ class VirtualizedList extends React.Component {
 
   handleSelectControlClick = (item) => {
     let newSelection = null;
-    if (this.state.selection !== item.id) {
-      newSelection = item.id;
+    if (!this.state.selection || this.state.selection.id !== item.id) {
+      newSelection = item;
     }
     this.setState({ selection: newSelection });
 
@@ -56,7 +56,7 @@ class VirtualizedList extends React.Component {
                 item={item}
                 onItemClick={this.props.onItemClick}
                 onSelectControlClick={this.handleSelectControlClick}
-                selected={item.id === this.state.selection}
+                selected={this.state.selection ? item.id === this.state.selection.id : false}
                 selectionMode={this.props.selectionMode}
               />
             ))}

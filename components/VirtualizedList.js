@@ -54,8 +54,8 @@ var VirtualizedList = function (_React$Component) {
 
     _this.handleSelectControlClick = function (item) {
       var newSelection = null;
-      if (_this.state.selection !== item.id) {
-        newSelection = item.id;
+      if (!_this.state.selection || _this.state.selection.id !== item.id) {
+        newSelection = item;
       }
       _this.setState({ selection: newSelection });
 
@@ -105,7 +105,7 @@ var VirtualizedList = function (_React$Component) {
               item: item,
               onItemClick: _this2.props.onItemClick,
               onSelectControlClick: _this2.handleSelectControlClick,
-              selected: item.id === _this2.state.selection,
+              selected: _this2.state.selection ? item.id === _this2.state.selection.id : false,
               selectionMode: _this2.props.selectionMode
             });
           })
