@@ -64,11 +64,11 @@ class AlertManager extends React.Component {
           <DialogActions>
             {alertInfo.ALERT_TYPE === 'confirm' &&
               <Button onClick={() => { AlertManager.dismiss(key, false); }}>
-                Cancel
+                {alertInfo.cancelButtonTitle || 'Cancel'}
               </Button>
             }
             <Button onClick={() => { AlertManager.dismiss(key, true); }} color="primary">
-              OK
+              {alertInfo.confirmButtonTitle || 'OK'}
             </Button>
           </DialogActions>
         </Dialog>

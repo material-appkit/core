@@ -116,14 +116,14 @@ var AlertManager = function (_React$Component) {
               { onClick: function onClick() {
                   AlertManager.dismiss(key, false);
                 } },
-              'Cancel'
+              alertInfo.cancelButtonTitle || 'Cancel'
             ),
             _react2.default.createElement(
               _Button2.default,
               { onClick: function onClick() {
                   AlertManager.dismiss(key, true);
                 }, color: 'primary' },
-              'OK'
+              alertInfo.confirmButtonTitle || 'OK'
             )
           )
         ));
