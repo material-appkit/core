@@ -224,6 +224,7 @@ var NavigationController = function (_React$Component) {
       var newTopbarConfig = {
         title: viewControllerProps.title,
         rightBarItem: viewControllerProps.rightBarItem,
+        toolbarItems: viewControllerProps.toolbarItems,
         contextMenuItems: viewControllerProps.contextMenuItems
       };
 
@@ -253,18 +254,19 @@ var NavigationController = function (_React$Component) {
           { color: 'default', position: 'fixed', className: classes.appBar },
           _react2.default.createElement(
             _Toolbar2.default,
-            { className: classes.toolBar, disableGutters: true },
+            { className: classes.navBar, disableGutters: true },
             _react2.default.createElement(
               _reactTabs.TabList,
               { className: classes.tabList },
               this.tabs
             ),
             this.rightBarItem
-          )
+          ),
+          this.contextToolbar
         ),
         _react2.default.createElement(
           'div',
-          { className: classes.tabPanelContainer },
+          { style: { paddingTop: this.tabPanelContainerPaddingTop } },
           this.props.matches.map(function (match) {
             return _react2.default.createElement(
               _reactTabs.TabPanel,
@@ -337,17 +339,50 @@ var NavigationController = function (_React$Component) {
       });
     }
   }, {
-    key: 'rightBarItem',
+    key: 'activeTopBarConfig',
     get: function get() {
+      var topbarConfig = null;
       if (this.props.matches.length) {
         var activeMatch = this.props.matches[this.props.matches.length - 1];
-        var topbarConfig = this.topbarConfigMap.get(activeMatch.path);
-        if (topbarConfig && topbarConfig.rightBarItem) {
-          return topbarConfig.rightBarItem;
-        }
+        topbarConfig = this.topbarConfigMap.get(activeMatch.path);
+      }
+      return topbarConfig || {};
+    }
+  }, {
+    key: 'rightBarItem',
+    get: function get() {
+      return this.activeTopBarConfig.rightBarItem;
+    }
+  }, {
+    key: 'toolbarItems',
+    get: function get() {
+      return this.activeTopBarConfig.toolbarItems;
+    }
+  }, {
+    key: 'contextToolbar',
+    get: function get() {
+      var toolbarItems = this.toolbarItems;
+      if (!toolbarItems) {
+        return null;
       }
 
-      return null;
+      return _react2.default.createElement(
+        _Toolbar2.default,
+        { variant: 'dense', className: this.props.classes.toolBar },
+        toolbarItems
+      );
+    }
+  }, {
+    key: 'tabPanelContainerPaddingTop',
+    get: function get() {
+      var theme = this.props.theme.navigationController;
+
+      var tabPanelContainerHeight = theme.navBar.height;
+      if (this.contextToolbar) {
+        tabPanelContainerHeight += theme.toolBar.height;
+      }
+
+      return tabPanelContainerHeight;
     }
   }]);
 
@@ -365,4 +400,4 @@ NavigationController.defaultProps = {
 
 exports.default = (0, _styles.withStyles)(function (theme) {
   return theme.navigationController;
-})(NavigationController);
+}, { withTheme: true })(NavigationController);

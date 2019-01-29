@@ -73,16 +73,45 @@ class NavigationController extends React.Component {
     });
   }
 
-  get rightBarItem() {
+  get activeTopBarConfig() {
+    let topbarConfig = null;
     if (this.props.matches.length) {
       const activeMatch = this.props.matches[this.props.matches.length - 1];
-      const topbarConfig = this.topbarConfigMap.get(activeMatch.path);
-      if (topbarConfig && topbarConfig.rightBarItem) {
-        return topbarConfig.rightBarItem;
-      }
+      topbarConfig = this.topbarConfigMap.get(activeMatch.path);
+    }
+    return topbarConfig || {};
+  }
+
+  get rightBarItem() {
+    return this.activeTopBarConfig.rightBarItem;
+  }
+
+  get toolbarItems() {
+    return this.activeTopBarConfig.toolbarItems;
+  }
+
+  get contextToolbar() {
+    const toolbarItems = this.toolbarItems;
+    if (!toolbarItems) {
+      return null;
     }
 
-    return null;
+    return (
+      <Toolbar variant="dense" className={this.props.classes.toolBar}>
+        {toolbarItems}
+      </Toolbar>
+    );
+  }
+
+  get tabPanelContainerPaddingTop() {
+    const theme = this.props.theme.navigationController;
+
+    let tabPanelContainerHeight = theme.navBar.height;
+    if (this.contextToolbar) {
+      tabPanelContainerHeight += theme.toolBar.height;
+    }
+
+    return tabPanelContainerHeight;
   }
 
   createContextMenu = (topbarConfig) => {
@@ -164,6 +193,7 @@ class NavigationController extends React.Component {
     const newTopbarConfig = {
       title: viewControllerProps.title,
       rightBarItem: viewControllerProps.rightBarItem,
+      toolbarItems: viewControllerProps.toolbarItems,
       contextMenuItems: viewControllerProps.contextMenuItems,
     };
 
@@ -198,13 +228,14 @@ class NavigationController extends React.Component {
         onSelect={() => {}}
       >
         <AppBar color="default" position="fixed" className={classes.appBar}>
-          <Toolbar className={classes.toolBar} disableGutters>
+          <Toolbar className={classes.navBar} disableGutters>
             <TabList className={classes.tabList}>{this.tabs}</TabList>
             {this.rightBarItem}
           </Toolbar>
+          {this.contextToolbar}
         </AppBar>
 
-        <div className={classes.tabPanelContainer}>
+        <div style={{ paddingTop: this.tabPanelContainerPaddingTop }}>
           {this.props.matches.map((match) => (
             <TabPanel key={match.path}>
               <Route
@@ -239,6 +270,6 @@ NavigationController.defaultProps = {
   matches: [],
 };
 
-export default withStyles(
-  (theme) => (theme.navigationController)
-)(NavigationController);
+export default withStyles((theme) => (
+  theme.navigationController
+), { withTheme: true })(NavigationController);
