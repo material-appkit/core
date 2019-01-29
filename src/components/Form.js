@@ -181,6 +181,10 @@ class Form extends React.Component {
             textFieldProps.type = FIELD_TYPE_MAP[fieldInfo.type];
           }
 
+          if (textFieldProps.type === 'number') {
+            textFieldProps.inputProps = { min: 0, step: 'any' };
+          }
+
           field = (
             <TextField {...textFieldProps }>
               {fieldInfo.choices &&
