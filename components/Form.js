@@ -285,41 +285,49 @@ var Form = function (_React$Component) {
       this.fieldNames.forEach(function (fieldName) {
         var fieldInfo = _this3.state.fieldInfoMap[fieldName];
         if (!fieldInfo.read_only) {
-          var textFieldProps = {
-            className: classes.field,
-            disabled: _this3.state.saving,
-            key: fieldName,
-            fullWidth: true,
-            label: fieldInfo.label,
-            margin: "dense",
-            name: fieldName,
-            defaultValue: _this3.state.originalObject[fieldName] || '',
-            variant: "outlined"
-          };
-
-          if (fieldInfo.choices) {
-            textFieldProps.select = true;
-            textFieldProps.SelectProps = { native: true };
+          var field = null;
+          var defaultValue = _this3.state.originalObject[fieldName] || '';
+          if (fieldInfo.hidden) {
+            field = _react2.default.createElement('input', { type: 'hidden', name: fieldName, defaultValue: defaultValue });
           } else {
-            textFieldProps.type = FIELD_TYPE_MAP[fieldInfo.type];
+            var textFieldProps = {
+              className: classes.field,
+              disabled: _this3.state.saving,
+              key: fieldName,
+              fullWidth: true,
+              label: fieldInfo.label,
+              margin: "dense",
+              name: fieldName,
+              defaultValue: defaultValue,
+              variant: "outlined"
+            };
+
+            if (fieldInfo.choices) {
+              textFieldProps.select = true;
+              textFieldProps.SelectProps = { native: true };
+            } else {
+              textFieldProps.type = FIELD_TYPE_MAP[fieldInfo.type];
+            }
+
+            field = _react2.default.createElement(
+              _TextField2.default,
+              textFieldProps,
+              fieldInfo.choices && _react2.default.createElement(
+                _react2.default.Fragment,
+                null,
+                _react2.default.createElement('option', null),
+                fieldInfo.choices.map(function (choice) {
+                  return _react2.default.createElement(
+                    'option',
+                    { key: choice.value, value: choice.value },
+                    choice.display_name
+                  );
+                })
+              )
+            );
           }
 
-          fields.push(_react2.default.createElement(
-            _TextField2.default,
-            textFieldProps,
-            fieldInfo.choices && _react2.default.createElement(
-              _react2.default.Fragment,
-              null,
-              _react2.default.createElement('option', null),
-              fieldInfo.choices.map(function (choice) {
-                return _react2.default.createElement(
-                  'option',
-                  { key: choice.value, value: choice.value },
-                  choice.display_name
-                );
-              })
-            )
-          ));
+          fields.push(field);
         }
       });
       return fields;

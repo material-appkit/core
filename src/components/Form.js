@@ -155,37 +155,47 @@ class Form extends React.Component {
     this.fieldNames.forEach((fieldName) => {
       const fieldInfo = this.state.fieldInfoMap[fieldName];
       if (!fieldInfo.read_only) {
-        const textFieldProps = {
-          className: classes.field,
-          disabled: this.state.saving,
-          key: fieldName,
-          fullWidth: true,
-          label: fieldInfo.label,
-          margin: "dense",
-          name: fieldName,
-          defaultValue: this.state.originalObject[fieldName] || '',
-          variant: "outlined",
-        };
-
-        if (fieldInfo.choices) {
-          textFieldProps.select = true;
-          textFieldProps.SelectProps = { native: true };
+        let field = null;
+        const defaultValue = this.state.originalObject[fieldName] || '';
+        if (fieldInfo.hidden) {
+          field = (
+            <input type="hidden" name={fieldName} defaultValue={defaultValue} />
+          );
         } else {
-          textFieldProps.type = FIELD_TYPE_MAP[fieldInfo.type];
+          const textFieldProps = {
+            className: classes.field,
+            disabled: this.state.saving,
+            key: fieldName,
+            fullWidth: true,
+            label: fieldInfo.label,
+            margin: "dense",
+            name: fieldName,
+            defaultValue,
+            variant: "outlined",
+          };
+
+          if (fieldInfo.choices) {
+            textFieldProps.select = true;
+            textFieldProps.SelectProps = { native: true };
+          } else {
+            textFieldProps.type = FIELD_TYPE_MAP[fieldInfo.type];
+          }
+
+          field = (
+            <TextField {...textFieldProps }>
+              {fieldInfo.choices &&
+                <React.Fragment>
+                  <option />
+                  {fieldInfo.choices.map((choice) => (
+                    <option key={choice.value} value={choice.value}>{choice.display_name}</option>
+                  ))}
+                </React.Fragment>
+              }
+            </TextField>
+          );
         }
 
-        fields.push(
-          <TextField {...textFieldProps }>
-            {fieldInfo.choices &&
-              <React.Fragment>
-                <option />
-                {fieldInfo.choices.map((choice) => (
-                  <option key={choice.value} value={choice.value}>{choice.display_name}</option>
-                ))}
-              </React.Fragment>
-            }
-          </TextField>
-        );
+        fields.push(field);
       }
     });
     return fields;
