@@ -69,7 +69,7 @@ var Form = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (Form.__proto__ || Object.getPrototypeOf(Form)).call(this, props));
 
     _this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      var originalObject, optionsRequest, requests, responses, optionsResponse, fieldInfoMap;
+      var originalObject, fieldInfoMap, requests, optionsUrl, responses;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -77,40 +77,53 @@ var Form = function (_React$Component) {
               _this.setState({ loading: true });
 
               originalObject = _this.props.originalObject;
-              optionsRequest = _this.props.serviceAgent.options(_this.detailUrl || _this.props.apiCreateUrlPath);
-              requests = [optionsRequest];
+              fieldInfoMap = null;
+              requests = [];
 
 
-              if (!_this.props.originalObject && _this.detailUrl) {
-                requests.push(_this.props.serviceAgent.get(_this.detailUrl));
+              if (!_this.props.fields) {
+                // If the fields have not been explicitly provided, issue an OPTIONS request for
+                // metadata about the represented object so the fields can be generated dynamically.
+                optionsUrl = _this.detailUrl || _this.props.apiCreateUrlPath;
+
+                requests.push(_this.props.serviceAgent.options(optionsUrl));
               }
 
-              _context.next = 7;
-              return Promise.all(requests);
-
-            case 7:
-              responses = _context.sent;
-              optionsResponse = responses[0].body;
-              fieldInfoMap = null;
-
-              if (_this.detailUrl) {
-                fieldInfoMap = optionsResponse.actions.PUT;
-                if (responses.length === 2) {
-                  originalObject = responses[1].body;
-                }
+              if (!_this.props.originalObject && _this.detailUrl) {
+                // If an original object was not explicitly provided, attempt to load one from the given detailUrl
+                requests.push(_this.props.serviceAgent.get(_this.detailUrl));
               } else {
-                fieldInfoMap = optionsResponse.actions.POST;
                 originalObject = _this.props.defaultValues;
               }
 
-              if (fieldInfoMap && originalObject) {
-                _context.next = 13;
+              _context.next = 8;
+              return Promise.all(requests);
+
+            case 8:
+              responses = _context.sent;
+
+
+              responses.forEach(function (response) {
+                if (response.req.method === 'OPTIONS') {
+                  var optionsResponse = response.body;
+                  if (_this.detailUrl) {
+                    fieldInfoMap = optionsResponse.actions.PUT;
+                  } else {
+                    fieldInfoMap = optionsResponse.actions.POST;
+                  }
+                } else {
+                  originalObject = responses[1].body;
+                }
+              });
+
+              if (originalObject) {
+                _context.next = 12;
                 break;
               }
 
               throw new Error('Failed to initialize form');
 
-            case 13:
+            case 12:
 
               _this.setState({
                 fieldInfoMap: fieldInfoMap,
@@ -122,7 +135,7 @@ var Form = function (_React$Component) {
                 _this.props.onLoad(originalObject, fieldInfoMap);
               }
 
-            case 15:
+            case 14:
             case 'end':
               return _context.stop();
           }
@@ -367,13 +380,13 @@ Form.propTypes = {
   entityType: _propTypes2.default.string,
   fields: _propTypes2.default.any,
   fieldArrangement: _propTypes2.default.array,
-  representedObject: _propTypes2.default.object,
   representedObjectId: _propTypes2.default.number,
   onMount: _propTypes2.default.func,
   onUnmount: _propTypes2.default.func,
   onLoad: _propTypes2.default.func,
   onSave: _propTypes2.default.func,
   onError: _propTypes2.default.func,
+  originalObject: _propTypes2.default.object,
   loadingIndicator: _propTypes2.default.node,
   serviceAgent: _propTypes2.default.object
 };

@@ -76,29 +76,40 @@ class Form extends React.Component {
     this.setState({ loading: true });
 
     let originalObject = this.props.originalObject;
+    let fieldInfoMap = null;
+    const requests = [];
 
-    const optionsRequest = this.props.serviceAgent.options(this.detailUrl || this.props.apiCreateUrlPath);
-    const requests = [optionsRequest];
+    if (!this.props.fields) {
+      // If the fields have not been explicitly provided, issue an OPTIONS request for
+      // metadata about the represented object so the fields can be generated dynamically.
+      const optionsUrl = this.detailUrl || this.props.apiCreateUrlPath;
+      requests.push(this.props.serviceAgent.options(optionsUrl));
+    }
 
     if (!this.props.originalObject && this.detailUrl) {
+      // If an original object was not explicitly provided, attempt to load one from the given detailUrl
       requests.push(this.props.serviceAgent.get(this.detailUrl));
+    } else {
+      originalObject = this.props.defaultValues;
     }
 
     let responses = await(Promise.all(requests));
 
-    const optionsResponse = responses[0].body;
-    let fieldInfoMap = null;
-    if (this.detailUrl) {
-      fieldInfoMap = optionsResponse.actions.PUT;
-      if (responses.length === 2) {
+    responses.forEach((response) => {
+      if (response.req.method === 'OPTIONS') {
+        const optionsResponse = response.body;
+        if (this.detailUrl) {
+          fieldInfoMap = optionsResponse.actions.PUT;
+        } else {
+          fieldInfoMap = optionsResponse.actions.POST;
+        }
+      } else {
         originalObject = responses[1].body;
       }
-    } else {
-      fieldInfoMap = optionsResponse.actions.POST;
-      originalObject = this.props.defaultValues;
-    }
+    });
 
-    if (!(fieldInfoMap && originalObject)) {
+
+    if (!originalObject) {
       throw new Error('Failed to initialize form');
     }
 
@@ -255,13 +266,13 @@ Form.propTypes = {
   entityType: PropTypes.string,
   fields: PropTypes.any,
   fieldArrangement: PropTypes.array,
-  representedObject: PropTypes.object,
   representedObjectId: PropTypes.number,
   onMount: PropTypes.func,
   onUnmount: PropTypes.func,
   onLoad: PropTypes.func,
   onSave: PropTypes.func,
   onError: PropTypes.func,
+  originalObject: PropTypes.object,
   loadingIndicator: PropTypes.node,
   serviceAgent: PropTypes.object,
 };
