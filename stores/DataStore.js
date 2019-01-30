@@ -32,6 +32,10 @@ class DataStore {
     this.items.remove(record);
     this.totalLength = this.items.length;
   }
+
+  sort(sortFunc) {
+    this.items = this.items.slice().sort(sortFunc);
+  }
 }
 
 decorate(DataStore, {
