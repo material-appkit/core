@@ -16,8 +16,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _mobxReact = require('mobx-react');
-
 var _CircularProgress = require('@material-ui/core/CircularProgress');
 
 var _CircularProgress2 = _interopRequireDefault(_CircularProgress);
@@ -58,8 +56,8 @@ var FIELD_TYPE_MAP = {
   'string': 'text'
 };
 
-var Form = function (_React$Component) {
-  _inherits(Form, _React$Component);
+var Form = function (_React$PureComponent) {
+  _inherits(Form, _React$PureComponent);
 
   function Form(props) {
     var _this2 = this;
@@ -211,6 +209,12 @@ var Form = function (_React$Component) {
       _this.save(e.target);
     };
 
+    _this.handleFormChange = function (e) {
+      if (_this.props.autosave) {
+        _this.save(e.currentTarget);
+      }
+    };
+
     _this.state = {
       errors: {},
       originalObject: null,
@@ -262,7 +266,10 @@ var Form = function (_React$Component) {
 
       return _react2.default.createElement(
         'form',
-        { onSubmit: this.handleFormSubmit },
+        {
+          onSubmit: this.handleFormSubmit,
+          onChange: this.handleFormChange
+        },
         _react2.default.createElement(
           _react2.default.Fragment,
           null,
@@ -371,11 +378,12 @@ var Form = function (_React$Component) {
   }]);
 
   return Form;
-}(_react2.default.Component);
+}(_react2.default.PureComponent);
 
 Form.propTypes = {
   apiCreateUrlPath: _propTypes2.default.string,
   apiDetailUrlPath: _propTypes2.default.string,
+  autosave: _propTypes2.default.bool,
   children: _propTypes2.default.any,
   classes: _propTypes2.default.object.isRequired,
   defaultValues: _propTypes2.default.object,
@@ -395,10 +403,11 @@ Form.propTypes = {
 
 Form.defaultProps = {
   defaultValues: {},
+  autosave: false,
   entityType: '',
   serviceAgent: new _util.ServiceAgent()
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {
   return theme.form;
-})((0, _mobxReact.observer)(Form));
+})(Form);

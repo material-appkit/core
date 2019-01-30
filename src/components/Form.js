@@ -3,8 +3,6 @@ import { updatedDiff } from 'deep-object-diff';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { observer } from 'mobx-react';
-
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -25,7 +23,7 @@ const FIELD_TYPE_MAP = {
   'string': 'text',
 };
 
-class Form extends React.Component {
+class Form extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -237,6 +235,12 @@ class Form extends React.Component {
   };
 
 
+  handleFormChange = (e) => {
+    if (this.props.autosave) {
+      this.save(e.currentTarget);
+    }
+  };
+
   render() {
     if (this.state.loading || !this.state.originalObject) {
       const loadingIndicatorContainerStyle = {
@@ -249,7 +253,10 @@ class Form extends React.Component {
     }
 
     return (
-      <form onSubmit={this.handleFormSubmit}>
+      <form
+        onSubmit={this.handleFormSubmit}
+        onChange={this.handleFormChange}
+      >
         <React.Fragment>
           {decorateErrors(this.fields, this.state.errors)}
           {this.children}
@@ -262,6 +269,7 @@ class Form extends React.Component {
 Form.propTypes = {
   apiCreateUrlPath: PropTypes.string,
   apiDetailUrlPath: PropTypes.string,
+  autosave: PropTypes.bool,
   children: PropTypes.any,
   classes: PropTypes.object.isRequired,
   defaultValues: PropTypes.object,
@@ -281,10 +289,11 @@ Form.propTypes = {
 
 Form.defaultProps = {
   defaultValues: {},
+  autosave: false,
   entityType: '',
   serviceAgent: new ServiceAgent(),
 };
 
 export default withStyles((theme) => {
   return theme.form;
-})(observer(Form));
+})(Form);
