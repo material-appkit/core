@@ -29,19 +29,21 @@ class Form extends React.PureComponent {
 
     this.state = {
       errors: {},
-      originalObject: null,
+      referenceObject: null,
       fieldInfoMap: null,
       loading: false,
       saving: false,
     };
 
     let detailUrl = null;
-    if (props.originalObject) {
-      detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.originalObject.id });
+    if (props.persistedObject) {
+      detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.persistedObject.id });
     } else if (props.representedObjectId) {
       detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.representedObjectId });
     }
     this.detailUrl = detailUrl;
+
+    this.autoSaveTimer = null;
   }
 
   componentDidMount() {
@@ -55,6 +57,11 @@ class Form extends React.PureComponent {
   componentWillUnmount() {
     if (this.props.onUnmount) {
       this.props.onUnmount(this);
+    }
+
+    if (this.autoSaveTimer) {
+      clearTimeout(this.autoSaveTimer);
+      this.autoSaveTimer = null;
     }
   }
 
@@ -73,7 +80,7 @@ class Form extends React.PureComponent {
   load = async() => {
     this.setState({ loading: true });
 
-    let originalObject = this.props.originalObject;
+    let referenceObject = this.props.persistedObject;
     let fieldInfoMap = null;
     const requests = [];
 
@@ -84,12 +91,12 @@ class Form extends React.PureComponent {
       requests.push(this.props.serviceAgent.options(optionsUrl));
     }
 
-    if (!originalObject) {
+    if (!referenceObject) {
       if (this.detailUrl) {
         // If an original object was not explicitly provided, attempt to load one from the given detailUrl
         requests.push(this.props.serviceAgent.get(this.detailUrl));
       } else {
-        originalObject = this.props.defaultValues;
+        referenceObject = this.props.defaultValues;
       }
     }
 
@@ -104,23 +111,23 @@ class Form extends React.PureComponent {
           fieldInfoMap = optionsResponse.actions.POST;
         }
       } else {
-        originalObject = responses[1].body;
+        referenceObject = responses[1].body;
       }
     });
 
 
-    if (!originalObject) {
+    if (!referenceObject) {
       throw new Error('Failed to initialize form');
     }
 
     this.setState({
       fieldInfoMap,
-      originalObject,
+      referenceObject,
       loading: false,
     });
 
     if (this.props.onLoad) {
-      this.props.onLoad(originalObject, fieldInfoMap);
+      this.props.onLoad(referenceObject, fieldInfoMap);
     }
   };
 
@@ -131,7 +138,7 @@ class Form extends React.PureComponent {
 
     let saveRequest = null;
     if (this.detailUrl) {
-      const pendingChanges = updatedDiff(this.state.originalObject, formData);
+      const pendingChanges = updatedDiff(this.state.referenceObject, formData);
       saveRequest = this.props.serviceAgent.patch(this.detailUrl, pendingChanges);
     } else {
       saveRequest = this.props.serviceAgent.post(this.props.apiCreateUrlPath, formData);
@@ -139,9 +146,14 @@ class Form extends React.PureComponent {
 
     try {
       const response = await saveRequest;
-      this.setState({ saving: false });
+      const persistedObject = response.body;
+
+      this.setState({
+        saving: false,
+        referenceObject: persistedObject
+      });
       if (this.props.onSave) {
-        this.props.onSave(response.body);
+        this.props.onSave(persistedObject);
       }
     } catch (err) {
       this.setState({
@@ -167,7 +179,7 @@ class Form extends React.PureComponent {
       const fieldInfo = this.state.fieldInfoMap[fieldName];
       if (!fieldInfo.read_only) {
         let field = null;
-        const defaultValue = this.state.originalObject[fieldName] || '';
+        const defaultValue = this.state.referenceObject[fieldName] || '';
         if (fieldInfo.hidden) {
           field = (
             <input type="hidden" name={fieldName} defaultValue={defaultValue} />
@@ -237,12 +249,19 @@ class Form extends React.PureComponent {
 
   handleFormChange = (e) => {
     if (this.props.autosave) {
-      this.save(e.currentTarget);
+      const formElement = e.currentTarget;
+
+      if (this.autoSaveTimer) {
+        clearTimeout(this.autoSaveTimer);
+      }
+      this.autoSaveTimer = setTimeout(() => {
+        this.save(formElement);
+      }, 1000);
     }
   };
 
   render() {
-    if (this.state.loading || !this.state.originalObject) {
+    if (this.state.loading || !this.state.referenceObject) {
       const loadingIndicatorContainerStyle = {
         display: 'flex',
         justifyContent: 'center',
@@ -282,7 +301,7 @@ Form.propTypes = {
   onLoad: PropTypes.func,
   onSave: PropTypes.func,
   onError: PropTypes.func,
-  originalObject: PropTypes.object,
+  persistedObject: PropTypes.object,
   loadingIndicator: PropTypes.node,
   serviceAgent: PropTypes.object,
 };

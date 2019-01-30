@@ -67,14 +67,14 @@ var Form = function (_React$PureComponent) {
     var _this = _possibleConstructorReturn(this, (Form.__proto__ || Object.getPrototypeOf(Form)).call(this, props));
 
     _this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      var originalObject, fieldInfoMap, requests, optionsUrl, responses;
+      var referenceObject, fieldInfoMap, requests, optionsUrl, responses;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
               _this.setState({ loading: true });
 
-              originalObject = _this.props.originalObject;
+              referenceObject = _this.props.persistedObject;
               fieldInfoMap = null;
               requests = [];
 
@@ -87,12 +87,12 @@ var Form = function (_React$PureComponent) {
                 requests.push(_this.props.serviceAgent.options(optionsUrl));
               }
 
-              if (!originalObject) {
+              if (!referenceObject) {
                 if (_this.detailUrl) {
                   // If an original object was not explicitly provided, attempt to load one from the given detailUrl
                   requests.push(_this.props.serviceAgent.get(_this.detailUrl));
                 } else {
-                  originalObject = _this.props.defaultValues;
+                  referenceObject = _this.props.defaultValues;
                 }
               }
 
@@ -112,11 +112,11 @@ var Form = function (_React$PureComponent) {
                     fieldInfoMap = optionsResponse.actions.POST;
                   }
                 } else {
-                  originalObject = responses[1].body;
+                  referenceObject = responses[1].body;
                 }
               });
 
-              if (originalObject) {
+              if (referenceObject) {
                 _context.next = 12;
                 break;
               }
@@ -127,12 +127,12 @@ var Form = function (_React$PureComponent) {
 
               _this.setState({
                 fieldInfoMap: fieldInfoMap,
-                originalObject: originalObject,
+                referenceObject: referenceObject,
                 loading: false
               });
 
               if (_this.props.onLoad) {
-                _this.props.onLoad(originalObject, fieldInfoMap);
+                _this.props.onLoad(referenceObject, fieldInfoMap);
               }
 
             case 14:
@@ -145,7 +145,7 @@ var Form = function (_React$PureComponent) {
 
     _this.save = function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(form) {
-        var formData, saveRequest, pendingChanges, response;
+        var formData, saveRequest, pendingChanges, response, persistedObject;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -156,7 +156,7 @@ var Form = function (_React$PureComponent) {
                 saveRequest = null;
 
                 if (_this.detailUrl) {
-                  pendingChanges = (0, _deepObjectDiff.updatedDiff)(_this.state.originalObject, formData);
+                  pendingChanges = (0, _deepObjectDiff.updatedDiff)(_this.state.referenceObject, formData);
 
                   saveRequest = _this.props.serviceAgent.patch(_this.detailUrl, pendingChanges);
                 } else {
@@ -169,16 +169,21 @@ var Form = function (_React$PureComponent) {
 
               case 7:
                 response = _context2.sent;
+                persistedObject = response.body;
 
-                _this.setState({ saving: false });
+
+                _this.setState({
+                  saving: false,
+                  referenceObject: persistedObject
+                });
                 if (_this.props.onSave) {
-                  _this.props.onSave(response.body);
+                  _this.props.onSave(persistedObject);
                 }
-                _context2.next = 16;
+                _context2.next = 17;
                 break;
 
-              case 12:
-                _context2.prev = 12;
+              case 13:
+                _context2.prev = 13;
                 _context2.t0 = _context2['catch'](4);
 
                 _this.setState({
@@ -190,12 +195,12 @@ var Form = function (_React$PureComponent) {
                   _this.props.onError(_context2.t0);
                 }
 
-              case 16:
+              case 17:
               case 'end':
                 return _context2.stop();
             }
           }
-        }, _callee2, _this2, [[4, 12]]);
+        }, _callee2, _this2, [[4, 13]]);
       }));
 
       return function (_x) {
@@ -211,25 +216,34 @@ var Form = function (_React$PureComponent) {
 
     _this.handleFormChange = function (e) {
       if (_this.props.autosave) {
-        _this.save(e.currentTarget);
+        var formElement = e.currentTarget;
+
+        if (_this.autoSaveTimer) {
+          clearTimeout(_this.autoSaveTimer);
+        }
+        _this.autoSaveTimer = setTimeout(function () {
+          _this.save(formElement);
+        }, 1000);
       }
     };
 
     _this.state = {
       errors: {},
-      originalObject: null,
+      referenceObject: null,
       fieldInfoMap: null,
       loading: false,
       saving: false
     };
 
     var detailUrl = null;
-    if (props.originalObject) {
-      detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.originalObject.id });
+    if (props.persistedObject) {
+      detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.persistedObject.id });
     } else if (props.representedObjectId) {
       detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.representedObjectId });
     }
     _this.detailUrl = detailUrl;
+
+    _this.autoSaveTimer = null;
     return _this;
   }
 
@@ -248,11 +262,16 @@ var Form = function (_React$PureComponent) {
       if (this.props.onUnmount) {
         this.props.onUnmount(this);
       }
+
+      if (this.autoSaveTimer) {
+        clearTimeout(this.autoSaveTimer);
+        this.autoSaveTimer = null;
+      }
     }
   }, {
     key: 'render',
     value: function render() {
-      if (this.state.loading || !this.state.originalObject) {
+      if (this.state.loading || !this.state.referenceObject) {
         var loadingIndicatorContainerStyle = {
           display: 'flex',
           justifyContent: 'center'
@@ -308,7 +327,7 @@ var Form = function (_React$PureComponent) {
         var fieldInfo = _this3.state.fieldInfoMap[fieldName];
         if (!fieldInfo.read_only) {
           var field = null;
-          var defaultValue = _this3.state.originalObject[fieldName] || '';
+          var defaultValue = _this3.state.referenceObject[fieldName] || '';
           if (fieldInfo.hidden) {
             field = _react2.default.createElement('input', { type: 'hidden', name: fieldName, defaultValue: defaultValue });
           } else {
@@ -396,7 +415,7 @@ Form.propTypes = {
   onLoad: _propTypes2.default.func,
   onSave: _propTypes2.default.func,
   onError: _propTypes2.default.func,
-  originalObject: _propTypes2.default.object,
+  persistedObject: _propTypes2.default.object,
   loadingIndicator: _propTypes2.default.node,
   serviceAgent: _propTypes2.default.object
 };
