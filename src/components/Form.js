@@ -86,11 +86,13 @@ class Form extends React.Component {
       requests.push(this.props.serviceAgent.options(optionsUrl));
     }
 
-    if (!this.props.originalObject && this.detailUrl) {
-      // If an original object was not explicitly provided, attempt to load one from the given detailUrl
-      requests.push(this.props.serviceAgent.get(this.detailUrl));
-    } else {
-      originalObject = this.props.defaultValues;
+    if (!originalObject) {
+      if (this.detailUrl) {
+        // If an original object was not explicitly provided, attempt to load one from the given detailUrl
+        requests.push(this.props.serviceAgent.get(this.detailUrl));
+      } else {
+        originalObject = this.props.defaultValues;
+      }
     }
 
     let responses = await(Promise.all(requests));

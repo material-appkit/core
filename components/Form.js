@@ -89,11 +89,13 @@ var Form = function (_React$Component) {
                 requests.push(_this.props.serviceAgent.options(optionsUrl));
               }
 
-              if (!_this.props.originalObject && _this.detailUrl) {
-                // If an original object was not explicitly provided, attempt to load one from the given detailUrl
-                requests.push(_this.props.serviceAgent.get(_this.detailUrl));
-              } else {
-                originalObject = _this.props.defaultValues;
+              if (!originalObject) {
+                if (_this.detailUrl) {
+                  // If an original object was not explicitly provided, attempt to load one from the given detailUrl
+                  requests.push(_this.props.serviceAgent.get(_this.detailUrl));
+                } else {
+                  originalObject = _this.props.defaultValues;
+                }
               }
 
               _context.next = 8;
