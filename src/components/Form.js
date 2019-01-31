@@ -248,7 +248,7 @@ class Form extends React.PureComponent {
 
 
   handleFormChange = (e) => {
-    if (this.props.autosave) {
+    if (this.props.autosaveDelay !== null) {
       const formElement = e.currentTarget;
 
       if (this.autoSaveTimer) {
@@ -256,7 +256,7 @@ class Form extends React.PureComponent {
       }
       this.autoSaveTimer = setTimeout(() => {
         this.save(formElement);
-      }, 1000);
+      }, this.props.autosaveDelay);
     }
   };
 
@@ -288,7 +288,7 @@ class Form extends React.PureComponent {
 Form.propTypes = {
   apiCreateUrlPath: PropTypes.string,
   apiDetailUrlPath: PropTypes.string,
-  autosave: PropTypes.bool,
+  autosaveDelay: PropTypes.number,
   children: PropTypes.any,
   classes: PropTypes.object.isRequired,
   defaultValues: PropTypes.object,
@@ -307,6 +307,7 @@ Form.propTypes = {
 };
 
 Form.defaultProps = {
+  autosaveDelay: null,
   defaultValues: {},
   autosave: false,
   entityType: '',

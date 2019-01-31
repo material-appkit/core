@@ -215,7 +215,7 @@ var Form = function (_React$PureComponent) {
     };
 
     _this.handleFormChange = function (e) {
-      if (_this.props.autosave) {
+      if (_this.props.autosaveDelay !== null) {
         var formElement = e.currentTarget;
 
         if (_this.autoSaveTimer) {
@@ -223,7 +223,7 @@ var Form = function (_React$PureComponent) {
         }
         _this.autoSaveTimer = setTimeout(function () {
           _this.save(formElement);
-        }, 1000);
+        }, _this.props.autosaveDelay);
       }
     };
 
@@ -402,7 +402,7 @@ var Form = function (_React$PureComponent) {
 Form.propTypes = {
   apiCreateUrlPath: _propTypes2.default.string,
   apiDetailUrlPath: _propTypes2.default.string,
-  autosave: _propTypes2.default.bool,
+  autosaveDelay: _propTypes2.default.number,
   children: _propTypes2.default.any,
   classes: _propTypes2.default.object.isRequired,
   defaultValues: _propTypes2.default.object,
@@ -421,6 +421,7 @@ Form.propTypes = {
 };
 
 Form.defaultProps = {
+  autosaveDelay: null,
   defaultValues: {},
   autosave: false,
   entityType: '',
