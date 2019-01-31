@@ -15,7 +15,7 @@ class ServiceAgent {
     }
   }
 
-  static request(method, endpoint, params, context) {
+  static buildRequestUrl(endpoint) {
     // Construct the AJAX request with the given params
     let requestURL = process.env.REACT_APP_API_URL;
     if (!endpoint.startsWith('/')) {
@@ -23,9 +23,11 @@ class ServiceAgent {
     }
     requestURL += endpoint;
 
-    if (process.env.REACT_APP_API_XDEBUG_KEY) {
-      requestURL = `${requestURL}?XDEBUG_SESSION_START=${process.env.REACT_APP_API_XDEBUG_KEY}`;
-    }
+    return requestURL;
+  }
+
+  static request(method, endpoint, params, context) {
+    const requestURL = this.buildRequestUrl(endpoint);
 
     if (typeof params === 'function') {
       params = params();
