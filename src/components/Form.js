@@ -111,7 +111,7 @@ class Form extends React.PureComponent {
           fieldInfoMap = optionsResponse.actions.POST;
         }
       } else {
-        referenceObject = responses[1].body;
+        referenceObject = response.body;
       }
     });
 
