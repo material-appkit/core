@@ -1,10 +1,9 @@
 {
   "name": "@material-appkit/core",
-  "version": "1.0.0",
+  "version": "0.1.1",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "main": "dist/index.js",
   "scripts": {
-    "start": "webpack-dev-server --mode development",
     "transpile": "babel src -d . --copy-files"
   },
   "keywords": [
@@ -28,31 +27,11 @@
     "title-case": "^2.1.1"
   },
   "devDependencies": {
-    "@babel/runtime": "^7.2.0",
-    "@material-ui/core": "^3.9.1",
-    "@material-ui/icons": "^3.0.2",
     "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.4",
-    "babel-plugin-module-resolver": "^3.1.2",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "css-loader": "^2.1.0",
-    "html-webpack-plugin": "^3.2.0",
-    "mobx": "^5.8.0",
-    "mobx-react": "^5.4.3",
-    "moment": "^2.23.0",
-    "moment-timezone-with-data-2010-2020": "^0.4.0",
-    "path-to-regexp": "^3.0.0",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "react-router-dom": "^4.3.1",
-    "style-loader": "^0.23.1",
-    "webpack": "^4.28.4",
-    "webpack-cli": "^3.2.1",
-    "webpack-dev-server": "^3.1.14"
+    "babel-preset-react": "^6.24.1"
   },
   "peerDependencies": {
     "@material-ui/core": "^3.9.1",
@@ -60,8 +39,6 @@
     "mobx": "^5.8.0",
     "mobx-react": "^5.4.3",
     "moment": "^2.23.0",
-    "moment-timezone-with-data-2010-2020": "^0.4.0",
-    "path-to-regexp": "^3.0.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-router-dom": "^4.3.1"
