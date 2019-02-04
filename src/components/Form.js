@@ -84,12 +84,10 @@ class Form extends React.PureComponent {
     let fieldInfoMap = null;
     const requests = [];
 
-    if (!this.props.fields) {
-      // If the fields have not been explicitly provided, issue an OPTIONS request for
-      // metadata about the represented object so the fields can be generated dynamically.
-      const optionsUrl = this.detailUrl || this.props.apiCreateUrlPath;
-      requests.push(this.props.serviceAgent.options(optionsUrl));
-    }
+    // If the fields have not been explicitly provided, issue an OPTIONS request for
+    // metadata about the represented object so the fields can be generated dynamically.
+    const optionsUrl = this.detailUrl || this.props.apiCreateUrlPath;
+    requests.push(this.props.serviceAgent.options(optionsUrl));
 
     if (!referenceObject) {
       if (this.detailUrl) {

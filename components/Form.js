@@ -78,14 +78,12 @@ var Form = function (_React$PureComponent) {
               fieldInfoMap = null;
               requests = [];
 
+              // If the fields have not been explicitly provided, issue an OPTIONS request for
+              // metadata about the represented object so the fields can be generated dynamically.
 
-              if (!_this.props.fields) {
-                // If the fields have not been explicitly provided, issue an OPTIONS request for
-                // metadata about the represented object so the fields can be generated dynamically.
-                optionsUrl = _this.detailUrl || _this.props.apiCreateUrlPath;
+              optionsUrl = _this.detailUrl || _this.props.apiCreateUrlPath;
 
-                requests.push(_this.props.serviceAgent.options(optionsUrl));
-              }
+              requests.push(_this.props.serviceAgent.options(optionsUrl));
 
               if (!referenceObject) {
                 if (_this.detailUrl) {
@@ -96,10 +94,10 @@ var Form = function (_React$PureComponent) {
                 }
               }
 
-              _context.next = 8;
+              _context.next = 9;
               return Promise.all(requests);
 
-            case 8:
+            case 9:
               responses = _context.sent;
 
 
@@ -112,18 +110,18 @@ var Form = function (_React$PureComponent) {
                     fieldInfoMap = optionsResponse.actions.POST;
                   }
                 } else {
-                  referenceObject = responses[1].body;
+                  referenceObject = response.body;
                 }
               });
 
               if (referenceObject) {
-                _context.next = 12;
+                _context.next = 13;
                 break;
               }
 
               throw new Error('Failed to initialize form');
 
-            case 12:
+            case 13:
 
               _this.setState({
                 fieldInfoMap: fieldInfoMap,
@@ -135,7 +133,7 @@ var Form = function (_React$PureComponent) {
                 _this.props.onLoad(referenceObject, fieldInfoMap);
               }
 
-            case 14:
+            case 15:
             case 'end':
               return _context.stop();
           }
