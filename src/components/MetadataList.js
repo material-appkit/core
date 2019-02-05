@@ -87,5 +87,6 @@ export default withStyles({
   ul: {
     fontSize: '0.85rem',
     listStyleType: 'none',
+    padding: 0,
   },
 })(MetadataList);

@@ -118,6 +118,7 @@ MetadataList.propTypes = {
 exports.default = (0, _withStyles2.default)({
   ul: {
     fontSize: '0.85rem',
-    listStyleType: 'none'
+    listStyleType: 'none',
+    padding: 0
   }
 })(MetadataList);
