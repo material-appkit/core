@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _mobxReact = require('mobx-react');
@@ -86,20 +88,22 @@ var VirtualizedList = function (_React$Component) {
 
       return _react2.default.createElement(
         _List2.default,
-        { className: classes.list },
+        { className: classes.list, dense: this.props.dense },
         this.props.store && this.props.store.items ? _react2.default.createElement(
           _reactInfiniteScroller2.default,
           {
+            getScrollParent: this.props.getScrollParent,
             initialLoad: false,
             pageStart: 1,
             loadMore: function loadMore(page) {
               _this2.props.store.loadMore(page);
             },
             hasMore: !this.props.store.isLoaded,
-            loader: this.loadMoreProgressIndicator
+            loader: this.loadMoreProgressIndicator,
+            useWindow: this.props.useWindow
           },
           this.props.store.items.map(function (item) {
-            return _react2.default.createElement(_this2.props.componentForItem, {
+            return _react2.default.createElement(_this2.props.componentForItem, _extends({
               contextProvider: _this2.props.itemContextProvider,
               key: item.id,
               item: item,
@@ -107,7 +111,7 @@ var VirtualizedList = function (_React$Component) {
               onSelectControlClick: _this2.handleSelectControlClick,
               selected: _this2.state.selection ? item.id === _this2.state.selection.id : false,
               selectionMode: _this2.props.selectionMode
-            });
+            }, _this2.props.itemProps));
           })
         ) : _react2.default.createElement(
           _react2.default.Fragment,
@@ -124,11 +128,21 @@ var VirtualizedList = function (_React$Component) {
 VirtualizedList.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   componentForItem: _propTypes2.default.func.isRequired,
+  dense: _propTypes2.default.bool,
+  getScrollParent: _propTypes2.default.func,
   itemContextProvider: _propTypes2.default.func,
+  itemProps: _propTypes2.default.object,
   onItemClick: _propTypes2.default.func,
   onSelectionChange: _propTypes2.default.func,
   selectionMode: _propTypes2.default.oneOf(['single', 'multiple']),
-  store: _propTypes2.default.object.isRequired
+  store: _propTypes2.default.object.isRequired,
+  useWindow: _propTypes2.default.bool
+};
+
+VirtualizedList.defaultProps = {
+  dense: false,
+  itemProps: {},
+  useWindow: true
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

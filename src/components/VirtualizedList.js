@@ -40,14 +40,16 @@ class VirtualizedList extends React.Component {
     const { classes } = this.props;
 
     return (
-      <List className={classes.list}>
+      <List className={classes.list} dense={this.props.dense}>
         {(this.props.store && this.props.store.items) ? (
           <InfiniteScroll
+            getScrollParent={this.props.getScrollParent}
             initialLoad={false}
             pageStart={1}
             loadMore={(page) => { this.props.store.loadMore(page); }}
             hasMore={!this.props.store.isLoaded}
             loader={this.loadMoreProgressIndicator}
+            useWindow={this.props.useWindow}
           >
             {this.props.store.items.map((item) => (
               <this.props.componentForItem
@@ -58,6 +60,7 @@ class VirtualizedList extends React.Component {
                 onSelectControlClick={this.handleSelectControlClick}
                 selected={this.state.selection ? item.id === this.state.selection.id : false}
                 selectionMode={this.props.selectionMode}
+                {...this.props.itemProps}
               />
             ))}
           </InfiniteScroll>
@@ -74,11 +77,21 @@ class VirtualizedList extends React.Component {
 VirtualizedList.propTypes = {
   classes: PropTypes.object.isRequired,
   componentForItem: PropTypes.func.isRequired,
+  dense: PropTypes.bool,
+  getScrollParent: PropTypes.func,
   itemContextProvider: PropTypes.func,
+  itemProps: PropTypes.object,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   store: PropTypes.object.isRequired,
+  useWindow: PropTypes.bool,
+};
+
+VirtualizedList.defaultProps = {
+  dense: false,
+  itemProps: {},
+  useWindow: true,
 };
 
 export default withStyles((theme) => ({
