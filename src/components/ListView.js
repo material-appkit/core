@@ -15,18 +15,14 @@ import { filterByKeys } from '../util/object';
 
 
 class ListView extends React.PureComponent {
-  constructor(props) {
-    super(props);
-
-    this.initializeTabConfigList();
-
-    this.state = {
-      redirectUrl: null,
-      selectedTabIndex : null,
-    };
-  }
+  state = {
+    redirectUrl: null,
+    selectedTabIndex : null,
+  };
 
   componentDidMount() {
+    this.initializeTabConfigList();
+
     this.props.store.update(this.filterParams);
   }
 

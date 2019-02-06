@@ -53,14 +53,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ListView = function (_React$PureComponent) {
   _inherits(ListView, _React$PureComponent);
 
-  function ListView(props) {
-    var _this2 = this;
+  function ListView() {
+    var _ref,
+        _this2 = this;
+
+    var _temp, _this, _ret;
 
     _classCallCheck(this, ListView);
 
-    var _this = _possibleConstructorReturn(this, (ListView.__proto__ || Object.getPrototypeOf(ListView)).call(this, props));
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    _this.reloadItemStore = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = ListView.__proto__ || Object.getPrototypeOf(ListView)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+      redirectUrl: null,
+      selectedTabIndex: null
+    }, _this.reloadItemStore = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
       var filterParams;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
@@ -84,21 +92,14 @@ var ListView = function (_React$PureComponent) {
           }
         }
       }, _callee, _this2);
-    }));
-
-
-    _this.initializeTabConfigList();
-
-    _this.state = {
-      redirectUrl: null,
-      selectedTabIndex: null
-    };
-    return _this;
+    })), _temp), _possibleConstructorReturn(_this, _ret);
   }
 
   _createClass(ListView, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
+      this.initializeTabConfigList();
+
       this.props.store.update(this.filterParams);
     }
   }, {

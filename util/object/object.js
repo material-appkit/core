@@ -21,7 +21,7 @@ export function filterByKeys(object, keys) {
 export function filterEmptyValues(object) {
   const filteredObject = {};
   for (const key in object) {
-    if (object[key]) {
+    if (object[key] !== null && object[key] !== undefined) {
       filteredObject[key] = object[key];
     }
   }
