@@ -16,6 +16,11 @@ class ServiceAgent {
   }
 
   static buildRequestUrl(endpoint) {
+    // If this is already an absolute URL, leave it as is.
+    if (endpoint.startsWith('http')) {
+      return endpoint;
+    }
+
     // Construct the AJAX request with the given params
     let requestURL = process.env.REACT_APP_API_URL;
     if (!endpoint.startsWith('/')) {
