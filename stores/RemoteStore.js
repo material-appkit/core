@@ -112,6 +112,10 @@ class RemoteStore extends DataStore {
   async _load(page, replace) {
     const searchParams = { page, ...this.params };
 
+    if (this.options.onLoadStart) {
+      this.options.onLoadStart(searchParams);
+    }
+
     this.isLoading = true;
 
     if (this.requestContext) {
@@ -143,6 +147,10 @@ class RemoteStore extends DataStore {
       }
 
       this.isLoading = false;
+
+      if (this.options.onLoadComplete) {
+        this.options.onLoadComplete(responseData);
+      }
 
       return responseData;
     }).catch((err) => {
