@@ -32,17 +32,16 @@ class RemoteStore extends DataStore {
   }
 
   async load(params, page) {
-    this.unload();
     if (!params) {
       return;
     }
 
     this.params = filterEmptyValues(params);
-    return this._load(page || 1);
+    return this._load(page || 1, true);
   }
 
   async loadMore(page) {
-    return this._load(page);
+    return this._load(page, false);
   }
 
   async update(params) {
@@ -52,7 +51,7 @@ class RemoteStore extends DataStore {
 
     let updatedParams = null;
     if (this.params) {
-      const updatedParams = filterEmptyValues(params);
+      updatedParams = filterEmptyValues(params);
       const paramDiff = diff(updatedParams, this.params);
       if (!Object.keys(paramDiff).length) {
         return;
@@ -110,7 +109,7 @@ class RemoteStore extends DataStore {
    * Load records for the given page. Upon completion, store them
    * in their respective index in the _pages array.
    */
-  async _load(page) {
+  async _load(page, replace) {
     const searchParams = { page, ...this.params };
 
     this.isLoading = true;
@@ -135,7 +134,7 @@ class RemoteStore extends DataStore {
       const loadedItems = this._transformResponseData(responseData);
 
       // Initialize the list of pages now that we know how many there are.
-      if (!this.items) {
+      if (replace) {
         this.totalLength = this._getTotalLength(responseData);
         this.pageCount = this._getPageCount(responseData);
         this.items = loadedItems;
