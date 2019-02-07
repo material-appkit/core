@@ -20,6 +20,7 @@ import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
 
+import EditDialog from './EditDialog';
 import VirtualizedList from './VirtualizedList';
 
 import RemoteStore from '../stores/RemoteStore';
@@ -76,6 +77,7 @@ const DialogContent = withStyles((theme) => ({
 const DialogActions = withStyles((theme) => ({
   root: {
     borderTop: `1px solid ${theme.palette.divider}`,
+    justifyContent: 'space-between',
     margin: 0,
     padding: '8px 4px 8px 12px',
   },
@@ -87,7 +89,7 @@ class ListDialog extends React.Component {
     super(props);
 
     this.store = new RemoteStore({
-      endpoint: this.props.endpoint,
+      endpoint: this.props.apiListUrl,
       ServiceAgent: props.ServiceAgent,
     });
     this.store.load({});
@@ -96,6 +98,7 @@ class ListDialog extends React.Component {
       filterTerm: '',
       loading: false,
       selection: null,
+      addDialogIsOpen: false,
     };
 
     this.filterUpdateTimer = null;
@@ -132,8 +135,12 @@ class ListDialog extends React.Component {
     }, 500);
   };
 
-  handleSelectionChange = (selection) => {
-    this.setState({ selection });
+  handleEditDialogClose = () => {
+    this.setState({ addDialogIsOpen: false });
+  };
+
+  handleEditDialogSave = (record) => {
+    this.store.prepend(record);
   };
 
   render() {
@@ -179,7 +186,7 @@ class ListDialog extends React.Component {
                 getScrollParent={() => this.dialogContentRef.current}
                 itemProps={itemProps}
                 itemContextProvider={this.listItemContextProvider}
-                onSelectionChange={this.handleSelectionChange}
+                onSelectionChange={(selection) => { this.setState({ selection }); }}
                 selectionMode="single"
                 store={this.store}
                 useWindow={false}
@@ -187,6 +194,11 @@ class ListDialog extends React.Component {
             </DialogContent>
           </RootRef>
           <DialogActions>
+            {this.props.apiCreateUrl &&
+              <Button onClick={() => { this.setState({ addDialogIsOpen: true }); }}>
+                Add
+              </Button>
+            }
             <Button
               disabled={!this.state.selection}
               onClick={() => { this.dismiss(this.state.selection); }}
@@ -196,14 +208,24 @@ class ListDialog extends React.Component {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {this.state.addDialogIsOpen &&
+          <EditDialog
+            apiCreateUrl={this.props.apiCreateUrl}
+            entityType={this.props.entityType}
+            onClose={this.handleEditDialogClose}
+            onSave={this.handleEditDialogSave}
+          />
+        }
       </React.Fragment>
     );
   }
 }
 
 ListDialog.propTypes = {
+  apiCreateUrl: PropTypes.string,
+  apiListUrl: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
-  endpoint: PropTypes.string.isRequired,
   entityType: PropTypes.string.isRequired,
   filterBy: PropTypes.oneOfType([
     PropTypes.string,

@@ -64,6 +64,10 @@ var _Close = require('@material-ui/icons/Close');
 
 var _Close2 = _interopRequireDefault(_Close);
 
+var _EditDialog = require('./EditDialog');
+
+var _EditDialog2 = _interopRequireDefault(_EditDialog);
+
 var _VirtualizedList = require('./VirtualizedList');
 
 var _VirtualizedList2 = _interopRequireDefault(_VirtualizedList);
@@ -148,6 +152,7 @@ var DialogActions = (0, _withStyles2.default)(function (theme) {
   return {
     root: {
       borderTop: '1px solid ' + theme.palette.divider,
+      justifyContent: 'space-between',
       margin: 0,
       padding: '8px 4px 8px 12px'
     }
@@ -192,12 +197,16 @@ var ListDialog = function (_React$Component) {
       }, 500);
     };
 
-    _this.handleSelectionChange = function (selection) {
-      _this.setState({ selection: selection });
+    _this.handleEditDialogClose = function () {
+      _this.setState({ addDialogIsOpen: false });
+    };
+
+    _this.handleEditDialogSave = function (record) {
+      _this.store.prepend(record);
     };
 
     _this.store = new _RemoteStore2.default({
-      endpoint: _this.props.endpoint,
+      endpoint: _this.props.apiListUrl,
       ServiceAgent: props.ServiceAgent
     });
     _this.store.load({});
@@ -205,7 +214,8 @@ var ListDialog = function (_React$Component) {
     _this.state = {
       filterTerm: '',
       loading: false,
-      selection: null
+      selection: null,
+      addDialogIsOpen: false
     };
 
     _this.filterUpdateTimer = null;
@@ -277,7 +287,9 @@ var ListDialog = function (_React$Component) {
                 },
                 itemProps: itemProps,
                 itemContextProvider: this.listItemContextProvider,
-                onSelectionChange: this.handleSelectionChange,
+                onSelectionChange: function onSelectionChange(selection) {
+                  _this2.setState({ selection: selection });
+                },
                 selectionMode: 'single',
                 store: this.store,
                 useWindow: false
@@ -287,6 +299,13 @@ var ListDialog = function (_React$Component) {
           _react2.default.createElement(
             DialogActions,
             null,
+            this.props.apiCreateUrl && _react2.default.createElement(
+              _Button2.default,
+              { onClick: function onClick() {
+                  _this2.setState({ addDialogIsOpen: true });
+                } },
+              'Add'
+            ),
             _react2.default.createElement(
               _Button2.default,
               {
@@ -299,7 +318,13 @@ var ListDialog = function (_React$Component) {
               'Choose'
             )
           )
-        )
+        ),
+        this.state.addDialogIsOpen && _react2.default.createElement(_EditDialog2.default, {
+          apiCreateUrl: this.props.apiCreateUrl,
+          entityType: this.props.entityType,
+          onClose: this.handleEditDialogClose,
+          onSave: this.handleEditDialogSave
+        })
       );
     }
   }]);
@@ -308,8 +333,9 @@ var ListDialog = function (_React$Component) {
 }(_react2.default.Component);
 
 ListDialog.propTypes = {
+  apiCreateUrl: _propTypes2.default.string,
+  apiListUrl: _propTypes2.default.string.isRequired,
   classes: _propTypes2.default.object.isRequired,
-  endpoint: _propTypes2.default.string.isRequired,
   entityType: _propTypes2.default.string.isRequired,
   filterBy: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
   listItemComponent: _propTypes2.default.func.isRequired,
