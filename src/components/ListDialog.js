@@ -137,11 +137,12 @@ class ListDialog extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, listItemProps } = this.props;
 
     const itemProps = {
       isLink: false,
       style: { padding: '3px 6px' },
+      ...listItemProps
     };
 
     return (
@@ -209,11 +210,13 @@ ListDialog.propTypes = {
     PropTypes.array,
   ]),
   listItemComponent: PropTypes.func.isRequired,
+  listItemProps: PropTypes.object,
   onDismiss: PropTypes.func.isRequired,
   ServiceAgent: PropTypes.func,
 };
 
 ListDialog.defaultProps = {
+  listItemProps: {},
   ServiceAgent: ServiceAgent,
 };
 

@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -216,13 +218,15 @@ var ListDialog = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var classes = this.props.classes;
+      var _props = this.props,
+          classes = _props.classes,
+          listItemProps = _props.listItemProps;
 
 
-      var itemProps = {
+      var itemProps = _extends({
         isLink: false,
         style: { padding: '3px 6px' }
-      };
+      }, listItemProps);
 
       return _react2.default.createElement(
         _react2.default.Fragment,
@@ -309,11 +313,13 @@ ListDialog.propTypes = {
   entityType: _propTypes2.default.string.isRequired,
   filterBy: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
   listItemComponent: _propTypes2.default.func.isRequired,
+  listItemProps: _propTypes2.default.object,
   onDismiss: _propTypes2.default.func.isRequired,
   ServiceAgent: _propTypes2.default.func
 };
 
 ListDialog.defaultProps = {
+  listItemProps: {},
   ServiceAgent: _util.ServiceAgent
 };
 
