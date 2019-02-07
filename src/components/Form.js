@@ -36,7 +36,9 @@ class Form extends React.PureComponent {
     };
 
     let detailUrl = null;
-    if (props.persistedObject) {
+    if (props.apiDetailUrl) {
+      detailUrl = props.apiDetailUrl;
+    } else if (props.persistedObject) {
       detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.persistedObject.id });
     } else if (props.representedObjectId) {
       detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.representedObjectId });
@@ -285,6 +287,7 @@ class Form extends React.PureComponent {
 
 Form.propTypes = {
   apiCreateUrl: PropTypes.string,
+  apiDetailUrl: PropTypes.string,
   apiDetailUrlPath: PropTypes.string,
   autosaveDelay: PropTypes.number,
   children: PropTypes.any,

@@ -234,7 +234,9 @@ var Form = function (_React$PureComponent) {
     };
 
     var detailUrl = null;
-    if (props.persistedObject) {
+    if (props.apiDetailUrl) {
+      detailUrl = props.apiDetailUrl;
+    } else if (props.persistedObject) {
       detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.persistedObject.id });
     } else if (props.representedObjectId) {
       detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.representedObjectId });
@@ -399,6 +401,7 @@ var Form = function (_React$PureComponent) {
 
 Form.propTypes = {
   apiCreateUrl: _propTypes2.default.string,
+  apiDetailUrl: _propTypes2.default.string,
   apiDetailUrlPath: _propTypes2.default.string,
   autosaveDelay: _propTypes2.default.number,
   children: _propTypes2.default.any,
