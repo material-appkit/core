@@ -86,7 +86,7 @@ class Form extends React.PureComponent {
 
     // If the fields have not been explicitly provided, issue an OPTIONS request for
     // metadata about the represented object so the fields can be generated dynamically.
-    const optionsUrl = this.detailUrl || this.props.apiCreateUrlPath;
+    const optionsUrl = this.detailUrl || this.props.apiCreateUrl;
     requests.push(this.props.serviceAgent.options(optionsUrl));
 
     if (!referenceObject) {
@@ -139,7 +139,7 @@ class Form extends React.PureComponent {
       const pendingChanges = updatedDiff(this.state.referenceObject, formData);
       saveRequest = this.props.serviceAgent.patch(this.detailUrl, pendingChanges);
     } else {
-      saveRequest = this.props.serviceAgent.post(this.props.apiCreateUrlPath, formData);
+      saveRequest = this.props.serviceAgent.post(this.props.apiCreateUrl, formData);
     }
 
     try {
@@ -284,7 +284,7 @@ class Form extends React.PureComponent {
 }
 
 Form.propTypes = {
-  apiCreateUrlPath: PropTypes.string,
+  apiCreateUrl: PropTypes.string,
   apiDetailUrlPath: PropTypes.string,
   autosaveDelay: PropTypes.number,
   children: PropTypes.any,
