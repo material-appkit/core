@@ -87,7 +87,8 @@ var EditDialog = function (_React$Component) {
     };
 
     _this.handleFormError = function (err) {
-      _SnackbarManager2.default.error(_reactIntlUniversal2.default.get('SAVE_FAIL_NOTIFICATION'));
+      var errorMessage = _reactIntlUniversal2.default.get('SAVE_FAIL_NOTIFICATION').defaultMessage('Unable to Save');
+      _SnackbarManager2.default.error(errorMessage);
     };
 
     var title = props.entityType;

@@ -47,7 +47,8 @@ class EditDialog extends React.Component {
   };
 
   handleFormError = (err) => {
-    SnackbarManager.error(intl.get('SAVE_FAIL_NOTIFICATION'));
+    const errorMessage = intl.get('SAVE_FAIL_NOTIFICATION').defaultMessage('Unable to Save');
+    SnackbarManager.error(errorMessage);
   };
 
   dismiss() {
