@@ -48,10 +48,6 @@ var _RootRef = require('@material-ui/core/RootRef');
 
 var _RootRef2 = _interopRequireDefault(_RootRef);
 
-var _TextField = require('@material-ui/core/TextField');
-
-var _TextField2 = _interopRequireDefault(_TextField);
-
 var _Typography = require('@material-ui/core/Typography');
 
 var _Typography2 = _interopRequireDefault(_Typography);
@@ -67,6 +63,10 @@ var _Close2 = _interopRequireDefault(_Close);
 var _EditDialog = require('./EditDialog');
 
 var _EditDialog2 = _interopRequireDefault(_EditDialog);
+
+var _TextField = require('./TextField');
+
+var _TextField2 = _interopRequireDefault(_TextField);
 
 var _VirtualizedList = require('./VirtualizedList');
 
@@ -172,29 +172,19 @@ var ListDialog = function (_React$Component) {
     };
 
     _this.updateFilterTerm = function (filterTerm) {
-      var self = _this;
-
-      self.setState({ filterTerm: filterTerm });
-
-      if (self.filterUpdateTimer) {
-        clearTimeout(self.filterUpdateTimer);
+      var filterParams = {};
+      if (filterTerm) {
+        var filterBy = _this.props.filterBy;
+        if (typeof filterBy === 'string') {
+          filterParams[filterBy] = filterTerm;
+        } else {
+          filterBy.forEach(function (paramName) {
+            filterParams[paramName] = filterTerm;
+          });
+        }
       }
 
-      self.filterUpdateTimer = setTimeout(function () {
-        var filterParams = {};
-        if (filterTerm) {
-          var filterBy = self.props.filterBy;
-          if (typeof filterBy === 'string') {
-            filterParams[filterBy] = filterTerm;
-          } else {
-            filterBy.forEach(function (paramName) {
-              filterParams[paramName] = filterTerm;
-            });
-          }
-        }
-
-        self.store.update(filterParams);
-      }, 500);
+      _this.store.update(filterParams);
     };
 
     _this.handleEditDialogClose = function () {
@@ -212,7 +202,6 @@ var ListDialog = function (_React$Component) {
     _this.store.load({});
 
     _this.state = {
-      filterTerm: '',
       loading: false,
       selection: null,
       addDialogIsOpen: false
@@ -261,12 +250,12 @@ var ListDialog = function (_React$Component) {
             this.props.filterBy && _react2.default.createElement(_TextField2.default, {
               className: classes.filterField,
               fullWidth: true,
-              onChange: function onChange(e) {
-                _this2.updateFilterTerm(e.target.value);
+              onTimeout: function onTimeout(value) {
+                _this2.updateFilterTerm(value);
               },
+              timeoutDelay: 500,
               placeholder: 'Filter by search term...',
-              variant: 'outlined',
-              value: this.state.filterTerm
+              variant: 'outlined'
             }),
             _react2.default.createElement(_LinearProgress2.default, {
               className: classes.progressBar,

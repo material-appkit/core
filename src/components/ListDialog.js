@@ -15,12 +15,12 @@ import MuiDialogContent from '@material-ui/core/DialogContent';
 import MuiDialogActions from '@material-ui/core/DialogActions';
 import IconButton from '@material-ui/core/IconButton';
 import RootRef from '@material-ui/core/RootRef';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
 
 import EditDialog from './EditDialog';
+import TextField from './TextField';
 import VirtualizedList from './VirtualizedList';
 
 import RemoteStore from '../stores/RemoteStore';
@@ -95,7 +95,6 @@ class ListDialog extends React.Component {
     this.store.load({});
 
     this.state = {
-      filterTerm: '',
       loading: false,
       selection: null,
       addDialogIsOpen: false,
@@ -110,29 +109,19 @@ class ListDialog extends React.Component {
   };
 
   updateFilterTerm = (filterTerm) => {
-    const self = this;
-
-    self.setState({ filterTerm });
-
-    if (self.filterUpdateTimer) {
-      clearTimeout(self.filterUpdateTimer);
+    const filterParams = {};
+    if (filterTerm) {
+      const filterBy = this.props.filterBy;
+      if (typeof(filterBy) === 'string') {
+        filterParams[filterBy] = filterTerm;
+      } else {
+        filterBy.forEach((paramName) => {
+          filterParams[paramName] = filterTerm;
+        });
+      }
     }
 
-    self.filterUpdateTimer = setTimeout(() => {
-      const filterParams = {};
-      if (filterTerm) {
-        const filterBy = self.props.filterBy;
-        if (typeof(filterBy) === 'string') {
-          filterParams[filterBy] = filterTerm;
-        } else {
-          filterBy.forEach((paramName) => {
-            filterParams[paramName] = filterTerm;
-          });
-        }
-      }
-
-      self.store.update(filterParams);
-    }, 500);
+    this.store.update(filterParams);
   };
 
   handleEditDialogClose = () => {
@@ -167,10 +156,10 @@ class ListDialog extends React.Component {
               <TextField
                 className={classes.filterField}
                 fullWidth
-                onChange={(e) => { this.updateFilterTerm(e.target.value); }}
+                onTimeout={(value) => { this.updateFilterTerm(value); }}
+                timeoutDelay={500}
                 placeholder="Filter by search term..."
                 variant="outlined"
-                value={this.state.filterTerm}
               />
             }
             <LinearProgress
