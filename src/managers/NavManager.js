@@ -80,8 +80,8 @@ class NavManager {
   /**
    * Convenience method to set a single querystring param
    */
-  static setUrlParam(paramName, paramValue, replace) {
-    this.setUrlParams({ [paramName]: paramValue }, null, replace);
+  static updateUrlParam(paramName, paramValue, replace) {
+    this.updateUrlParams({ [paramName]: paramValue }, replace);
   }
 
   /**

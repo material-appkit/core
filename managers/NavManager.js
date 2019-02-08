@@ -101,9 +101,9 @@ var NavManager = function () {
      */
 
   }, {
-    key: 'setUrlParam',
-    value: function setUrlParam(paramName, paramValue, replace) {
-      this.setUrlParams(_defineProperty({}, paramName, paramValue), null, replace);
+    key: 'updateUrlParam',
+    value: function updateUrlParam(paramName, paramValue, replace) {
+      this.updateUrlParams(_defineProperty({}, paramName, paramValue), replace);
     }
 
     /**
