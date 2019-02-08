@@ -20,6 +20,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
 
 import EditDialog from './EditDialog';
+import Spacer from './Spacer';
 import TextField from './TextField';
 import VirtualizedList from './VirtualizedList';
 
@@ -77,7 +78,6 @@ const DialogContent = withStyles((theme) => ({
 const DialogActions = withStyles((theme) => ({
   root: {
     borderTop: `1px solid ${theme.palette.divider}`,
-    justifyContent: 'space-between',
     margin: 0,
     padding: '8px 4px 8px 12px',
   },
@@ -100,7 +100,6 @@ class ListDialog extends React.Component {
       addDialogIsOpen: false,
     };
 
-    this.filterUpdateTimer = null;
     this.dialogContentRef = React.createRef();
   }
 
@@ -184,9 +183,12 @@ class ListDialog extends React.Component {
           </RootRef>
           <DialogActions>
             {this.props.apiCreateUrl &&
-              <Button onClick={() => { this.setState({ addDialogIsOpen: true }); }}>
-                Add
-              </Button>
+              <React.Fragment>
+                <Button onClick={() => { this.setState({ addDialogIsOpen: true }); }}>
+                  Add
+                </Button>
+                <Spacer />
+              </React.Fragment>
             }
             <Button
               disabled={!this.state.selection}

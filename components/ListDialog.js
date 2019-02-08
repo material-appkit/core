@@ -64,6 +64,10 @@ var _EditDialog = require('./EditDialog');
 
 var _EditDialog2 = _interopRequireDefault(_EditDialog);
 
+var _Spacer = require('./Spacer');
+
+var _Spacer2 = _interopRequireDefault(_Spacer);
+
 var _TextField = require('./TextField');
 
 var _TextField2 = _interopRequireDefault(_TextField);
@@ -152,7 +156,6 @@ var DialogActions = (0, _withStyles2.default)(function (theme) {
   return {
     root: {
       borderTop: '1px solid ' + theme.palette.divider,
-      justifyContent: 'space-between',
       margin: 0,
       padding: '8px 4px 8px 12px'
     }
@@ -207,7 +210,6 @@ var ListDialog = function (_React$Component) {
       addDialogIsOpen: false
     };
 
-    _this.filterUpdateTimer = null;
     _this.dialogContentRef = _react2.default.createRef();
     return _this;
   }
@@ -289,11 +291,16 @@ var ListDialog = function (_React$Component) {
             DialogActions,
             null,
             this.props.apiCreateUrl && _react2.default.createElement(
-              _Button2.default,
-              { onClick: function onClick() {
-                  _this2.setState({ addDialogIsOpen: true });
-                } },
-              'Add'
+              _react2.default.Fragment,
+              null,
+              _react2.default.createElement(
+                _Button2.default,
+                { onClick: function onClick() {
+                    _this2.setState({ addDialogIsOpen: true });
+                  } },
+                'Add'
+              ),
+              _react2.default.createElement(_Spacer2.default, null)
             ),
             _react2.default.createElement(
               _Button2.default,
