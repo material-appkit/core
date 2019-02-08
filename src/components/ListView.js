@@ -54,8 +54,9 @@ class ListView extends React.PureComponent {
     if (this.props.subsetArrangement) {
       const tabConfigList = [];
       const subsetArrangement = this.props.subsetArrangement;
+
       subsetArrangement.forEach((subset) => {
-        let url = this.props.location.pathname;
+        let url = this.props.match.path;
 
         const subsetName = subset[0];
         if (subsetName) {
@@ -165,6 +166,7 @@ ListView.propTypes = {
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
   location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
   mountPath: PropTypes.string,
   qsFilterParamNames: PropTypes.array,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),

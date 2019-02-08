@@ -135,8 +135,9 @@ var ListView = function (_React$PureComponent) {
       if (this.props.subsetArrangement) {
         var tabConfigList = [];
         var subsetArrangement = this.props.subsetArrangement;
+
         subsetArrangement.forEach(function (subset) {
-          var url = _this3.props.location.pathname;
+          var url = _this3.props.match.path;
 
           var subsetName = subset[0];
           if (subsetName) {
@@ -249,6 +250,7 @@ ListView.propTypes = {
   onItemClick: _propTypes2.default.func,
   onSelectionChange: _propTypes2.default.func,
   location: _propTypes2.default.object.isRequired,
+  match: _propTypes2.default.object.isRequired,
   mountPath: _propTypes2.default.string,
   qsFilterParamNames: _propTypes2.default.array,
   selectionMode: _propTypes2.default.oneOf(['single', 'multiple']),
