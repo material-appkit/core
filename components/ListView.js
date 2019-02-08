@@ -61,7 +61,7 @@ var ListView = function (_React$PureComponent) {
     var _this = _possibleConstructorReturn(this, (ListView.__proto__ || Object.getPrototypeOf(ListView)).call(this, props));
 
     _this.state = {
-      redirectUrl: null,
+      redirectTo: null,
       selectedTabIndex: null
     };
     _this.reloadItemStore = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -92,7 +92,6 @@ var ListView = function (_React$PureComponent) {
 
 
     _this.constructTabConfigList();
-    _this.redirectTo = null;
     return _this;
   }
 
@@ -148,12 +147,12 @@ var ListView = function (_React$PureComponent) {
         // Decide whether we need to redirect.
         // This will be the case when a subset arrangement is in effect and the
         // querystring param does not match any of the existing subset names.
-        if (!this.redirectTo) {
+        if (!this.state.redirectTo) {
           var firstSubsetKey = this.subsetArrangement.keys().next().value;
           var subsetConfig = this.subsetArrangement.get(firstSubsetKey);
-          this.redirectTo = subsetConfig.path;
+          this.setState({ redirectTo: subsetConfig.path });
         } else {
-          this.redirectTo = null;
+          this.setState({ redirectTo: null });
         }
       } else {
         if (tabIndex !== this.state.selectedTabIndex) {
@@ -165,8 +164,8 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'render',
     value: function render() {
-      if (this.redirectTo) {
-        return _react2.default.createElement(_reactRouterDom.Redirect, { to: this.redirectTo });
+      if (this.state.redirectTo) {
+        return _react2.default.createElement(_reactRouterDom.Redirect, { to: this.state.redirectTo });
       }
 
       return _react2.default.createElement(

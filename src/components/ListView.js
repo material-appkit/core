@@ -16,7 +16,7 @@ import { filterByKeys } from '../util/object';
 
 class ListView extends React.PureComponent {
   state = {
-    redirectUrl: null,
+    redirectTo: null,
     selectedTabIndex : null,
   };
 
@@ -24,7 +24,6 @@ class ListView extends React.PureComponent {
     super(props);
 
     this.constructTabConfigList();
-    this.redirectTo = null;
   }
 
   constructTabConfigList() {
@@ -75,12 +74,12 @@ class ListView extends React.PureComponent {
       // Decide whether we need to redirect.
       // This will be the case when a subset arrangement is in effect and the
       // querystring param does not match any of the existing subset names.
-      if (!this.redirectTo) {
+      if (!this.state.redirectTo) {
         const firstSubsetKey = this.subsetArrangement.keys().next().value;
         let subsetConfig = this.subsetArrangement.get(firstSubsetKey);
-        this.redirectTo = subsetConfig.path;
+        this.setState({ redirectTo: subsetConfig.path });
       } else {
-        this.redirectTo = null;
+        this.setState({ redirectTo: null });
       }
     } else {
       if (tabIndex !== this.state.selectedTabIndex) {
@@ -154,8 +153,8 @@ class ListView extends React.PureComponent {
   };
 
   render() {
-    if (this.redirectTo) {
-      return <Redirect to={this.redirectTo} />
+    if (this.state.redirectTo) {
+      return <Redirect to={this.state.redirectTo} />
     }
 
     return (
