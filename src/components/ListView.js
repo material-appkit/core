@@ -2,7 +2,7 @@ import qs from 'query-string';
 
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -20,11 +20,41 @@ class ListView extends React.PureComponent {
     selectedTabIndex : null,
   };
 
-  componentDidMount() {
-    this.initializeTabConfigList();
+  constructor(props) {
+    super(props);
 
-    this.props.store.update(this.filterParams);
+    this.constructTabConfigList();
+    this.redirectTo = null;
   }
+
+  constructTabConfigList() {
+    if (this.props.subsetArrangement) {
+      const tabConfigList = [];
+      const subsetArrangement = this.props.subsetArrangement;
+
+      subsetArrangement.forEach((subset) => {
+        let path = this.props.match.path;
+
+        const subsetName = subset[0];
+        if (subsetName) {
+          path = `${path}?subset=${subsetName}`;
+        }
+        subset[1].path = path;
+
+        tabConfigList.push({
+          subsetName,
+          label: subset[1].tabLabel,
+          path,
+        });
+      });
+      this.tabConfigList = tabConfigList;
+      this.subsetArrangement = new Map(subsetArrangement);
+    } else {
+      this.subsetArrangement = null;
+      this.tabConfigList = null;
+    }
+  }
+
 
   componentDidUpdate() {
     if (this.props.location.pathname !== this.props.mountPath) {
@@ -33,45 +63,30 @@ class ListView extends React.PureComponent {
       return;
     }
 
-    if (this.subsetArrangement) {
-      let tabIndex = indexOfKey(this.subsetKey, this.subsetArrangement);
-      if (tabIndex === -1) {
-        this.setState({ selectedTabIndex: 0 });
-      } else {
-        if (tabIndex !== this.state.selectedTabIndex) {
-          this.setState({ selectedTabIndex: tabIndex });
-        }
-      }
+    if (!this.subsetArrangement) {
+      // If we have no subset arrangements, simply set the store update itself with
+      // respect to the current URL querystring
+      this.props.store.update(this.filterParams);
+      return;
     }
 
-    this.props.store.update(this.filterParams);
-  }
-
-  initializeTabConfigList() {
-    this.subsetArrangement = null;
-    this.tabConfigList = null;
-
-    if (this.props.subsetArrangement) {
-      const tabConfigList = [];
-      const subsetArrangement = this.props.subsetArrangement;
-
-      subsetArrangement.forEach((subset) => {
-        let url = this.props.match.path;
-
-        const subsetName = subset[0];
-        if (subsetName) {
-          url = `${url}?subset=${subsetName}`;
-        }
-        subset[1].url = url;
-
-        tabConfigList.push({
-          subsetName,
-          label: subset[1].tabLabel,
-          url,
-        });
-      });
-      this.tabConfigList = tabConfigList;
-      this.subsetArrangement = new Map(subsetArrangement);
+    let tabIndex = indexOfKey(this.subsetKey, this.subsetArrangement);
+    if (tabIndex === -1) {
+      // Decide whether we need to redirect.
+      // This will be the case when a subset arrangement is in effect and the
+      // querystring param does not match any of the existing subset names.
+      if (!this.redirectTo) {
+        const firstSubsetKey = this.subsetArrangement.keys().next().value;
+        let subsetConfig = this.subsetArrangement.get(firstSubsetKey);
+        this.redirectTo = subsetConfig.path;
+      } else {
+        this.redirectTo = null;
+      }
+    } else {
+      if (tabIndex !== this.state.selectedTabIndex) {
+        this.setState({ selectedTabIndex: tabIndex });
+        this.props.store.update(this.filterParams);
+      }
     }
   }
 
@@ -95,7 +110,7 @@ class ListView extends React.PureComponent {
             className={this.props.classes.tab}
             key={tabConfig.subsetName}
             label={tabConfig.label}
-            to={tabConfig.url}
+            to={tabConfig.path}
           />
         ))}
       </Tabs>
@@ -139,6 +154,10 @@ class ListView extends React.PureComponent {
   };
 
   render() {
+    if (this.redirectTo) {
+      return <Redirect to={this.redirectTo} />
+    }
+
     return (
       <React.Fragment>
         {this.tabs}
