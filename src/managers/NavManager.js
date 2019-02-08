@@ -78,6 +78,13 @@ class NavManager {
   }
 
   /**
+   * Convenience method to set a single querystring param
+   */
+  static setUrlParam(paramName, paramValue, replace) {
+    this.setUrlParams({ [paramName]: paramValue }, null, replace);
+  }
+
+  /**
    * Unlike the underlying setUrlParams method, this method will clear the
    * querystring params if qsParams is unset.
    */

@@ -16,6 +16,8 @@ var _mobxReactRouter = require('mobx-react-router');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var NavManager = function () {
@@ -92,6 +94,16 @@ var NavManager = function () {
       });
 
       this.setUrlParams(params, null, replace);
+    }
+
+    /**
+     * Convenience method to set a single querystring param
+     */
+
+  }, {
+    key: 'setUrlParam',
+    value: function setUrlParam(paramName, paramValue, replace) {
+      this.setUrlParams(_defineProperty({}, paramName, paramValue), null, replace);
     }
 
     /**
