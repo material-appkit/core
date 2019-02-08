@@ -84,8 +84,8 @@ class ListView extends React.PureComponent {
     } else {
       if (tabIndex !== this.state.selectedTabIndex) {
         this.setState({ selectedTabIndex: tabIndex });
-        this.props.store.update(this.filterParams);
       }
+      this.props.store.update(this.filterParams);
     }
   }
 
