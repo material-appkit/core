@@ -350,7 +350,7 @@ var Form = function (_React$PureComponent) {
               var inputType = fieldInfo.input_type;
               if (inputType === 'textarea') {
                 textFieldProps.multiline = true;
-                textFieldProps.rows = 1;
+                textFieldProps.rows = 2;
                 textFieldProps.rowsMax = 4;
               } else {
                 textFieldProps.type = inputType;
