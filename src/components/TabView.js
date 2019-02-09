@@ -17,7 +17,7 @@ class TabView extends React.PureComponent {
     let selectedTabIndex = 0;
     const currentLocationPath = this.props.location.pathname;
     this.props.tabArrangement.forEach((tabConfig, tabIndex) => {
-      if (currentLocationPath === tabConfig.url) {
+      if (currentLocationPath === tabConfig.path) {
         selectedTabIndex = tabIndex;
       }
     });
@@ -29,6 +29,9 @@ class TabView extends React.PureComponent {
 
     const selectedTabIndex = this.selectedTabIndex;
     const activeTabConfig = this.props.tabArrangement[selectedTabIndex];
+
+    const activeTabProps = activeTabConfig.componentProps || {};
+    activeTabProps.mountPath = activeTabConfig.path;
 
     return (
       <React.Fragment>
@@ -42,14 +45,17 @@ class TabView extends React.PureComponent {
         >
           {this.props.tabArrangement.map((tabConfig) => (
             <Tab
-              key={tabConfig.url}
+              key={tabConfig.path}
               component={Link}
-              to={tabConfig.url}
+              to={tabConfig.path}
               label={tabConfig.label}
             />
           ))}
         </Tabs>
-        <activeTabConfig.component {...rest} />
+        <activeTabConfig.component
+          {...activeTabProps}
+          {...rest}
+        />
       </React.Fragment>
     );
   }

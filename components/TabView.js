@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _propTypes = require('prop-types');
@@ -59,6 +61,9 @@ var TabView = function (_React$PureComponent) {
       var selectedTabIndex = this.selectedTabIndex;
       var activeTabConfig = this.props.tabArrangement[selectedTabIndex];
 
+      var activeTabProps = activeTabConfig.componentProps || {};
+      activeTabProps.mountPath = activeTabConfig.path;
+
       return _react2.default.createElement(
         _react2.default.Fragment,
         null,
@@ -74,14 +79,14 @@ var TabView = function (_React$PureComponent) {
           },
           this.props.tabArrangement.map(function (tabConfig) {
             return _react2.default.createElement(_Tab2.default, {
-              key: tabConfig.url,
+              key: tabConfig.path,
               component: _reactRouterDom.Link,
-              to: tabConfig.url,
+              to: tabConfig.path,
               label: tabConfig.label
             });
           })
         ),
-        _react2.default.createElement(activeTabConfig.component, rest)
+        _react2.default.createElement(activeTabConfig.component, _extends({}, activeTabProps, rest))
       );
     }
   }, {
@@ -90,7 +95,7 @@ var TabView = function (_React$PureComponent) {
       var selectedTabIndex = 0;
       var currentLocationPath = this.props.location.pathname;
       this.props.tabArrangement.forEach(function (tabConfig, tabIndex) {
-        if (currentLocationPath === tabConfig.url) {
+        if (currentLocationPath === tabConfig.path) {
           selectedTabIndex = tabIndex;
         }
       });
