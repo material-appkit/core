@@ -164,6 +164,7 @@ class ListView extends React.PureComponent {
           componentForItem={this.props.listItemComponent}
           store={this.props.store}
           itemContextProvider={this.props.itemContextProvider}
+          itemProps={this.props.itemProps}
           onItemClick={this.props.onItemClick}
           onSelectionChange={this.props.onSelectionChange}
           selectionMode={this.props.selectionMode}
@@ -181,6 +182,7 @@ ListView.propTypes = {
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
   itemContextProvider: PropTypes.func,
+  itemProps: PropTypes.object,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
   location: PropTypes.object.isRequired,
@@ -192,6 +194,7 @@ ListView.propTypes = {
 };
 
 ListView.defaultProps = {
+  itemProps: {},
   qsFilterParamNames: [],
 };
 

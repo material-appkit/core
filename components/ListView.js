@@ -176,6 +176,7 @@ var ListView = function (_React$PureComponent) {
           componentForItem: this.props.listItemComponent,
           store: this.props.store,
           itemContextProvider: this.props.itemContextProvider,
+          itemProps: this.props.itemProps,
           onItemClick: this.props.onItemClick,
           onSelectionChange: this.props.onSelectionChange,
           selectionMode: this.props.selectionMode
@@ -257,6 +258,7 @@ ListView.propTypes = {
   entityType: _propTypes2.default.string,
   filterParams: _propTypes2.default.object,
   itemContextProvider: _propTypes2.default.func,
+  itemProps: _propTypes2.default.object,
   onItemClick: _propTypes2.default.func,
   onSelectionChange: _propTypes2.default.func,
   location: _propTypes2.default.object.isRequired,
@@ -268,6 +270,7 @@ ListView.propTypes = {
 };
 
 ListView.defaultProps = {
+  itemProps: {},
   qsFilterParamNames: []
 };
 
