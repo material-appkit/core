@@ -347,7 +347,14 @@ var Form = function (_React$PureComponent) {
               textFieldProps.select = true;
               textFieldProps.SelectProps = { native: true };
             } else {
-              textFieldProps.type = FIELD_TYPE_MAP[fieldInfo.type];
+              var inputType = fieldInfo.input_type;
+              if (inputType === 'textarea') {
+                textFieldProps.multiline = true;
+                textFieldProps.rows = 1;
+                textFieldProps.rowsMax = 4;
+              } else {
+                textFieldProps.type = inputType;
+              }
             }
 
             if (textFieldProps.type === 'number') {
