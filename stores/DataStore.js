@@ -28,7 +28,7 @@ class DataStore {
     this.totalLength = this.items.length;
   }
 
-  update(record) {
+  replace(record) {
     for (let i = this.totalLength - 1; i >= 0; --i) {
       if (this.items[i].id === record.id) {
         this.items[i] = record;
