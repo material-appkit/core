@@ -165,13 +165,13 @@ var FlowFileUploader = function (_React$PureComponent) {
     };
 
     _this.handleFileSuccess = function (file, message) {
+      _this.setStatus(_reactIntlUniversal2.default.get('UPLOAD_COMPLETE') + '...', null);
+
       _this.flow.removeFile(file);
 
       if (_this.props.onComplete) {
         _this.props.onComplete(JSON.parse(message));
       }
-
-      _this.setStatus(_reactIntlUniversal2.default.get('UPLOAD_COMPLETE') + '...', null);
     };
 
     _this.handleFileError = function () {
@@ -271,6 +271,8 @@ var FlowFileUploader = function (_React$PureComponent) {
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
+      this.flow.off();
+
       if (this.reader) {
         this.reader.removeEventListener("load", this.handleReaderLoad);
       }

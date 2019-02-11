@@ -86,6 +86,8 @@ class FlowFileUploader extends React.PureComponent {
   }
 
   componentWillUnmount() {
+    this.flow.off();
+
     if (this.reader) {
       this.reader.removeEventListener("load", this.handleReaderLoad);
     }
@@ -165,13 +167,13 @@ class FlowFileUploader extends React.PureComponent {
   };
 
   handleFileSuccess = (file, message) => {
+    this.setStatus(`${intl.get('UPLOAD_COMPLETE')}...`, null);
+
     this.flow.removeFile(file);
 
     if (this.props.onComplete) {
       this.props.onComplete(JSON.parse(message));
     }
-
-    this.setStatus(`${intl.get('UPLOAD_COMPLETE')}...`, null);
   };
 
   handleFileError = async(file, message) => {
