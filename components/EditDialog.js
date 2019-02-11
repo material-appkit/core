@@ -24,10 +24,6 @@ var _Button = require('@material-ui/core/Button');
 
 var _Button2 = _interopRequireDefault(_Button);
 
-var _withStyles = require('@material-ui/core/styles/withStyles');
-
-var _withStyles2 = _interopRequireDefault(_withStyles);
-
 var _Dialog = require('@material-ui/core/Dialog');
 
 var _Dialog2 = _interopRequireDefault(_Dialog);
@@ -39,6 +35,10 @@ var _DialogContent2 = _interopRequireDefault(_DialogContent);
 var _DialogTitle = require('@material-ui/core/DialogTitle');
 
 var _DialogTitle2 = _interopRequireDefault(_DialogTitle);
+
+var _withStyles = require('@material-ui/core/styles/withStyles');
+
+var _withStyles2 = _interopRequireDefault(_withStyles);
 
 var _Form = require('./Form');
 
