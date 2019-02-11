@@ -4,11 +4,11 @@ import intl from 'react-intl-universal';
 import { Redirect } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
-import withStyles from '@material-ui/core/styles/withStyles';
-
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import withStyles from '@material-ui/core/styles/withStyles';
+
 
 import Form from './Form';
 import FormActions from './FormActions';
