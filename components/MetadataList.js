@@ -59,7 +59,7 @@ function _MetadataListItem(props) {
 
   return _react2.default.createElement(
     'li',
-    { key: fieldInfo.name, id: listItemId, className: classes.listItem },
+    { key: fieldInfo.name, id: listItemId, className: classes.li },
     _react2.default.createElement(
       'label',
       { htmlFor: listItemId, className: classes.label },
@@ -76,6 +76,11 @@ _MetadataListItem.propTypes = {
 };
 
 var MetadataListItem = (0, _withStyles2.default)({
+  li: {
+    fontSize: '0.85rem',
+    margin: '2px 0'
+  },
+
   label: {
     display: 'inline-block',
     fontWeight: 500,
@@ -88,37 +93,22 @@ var MetadataListItem = (0, _withStyles2.default)({
 
 // -----------------------------------------------------------------------------
 function MetadataList(props) {
-  var classes = props.classes,
-      representedObject = props.representedObject;
-
-
   return _react2.default.createElement(
-    _react2.default.Fragment,
+    'ul',
     null,
-    _react2.default.createElement(
-      'ul',
-      { className: classes.ul },
-      props.arrangement.map(function (fieldInfo) {
-        return _react2.default.createElement(MetadataListItem, {
-          key: fieldInfo.name,
-          fieldInfo: fieldInfo,
-          representedObject: representedObject
-        });
-      })
-    )
+    props.arrangement.map(function (fieldInfo) {
+      return _react2.default.createElement(MetadataListItem, {
+        key: fieldInfo.name,
+        fieldInfo: fieldInfo,
+        representedObject: props.representedObject
+      });
+    })
   );
 }
 
 MetadataList.propTypes = {
   arrangement: _propTypes2.default.array.isRequired,
-  classes: _propTypes2.default.object.isRequired,
   representedObject: _propTypes2.default.object.isRequired
 };
 
-exports.default = (0, _withStyles2.default)({
-  ul: {
-    fontSize: '0.85rem',
-    listStyleType: 'none',
-    padding: 0
-  }
-})(MetadataList);
+exports.default = MetadataList;

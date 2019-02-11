@@ -34,7 +34,7 @@ function _MetadataListItem(props) {
   }
 
   return (
-    <li key={fieldInfo.name} id={listItemId} className={classes.listItem}>
+    <li key={fieldInfo.name} id={listItemId} className={classes.li}>
       <label htmlFor={listItemId} className={classes.label}>{label}</label>
       {value}
     </li>
@@ -48,6 +48,11 @@ _MetadataListItem.propTypes = {
 };
 
 const MetadataListItem = withStyles({
+  li: {
+    fontSize: '0.85rem',
+    margin: '2px 0',
+  },
+
   label: {
     display: 'inline-block',
     fontWeight: 500,
@@ -60,33 +65,22 @@ const MetadataListItem = withStyles({
 
 // -----------------------------------------------------------------------------
 function MetadataList(props) {
-  const { classes, representedObject } = props;
-
   return (
-    <React.Fragment>
-      <ul className={classes.ul}>
-        {props.arrangement.map((fieldInfo) => (
-          <MetadataListItem
-            key={fieldInfo.name}
-            fieldInfo={fieldInfo}
-            representedObject={representedObject}
-          />
-        ))}
-      </ul>
-    </React.Fragment>
+    <ul>
+      {props.arrangement.map((fieldInfo) => (
+        <MetadataListItem
+          key={fieldInfo.name}
+          fieldInfo={fieldInfo}
+          representedObject={props.representedObject}
+        />
+      ))}
+    </ul>
   );
 }
 
 MetadataList.propTypes = {
   arrangement: PropTypes.array.isRequired,
-  classes: PropTypes.object.isRequired,
   representedObject: PropTypes.object.isRequired,
 };
 
-export default withStyles({
-  ul: {
-    fontSize: '0.85rem',
-    listStyleType: 'none',
-    padding: 0,
-  },
-})(MetadataList);
+export default MetadataList;
