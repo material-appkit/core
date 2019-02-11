@@ -27,3 +27,13 @@ export function include(base, routes) {
 
   return mappedRoutes;
 }
+
+export function lastPathComponent(path) {
+  const pathComponents = path.split('/');
+  const pathComponentCount = pathComponents.length;
+  if (!pathComponentCount) {
+    return null;
+  }
+
+  return pathComponents[pathComponentCount - 1];
+}

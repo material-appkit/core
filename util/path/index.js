@@ -9,4 +9,11 @@ Object.defineProperty(exports, "include", {
   },
 });
 
+Object.defineProperty(exports, "lastPathComponent", {
+  enumerable: true,
+  get: function get() {
+    return _path.lastPathComponent;
+  },
+});
+
 const _path = _interopRequireDefault(require("./path"));

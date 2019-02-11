@@ -8,3 +8,11 @@ export function arrayToObject(array, key) {
     return data;
   }, {});
 }
+
+export function removeObject(array, fieldName, value) {
+  for (let i = array.length - 1; i >= 0; --i) {
+    if (array[i][fieldName] === value) {
+      array.splice(i, 1);
+    }
+  }
+}

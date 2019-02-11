@@ -9,4 +9,11 @@ Object.defineProperty(exports, "arrayToObject", {
   },
 });
 
+Object.defineProperty(exports, "removeObject", {
+  enumerable: true,
+  get: function get() {
+    return _array.removeObject;
+  },
+});
+
 const _array = _interopRequireDefault(require("./array"));
