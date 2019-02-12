@@ -146,8 +146,6 @@ var Form = function (_React$PureComponent) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              console.log('saving form');
-
               _this.setState({ errors: {}, saving: true });
 
               form = _this.formRef.current;
@@ -162,11 +160,11 @@ var Form = function (_React$PureComponent) {
                 saveRequest = _this.props.serviceAgent.post(_this.props.apiCreateUrl, formData);
               }
 
-              _context2.prev = 6;
-              _context2.next = 9;
+              _context2.prev = 5;
+              _context2.next = 8;
               return saveRequest;
 
-            case 9:
+            case 8:
               response = _context2.sent;
               persistedObject = response.body;
 
@@ -175,12 +173,12 @@ var Form = function (_React$PureComponent) {
               if (_this.props.onSave) {
                 _this.props.onSave(persistedObject);
               }
-              _context2.next = 19;
+              _context2.next = 18;
               break;
 
-            case 15:
-              _context2.prev = 15;
-              _context2.t0 = _context2['catch'](6);
+            case 14:
+              _context2.prev = 14;
+              _context2.t0 = _context2['catch'](5);
 
               _this.setState({
                 saving: false,
@@ -191,12 +189,12 @@ var Form = function (_React$PureComponent) {
                 _this.props.onError(_context2.t0);
               }
 
-            case 19:
+            case 18:
             case 'end':
               return _context2.stop();
           }
         }
-      }, _callee2, _this2, [[6, 15]]);
+      }, _callee2, _this2, [[5, 14]]);
     }));
 
     _this.handleFormSubmit = function (e) {
