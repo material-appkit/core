@@ -169,15 +169,19 @@ var Form = function (_React$PureComponent) {
               persistedObject = response.body;
 
 
-              _this.setState({ saving: false, referenceObject: persistedObject });
+              _this.setState({
+                saving: false,
+                referenceObject: persistedObject
+              });
+
               if (_this.props.onSave) {
                 _this.props.onSave(persistedObject);
               }
-              _context2.next = 18;
-              break;
 
-            case 14:
-              _context2.prev = 14;
+              return _context2.abrupt('return', persistedObject);
+
+            case 15:
+              _context2.prev = 15;
               _context2.t0 = _context2['catch'](5);
 
               _this.setState({
@@ -189,12 +193,12 @@ var Form = function (_React$PureComponent) {
                 _this.props.onError(_context2.t0);
               }
 
-            case 18:
+            case 19:
             case 'end':
               return _context2.stop();
           }
         }
-      }, _callee2, _this2, [[5, 14]]);
+      }, _callee2, _this2, [[5, 15]]);
     }));
 
     _this.handleFormSubmit = function (e) {

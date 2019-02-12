@@ -155,10 +155,16 @@ class Form extends React.PureComponent {
       const response = await saveRequest;
       const persistedObject = response.body;
 
-      this.setState({ saving: false, referenceObject: persistedObject });
+      this.setState({
+        saving: false,
+        referenceObject: persistedObject
+      });
+
       if (this.props.onSave) {
         this.props.onSave(persistedObject);
       }
+
+      return persistedObject;
     } catch (err) {
       this.setState({
         saving: false,
