@@ -237,7 +237,11 @@ var Form = function (_React$PureComponent) {
     if (props.apiDetailUrl) {
       detailUrl = props.apiDetailUrl;
     } else if (props.persistedObject) {
-      detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.persistedObject.id });
+      if (props.persistedObject.url) {
+        detailUrl = props.persistedObject.url;
+      } else {
+        detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.persistedObject.id });
+      }
     } else if (props.representedObjectId) {
       detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.representedObjectId });
     }

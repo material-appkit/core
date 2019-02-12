@@ -39,7 +39,11 @@ class Form extends React.PureComponent {
     if (props.apiDetailUrl) {
       detailUrl = props.apiDetailUrl;
     } else if (props.persistedObject) {
-      detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.persistedObject.id });
+      if (props.persistedObject.url) {
+        detailUrl = props.persistedObject.url;
+      } else {
+        detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.persistedObject.id });
+      }
     } else if (props.representedObjectId) {
       detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.representedObjectId });
     }
