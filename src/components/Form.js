@@ -50,6 +50,8 @@ class Form extends React.PureComponent {
     this.detailUrl = detailUrl;
 
     this.autoSaveTimer = null;
+
+    this.formRef = React.createRef();
   }
 
   componentDidMount() {
@@ -135,9 +137,10 @@ class Form extends React.PureComponent {
     }
   };
 
-  save = async(form) => {
+  save = async() => {
     this.setState({ errors: {}, saving: true });
 
+    const form = this.formRef.current;
     const formData = formToObject(form);
 
     let saveRequest = null;
@@ -152,10 +155,7 @@ class Form extends React.PureComponent {
       const response = await saveRequest;
       const persistedObject = response.body;
 
-      this.setState({
-        saving: false,
-        referenceObject: persistedObject
-      });
+      this.setState({ saving: false, referenceObject: persistedObject });
       if (this.props.onSave) {
         this.props.onSave(persistedObject);
       }
@@ -254,7 +254,7 @@ class Form extends React.PureComponent {
   handleFormSubmit = (e) => {
     e.preventDefault();
 
-    this.save(e.target);
+    this.save();
   };
 
 
@@ -266,7 +266,7 @@ class Form extends React.PureComponent {
         clearTimeout(this.autoSaveTimer);
       }
       this.autoSaveTimer = setTimeout(() => {
-        this.save(formElement);
+        this.save();
       }, this.props.autosaveDelay);
     }
   };
@@ -286,6 +286,7 @@ class Form extends React.PureComponent {
       <form
         onSubmit={this.handleFormSubmit}
         onChange={this.handleFormChange}
+        ref={this.formRef}
       >
         <React.Fragment>
           {decorateErrors(this.fields, this.state.errors)}

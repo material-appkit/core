@@ -140,76 +140,69 @@ var Form = function (_React$PureComponent) {
         }
       }, _callee, _this2);
     }));
+    _this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+      var form, formData, saveRequest, pendingChanges, response, persistedObject;
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              console.log('saving form');
 
-    _this.save = function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(form) {
-        var formData, saveRequest, pendingChanges, response, persistedObject;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                _this.setState({ errors: {}, saving: true });
+              _this.setState({ errors: {}, saving: true });
 
-                formData = (0, _form.formToObject)(form);
-                saveRequest = null;
+              form = _this.formRef.current;
+              formData = (0, _form.formToObject)(form);
+              saveRequest = null;
 
-                if (_this.detailUrl) {
-                  pendingChanges = (0, _deepObjectDiff.updatedDiff)(_this.state.referenceObject, formData);
+              if (_this.detailUrl) {
+                pendingChanges = (0, _deepObjectDiff.updatedDiff)(_this.state.referenceObject, formData);
 
-                  saveRequest = _this.props.serviceAgent.patch(_this.detailUrl, pendingChanges);
-                } else {
-                  saveRequest = _this.props.serviceAgent.post(_this.props.apiCreateUrl, formData);
-                }
+                saveRequest = _this.props.serviceAgent.patch(_this.detailUrl, pendingChanges);
+              } else {
+                saveRequest = _this.props.serviceAgent.post(_this.props.apiCreateUrl, formData);
+              }
 
-                _context2.prev = 4;
-                _context2.next = 7;
-                return saveRequest;
+              _context2.prev = 6;
+              _context2.next = 9;
+              return saveRequest;
 
-              case 7:
-                response = _context2.sent;
-                persistedObject = response.body;
+            case 9:
+              response = _context2.sent;
+              persistedObject = response.body;
 
 
-                _this.setState({
-                  saving: false,
-                  referenceObject: persistedObject
-                });
-                if (_this.props.onSave) {
-                  _this.props.onSave(persistedObject);
-                }
-                _context2.next = 17;
-                break;
+              _this.setState({ saving: false, referenceObject: persistedObject });
+              if (_this.props.onSave) {
+                _this.props.onSave(persistedObject);
+              }
+              _context2.next = 19;
+              break;
 
-              case 13:
-                _context2.prev = 13;
-                _context2.t0 = _context2['catch'](4);
+            case 15:
+              _context2.prev = 15;
+              _context2.t0 = _context2['catch'](6);
 
-                _this.setState({
-                  saving: false,
-                  errors: _context2.t0.response ? _context2.t0.response.body : {}
-                });
+              _this.setState({
+                saving: false,
+                errors: _context2.t0.response ? _context2.t0.response.body : {}
+              });
 
-                if (_this.props.onError) {
-                  _this.props.onError(_context2.t0);
-                }
+              if (_this.props.onError) {
+                _this.props.onError(_context2.t0);
+              }
 
-              case 17:
-              case 'end':
-                return _context2.stop();
-            }
+            case 19:
+            case 'end':
+              return _context2.stop();
           }
-        }, _callee2, _this2, [[4, 13]]);
-      }));
-
-      return function (_x) {
-        return _ref2.apply(this, arguments);
-      };
-    }();
+        }
+      }, _callee2, _this2, [[6, 15]]);
+    }));
 
     _this.handleFormSubmit = function (e) {
       e.preventDefault();
 
-      _this.save(e.target);
+      _this.save();
     };
 
     _this.handleFormChange = function (e) {
@@ -220,7 +213,7 @@ var Form = function (_React$PureComponent) {
           clearTimeout(_this.autoSaveTimer);
         }
         _this.autoSaveTimer = setTimeout(function () {
-          _this.save(formElement);
+          _this.save();
         }, _this.props.autosaveDelay);
       }
     };
@@ -248,6 +241,8 @@ var Form = function (_React$PureComponent) {
     _this.detailUrl = detailUrl;
 
     _this.autoSaveTimer = null;
+
+    _this.formRef = _react2.default.createRef();
     return _this;
   }
 
@@ -291,7 +286,8 @@ var Form = function (_React$PureComponent) {
         'form',
         {
           onSubmit: this.handleFormSubmit,
-          onChange: this.handleFormChange
+          onChange: this.handleFormChange,
+          ref: this.formRef
         },
         _react2.default.createElement(
           _react2.default.Fragment,
