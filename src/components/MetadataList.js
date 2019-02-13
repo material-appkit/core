@@ -9,13 +9,17 @@ import { valueForKeyPath } from '../util/object';
 
 // -----------------------------------------------------------------------------
 function _MetadataListItem(props) {
-  const { classes, fieldInfo, representedObject } = props;
+  const { classes, fieldInfo, nullValue, representedObject } = props;
 
   let value = representedObject[fieldInfo.name];
   if (!value) {
-    // If no such value exists for the given field,
-    // returning null effectively skips rendering of the list item.
-    return null;
+    if (!nullValue) {
+      // If no value exists for the given field and nothing has been specified
+      // to display for null values, returning null skips rendering of the list item.
+      return null;
+    } else {
+      value = nullValue;
+    }
   }
 
   const listItemId = `${fieldInfo.name}MetadataListItem`;
@@ -44,6 +48,7 @@ function _MetadataListItem(props) {
 _MetadataListItem.propTypes = {
   classes: PropTypes.object.isRequired,
   fieldInfo: PropTypes.object.isRequired,
+  nullValue: PropTypes.string,
   representedObject: PropTypes.object.isRequired,
 };
 
@@ -71,6 +76,7 @@ function MetadataList(props) {
         <MetadataListItem
           key={fieldInfo.name}
           fieldInfo={fieldInfo}
+          nullValue={props.nullValue}
           representedObject={props.representedObject}
         />
       ))}
@@ -80,7 +86,12 @@ function MetadataList(props) {
 
 MetadataList.propTypes = {
   arrangement: PropTypes.array.isRequired,
+  nullValue: PropTypes.string,
   representedObject: PropTypes.object.isRequired,
+};
+
+MetadataList.defaultProps = {
+  nullValue: 'None',
 };
 
 export default MetadataList;

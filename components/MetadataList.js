@@ -32,14 +32,19 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _MetadataListItem(props) {
   var classes = props.classes,
       fieldInfo = props.fieldInfo,
+      nullValue = props.nullValue,
       representedObject = props.representedObject;
 
 
   var value = representedObject[fieldInfo.name];
   if (!value) {
-    // If no such value exists for the given field,
-    // returning null effectively skips rendering of the list item.
-    return null;
+    if (!nullValue) {
+      // If no value exists for the given field and nothing has been specified
+      // to display for null values, returning null skips rendering of the list item.
+      return null;
+    } else {
+      value = nullValue;
+    }
   }
 
   var listItemId = fieldInfo.name + 'MetadataListItem';
@@ -72,6 +77,7 @@ function _MetadataListItem(props) {
 _MetadataListItem.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   fieldInfo: _propTypes2.default.object.isRequired,
+  nullValue: _propTypes2.default.string,
   representedObject: _propTypes2.default.object.isRequired
 };
 
@@ -100,6 +106,7 @@ function MetadataList(props) {
       return _react2.default.createElement(MetadataListItem, {
         key: fieldInfo.name,
         fieldInfo: fieldInfo,
+        nullValue: props.nullValue,
         representedObject: props.representedObject
       });
     })
@@ -108,7 +115,12 @@ function MetadataList(props) {
 
 MetadataList.propTypes = {
   arrangement: _propTypes2.default.array.isRequired,
+  nullValue: _propTypes2.default.string,
   representedObject: _propTypes2.default.object.isRequired
+};
+
+MetadataList.defaultProps = {
+  nullValue: 'None'
 };
 
 exports.default = MetadataList;
