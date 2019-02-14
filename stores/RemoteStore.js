@@ -1,168 +1,319 @@
-import { diff } from 'deep-object-diff';
+'use strict';
 
-import { decorate, observable } from 'mobx';
-import { ServiceAgent } from '../util';
-import { filterEmptyValues } from '../util/object';
-
-import DataStore from './DataStore';
-
-class RemoteStore extends DataStore {
-  constructor(options) {
-    super();
-
-    this.isLoading = false;
-    this.pageCount = null;
-    this.params = null;
-    this.requestContext = null;
-    this.ServiceAgent = options.ServiceAgent || ServiceAgent;
-
-    this.options = options || {};
-    this._endpoint = this.options.endpoint;
-
-    // List of objects to receive callback when data is loaded
-    this.subscribers = [];
-  }
-
-  get endpoint() {
-    if (this._endpoint) {
-      return this._endpoint;
-    }
-
-    throw new Error('Store must specify its endpoint!');
-  }
-
-  async load(params, page) {
-    if (!params) {
-      return;
-    }
-
-    this.params = filterEmptyValues(params);
-    return this._load(page || 1, true);
-  }
-
-  async loadMore(page) {
-    return this._load(page, false);
-  }
-
-  async update(params) {
-    if (!params) {
-      return;
-    }
-
-    let updatedParams = null;
-    if (this.params) {
-      updatedParams = filterEmptyValues(params);
-      const paramDiff = diff(updatedParams, this.params);
-      if (!Object.keys(paramDiff).length) {
-        return;
-      }
-    } else {
-      updatedParams = params;
-    }
-
-    this.load(updatedParams);
-  }
-
-
-  unload() {
-    this.params = null;
-    this.items = null;
-    this.totalLength = null;
-    this.pageCount = null;
-  }
-
-  subscribe(callback) {
-    const self = this;
-
-    this.subscribers.push(callback);
-
-    return function() {
-      const index = self.subscribers.indexOf(callback);
-      if (index === -1) {
-        throw new Error('Could not locate callback index!');
-      }
-      self.subscribers.splice(1, index);
-    }
-  }
-
-
-  _getPageCount(responseData) {
-    if (responseData.count === 0) {
-      return 0;
-    }
-    return Math.ceil(responseData.count / 50);
-  }
-
-  _getTotalLength(responseData) {
-    return responseData.count;
-  }
-
-  /**
-   * Typically the response body is a JSON array of records.
-   * Can be overridden by subclasses to handle response bodies of different form.
-   */
-  _transformResponseData(responseData) {
-    return responseData.results;
-  }
-
-  /**
-   * Load records for the given page. Upon completion, store them
-   * in their respective index in the _pages array.
-   */
-  async _load(page, replace) {
-    const searchParams = { page, ...this.params };
-
-    if (this.options.onLoadStart) {
-      this.options.onLoadStart(searchParams);
-    }
-
-    this.isLoading = true;
-
-    if (this.requestContext) {
-      // Abort the currently in-flight request, if any
-      this.requestContext.request.abort();
-    }
-
-    this.requestContext = {};
-    const req = this.ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
-    req.then((res) => {
-      this.requestContext = null;
-
-      const responseData = res.body;
-
-      // Notify subscribers
-      this.subscribers.forEach((callback) => {
-        callback(responseData, 'load`');
-      });
-
-      const loadedItems = this._transformResponseData(responseData);
-
-      // Initialize the list of pages now that we know how many there are.
-      if (replace) {
-        this.totalLength = this._getTotalLength(responseData);
-        this.pageCount = this._getPageCount(responseData);
-        this.items = loadedItems;
-      } else {
-        this.items = this.items.concat(loadedItems);
-      }
-
-      this.isLoading = false;
-
-      if (this.options.onLoadComplete) {
-        this.options.onLoadComplete(responseData);
-      }
-
-      return responseData;
-    }).catch((err) => {
-      if (err.code !== 'ABORTED') {
-        throw err;
-      }
-    });
-  }
-}
-
-decorate(RemoteStore, {
-  isLoading: observable,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 
-export default RemoteStore;
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _deepObjectDiff = require('deep-object-diff');
+
+var _mobx = require('mobx');
+
+var _util = require('../util');
+
+var _object = require('../util/object');
+
+var _DataStore2 = require('./DataStore');
+
+var _DataStore3 = _interopRequireDefault(_DataStore2);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var RemoteStore = function (_DataStore) {
+  _inherits(RemoteStore, _DataStore);
+
+  function RemoteStore(options) {
+    _classCallCheck(this, RemoteStore);
+
+    var _this = _possibleConstructorReturn(this, (RemoteStore.__proto__ || Object.getPrototypeOf(RemoteStore)).call(this));
+
+    _this.isLoading = false;
+    _this.pageCount = null;
+    _this.params = null;
+    _this.requestContext = null;
+    _this.ServiceAgent = options.ServiceAgent || _util.ServiceAgent;
+
+    _this.options = options || {};
+    _this._endpoint = _this.options.endpoint;
+
+    // List of objects to receive callback when data is loaded
+    _this.subscribers = [];
+    return _this;
+  }
+
+  _createClass(RemoteStore, [{
+    key: 'load',
+    value: function () {
+      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(params, page) {
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (params) {
+                  _context.next = 2;
+                  break;
+                }
+
+                return _context.abrupt('return');
+
+              case 2:
+
+                this.params = (0, _object.filterEmptyValues)(params);
+                return _context.abrupt('return', this._load(page || 1, true));
+
+              case 4:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function load(_x, _x2) {
+        return _ref.apply(this, arguments);
+      }
+
+      return load;
+    }()
+  }, {
+    key: 'loadMore',
+    value: function () {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(page) {
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                return _context2.abrupt('return', this._load(page, false));
+
+              case 1:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function loadMore(_x3) {
+        return _ref2.apply(this, arguments);
+      }
+
+      return loadMore;
+    }()
+  }, {
+    key: 'update',
+    value: function () {
+      var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(params) {
+        var updatedParams, paramDiff;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                if (params) {
+                  _context3.next = 2;
+                  break;
+                }
+
+                return _context3.abrupt('return');
+
+              case 2:
+                updatedParams = null;
+
+                if (!this.params) {
+                  _context3.next = 10;
+                  break;
+                }
+
+                updatedParams = (0, _object.filterEmptyValues)(params);
+                paramDiff = (0, _deepObjectDiff.diff)(updatedParams, this.params);
+
+                if (Object.keys(paramDiff).length) {
+                  _context3.next = 8;
+                  break;
+                }
+
+                return _context3.abrupt('return');
+
+              case 8:
+                _context3.next = 11;
+                break;
+
+              case 10:
+                updatedParams = params;
+
+              case 11:
+
+                this.load(updatedParams);
+
+              case 12:
+              case 'end':
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function update(_x4) {
+        return _ref3.apply(this, arguments);
+      }
+
+      return update;
+    }()
+  }, {
+    key: 'unload',
+    value: function unload() {
+      this.params = null;
+      this.items = null;
+      this.totalLength = null;
+      this.pageCount = null;
+    }
+  }, {
+    key: 'subscribe',
+    value: function subscribe(callback) {
+      var self = this;
+
+      this.subscribers.push(callback);
+
+      return function () {
+        var index = self.subscribers.indexOf(callback);
+        if (index === -1) {
+          throw new Error('Could not locate callback index!');
+        }
+        self.subscribers.splice(1, index);
+      };
+    }
+  }, {
+    key: '_getPageCount',
+    value: function _getPageCount(responseData) {
+      if (responseData.count === 0) {
+        return 0;
+      }
+      return Math.ceil(responseData.count / 50);
+    }
+  }, {
+    key: '_getTotalLength',
+    value: function _getTotalLength(responseData) {
+      return responseData.count;
+    }
+
+    /**
+     * Typically the response body is a JSON array of records.
+     * Can be overridden by subclasses to handle response bodies of different form.
+     */
+
+  }, {
+    key: '_transformResponseData',
+    value: function _transformResponseData(responseData) {
+      return responseData.results;
+    }
+
+    /**
+     * Load records for the given page. Upon completion, store them
+     * in their respective index in the _pages array.
+     */
+
+  }, {
+    key: '_load',
+    value: function () {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(page, replace) {
+        var _this2 = this;
+
+        var searchParams, req;
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                searchParams = _extends({ page: page }, this.params);
+
+
+                if (this.options.onLoadStart) {
+                  this.options.onLoadStart(searchParams);
+                }
+
+                this.isLoading = true;
+
+                if (this.requestContext) {
+                  // Abort the currently in-flight request, if any
+                  this.requestContext.request.abort();
+                }
+
+                this.requestContext = {};
+                req = this.ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
+
+                req.then(function (res) {
+                  _this2.requestContext = null;
+
+                  var responseData = res.body;
+
+                  // Notify subscribers
+                  _this2.subscribers.forEach(function (callback) {
+                    callback(responseData, 'load`');
+                  });
+
+                  var loadedItems = _this2._transformResponseData(responseData);
+
+                  // Initialize the list of pages now that we know how many there are.
+                  if (replace) {
+                    _this2.totalLength = _this2._getTotalLength(responseData);
+                    _this2.pageCount = _this2._getPageCount(responseData);
+                    _this2.items = loadedItems;
+                  } else {
+                    _this2.items = _this2.items.concat(loadedItems);
+                  }
+
+                  _this2.isLoading = false;
+
+                  if (_this2.options.onLoadComplete) {
+                    _this2.options.onLoadComplete(responseData);
+                  }
+
+                  return responseData;
+                }).catch(function (err) {
+                  if (err.code !== 'ABORTED') {
+                    throw err;
+                  }
+                });
+
+              case 7:
+              case 'end':
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this);
+      }));
+
+      function _load(_x5, _x6) {
+        return _ref4.apply(this, arguments);
+      }
+
+      return _load;
+    }()
+  }, {
+    key: 'endpoint',
+    get: function get() {
+      if (this._endpoint) {
+        return this._endpoint;
+      }
+
+      throw new Error('Store must specify its endpoint!');
+    }
+  }]);
+
+  return RemoteStore;
+}(_DataStore3.default);
+
+(0, _mobx.decorate)(RemoteStore, {
+  isLoading: _mobx.observable
+});
+
+exports.default = RemoteStore;

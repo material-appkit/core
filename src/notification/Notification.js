@@ -1,11 +1,3 @@
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 /**
   * Plagerized verbatim from Cocoa's NSNotification:
   *
@@ -20,20 +12,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * The NSNotificationCenter methods postNotificationName:object: and postNotificationName:object:userInfo: allow you to conveniently
  * post a notification without creating it first.
  */
-var Notification =
-/**
- * Returns a notification object with a specified name, object, and user information.
- *
- * @param notificationName The name for the new notification. May not be nil.
- * @param anObject The object for the new notification.
- * @param userInfo The user information dictionary for the new notification. May be nil.
- */
-function Notification(notificationName, anObject, context) {
-  _classCallCheck(this, Notification);
-
-  this.name = notificationName;
-  this.object = anObject;
-  this.context = context;
-};
-
-exports.default = Notification;
+export default class Notification {
+  /**
+   * Returns a notification object with a specified name, object, and user information.
+   *
+   * @param notificationName The name for the new notification. May not be nil.
+   * @param anObject The object for the new notification.
+   * @param userInfo The user information dictionary for the new notification. May be nil.
+   */
+  constructor(notificationName, anObject, context) {
+    this.name = notificationName;
+    this.object = anObject;
+    this.context = context;
+  }
+}

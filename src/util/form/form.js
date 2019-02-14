@@ -1,9 +1,3 @@
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.formToObject = formToObject;
 /**
  * Credit: JASON LENGSTORF
  * https://code.lengstorf.com/get-form-values-as-json/
@@ -14,36 +8,28 @@ exports.formToObject = formToObject;
  * @param  {Element} element  the element to check
  * @return {Bool}             true if the element is an input, false if not
  */
-function isValidElement(element) {
-  return element.name && element.value;
-}
+function isValidElement(element) { return (element.name && element.value); }
 
 /**
  * Checks if an element’s value can be saved (e.g. not an unselected checkbox).
  * @param  {Element} element  the element to check
  * @return {Boolean}          true if the value should be added, false if not
  */
-function isValidValue(element) {
-  return !['checkbox', 'radio'].includes(element.type) || element.checked;
-}
+function isValidValue(element) { return  (!['checkbox', 'radio'].includes(element.type) || element.checked); }
 
 /**
  * Checks if an input is a checkbox, because checkboxes allow multiple values.
  * @param  {Element} element  the element to check
  * @return {Boolean}          true if the element is a checkbox, false if not
  */
-function isCheckbox(element) {
-  return element.type === 'checkbox';
-}
+function isCheckbox(element) {return (element.type === 'checkbox'); }
 
 /**
  * Checks if an input is a `select` with the `multiple` attribute.
  * @param  {Element} element  the element to check
  * @return {Boolean}          true if the element is a multiselect, false if not
  */
-function isMultiSelect(element) {
-  return element.options && element.multiple;
-}
+function isMultiSelect(element) { return (element.options && element.multiple); }
 
 /**
  * Retrieves the selected options from a multi-select as an array.
@@ -51,8 +37,8 @@ function isMultiSelect(element) {
  * @return {Array}                          an array of selected option values
  */
 function getSelectValues(options) {
-  return [].reduce.call(options, function (values, option) {
-    return option.selected ? values.concat(option.value) : values;
+  return [].reduce.call(options, function(values, option) {
+    return option.selected ? values.concat(option.value) : values
   }, []);
 }
 
@@ -61,8 +47,8 @@ function getSelectValues(options) {
  * @param  {HTMLFormControlsCollection} elements  the form elements
  * @return {Object}                               form data as an object literal
  */
-function formToObject(form) {
-  return [].reduce.call(form.elements, function (data, element) {
+export function formToObject(form) {
+  return [].reduce.call(form.elements, function(data, element) {
     // Make sure the element has the required properties and should be added.
     if (isValidElement(element) && isValidValue(element)) {
       // Some fields allow for more than one value, so we need to check if this
@@ -77,5 +63,5 @@ function formToObject(form) {
     }
 
     return data;
-  }, {});
+  }, {})
 }
