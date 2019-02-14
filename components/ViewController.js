@@ -34,17 +34,23 @@ var ViewController = function (_React$PureComponent) {
   _createClass(ViewController, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
-      this.props.onMount(this, this.props.mountPath);
+      if (this.props.onMount) {
+        this.props.onMount(this, this.props.mountPath);
+      }
     }
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
-      this.props.onUpdate(this, this.props.mountPath);
+      if (this.props.onUpdate) {
+        this.props.onUpdate(this, this.props.mountPath);
+      }
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      this.props.onUnmount(this, this.props.mountPath);
+      if (this.props.onUnmount) {
+        this.props.onUnmount(this, this.props.mountPath);
+      }
     }
   }, {
     key: 'render',
@@ -58,9 +64,9 @@ var ViewController = function (_React$PureComponent) {
 
 ViewController.propTypes = {
   children: _propTypes2.default.any,
-  onMount: _propTypes2.default.func.isRequired,
-  onUpdate: _propTypes2.default.func.isRequired,
-  onUnmount: _propTypes2.default.func.isRequired,
+  onMount: _propTypes2.default.func,
+  onUpdate: _propTypes2.default.func,
+  onUnmount: _propTypes2.default.func,
   mountPath: _propTypes2.default.string
 };
 

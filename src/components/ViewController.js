@@ -3,15 +3,21 @@ import React from 'react';
 
 class ViewController extends React.PureComponent {
   componentDidMount() {
-    this.props.onMount(this, this.props.mountPath);
+    if (this.props.onMount) {
+      this.props.onMount(this, this.props.mountPath);
+    }
   }
 
   componentDidUpdate() {
-    this.props.onUpdate(this, this.props.mountPath);
+    if (this.props.onUpdate) {
+      this.props.onUpdate(this, this.props.mountPath);
+    }
   }
 
   componentWillUnmount() {
-    this.props.onUnmount(this, this.props.mountPath);
+    if (this.props.onUnmount) {
+      this.props.onUnmount(this, this.props.mountPath);
+    }
   }
 
   render() {
@@ -21,9 +27,9 @@ class ViewController extends React.PureComponent {
 
 ViewController.propTypes = {
   children: PropTypes.any,
-  onMount: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired,
-  onUnmount: PropTypes.func.isRequired,
+  onMount: PropTypes.func,
+  onUpdate: PropTypes.func,
+  onUnmount: PropTypes.func,
   mountPath: PropTypes.string,
 };
 
