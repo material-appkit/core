@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "webpack-dev-server --mode development",
-    "transpile": "babel src -d . --copy-files"
+    "transpile": "babel src -d .",
+    "watch": "babel src -d . --watch --source-maps"
   },
   "keywords": [
     "React",
