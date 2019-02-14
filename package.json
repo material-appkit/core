@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack-dev-server --mode development",
     "transpile": "babel src -d .",
-    "watch": "babel src -d . --watch --source-maps"
+    "watch": "babel src -d . --watch"
   },
   "keywords": [
     "React",
