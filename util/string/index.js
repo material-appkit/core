@@ -9,4 +9,11 @@ Object.defineProperty(exports, "slugify", {
   },
 });
 
+Object.defineProperty(exports, "rstrip", {
+  enumerable: true,
+  get: function get() {
+    return _string.rstrip;
+  },
+});
+
 const _string = _interopRequireDefault(require('./string'));

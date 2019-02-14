@@ -16,3 +16,10 @@ export function slugify(string) {
     .replace(/^-+/, '') // Trim - from start of text
     .replace(/-+$/, '') // Trim - from end of text
 }
+
+export function rstrip(string, value) {
+  const lastIndex = string.lastIndexOf(value);
+  if (lastIndex !== -1) {
+    return string.substring(0, lastIndex);
+  }
+}
