@@ -16,10 +16,12 @@ function arrayToObject(array, key) {
   }, {});
 }
 
-function removeObject(array, fieldName, value) {
+function removeObject(originalArray, fieldName, value) {
+  var array = originalArray.slice();
   for (var i = array.length - 1; i >= 0; --i) {
     if (array[i][fieldName] === value) {
       array.splice(i, 1);
     }
   }
+  return array;
 }
