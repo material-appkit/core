@@ -54,7 +54,7 @@ function valueForKeyPath(object, keyPath) {
   keys.forEach(function (key) {
     // If the encoutnered property doesn't exist, bail out.
     if (value === null || value.hasOwnProperty(key) === false) {
-      throw new Error('Invalid key path: ' + keyPath);
+      return null;
     }
 
     value = value[key];
