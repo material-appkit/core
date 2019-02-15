@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _deepObjectDiff = require('deep-object-diff');
@@ -30,11 +32,17 @@ var _withStyles2 = _interopRequireDefault(_withStyles);
 
 var _util = require('../util');
 
+var _array = require('../util/array');
+
 var _component = require('../util/component');
+
+var _form = require('../util/form');
 
 var _urls = require('../util/urls');
 
-var _form = require('../util/form');
+var _ItemListField = require('./ItemListField');
+
+var _ItemListField2 = _interopRequireDefault(_ItemListField);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -46,179 +54,15 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var FIELD_TYPE_MAP = {
-  'integer': 'number',
-  'float': 'number',
-  'decimal': 'number',
-  'date': 'date',
-  'email': 'email',
-  'field': 'text',
-  'string': 'text'
-};
-
 var Form = function (_React$PureComponent) {
   _inherits(Form, _React$PureComponent);
 
   function Form(props) {
-    var _this2 = this;
-
     _classCallCheck(this, Form);
 
     var _this = _possibleConstructorReturn(this, (Form.__proto__ || Object.getPrototypeOf(Form)).call(this, props));
 
-    _this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      var referenceObject, fieldInfoMap, requests, optionsUrl, responses;
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              _this.setState({ loading: true });
-
-              referenceObject = _this.props.persistedObject;
-              fieldInfoMap = null;
-              requests = [];
-
-              // If the fields have not been explicitly provided, issue an OPTIONS request for
-              // metadata about the represented object so the fields can be generated dynamically.
-
-              optionsUrl = _this.detailUrl || _this.props.apiCreateUrl;
-
-              requests.push(_this.props.serviceAgent.options(optionsUrl));
-
-              if (!referenceObject) {
-                if (_this.detailUrl) {
-                  // If an original object was not explicitly provided, attempt to load one from the given detailUrl
-                  requests.push(_this.props.serviceAgent.get(_this.detailUrl));
-                } else {
-                  referenceObject = _this.props.defaultValues;
-                }
-              }
-
-              _context.next = 9;
-              return Promise.all(requests);
-
-            case 9:
-              responses = _context.sent;
-
-
-              responses.forEach(function (response) {
-                if (response.req.method === 'OPTIONS') {
-                  var optionsResponse = response.body;
-                  if (_this.detailUrl) {
-                    fieldInfoMap = optionsResponse.actions.PUT;
-                  } else {
-                    fieldInfoMap = optionsResponse.actions.POST;
-                  }
-                } else {
-                  referenceObject = response.body;
-                }
-              });
-
-              if (referenceObject) {
-                _context.next = 13;
-                break;
-              }
-
-              throw new Error('Failed to initialize form');
-
-            case 13:
-
-              _this.setState({
-                fieldInfoMap: fieldInfoMap,
-                referenceObject: referenceObject,
-                loading: false
-              });
-
-              if (_this.props.onLoad) {
-                _this.props.onLoad(referenceObject, fieldInfoMap);
-              }
-
-            case 15:
-            case 'end':
-              return _context.stop();
-          }
-        }
-      }, _callee, _this2);
-    }));
-    _this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-      var form, formData, saveRequest, pendingChanges, response, persistedObject;
-      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              _this.setState({ errors: {}, saving: true });
-
-              form = _this.formRef.current;
-              formData = (0, _form.formToObject)(form);
-              saveRequest = null;
-
-              if (_this.detailUrl) {
-                pendingChanges = (0, _deepObjectDiff.updatedDiff)(_this.state.referenceObject, formData);
-
-                saveRequest = _this.props.serviceAgent.patch(_this.detailUrl, pendingChanges);
-              } else {
-                saveRequest = _this.props.serviceAgent.post(_this.props.apiCreateUrl, formData);
-              }
-
-              _context2.prev = 5;
-              _context2.next = 8;
-              return saveRequest;
-
-            case 8:
-              response = _context2.sent;
-              persistedObject = response.body;
-
-
-              _this.setState({
-                saving: false,
-                referenceObject: persistedObject
-              });
-
-              if (_this.props.onSave) {
-                _this.props.onSave(persistedObject);
-              }
-
-              return _context2.abrupt('return', persistedObject);
-
-            case 15:
-              _context2.prev = 15;
-              _context2.t0 = _context2['catch'](5);
-
-              _this.setState({
-                saving: false,
-                errors: _context2.t0.response ? _context2.t0.response.body : {}
-              });
-
-              if (_this.props.onError) {
-                _this.props.onError(_context2.t0);
-              }
-
-            case 19:
-            case 'end':
-              return _context2.stop();
-          }
-        }
-      }, _callee2, _this2, [[5, 15]]);
-    }));
-
-    _this.handleFormSubmit = function (e) {
-      e.preventDefault();
-
-      _this.save();
-    };
-
-    _this.handleFormChange = function (e) {
-      if (_this.props.autosaveDelay !== null) {
-        var formElement = e.currentTarget;
-
-        if (_this.autoSaveTimer) {
-          clearTimeout(_this.autoSaveTimer);
-        }
-        _this.autoSaveTimer = setTimeout(function () {
-          _this.save();
-        }, _this.props.autosaveDelay);
-      }
-    };
+    _initialiseProps.call(_this);
 
     _this.state = {
       errors: {},
@@ -245,6 +89,18 @@ var Form = function (_React$PureComponent) {
     _this.autoSaveTimer = null;
 
     _this.formRef = _react2.default.createRef();
+
+    _this.fieldNames = [];
+    _this.fieldArrangementMap = {};
+    if (props.fieldArrangement) {
+      props.fieldArrangement.forEach(function (fieldInfo) {
+        if (typeof fieldInfo === 'string') {
+          fieldInfo = { name: fieldInfo };
+        }
+        _this.fieldNames.push(fieldInfo.name);
+        _this.fieldArrangementMap[fieldInfo.name] = fieldInfo;
+      });
+    }
     return _this;
   }
 
@@ -300,22 +156,9 @@ var Form = function (_React$PureComponent) {
       );
     }
   }, {
-    key: 'fieldNames',
-    get: function get() {
-      if (this.props.fieldArrangement) {
-        return this.props.fieldArrangement;
-      }
-
-      if (this.state.fieldInfoMap) {
-        return Object.keys(this.state.fieldInfoMap);
-      }
-
-      return null;
-    }
-  }, {
     key: 'fields',
     get: function get() {
-      var _this3 = this;
+      var _this2 = this;
 
       if (this.props.fields) {
         return this.props.fields;
@@ -323,22 +166,32 @@ var Form = function (_React$PureComponent) {
 
       var classes = this.props.classes;
 
+      var referenceObject = this.state.referenceObject;
 
       var fields = [];
       this.fieldNames.forEach(function (fieldName) {
-        var fieldInfo = _this3.state.fieldInfoMap[fieldName];
+        var fieldInfo = _this2.state.fieldInfoMap[fieldName];
         if (!fieldInfo.read_only) {
           var field = null;
-          var defaultValue = _this3.state.referenceObject[fieldName] || '';
+          var defaultValue = _this2.state.referenceObject[fieldName] || '';
+
           if (fieldInfo.hidden) {
             field = _react2.default.createElement('input', { type: 'hidden', name: fieldName, defaultValue: defaultValue });
+          } else if (fieldInfo.type === 'itemlist') {
+            var fieldArrangementInfo = _this2.fieldArrangementMap[fieldName];
+            field = _react2.default.createElement(_ItemListField2.default, _extends({
+              defaultItems: referenceObject[fieldName],
+              listUrl: fieldInfo.related_endpoint.singular + '/',
+              name: fieldName,
+              ServiceAgent: _this2.props.serviceAgent
+            }, fieldArrangementInfo));
           } else {
             var textFieldProps = {
               className: classes.field,
-              disabled: _this3.state.saving,
+              disabled: _this2.state.saving,
               key: fieldName,
               fullWidth: true,
-              label: fieldInfo.label,
+              label: fieldInfo.ui.label,
               margin: "dense",
               name: fieldName,
               defaultValue: defaultValue,
@@ -349,7 +202,7 @@ var Form = function (_React$PureComponent) {
               textFieldProps.select = true;
               textFieldProps.SelectProps = { native: true };
             } else {
-              var inputType = fieldInfo.input_type;
+              var inputType = fieldInfo.type;
               if (inputType === 'textarea') {
                 textFieldProps.multiline = true;
                 textFieldProps.rows = 2;
@@ -359,7 +212,7 @@ var Form = function (_React$PureComponent) {
               }
             }
 
-            if (textFieldProps.type === 'number') {
+            if (fieldInfo.type === 'number') {
               textFieldProps.inputProps = { min: 0, step: 'any' };
             }
 
@@ -394,19 +247,179 @@ var Form = function (_React$PureComponent) {
   }, {
     key: 'children',
     get: function get() {
-      var _this4 = this;
+      var _this3 = this;
 
       return _react2.default.Children.map(this.props.children, function (child) {
         if (!child) {
           return child;
         }
-        return _react2.default.cloneElement(child, { disabled: _this4.state.saving });
+        return _react2.default.cloneElement(child, { disabled: _this3.state.saving });
       });
     }
   }]);
 
   return Form;
 }(_react2.default.PureComponent);
+
+var _initialiseProps = function _initialiseProps() {
+  var _this4 = this;
+
+  this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+    var referenceObject, fieldInfoMap, requests, optionsUrl, responses;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _this4.setState({ loading: true });
+
+            referenceObject = _this4.props.persistedObject;
+            fieldInfoMap = null;
+            requests = [];
+
+            // If the fields have not been explicitly provided, issue an OPTIONS request for
+            // metadata about the represented object so the fields can be generated dynamically.
+
+            optionsUrl = _this4.detailUrl || _this4.props.apiCreateUrl;
+
+            requests.push(_this4.props.serviceAgent.options(optionsUrl));
+
+            if (!referenceObject) {
+              if (_this4.detailUrl) {
+                // If an original object was not explicitly provided, attempt to load one from the given detailUrl
+                requests.push(_this4.props.serviceAgent.get(_this4.detailUrl));
+              } else {
+                referenceObject = _this4.props.defaultValues;
+              }
+            }
+
+            _context.next = 9;
+            return Promise.all(requests);
+
+          case 9:
+            responses = _context.sent;
+
+
+            responses.forEach(function (response) {
+              if (response.req.method === 'OPTIONS') {
+                fieldInfoMap = (0, _array.arrayToObject)(response.body, 'key');
+              } else {
+                referenceObject = response.body;
+              }
+            });
+
+            if (referenceObject) {
+              _context.next = 13;
+              break;
+            }
+
+            throw new Error('Failed to initialize form');
+
+          case 13:
+
+            _this4.setState({
+              fieldInfoMap: fieldInfoMap,
+              referenceObject: referenceObject,
+              loading: false
+            });
+
+            if (_this4.props.onLoad) {
+              _this4.props.onLoad(referenceObject, fieldInfoMap);
+            }
+
+          case 15:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _callee, _this4);
+  }));
+  this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+    var _props, serviceAgent, updateMethod, form, formData, saveRequest, detailUrl, pendingChanges, response, persistedObject;
+
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _props = _this4.props, serviceAgent = _props.serviceAgent, updateMethod = _props.updateMethod;
+
+
+            _this4.setState({ errors: {}, saving: true });
+
+            form = _this4.formRef.current;
+            formData = (0, _form.formToObject)(form);
+            saveRequest = null;
+            detailUrl = _this4.detailUrl;
+
+            if (detailUrl) {
+              if (updateMethod === 'PATCH') {
+                pendingChanges = (0, _deepObjectDiff.updatedDiff)(_this4.state.referenceObject, formData);
+
+                saveRequest = serviceAgent.patch(detailUrl, pendingChanges);
+              } else {
+                saveRequest = serviceAgent.put(detailUrl, formData);
+              }
+            } else {
+              saveRequest = serviceAgent.post(_this4.props.apiCreateUrl, formData);
+            }
+
+            _context2.prev = 7;
+            _context2.next = 10;
+            return saveRequest;
+
+          case 10:
+            response = _context2.sent;
+            persistedObject = response.body;
+
+
+            _this4.setState({
+              saving: false,
+              referenceObject: persistedObject
+            });
+
+            if (_this4.props.onSave) {
+              _this4.props.onSave(persistedObject);
+            }
+
+            return _context2.abrupt('return', persistedObject);
+
+          case 17:
+            _context2.prev = 17;
+            _context2.t0 = _context2['catch'](7);
+
+            _this4.setState({
+              saving: false,
+              errors: _context2.t0.response ? _context2.t0.response.body : {}
+            });
+
+            if (_this4.props.onError) {
+              _this4.props.onError(_context2.t0);
+            }
+
+          case 21:
+          case 'end':
+            return _context2.stop();
+        }
+      }
+    }, _callee2, _this4, [[7, 17]]);
+  }));
+
+  this.handleFormSubmit = function (e) {
+    e.preventDefault();
+
+    _this4.save();
+  };
+
+  this.handleFormChange = function (e) {
+    if (_this4.props.autosaveDelay !== null) {
+      if (_this4.autoSaveTimer) {
+        clearTimeout(_this4.autoSaveTimer);
+      }
+      _this4.autoSaveTimer = setTimeout(function () {
+        _this4.save();
+      }, _this4.props.autosaveDelay);
+    }
+  };
+};
 
 Form.propTypes = {
   apiCreateUrl: _propTypes2.default.string,
@@ -427,7 +440,8 @@ Form.propTypes = {
   onError: _propTypes2.default.func,
   persistedObject: _propTypes2.default.object,
   loadingIndicator: _propTypes2.default.node,
-  serviceAgent: _propTypes2.default.object
+  serviceAgent: _propTypes2.default.object,
+  updateMethod: _propTypes2.default.oneOf(['PUT', 'PATCH'])
 };
 
 Form.defaultProps = {
@@ -435,7 +449,8 @@ Form.defaultProps = {
   defaultValues: {},
   autosave: false,
   entityType: '',
-  serviceAgent: new _util.ServiceAgent()
+  serviceAgent: new _util.ServiceAgent(),
+  updateMethod: 'PATCH'
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

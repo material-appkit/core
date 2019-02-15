@@ -8,20 +8,12 @@ import TextField from '@material-ui/core/TextField';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import { ServiceAgent } from '../util';
+import { arrayToObject } from '../util/array';
 import { decorateErrors } from '../util/component';
+import { formToObject } from '../util/form';
 import { reverse } from '../util/urls';
 
-import { formToObject } from '../util/form';
-
-const FIELD_TYPE_MAP = {
-  'integer': 'number',
-  'float': 'number',
-  'decimal': 'number',
-  'date': 'date',
-  'email': 'email',
-  'field': 'text',
-  'string': 'text',
-};
+import ItemListField from './ItemListField';
 
 class Form extends React.PureComponent {
   constructor(props) {
@@ -52,6 +44,18 @@ class Form extends React.PureComponent {
     this.autoSaveTimer = null;
 
     this.formRef = React.createRef();
+
+    this.fieldNames = [];
+    this.fieldArrangementMap = {};
+    if (props.fieldArrangement) {
+      props.fieldArrangement.forEach((fieldInfo) => {
+        if (typeof(fieldInfo) === 'string') {
+          fieldInfo = { name: fieldInfo };
+        }
+        this.fieldNames.push(fieldInfo.name);
+        this.fieldArrangementMap[fieldInfo.name] = fieldInfo;
+      });
+    }
   }
 
   componentDidMount() {
@@ -71,18 +75,6 @@ class Form extends React.PureComponent {
       clearTimeout(this.autoSaveTimer);
       this.autoSaveTimer = null;
     }
-  }
-
-  get fieldNames() {
-    if (this.props.fieldArrangement) {
-      return this.props.fieldArrangement;
-    }
-
-    if (this.state.fieldInfoMap) {
-      return Object.keys(this.state.fieldInfoMap);
-    }
-
-    return null;
   }
 
   load = async() => {
@@ -110,12 +102,7 @@ class Form extends React.PureComponent {
 
     responses.forEach((response) => {
       if (response.req.method === 'OPTIONS') {
-        const optionsResponse = response.body;
-        if (this.detailUrl) {
-          fieldInfoMap = optionsResponse.actions.PUT;
-        } else {
-          fieldInfoMap = optionsResponse.actions.POST;
-        }
+        fieldInfoMap = arrayToObject(response.body, 'key');
       } else {
         referenceObject = response.body;
       }
@@ -138,17 +125,24 @@ class Form extends React.PureComponent {
   };
 
   save = async() => {
+    const { serviceAgent, updateMethod } = this.props;
+
     this.setState({ errors: {}, saving: true });
 
     const form = this.formRef.current;
     const formData = formToObject(form);
 
     let saveRequest = null;
-    if (this.detailUrl) {
-      const pendingChanges = updatedDiff(this.state.referenceObject, formData);
-      saveRequest = this.props.serviceAgent.patch(this.detailUrl, pendingChanges);
+    const detailUrl = this.detailUrl;
+    if (detailUrl) {
+      if (updateMethod === 'PATCH') {
+        const pendingChanges = updatedDiff(this.state.referenceObject, formData);
+        saveRequest = serviceAgent.patch(detailUrl, pendingChanges);
+      } else {
+        saveRequest = serviceAgent.put(detailUrl, formData);
+      }
     } else {
-      saveRequest = this.props.serviceAgent.post(this.props.apiCreateUrl, formData);
+      saveRequest = serviceAgent.post(this.props.apiCreateUrl, formData);
     }
 
     try {
@@ -157,7 +151,7 @@ class Form extends React.PureComponent {
 
       this.setState({
         saving: false,
-        referenceObject: persistedObject
+        referenceObject: persistedObject,
       });
 
       if (this.props.onSave) {
@@ -183,6 +177,7 @@ class Form extends React.PureComponent {
     }
 
     const { classes } = this.props;
+    const referenceObject = this.state.referenceObject;
 
     const fields = [];
     this.fieldNames.forEach((fieldName) => {
@@ -190,9 +185,21 @@ class Form extends React.PureComponent {
       if (!fieldInfo.read_only) {
         let field = null;
         const defaultValue = this.state.referenceObject[fieldName] || '';
+
         if (fieldInfo.hidden) {
           field = (
             <input type="hidden" name={fieldName} defaultValue={defaultValue} />
+          );
+        } else if (fieldInfo.type === 'itemlist') {
+          const fieldArrangementInfo = this.fieldArrangementMap[fieldName];
+          field = (
+            <ItemListField
+              defaultItems={referenceObject[fieldName]}
+              listUrl={`${fieldInfo.related_endpoint.singular}/`}
+              name={fieldName}
+              ServiceAgent={this.props.serviceAgent}
+              {...fieldArrangementInfo}
+            />
           );
         } else {
           const textFieldProps = {
@@ -200,7 +207,7 @@ class Form extends React.PureComponent {
             disabled: this.state.saving,
             key: fieldName,
             fullWidth: true,
-            label: fieldInfo.label,
+            label: fieldInfo.ui.label,
             margin: "dense",
             name: fieldName,
             defaultValue,
@@ -211,7 +218,7 @@ class Form extends React.PureComponent {
             textFieldProps.select = true;
             textFieldProps.SelectProps = { native: true };
           } else {
-            const inputType = fieldInfo.input_type;
+            const inputType = fieldInfo.type;
             if (inputType === 'textarea') {
               textFieldProps.multiline = true;
               textFieldProps.rows = 2;
@@ -221,7 +228,7 @@ class Form extends React.PureComponent {
             }
           }
 
-          if (textFieldProps.type === 'number') {
+          if (fieldInfo.type === 'number') {
             textFieldProps.inputProps = { min: 0, step: 'any' };
           }
 
@@ -266,8 +273,6 @@ class Form extends React.PureComponent {
 
   handleFormChange = (e) => {
     if (this.props.autosaveDelay !== null) {
-      const formElement = e.currentTarget;
-
       if (this.autoSaveTimer) {
         clearTimeout(this.autoSaveTimer);
       }
@@ -323,6 +328,7 @@ Form.propTypes = {
   persistedObject: PropTypes.object,
   loadingIndicator: PropTypes.node,
   serviceAgent: PropTypes.object,
+  updateMethod: PropTypes.oneOf(['PUT', 'PATCH'])
 };
 
 Form.defaultProps = {
@@ -331,6 +337,7 @@ Form.defaultProps = {
   autosave: false,
   entityType: '',
   serviceAgent: new ServiceAgent(),
+  updateMethod: 'PATCH',
 };
 
 export default withStyles((theme) => {
