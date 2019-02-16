@@ -183,11 +183,11 @@ var Form = function (_React$PureComponent) {
               defaultItems: referenceObject[fieldName],
               listUrl: fieldInfo.related_endpoint.singular + '/',
               name: fieldName,
+              label: fieldInfo.ui.label,
               ServiceAgent: _this2.props.serviceAgent
             }, fieldArrangementInfo));
           } else {
             var textFieldProps = {
-              className: classes.field,
               disabled: _this2.state.saving,
               key: fieldName,
               fullWidth: true,

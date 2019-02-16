@@ -14,6 +14,10 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+var _FormControl = require('@material-ui/core/FormControl');
+
+var _FormControl2 = _interopRequireDefault(_FormControl);
+
 var _withStyles = require('@material-ui/core/styles/withStyles');
 
 var _withStyles2 = _interopRequireDefault(_withStyles);
@@ -103,27 +107,41 @@ var ItemListField = function (_React$PureComponent) {
   }, {
     key: 'render',
     value: function render() {
+      var _props = this.props,
+          classes = _props.classes,
+          label = _props.label;
+
+
       return _react2.default.createElement(
-        _react2.default.Fragment,
-        null,
-        _react2.default.createElement('select', {
-          multiple: true,
-          name: this.props.name,
-          ref: this.selectRef,
-          style: { display: 'none' }
-        }),
-        _react2.default.createElement(_ItemList2.default, {
-          apiListUrl: this.props.listUrl,
-          entityType: this.props.entityType,
-          filterBy: this.props.filterBy,
-          items: this.state.items,
-          listItemComponent: this.props.listItemComponent,
-          mode: 'edit',
-          onAdd: this.handleItemListAdd,
-          onRemove: this.handleItemListRemove,
-          ServiceAgent: this.props.ServiceAgent,
-          titleKey: this.props.titleKey
-        })
+        _FormControl2.default,
+        { fullWidth: true, margin: 'dense' },
+        _react2.default.createElement(
+          'fieldset',
+          { className: classes.fieldset },
+          label && _react2.default.createElement(
+            'legend',
+            { className: classes.legend },
+            label
+          ),
+          _react2.default.createElement('select', {
+            multiple: true,
+            name: this.props.name,
+            ref: this.selectRef,
+            style: { display: 'none' }
+          }),
+          _react2.default.createElement(_ItemList2.default, {
+            apiListUrl: this.props.listUrl,
+            entityType: this.props.entityType,
+            filterBy: this.props.filterBy,
+            items: this.state.items,
+            listItemComponent: this.props.listItemComponent,
+            mode: 'edit',
+            onAdd: this.handleItemListAdd,
+            onRemove: this.handleItemListRemove,
+            ServiceAgent: this.props.ServiceAgent,
+            titleKey: this.props.titleKey
+          })
+        )
       );
     }
   }]);
@@ -138,6 +156,7 @@ ItemListField.propTypes = {
   filterBy: _propTypes2.default.string,
   listUrl: _propTypes2.default.string.isRequired,
   listItemComponent: _propTypes2.default.func,
+  label: _propTypes2.default.string,
   name: _propTypes2.default.string.isRequired,
   ServiceAgent: _propTypes2.default.object,
   titleKey: _propTypes2.default.any.isRequired
@@ -148,4 +167,18 @@ ItemListField.defaultProps = {
   ServiceAgent: _ServiceAgent2.default
 };
 
-exports.default = (0, _withStyles2.default)({})(ItemListField);
+exports.default = (0, _withStyles2.default)(function (theme) {
+  return {
+    fieldset: {
+      borderColor: 'rgba(0, 0, 0, 0.23)',
+      borderRadius: theme.shape.borderRadius,
+      borderWidth: 1
+    },
+
+    legend: {
+      color: 'rgba(0, 0, 0, 0.54)',
+      fontSize: '0.75rem',
+      textTransform: 'capitalize'
+    }
+  };
+})(ItemListField);

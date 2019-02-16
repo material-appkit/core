@@ -197,13 +197,13 @@ class Form extends React.PureComponent {
               defaultItems={referenceObject[fieldName]}
               listUrl={`${fieldInfo.related_endpoint.singular}/`}
               name={fieldName}
+              label={fieldInfo.ui.label}
               ServiceAgent={this.props.serviceAgent}
               {...fieldArrangementInfo}
             />
           );
         } else {
           const textFieldProps = {
-            className: classes.field,
             disabled: this.state.saving,
             key: fieldName,
             fullWidth: true,

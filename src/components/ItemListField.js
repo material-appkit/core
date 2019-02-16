@@ -7,6 +7,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import FormControl from '@material-ui/core/FormControl';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import { removeObject } from '../util/array';
@@ -65,28 +66,36 @@ class ItemListField extends React.PureComponent {
 
 
   render() {
-    return (
-      <React.Fragment>
-        <select
-          multiple
-          name={this.props.name}
-          ref={this.selectRef}
-          style={{ display: 'none' }}
-        />
+    const { classes, label } = this.props;
 
-        <ItemList
-          apiListUrl={this.props.listUrl}
-          entityType={this.props.entityType}
-          filterBy={this.props.filterBy}
-          items={this.state.items}
-          listItemComponent={this.props.listItemComponent}
-          mode="edit"
-          onAdd={this.handleItemListAdd}
-          onRemove={this.handleItemListRemove}
-          ServiceAgent={this.props.ServiceAgent}
-          titleKey={this.props.titleKey}
-        />
-      </React.Fragment>
+    return (
+      <FormControl fullWidth margin="dense">
+        <fieldset className={classes.fieldset}>
+          {label &&
+            <legend className={classes.legend}>{label}</legend>
+          }
+
+          <select
+            multiple
+            name={this.props.name}
+            ref={this.selectRef}
+            style={{ display: 'none' }}
+          />
+
+          <ItemList
+            apiListUrl={this.props.listUrl}
+            entityType={this.props.entityType}
+            filterBy={this.props.filterBy}
+            items={this.state.items}
+            listItemComponent={this.props.listItemComponent}
+            mode="edit"
+            onAdd={this.handleItemListAdd}
+            onRemove={this.handleItemListRemove}
+            ServiceAgent={this.props.ServiceAgent}
+            titleKey={this.props.titleKey}
+          />
+        </fieldset>
+      </FormControl>
     );
   }
 }
@@ -98,6 +107,7 @@ ItemListField.propTypes = {
   filterBy: PropTypes.string,
   listUrl: PropTypes.string.isRequired,
   listItemComponent: PropTypes.func,
+  label: PropTypes.string,
   name: PropTypes.string.isRequired,
   ServiceAgent: PropTypes.object,
   titleKey: PropTypes.any.isRequired,
@@ -108,6 +118,16 @@ ItemListField.defaultProps = {
   ServiceAgent: ServiceAgent,
 };
 
-export default withStyles({
+export default withStyles((theme) => ({
+  fieldset: {
+    borderColor: 'rgba(0, 0, 0, 0.23)',
+    borderRadius: theme.shape.borderRadius,
+    borderWidth: 1,
+  },
 
-})(ItemListField);
+  legend: {
+    color: 'rgba(0, 0, 0, 0.54)',
+    fontSize: '0.75rem',
+    textTransform: 'capitalize',
+  },
+}))(ItemListField);
