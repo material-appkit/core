@@ -316,7 +316,7 @@ var ItemList = function (_React$PureComponent) {
           _react2.default.createElement(
             _react2.default.Fragment,
             null,
-            _react2.default.createElement(
+            this.props.onAdd && _react2.default.createElement(
               _Button2.default,
               {
                 color: 'primary',

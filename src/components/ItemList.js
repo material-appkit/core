@@ -201,14 +201,16 @@ class ItemList extends React.PureComponent {
         {mode === 'edit' &&
           <React.Fragment>
             <React.Fragment>
-              <Button
-                color="primary"
-                className={classes.addButton}
-                onClick={this.handleAddButtonClick}
-              >
-                <AddIcon className={classes.addButtonIcon} />
-                Add {this.props.entityType}
-              </Button>
+              {this.props.onAdd &&
+                <Button
+                  color="primary"
+                  className={classes.addButton}
+                  onClick={this.handleAddButtonClick}
+                >
+                  <AddIcon className={classes.addButtonIcon} />
+                  Add {this.props.entityType}
+                </Button>
+              }
 
               {this.props.apiListUrl && this.state.listDialogOpen &&
                 <ListDialog
