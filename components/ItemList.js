@@ -84,7 +84,6 @@ function ItemListItem(props) {
     componentProps.className = classes.itemButton;
   } else {
     Component = _Link2.default;
-    componentProps.color = 'textPrimary';
 
     if (item.path) {
       componentProps.component = _reactRouterDom.Link;

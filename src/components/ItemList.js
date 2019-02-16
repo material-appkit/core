@@ -32,7 +32,6 @@ function ItemListItem(props) {
     componentProps.className = classes.itemButton;
   } else {
     Component = Link;
-    componentProps.color = 'textPrimary';
 
     if (item.path) {
       componentProps.component = RouterLink;
