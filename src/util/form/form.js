@@ -8,7 +8,7 @@
  * @param  {Element} element  the element to check
  * @return {Bool}             true if the element is an input, false if not
  */
-function isValidElement(element) { return (element.name && element.value); }
+function isValidElement(element) { return (element.name); }
 
 /**
  * Checks if an element’s value can be saved (e.g. not an unselected checkbox).

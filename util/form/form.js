@@ -15,7 +15,7 @@ exports.formToObject = formToObject;
  * @return {Bool}             true if the element is an input, false if not
  */
 function isValidElement(element) {
-  return element.name && element.value;
+  return element.name;
 }
 
 /**
