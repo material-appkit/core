@@ -207,6 +207,7 @@ class Form extends React.PureComponent {
             disabled: this.state.saving,
             key: fieldName,
             fullWidth: true,
+            InputLabelProps: { classes: { root: classes.inputLabel } },
             label: fieldInfo.ui.label,
             margin: "dense",
             name: fieldName,

@@ -191,6 +191,7 @@ var Form = function (_React$PureComponent) {
               disabled: _this2.state.saving,
               key: fieldName,
               fullWidth: true,
+              InputLabelProps: { classes: { root: classes.inputLabel } },
               label: fieldInfo.ui.label,
               margin: "dense",
               name: fieldName,
