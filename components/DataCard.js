@@ -44,6 +44,8 @@ var _Check = require('@material-ui/icons/Check');
 
 var _Check2 = _interopRequireDefault(_Check);
 
+var _component = require('../util/component');
+
 var _Form = require('./Form');
 
 var _Form2 = _interopRequireDefault(_Form);
@@ -163,6 +165,9 @@ var DataCard = function (_React$PureComponent) {
   }, {
     key: 'activeView',
     get: function get() {
+      var mode = this.state.mode;
+
+
       var children = _react2.default.Children.toArray(this.props.children);
       var childCount = children.length;
       if (childCount < 1 || 2 < childCount) {
@@ -170,17 +175,17 @@ var DataCard = function (_React$PureComponent) {
       }
 
       if (childCount === 2) {
-        return this.state.mode === 'view' ? children[0] : children[1];
+        return mode === 'view' ? children[0] : children[1];
       }
 
-      if (this.state.mode === 'edit' && this.props.formConfig) {
+      if (mode === 'edit' && this.props.formConfig) {
         return _react2.default.createElement(_Form2.default, _extends({ innerRef: this.formRef }, this.props.formConfig));
       }
       // If there is a single child, allow it to manage its own presentation
       // via a given 'mode' prop.
-      return _react2.default.cloneElement(children[0], {
-        mode: this.state.mode
-      });
+      return (0, _component.recursiveMap)(children[0], function (child) {
+        return _react2.default.cloneElement(child, { mode: mode });
+      }, 2);
     }
   }]);
 

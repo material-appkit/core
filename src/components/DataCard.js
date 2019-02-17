@@ -15,6 +15,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import EditIcon from '@material-ui/icons/Edit';
 import CheckIcon from '@material-ui/icons/Check';
 
+import { recursiveMap } from '../util/component';
+
 import Form from './Form';
 
 class DataCard extends React.PureComponent {
@@ -48,6 +50,8 @@ class DataCard extends React.PureComponent {
   };
 
   get activeView() {
+    const { mode } = this.state;
+
     const children = React.Children.toArray(this.props.children);
     const childCount = children.length;
     if (childCount < 1 || 2 < childCount) {
@@ -55,19 +59,19 @@ class DataCard extends React.PureComponent {
     }
 
     if (childCount === 2) {
-      return (this.state.mode === 'view') ? children[0] : children[1];
+      return (mode === 'view') ? children[0] : children[1];
     }
 
-    if (this.state.mode === 'edit' && this.props.formConfig) {
+    if (mode === 'edit' && this.props.formConfig) {
       return (
         <Form innerRef={this.formRef} {...this.props.formConfig} />
       );
     }
     // If there is a single child, allow it to manage its own presentation
     // via a given 'mode' prop.
-    return React.cloneElement(children[0], {
-      mode: this.state.mode,
-    });
+    return recursiveMap(children[0], (child) => {
+        return React.cloneElement(child, { mode });
+    }, 2);
   }
 
   render() {
