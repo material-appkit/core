@@ -22,7 +22,7 @@ class Form extends React.PureComponent {
     this.state = {
       errors: {},
       referenceObject: null,
-      fieldInfoMap: null,
+      metadata: null,
       loading: false,
       saving: false,
     };
@@ -45,14 +45,12 @@ class Form extends React.PureComponent {
 
     this.formRef = React.createRef();
 
-    this.fieldNames = [];
     this.fieldArrangementMap = {};
     if (props.fieldArrangement) {
       props.fieldArrangement.forEach((fieldInfo) => {
         if (typeof(fieldInfo) === 'string') {
           fieldInfo = { name: fieldInfo };
         }
-        this.fieldNames.push(fieldInfo.name);
         this.fieldArrangementMap[fieldInfo.name] = fieldInfo;
       });
     }
@@ -77,11 +75,40 @@ class Form extends React.PureComponent {
     }
   }
 
+  get fieldNames() {
+    if (this.props.fieldArrangement) {
+      const fieldNames = [];
+      this.props.fieldArrangement.forEach((fieldInfo) => {
+        const fieldInfoType = typeof(fieldInfo);
+        if (fieldInfoType === 'string') {
+          fieldNames.push(fieldInfo);
+        } else if (fieldInfoType === 'object') {
+          fieldNames.push(fieldInfo.name)
+        }
+      });
+      return fieldNames;
+    } else if (this.state.metadata) {
+      return this.state.metadata
+        .filter((fieldInfo) => !fieldInfo.read_only)
+        .map((fieldInfo) => fieldInfo.key);
+    } else {
+      return [];
+    }
+  }
+
+  get fieldInfoMap() {
+    if (!this.state.metadata) {
+      return null;
+    }
+
+    return arrayToObject(this.state.metadata, 'key');
+  }
+
   load = async() => {
     this.setState({ loading: true });
 
     let referenceObject = this.props.persistedObject;
-    let fieldInfoMap = null;
+    let metadata = null;
     const requests = [];
 
     // If the fields have not been explicitly provided, issue an OPTIONS request for
@@ -102,7 +129,7 @@ class Form extends React.PureComponent {
 
     responses.forEach((response) => {
       if (response.req.method === 'OPTIONS') {
-        fieldInfoMap = arrayToObject(response.body, 'key');
+        metadata = response.body;
       } else {
         referenceObject = response.body;
       }
@@ -114,13 +141,13 @@ class Form extends React.PureComponent {
     }
 
     this.setState({
-      fieldInfoMap,
+      metadata,
       referenceObject,
       loading: false,
     });
 
     if (this.props.onLoad) {
-      this.props.onLoad(referenceObject, fieldInfoMap);
+      this.props.onLoad(referenceObject, this.fieldInfoMap);
     }
   };
 
@@ -173,6 +200,7 @@ class Form extends React.PureComponent {
 
   get fields() {
     if (this.props.fields) {
+      // If a field set was explicitly provided, simply use it.
       return this.props.fields;
     }
 
@@ -181,7 +209,7 @@ class Form extends React.PureComponent {
 
     const fields = [];
     this.fieldNames.forEach((fieldName) => {
-      const fieldInfo = this.state.fieldInfoMap[fieldName];
+      const fieldInfo = this.fieldInfoMap[fieldName];
       if (!fieldInfo.read_only) {
         let field = null;
         const defaultValue = this.state.referenceObject[fieldName] || '';

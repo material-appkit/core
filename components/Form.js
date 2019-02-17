@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _deepObjectDiff = require('deep-object-diff');
@@ -67,7 +69,7 @@ var Form = function (_React$PureComponent) {
     _this.state = {
       errors: {},
       referenceObject: null,
-      fieldInfoMap: null,
+      metadata: null,
       loading: false,
       saving: false
     };
@@ -90,14 +92,12 @@ var Form = function (_React$PureComponent) {
 
     _this.formRef = _react2.default.createRef();
 
-    _this.fieldNames = [];
     _this.fieldArrangementMap = {};
     if (props.fieldArrangement) {
       props.fieldArrangement.forEach(function (fieldInfo) {
         if (typeof fieldInfo === 'string') {
           fieldInfo = { name: fieldInfo };
         }
-        _this.fieldNames.push(fieldInfo.name);
         _this.fieldArrangementMap[fieldInfo.name] = fieldInfo;
       });
     }
@@ -156,11 +156,45 @@ var Form = function (_React$PureComponent) {
       );
     }
   }, {
+    key: 'fieldNames',
+    get: function get() {
+      if (this.props.fieldArrangement) {
+        var fieldNames = [];
+        this.props.fieldArrangement.forEach(function (fieldInfo) {
+          var fieldInfoType = typeof fieldInfo === 'undefined' ? 'undefined' : _typeof(fieldInfo);
+          if (fieldInfoType === 'string') {
+            fieldNames.push(fieldInfo);
+          } else if (fieldInfoType === 'object') {
+            fieldNames.push(fieldInfo.name);
+          }
+        });
+        return fieldNames;
+      } else if (this.state.metadata) {
+        return this.state.metadata.filter(function (fieldInfo) {
+          return !fieldInfo.read_only;
+        }).map(function (fieldInfo) {
+          return fieldInfo.key;
+        });
+      } else {
+        return [];
+      }
+    }
+  }, {
+    key: 'fieldInfoMap',
+    get: function get() {
+      if (!this.state.metadata) {
+        return null;
+      }
+
+      return (0, _array.arrayToObject)(this.state.metadata, 'key');
+    }
+  }, {
     key: 'fields',
     get: function get() {
       var _this2 = this;
 
       if (this.props.fields) {
+        // If a field set was explicitly provided, simply use it.
         return this.props.fields;
       }
 
@@ -170,7 +204,7 @@ var Form = function (_React$PureComponent) {
 
       var fields = [];
       this.fieldNames.forEach(function (fieldName) {
-        var fieldInfo = _this2.state.fieldInfoMap[fieldName];
+        var fieldInfo = _this2.fieldInfoMap[fieldName];
         if (!fieldInfo.read_only) {
           var field = null;
           var defaultValue = _this2.state.referenceObject[fieldName] || '';
@@ -266,7 +300,7 @@ var _initialiseProps = function _initialiseProps() {
   var _this4 = this;
 
   this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    var referenceObject, fieldInfoMap, requests, optionsUrl, responses;
+    var referenceObject, metadata, requests, optionsUrl, responses;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -274,7 +308,7 @@ var _initialiseProps = function _initialiseProps() {
             _this4.setState({ loading: true });
 
             referenceObject = _this4.props.persistedObject;
-            fieldInfoMap = null;
+            metadata = null;
             requests = [];
 
             // If the fields have not been explicitly provided, issue an OPTIONS request for
@@ -302,7 +336,7 @@ var _initialiseProps = function _initialiseProps() {
 
             responses.forEach(function (response) {
               if (response.req.method === 'OPTIONS') {
-                fieldInfoMap = (0, _array.arrayToObject)(response.body, 'key');
+                metadata = response.body;
               } else {
                 referenceObject = response.body;
               }
@@ -318,13 +352,13 @@ var _initialiseProps = function _initialiseProps() {
           case 13:
 
             _this4.setState({
-              fieldInfoMap: fieldInfoMap,
+              metadata: metadata,
               referenceObject: referenceObject,
               loading: false
             });
 
             if (_this4.props.onLoad) {
-              _this4.props.onLoad(referenceObject, fieldInfoMap);
+              _this4.props.onLoad(referenceObject, _this4.fieldInfoMap);
             }
 
           case 15:
