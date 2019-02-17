@@ -90,8 +90,4 @@ MetadataList.propTypes = {
   representedObject: PropTypes.object.isRequired,
 };
 
-MetadataList.defaultProps = {
-  nullValue: 'None',
-};
-
 export default MetadataList;
