@@ -18,7 +18,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRouterDom = require('react-router-dom');
 
-var _deepObjectDiff = require('deep-object-diff');
+var _lodash = require('lodash.isequal');
+
+var _lodash2 = _interopRequireDefault(_lodash);
 
 var _reactTabs = require('react-tabs');
 
@@ -228,7 +230,7 @@ var NavigationController = function (_React$Component) {
         contextMenuItems: viewControllerProps.contextMenuItems
       };
 
-      if (Object.keys((0, _deepObjectDiff.diff)(newTopbarConfig, topbarConfig)).length) {
+      if (!(0, _lodash2.default)(newTopbarConfig, topbarConfig)) {
         this.topbarConfigMap.set(path, newTopbarConfig);
         this.forceUpdate();
       }

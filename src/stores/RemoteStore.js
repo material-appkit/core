@@ -1,4 +1,4 @@
-import { diff } from 'deep-object-diff';
+import isEqual from 'lodash.isequal';
 
 import { decorate, observable } from 'mobx';
 import { ServiceAgent } from '../util';
@@ -51,8 +51,7 @@ class RemoteStore extends DataStore {
     let updatedParams = null;
     if (this.params) {
       updatedParams = filterEmptyValues(params);
-      const paramDiff = diff(updatedParams, this.params);
-      if (!Object.keys(paramDiff).length) {
+      if (isEqual(updatedParams, this.params)) {
         return;
       }
     } else {

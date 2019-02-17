@@ -8,7 +8,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _deepObjectDiff = require('deep-object-diff');
+var _lodash = require('lodash.isequal');
+
+var _lodash2 = _interopRequireDefault(_lodash);
 
 var _mobx = require('mobx');
 
@@ -113,7 +115,7 @@ var RemoteStore = function (_DataStore) {
     key: 'update',
     value: function () {
       var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(params) {
-        var updatedParams, paramDiff;
+        var updatedParams;
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
@@ -129,32 +131,31 @@ var RemoteStore = function (_DataStore) {
                 updatedParams = null;
 
                 if (!this.params) {
-                  _context3.next = 10;
+                  _context3.next = 9;
                   break;
                 }
 
                 updatedParams = (0, _object.filterEmptyValues)(params);
-                paramDiff = (0, _deepObjectDiff.diff)(updatedParams, this.params);
 
-                if (Object.keys(paramDiff).length) {
-                  _context3.next = 8;
+                if (!(0, _lodash2.default)(updatedParams, this.params)) {
+                  _context3.next = 7;
                   break;
                 }
 
                 return _context3.abrupt('return');
 
-              case 8:
-                _context3.next = 11;
+              case 7:
+                _context3.next = 10;
                 break;
 
-              case 10:
+              case 9:
                 updatedParams = params;
 
-              case 11:
+              case 10:
 
                 this.load(updatedParams);
 
-              case 12:
+              case 11:
               case 'end':
                 return _context3.stop();
             }

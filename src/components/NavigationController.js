@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Route, Link } from 'react-router-dom';
 
-import { diff } from 'deep-object-diff';
+import isEqual from 'lodash.isequal';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
@@ -197,7 +197,7 @@ class NavigationController extends React.Component {
       contextMenuItems: viewControllerProps.contextMenuItems,
     };
 
-    if (Object.keys(diff(newTopbarConfig, topbarConfig)).length) {
+    if (!isEqual(newTopbarConfig, topbarConfig)) {
       this.topbarConfigMap.set(path, newTopbarConfig);
       this.forceUpdate();
     }

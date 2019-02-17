@@ -10,7 +10,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _deepObjectDiff = require('deep-object-diff');
+var _lodash = require('lodash.isequal');
+
+var _lodash2 = _interopRequireDefault(_lodash);
 
 var _propTypes = require('prop-types');
 
@@ -74,6 +76,10 @@ var Form = function (_React$PureComponent) {
       saving: false
     };
 
+    _this.autoSaveTimer = null;
+    _this.formRef = _react2.default.createRef();
+    _this._initialData = null;
+
     var detailUrl = null;
     if (props.apiDetailUrl) {
       detailUrl = props.apiDetailUrl;
@@ -87,10 +93,6 @@ var Form = function (_React$PureComponent) {
       detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.representedObjectId });
     }
     _this.detailUrl = detailUrl;
-
-    _this.autoSaveTimer = null;
-
-    _this.formRef = _react2.default.createRef();
 
     _this.fieldArrangementMap = {};
     if (props.fieldArrangement) {
@@ -123,6 +125,16 @@ var Form = function (_React$PureComponent) {
       if (this.autoSaveTimer) {
         clearTimeout(this.autoSaveTimer);
         this.autoSaveTimer = null;
+      }
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      var form = this.formRef.current;
+      if (form && !this._initialData) {
+        // When the form is rendered for the first time, gather its fields
+        // values to serve as the initial data.
+        this._initialData = (0, _form.formToObject)(form);
       }
     }
   }, {
@@ -385,8 +397,15 @@ var _initialiseProps = function _initialiseProps() {
 
             if (detailUrl) {
               if (updateMethod === 'PATCH') {
-                pendingChanges = (0, _deepObjectDiff.updatedDiff)(_this4.state.referenceObject, formData);
+                pendingChanges = {};
 
+                Object.keys(formData).forEach(function (key) {
+                  var value = formData[key];
+                  if (!(0, _lodash2.default)(value, _this4._initialData[key])) {
+                    pendingChanges[key] = value;
+                  }
+                });
+                console.log(pendingChanges);
                 saveRequest = _util.ServiceAgent.patch(detailUrl, pendingChanges);
               } else {
                 saveRequest = _util.ServiceAgent.put(detailUrl, formData);
@@ -403,6 +422,11 @@ var _initialiseProps = function _initialiseProps() {
             response = _context2.sent;
             persistedObject = response.body;
 
+            // When the form is saved and a new persisted object has been established,
+            // we clear the initialData so that on the next componentDidUpdate it gets
+            // reset to the new persisted values.
+
+            _this4._initialData = null;
 
             _this4.setState({
               saving: false,
@@ -415,8 +439,8 @@ var _initialiseProps = function _initialiseProps() {
 
             return _context2.abrupt('return', persistedObject);
 
-          case 17:
-            _context2.prev = 17;
+          case 18:
+            _context2.prev = 18;
             _context2.t0 = _context2['catch'](7);
 
             _this4.setState({
@@ -428,12 +452,12 @@ var _initialiseProps = function _initialiseProps() {
               _this4.props.onError(_context2.t0);
             }
 
-          case 21:
+          case 22:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, _this4, [[7, 17]]);
+    }, _callee2, _this4, [[7, 18]]);
   }));
 
   this.handleFormSubmit = function (e) {
