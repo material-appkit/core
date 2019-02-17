@@ -182,7 +182,7 @@ class ListDialog extends React.Component {
             {this.props.apiCreateUrl &&
               <React.Fragment>
                 <Button onClick={() => { this.setState({ addDialogIsOpen: true }); }}>
-                  Add
+                  Create
                 </Button>
                 <Spacer />
               </React.Fragment>

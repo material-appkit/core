@@ -295,7 +295,7 @@ var ListDialog = function (_React$Component) {
                 { onClick: function onClick() {
                     _this2.setState({ addDialogIsOpen: true });
                   } },
-                'Add'
+                'Create'
               ),
               _react2.default.createElement(_Spacer2.default, null)
             ),
