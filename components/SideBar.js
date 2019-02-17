@@ -120,7 +120,8 @@ _SidebarHeading.propTypes = {
 
 var SidebarHeading = (0, _styles.withStyles)({
   h3: {
-    fontSize: '1.15rem',
+    fontSize: '1.1rem',
+    fontWeight: 500,
     marginBottom: 5
   }
 })(_SidebarHeading);
