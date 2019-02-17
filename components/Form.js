@@ -138,6 +138,27 @@ var Form = function (_React$PureComponent) {
       }
     }
   }, {
+    key: 'coerceRequestData',
+    value: function coerceRequestData(data) {
+      var fieldInfoMap = this.fieldInfoMap;
+      if (!fieldInfoMap) {
+        return data;
+      }
+
+      Object.keys(data).forEach(function (fieldName) {
+        var fieldInfo = fieldInfoMap[fieldName];
+        if (fieldInfo) {
+          var value = data[fieldName];
+          // For values representing dates, convert the empty string to null
+          if (fieldInfo.type === 'date' && value === '') {
+            data[fieldName] = null;
+          }
+        }
+      });
+
+      return data;
+    }
+  }, {
     key: 'render',
     value: function render() {
       if (this.state.loading || !this.state.referenceObject) {
@@ -159,12 +180,8 @@ var Form = function (_React$PureComponent) {
           onChange: this.handleFormChange,
           ref: this.formRef
         },
-        _react2.default.createElement(
-          _react2.default.Fragment,
-          null,
-          (0, _component.decorateErrors)(this.fields, this.state.errors),
-          this.children
-        )
+        (0, _component.decorateErrors)(this.fields, this.state.errors),
+        this.children
       );
     }
   }, {
@@ -376,7 +393,7 @@ var _initialiseProps = function _initialiseProps() {
     }, _callee, _this3);
   }));
   this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-    var updateMethod, form, formData, saveRequest, detailUrl, pendingChanges, response, persistedObject;
+    var updateMethod, form, formData, requestUrl, requestMethod, requestData, detailUrl, changedData, response, persistedObject;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -388,32 +405,49 @@ var _initialiseProps = function _initialiseProps() {
 
             form = _this3.formRef.current;
             formData = (0, _form.formToObject)(form);
-            saveRequest = null;
+            requestUrl = null;
+            requestMethod = null;
+            requestData = null;
             detailUrl = _this3.detailUrl;
 
             if (detailUrl) {
+              requestUrl = detailUrl;
               if (updateMethod === 'PATCH') {
-                pendingChanges = {};
+                changedData = {};
 
                 Object.keys(formData).forEach(function (key) {
                   var value = formData[key];
                   if (!(0, _lodash2.default)(value, _this3._initialData[key])) {
-                    pendingChanges[key] = value;
+                    changedData[key] = value;
                   }
                 });
-                saveRequest = _util.ServiceAgent.patch(detailUrl, pendingChanges);
+                requestData = changedData;
+                requestMethod = 'PATCH';
               } else {
-                saveRequest = _util.ServiceAgent.put(detailUrl, formData);
+                requestData = formData;
+                requestMethod = 'PUT';
               }
             } else {
-              saveRequest = _util.ServiceAgent.post(_this3.props.apiCreateUrl, formData);
+              requestUrl = _this3.props.apiCreateUrl;
+              requestData = formData;
+              requestMethod = 'POST';
             }
 
-            _context2.prev = 7;
-            _context2.next = 10;
-            return saveRequest;
+            if (requestMethod && requestUrl && requestData) {
+              _context2.next = 11;
+              break;
+            }
 
-          case 10:
+            throw new Error('Missing one or more required paramers for form request');
+
+          case 11:
+            _context2.prev = 11;
+
+            requestData = _this3.coerceRequestData(requestData);
+            _context2.next = 15;
+            return _util.ServiceAgent.request(requestMethod, requestUrl, requestData);
+
+          case 15:
             response = _context2.sent;
             persistedObject = response.body;
 
@@ -434,9 +468,9 @@ var _initialiseProps = function _initialiseProps() {
 
             return _context2.abrupt('return', persistedObject);
 
-          case 18:
-            _context2.prev = 18;
-            _context2.t0 = _context2['catch'](7);
+          case 23:
+            _context2.prev = 23;
+            _context2.t0 = _context2['catch'](11);
 
             _this3.setState({
               saving: false,
@@ -447,17 +481,16 @@ var _initialiseProps = function _initialiseProps() {
               _this3.props.onError(_context2.t0);
             }
 
-          case 22:
+          case 27:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, _this3, [[7, 18]]);
+    }, _callee2, _this3, [[11, 23]]);
   }));
 
   this.handleFormSubmit = function (e) {
     e.preventDefault();
-
     _this3.save();
   };
 

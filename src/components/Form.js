@@ -113,6 +113,27 @@ class Form extends React.PureComponent {
     return arrayToObject(this.state.metadata, 'key');
   }
 
+  coerceRequestData(data) {
+    const fieldInfoMap = this.fieldInfoMap;
+    if (!fieldInfoMap) {
+      return data;
+    }
+
+
+    Object.keys(data).forEach((fieldName) => {
+      const fieldInfo = fieldInfoMap[fieldName];
+      if (fieldInfo) {
+        const value = data[fieldName];
+        // For values representing dates, convert the empty string to null
+        if (fieldInfo.type === 'date' && value === '') {
+          data[fieldName] = null;
+        }
+      }
+    });
+
+    return data;
+  }
+
   load = async() => {
     this.setState({ loading: true });
 
@@ -168,27 +189,41 @@ class Form extends React.PureComponent {
     const form = this.formRef.current;
     const formData = formToObject(form);
 
-    let saveRequest = null;
+    let requestUrl = null;
+    let requestMethod = null;
+    let requestData = null;
+
     const detailUrl = this.detailUrl;
     if (detailUrl) {
+      requestUrl = detailUrl;
       if (updateMethod === 'PATCH') {
-        const pendingChanges = {};
+        const changedData = {};
         Object.keys(formData).forEach((key) => {
           const value = formData[key];
           if (!isEqual(value, this._initialData[key])) {
-            pendingChanges[key] = value;
+            changedData[key] = value;
           }
         });
-        saveRequest = ServiceAgent.patch(detailUrl, pendingChanges);
+        requestData = changedData;
+        requestMethod = 'PATCH';
       } else {
-        saveRequest = ServiceAgent.put(detailUrl, formData);
+        requestData = formData;
+        requestMethod = 'PUT';
       }
     } else {
-      saveRequest = ServiceAgent.post(this.props.apiCreateUrl, formData);
+      requestUrl = this.props.apiCreateUrl;
+      requestData = formData;
+      requestMethod = 'POST';
     }
 
+    if (!(requestMethod && requestUrl && requestData)) {
+      throw new Error('Missing one or more required paramers for form request');
+    }
+
+
     try {
-      const response = await saveRequest;
+      requestData = this.coerceRequestData(requestData);
+      const response = await ServiceAgent.request(requestMethod, requestUrl, requestData);
       const persistedObject = response.body;
 
       // When the form is saved and a new persisted object has been established,
@@ -312,7 +347,6 @@ class Form extends React.PureComponent {
 
   handleFormSubmit = (e) => {
     e.preventDefault();
-
     this.save();
   };
 
@@ -345,10 +379,8 @@ class Form extends React.PureComponent {
         onChange={this.handleFormChange}
         ref={this.formRef}
       >
-        <React.Fragment>
-          {decorateErrors(this.fields, this.state.errors)}
-          {this.children}
-        </React.Fragment>
+        {decorateErrors(this.fields, this.state.errors)}
+        {this.children}
       </form>
     );
   }
