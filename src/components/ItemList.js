@@ -114,7 +114,6 @@ class ItemList extends React.PureComponent {
   attachItem = async(item) => {
     const attachUrl = this.attachUrl;
     if (attachUrl) {
-      const ServiceAgent = this.props.ServiceAgent;
       const res = await ServiceAgent.post(this.attachUrl, { item_id: item.id });
       item = res.body;
     }
@@ -127,7 +126,6 @@ class ItemList extends React.PureComponent {
   detachItem = async(item) => {
     const detachUrl = this.detachUrl;
     if (detachUrl) {
-      const ServiceAgent = this.props.ServiceAgent;
       const res = await ServiceAgent.delete(this.detachUrl, { item_id: item.id });
       item = res.body;
     }
@@ -220,7 +218,6 @@ class ItemList extends React.PureComponent {
                   listItemComponent={this.props.listItemComponent}
                   listItemProps={this.props.listItemProps}
                   onDismiss={this.handleListDialogDismiss}
-                  ServiceAgent={ServiceAgent}
                 />
               }
             </React.Fragment>
@@ -262,7 +259,6 @@ ItemList.propTypes = {
   listItemProps: PropTypes.object,
   mode: PropTypes.oneOf(['view', 'edit']),
   representedObject: PropTypes.object,
-  ServiceAgent: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   titleKey: PropTypes.any.isRequired,
 };
 
@@ -271,7 +267,6 @@ ItemList.defaultProps = {
   EditDialogComponent: EditDialog,
   listItemProps: {},
   mode: 'view',
-  ServiceAgent: ServiceAgent,
 };
 
 export default withStyles((theme) => ({

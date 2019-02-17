@@ -88,10 +88,7 @@ class ListDialog extends React.Component {
   constructor(props) {
     super(props);
 
-    this.store = new RemoteStore({
-      endpoint: this.props.apiListUrl,
-      ServiceAgent: props.ServiceAgent,
-    });
+    this.store = new RemoteStore({ endpoint: this.props.apiListUrl });
     this.store.load({});
 
     this.state = {
@@ -225,12 +222,10 @@ ListDialog.propTypes = {
   listItemComponent: PropTypes.func.isRequired,
   listItemProps: PropTypes.object,
   onDismiss: PropTypes.func.isRequired,
-  ServiceAgent: PropTypes.func,
 };
 
 ListDialog.defaultProps = {
   listItemProps: {},
-  ServiceAgent: ServiceAgent,
 };
 
 export default withStyles({

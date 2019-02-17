@@ -91,7 +91,6 @@ class ItemListField extends React.PureComponent {
             mode="edit"
             onAdd={this.handleItemListAdd}
             onRemove={this.handleItemListRemove}
-            ServiceAgent={this.props.ServiceAgent}
             titleKey={this.props.titleKey}
           />
         </fieldset>
@@ -109,13 +108,11 @@ ItemListField.propTypes = {
   listItemComponent: PropTypes.func,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
-  ServiceAgent: PropTypes.object,
   titleKey: PropTypes.any.isRequired,
 };
 
 ItemListField.defaultProps = {
   listItemComponent: VirtualizedListItem,
-  ServiceAgent: ServiceAgent,
 };
 
 export default withStyles((theme) => ({

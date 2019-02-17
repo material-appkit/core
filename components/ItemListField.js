@@ -138,7 +138,6 @@ var ItemListField = function (_React$PureComponent) {
             mode: 'edit',
             onAdd: this.handleItemListAdd,
             onRemove: this.handleItemListRemove,
-            ServiceAgent: this.props.ServiceAgent,
             titleKey: this.props.titleKey
           })
         )
@@ -158,13 +157,11 @@ ItemListField.propTypes = {
   listItemComponent: _propTypes2.default.func,
   label: _propTypes2.default.string,
   name: _propTypes2.default.string.isRequired,
-  ServiceAgent: _propTypes2.default.object,
   titleKey: _propTypes2.default.any.isRequired
 };
 
 ItemListField.defaultProps = {
-  listItemComponent: _VirtualizedListItem2.default,
-  ServiceAgent: _ServiceAgent2.default
+  listItemComponent: _VirtualizedListItem2.default
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

@@ -52,10 +52,6 @@ var _SnackbarManager = require('../managers/SnackbarManager');
 
 var _SnackbarManager2 = _interopRequireDefault(_SnackbarManager);
 
-var _ServiceAgent = require('../util/ServiceAgent');
-
-var _ServiceAgent2 = _interopRequireDefault(_ServiceAgent);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -158,8 +154,7 @@ var EditDialog = function (_React$Component) {
               onLoad: this.handleFormLoad,
               onSave: this.handleFormSave,
               onError: this.handleFormError,
-              representedObjectId: representedObjectId,
-              serviceAgent: new this.props.ServiceAgent()
+              representedObjectId: representedObjectId
             },
             _react2.default.createElement(
               _FormActions2.default,
@@ -199,14 +194,12 @@ EditDialog.propTypes = {
   onSave: _propTypes2.default.func,
   onClose: _propTypes2.default.func.isRequired,
   representedObjectId: _propTypes2.default.number,
-  ServiceAgent: _propTypes2.default.func,
   title: _propTypes2.default.any,
   titleKey: _propTypes2.default.string
 };
 
 EditDialog.defaultProps = {
-  defaults: {},
-  ServiceAgent: _ServiceAgent2.default
+  defaults: {}
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

@@ -48,9 +48,9 @@ var _ListDialog = require('./ListDialog');
 
 var _ListDialog2 = _interopRequireDefault(_ListDialog);
 
-var _ServiceAgent3 = require('../util/ServiceAgent');
+var _ServiceAgent = require('../util/ServiceAgent');
 
-var _ServiceAgent4 = _interopRequireDefault(_ServiceAgent3);
+var _ServiceAgent2 = _interopRequireDefault(_ServiceAgent);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -166,8 +166,7 @@ var ItemList = function (_React$PureComponent) {
       listDialogOpen: false
     }, _this.attachItem = function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(item) {
-        var attachUrl, _ServiceAgent, res;
-
+        var attachUrl, res;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -175,26 +174,25 @@ var ItemList = function (_React$PureComponent) {
                 attachUrl = _this.attachUrl;
 
                 if (!attachUrl) {
-                  _context.next = 7;
+                  _context.next = 6;
                   break;
                 }
 
-                _ServiceAgent = _this.props.ServiceAgent;
-                _context.next = 5;
-                return _ServiceAgent.post(_this.attachUrl, { item_id: item.id });
+                _context.next = 4;
+                return _ServiceAgent2.default.post(_this.attachUrl, { item_id: item.id });
 
-              case 5:
+              case 4:
                 res = _context.sent;
 
                 item = res.body;
 
-              case 7:
+              case 6:
 
                 if (_this.props.onAdd) {
                   _this.props.onAdd(item);
                 }
 
-              case 8:
+              case 7:
               case 'end':
                 return _context.stop();
             }
@@ -207,8 +205,7 @@ var ItemList = function (_React$PureComponent) {
       };
     }(), _this.detachItem = function () {
       var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(item) {
-        var detachUrl, _ServiceAgent2, res;
-
+        var detachUrl, res;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -216,26 +213,25 @@ var ItemList = function (_React$PureComponent) {
                 detachUrl = _this.detachUrl;
 
                 if (!detachUrl) {
-                  _context2.next = 7;
+                  _context2.next = 6;
                   break;
                 }
 
-                _ServiceAgent2 = _this.props.ServiceAgent;
-                _context2.next = 5;
-                return _ServiceAgent2.delete(_this.detachUrl, { item_id: item.id });
+                _context2.next = 4;
+                return _ServiceAgent2.default.delete(_this.detachUrl, { item_id: item.id });
 
-              case 5:
+              case 4:
                 res = _context2.sent;
 
                 item = res.body;
 
-              case 7:
+              case 6:
 
                 if (_this.props.onRemove) {
                   _this.props.onRemove(item);
                 }
 
-              case 8:
+              case 7:
               case 'end':
                 return _context2.stop();
             }
@@ -333,8 +329,7 @@ var ItemList = function (_React$PureComponent) {
               filterBy: this.props.filterBy,
               listItemComponent: this.props.listItemComponent,
               listItemProps: this.props.listItemProps,
-              onDismiss: this.handleListDialogDismiss,
-              ServiceAgent: _ServiceAgent4.default
+              onDismiss: this.handleListDialogDismiss
             })
           ),
           this.state.editDialogOpen && _react2.default.createElement(this.props.EditDialogComponent, {
@@ -390,7 +385,6 @@ ItemList.propTypes = {
   listItemProps: _propTypes2.default.object,
   mode: _propTypes2.default.oneOf(['view', 'edit']),
   representedObject: _propTypes2.default.object,
-  ServiceAgent: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.func]),
   titleKey: _propTypes2.default.any.isRequired
 };
 
@@ -398,8 +392,7 @@ ItemList.defaultProps = {
   clickAction: 'link',
   EditDialogComponent: _EditDialog2.default,
   listItemProps: {},
-  mode: 'view',
-  ServiceAgent: _ServiceAgent4.default
+  mode: 'view'
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

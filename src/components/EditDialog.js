@@ -12,7 +12,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import Form from './Form';
 import FormActions from './FormActions';
 import SnackbarManager from '../managers/SnackbarManager';
-import ServiceAgent from '../util/ServiceAgent';
 
 class EditDialog extends React.Component {
   constructor(props) {
@@ -88,7 +87,6 @@ class EditDialog extends React.Component {
             onSave={this.handleFormSave}
             onError={this.handleFormError}
             representedObjectId={representedObjectId}
-            serviceAgent={new this.props.ServiceAgent()}
           >
             <FormActions>
               <Button onClick={() => { this.dismiss(); }}>
@@ -118,14 +116,12 @@ EditDialog.propTypes = {
   onSave: PropTypes.func,
   onClose: PropTypes.func.isRequired,
   representedObjectId: PropTypes.number,
-  ServiceAgent: PropTypes.func,
   title: PropTypes.any,
   titleKey: PropTypes.string,
 };
 
 EditDialog.defaultProps = {
   defaults: {},
-  ServiceAgent: ServiceAgent,
 };
 
 

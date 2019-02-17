@@ -14,7 +14,6 @@ class RemoteStore extends DataStore {
     this.pageCount = null;
     this.params = null;
     this.requestContext = null;
-    this.ServiceAgent = options.ServiceAgent || ServiceAgent;
 
     this.options = options || {};
     this._endpoint = this.options.endpoint;
@@ -124,7 +123,7 @@ class RemoteStore extends DataStore {
     }
 
     this.requestContext = {};
-    const req = this.ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
+    const req = ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
     req.then((res) => {
       this.requestContext = null;
 

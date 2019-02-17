@@ -114,12 +114,12 @@ class Form extends React.PureComponent {
     // If the fields have not been explicitly provided, issue an OPTIONS request for
     // metadata about the represented object so the fields can be generated dynamically.
     const optionsUrl = this.detailUrl || this.props.apiCreateUrl;
-    requests.push(this.props.serviceAgent.options(optionsUrl));
+    requests.push(ServiceAgent.options(optionsUrl));
 
     if (!referenceObject) {
       if (this.detailUrl) {
         // If an original object was not explicitly provided, attempt to load one from the given detailUrl
-        requests.push(this.props.serviceAgent.get(this.detailUrl));
+        requests.push(ServiceAgent.get(this.detailUrl));
       } else {
         referenceObject = this.props.defaultValues;
       }
@@ -152,7 +152,7 @@ class Form extends React.PureComponent {
   };
 
   save = async() => {
-    const { serviceAgent, updateMethod } = this.props;
+    const { updateMethod } = this.props;
 
     this.setState({ errors: {}, saving: true });
 
@@ -164,12 +164,12 @@ class Form extends React.PureComponent {
     if (detailUrl) {
       if (updateMethod === 'PATCH') {
         const pendingChanges = updatedDiff(this.state.referenceObject, formData);
-        saveRequest = serviceAgent.patch(detailUrl, pendingChanges);
+        saveRequest = ServiceAgent.patch(detailUrl, pendingChanges);
       } else {
-        saveRequest = serviceAgent.put(detailUrl, formData);
+        saveRequest = ServiceAgent.put(detailUrl, formData);
       }
     } else {
-      saveRequest = serviceAgent.post(this.props.apiCreateUrl, formData);
+      saveRequest = ServiceAgent.post(this.props.apiCreateUrl, formData);
     }
 
     try {
@@ -226,7 +226,6 @@ class Form extends React.PureComponent {
               listUrl={`${fieldInfo.related_endpoint.singular}/`}
               name={fieldName}
               label={fieldInfo.ui.label}
-              ServiceAgent={this.props.serviceAgent}
               {...fieldArrangementInfo}
             />
           );
@@ -356,7 +355,6 @@ Form.propTypes = {
   onError: PropTypes.func,
   persistedObject: PropTypes.object,
   loadingIndicator: PropTypes.node,
-  serviceAgent: PropTypes.object,
   updateMethod: PropTypes.oneOf(['PUT', 'PATCH'])
 };
 
@@ -365,7 +363,6 @@ Form.defaultProps = {
   defaultValues: {},
   autosave: false,
   entityType: '',
-  serviceAgent: new ServiceAgent(),
   updateMethod: 'PATCH',
 };
 

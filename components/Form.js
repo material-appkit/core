@@ -217,8 +217,7 @@ var Form = function (_React$PureComponent) {
               defaultItems: referenceObject[fieldName],
               listUrl: fieldInfo.related_endpoint.singular + '/',
               name: fieldName,
-              label: fieldInfo.ui.label,
-              ServiceAgent: _this2.props.serviceAgent
+              label: fieldInfo.ui.label
             }, fieldArrangementInfo));
           } else {
             var textFieldProps = {
@@ -316,12 +315,12 @@ var _initialiseProps = function _initialiseProps() {
 
             optionsUrl = _this4.detailUrl || _this4.props.apiCreateUrl;
 
-            requests.push(_this4.props.serviceAgent.options(optionsUrl));
+            requests.push(_util.ServiceAgent.options(optionsUrl));
 
             if (!referenceObject) {
               if (_this4.detailUrl) {
                 // If an original object was not explicitly provided, attempt to load one from the given detailUrl
-                requests.push(_this4.props.serviceAgent.get(_this4.detailUrl));
+                requests.push(_util.ServiceAgent.get(_this4.detailUrl));
               } else {
                 referenceObject = _this4.props.defaultValues;
               }
@@ -369,13 +368,12 @@ var _initialiseProps = function _initialiseProps() {
     }, _callee, _this4);
   }));
   this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-    var _props, serviceAgent, updateMethod, form, formData, saveRequest, detailUrl, pendingChanges, response, persistedObject;
-
+    var updateMethod, form, formData, saveRequest, detailUrl, pendingChanges, response, persistedObject;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _props = _this4.props, serviceAgent = _props.serviceAgent, updateMethod = _props.updateMethod;
+            updateMethod = _this4.props.updateMethod;
 
 
             _this4.setState({ errors: {}, saving: true });
@@ -389,12 +387,12 @@ var _initialiseProps = function _initialiseProps() {
               if (updateMethod === 'PATCH') {
                 pendingChanges = (0, _deepObjectDiff.updatedDiff)(_this4.state.referenceObject, formData);
 
-                saveRequest = serviceAgent.patch(detailUrl, pendingChanges);
+                saveRequest = _util.ServiceAgent.patch(detailUrl, pendingChanges);
               } else {
-                saveRequest = serviceAgent.put(detailUrl, formData);
+                saveRequest = _util.ServiceAgent.put(detailUrl, formData);
               }
             } else {
-              saveRequest = serviceAgent.post(_this4.props.apiCreateUrl, formData);
+              saveRequest = _util.ServiceAgent.post(_this4.props.apiCreateUrl, formData);
             }
 
             _context2.prev = 7;
@@ -475,7 +473,6 @@ Form.propTypes = {
   onError: _propTypes2.default.func,
   persistedObject: _propTypes2.default.object,
   loadingIndicator: _propTypes2.default.node,
-  serviceAgent: _propTypes2.default.object,
   updateMethod: _propTypes2.default.oneOf(['PUT', 'PATCH'])
 };
 
@@ -484,7 +481,6 @@ Form.defaultProps = {
   defaultValues: {},
   autosave: false,
   entityType: '',
-  serviceAgent: new _util.ServiceAgent(),
   updateMethod: 'PATCH'
 };
 

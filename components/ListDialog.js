@@ -198,10 +198,7 @@ var ListDialog = function (_React$Component) {
       _this.store.prepend(record);
     };
 
-    _this.store = new _RemoteStore2.default({
-      endpoint: _this.props.apiListUrl,
-      ServiceAgent: props.ServiceAgent
-    });
+    _this.store = new _RemoteStore2.default({ endpoint: _this.props.apiListUrl });
     _this.store.load({});
 
     _this.state = {
@@ -336,13 +333,11 @@ ListDialog.propTypes = {
   filterBy: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
   listItemComponent: _propTypes2.default.func.isRequired,
   listItemProps: _propTypes2.default.object,
-  onDismiss: _propTypes2.default.func.isRequired,
-  ServiceAgent: _propTypes2.default.func
+  onDismiss: _propTypes2.default.func.isRequired
 };
 
 ListDialog.defaultProps = {
-  listItemProps: {},
-  ServiceAgent: _util.ServiceAgent
+  listItemProps: {}
 };
 
 exports.default = (0, _withStyles2.default)({

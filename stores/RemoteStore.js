@@ -42,7 +42,6 @@ var RemoteStore = function (_DataStore) {
     _this.pageCount = null;
     _this.params = null;
     _this.requestContext = null;
-    _this.ServiceAgent = options.ServiceAgent || _util.ServiceAgent;
 
     _this.options = options || {};
     _this._endpoint = _this.options.endpoint;
@@ -248,7 +247,7 @@ var RemoteStore = function (_DataStore) {
                 }
 
                 this.requestContext = {};
-                req = this.ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
+                req = _util.ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
 
                 req.then(function (res) {
                   _this2.requestContext = null;
