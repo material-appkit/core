@@ -9,7 +9,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import { ServiceAgent } from '../util';
 import { arrayToObject } from '../util/array';
-import { decorateErrors } from '../util/component';
+import { decorateErrors, recursiveMap } from '../util/component';
 import { formToObject } from '../util/form';
 import { reverse } from '../util/urls';
 
@@ -304,11 +304,9 @@ class Form extends React.PureComponent {
    * Decorate any given children with a 'disabled' prop while saving
    */
   get children() {
-    return React.Children.map(this.props.children, (child) => {
-      if (!child) {
-        return child;
-      }
-      return React.cloneElement(child, { disabled: this.state.saving });
+    const disabled = this.state.saving;
+    return recursiveMap(this.props.children, (child) => {
+      return React.cloneElement(child, { disabled });
     });
   }
 

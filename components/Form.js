@@ -293,13 +293,9 @@ var Form = function (_React$PureComponent) {
   }, {
     key: 'children',
     get: function get() {
-      var _this3 = this;
-
-      return _react2.default.Children.map(this.props.children, function (child) {
-        if (!child) {
-          return child;
-        }
-        return _react2.default.cloneElement(child, { disabled: _this3.state.saving });
+      var disabled = this.state.saving;
+      return (0, _component.recursiveMap)(this.props.children, function (child) {
+        return _react2.default.cloneElement(child, { disabled: disabled });
       });
     }
   }]);
@@ -308,7 +304,7 @@ var Form = function (_React$PureComponent) {
 }(_react2.default.PureComponent);
 
 var _initialiseProps = function _initialiseProps() {
-  var _this4 = this;
+  var _this3 = this;
 
   this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
     var referenceObject, metadata, requests, optionsUrl, responses;
@@ -316,25 +312,25 @@ var _initialiseProps = function _initialiseProps() {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _this4.setState({ loading: true });
+            _this3.setState({ loading: true });
 
-            referenceObject = _this4.props.persistedObject;
+            referenceObject = _this3.props.persistedObject;
             metadata = null;
             requests = [];
 
             // If the fields have not been explicitly provided, issue an OPTIONS request for
             // metadata about the represented object so the fields can be generated dynamically.
 
-            optionsUrl = _this4.detailUrl || _this4.props.apiCreateUrl;
+            optionsUrl = _this3.detailUrl || _this3.props.apiCreateUrl;
 
             requests.push(_util.ServiceAgent.options(optionsUrl));
 
             if (!referenceObject) {
-              if (_this4.detailUrl) {
+              if (_this3.detailUrl) {
                 // If an original object was not explicitly provided, attempt to load one from the given detailUrl
-                requests.push(_util.ServiceAgent.get(_this4.detailUrl));
+                requests.push(_util.ServiceAgent.get(_this3.detailUrl));
               } else {
-                referenceObject = _this4.props.defaultValues;
+                referenceObject = _this3.props.defaultValues;
               }
             }
 
@@ -362,14 +358,14 @@ var _initialiseProps = function _initialiseProps() {
 
           case 13:
 
-            _this4.setState({
+            _this3.setState({
               metadata: metadata,
               referenceObject: referenceObject,
               loading: false
             });
 
-            if (_this4.props.onLoad) {
-              _this4.props.onLoad(referenceObject, _this4.fieldInfoMap);
+            if (_this3.props.onLoad) {
+              _this3.props.onLoad(referenceObject, _this3.fieldInfoMap);
             }
 
           case 15:
@@ -377,7 +373,7 @@ var _initialiseProps = function _initialiseProps() {
             return _context.stop();
         }
       }
-    }, _callee, _this4);
+    }, _callee, _this3);
   }));
   this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
     var updateMethod, form, formData, saveRequest, detailUrl, pendingChanges, response, persistedObject;
@@ -385,15 +381,15 @@ var _initialiseProps = function _initialiseProps() {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            updateMethod = _this4.props.updateMethod;
+            updateMethod = _this3.props.updateMethod;
 
 
-            _this4.setState({ errors: {}, saving: true });
+            _this3.setState({ errors: {}, saving: true });
 
-            form = _this4.formRef.current;
+            form = _this3.formRef.current;
             formData = (0, _form.formToObject)(form);
             saveRequest = null;
-            detailUrl = _this4.detailUrl;
+            detailUrl = _this3.detailUrl;
 
             if (detailUrl) {
               if (updateMethod === 'PATCH') {
@@ -401,7 +397,7 @@ var _initialiseProps = function _initialiseProps() {
 
                 Object.keys(formData).forEach(function (key) {
                   var value = formData[key];
-                  if (!(0, _lodash2.default)(value, _this4._initialData[key])) {
+                  if (!(0, _lodash2.default)(value, _this3._initialData[key])) {
                     pendingChanges[key] = value;
                   }
                 });
@@ -410,7 +406,7 @@ var _initialiseProps = function _initialiseProps() {
                 saveRequest = _util.ServiceAgent.put(detailUrl, formData);
               }
             } else {
-              saveRequest = _util.ServiceAgent.post(_this4.props.apiCreateUrl, formData);
+              saveRequest = _util.ServiceAgent.post(_this3.props.apiCreateUrl, formData);
             }
 
             _context2.prev = 7;
@@ -425,15 +421,15 @@ var _initialiseProps = function _initialiseProps() {
             // we clear the initialData so that on the next componentDidUpdate it gets
             // reset to the new persisted values.
 
-            _this4._initialData = null;
+            _this3._initialData = null;
 
-            _this4.setState({
+            _this3.setState({
               saving: false,
               referenceObject: persistedObject
             });
 
-            if (_this4.props.onSave) {
-              _this4.props.onSave(persistedObject);
+            if (_this3.props.onSave) {
+              _this3.props.onSave(persistedObject);
             }
 
             return _context2.abrupt('return', persistedObject);
@@ -442,13 +438,13 @@ var _initialiseProps = function _initialiseProps() {
             _context2.prev = 18;
             _context2.t0 = _context2['catch'](7);
 
-            _this4.setState({
+            _this3.setState({
               saving: false,
               errors: _context2.t0.response ? _context2.t0.response.body : {}
             });
 
-            if (_this4.props.onError) {
-              _this4.props.onError(_context2.t0);
+            if (_this3.props.onError) {
+              _this3.props.onError(_context2.t0);
             }
 
           case 22:
@@ -456,23 +452,23 @@ var _initialiseProps = function _initialiseProps() {
             return _context2.stop();
         }
       }
-    }, _callee2, _this4, [[7, 18]]);
+    }, _callee2, _this3, [[7, 18]]);
   }));
 
   this.handleFormSubmit = function (e) {
     e.preventDefault();
 
-    _this4.save();
+    _this3.save();
   };
 
   this.handleFormChange = function (e) {
-    if (_this4.props.autosaveDelay !== null) {
-      if (_this4.autoSaveTimer) {
-        clearTimeout(_this4.autoSaveTimer);
+    if (_this3.props.autosaveDelay !== null) {
+      if (_this3.autoSaveTimer) {
+        clearTimeout(_this3.autoSaveTimer);
       }
-      _this4.autoSaveTimer = setTimeout(function () {
-        _this4.save();
-      }, _this4.props.autosaveDelay);
+      _this3.autoSaveTimer = setTimeout(function () {
+        _this3.save();
+      }, _this3.props.autosaveDelay);
     }
   };
 };
