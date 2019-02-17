@@ -118,7 +118,16 @@ var EditDialog = function (_React$Component) {
         return _react2.default.createElement(_reactRouterDom.Redirect, { to: this.state.redirectTo });
       }
 
-      var classes = this.props.classes;
+      var _props = this.props,
+          apiCreateUrl = _props.apiCreateUrl,
+          apiDetailUrl = _props.apiDetailUrl,
+          apiDetailUrlPath = _props.apiDetailUrlPath,
+          classes = _props.classes,
+          defaults = _props.defaults,
+          entityType = _props.entityType,
+          fields = _props.fields,
+          fieldArrangement = _props.fieldArrangement,
+          representedObjectId = _props.representedObjectId;
 
       return _react2.default.createElement(
         _Dialog2.default,
@@ -139,17 +148,17 @@ var EditDialog = function (_React$Component) {
           _react2.default.createElement(
             _Form2.default,
             {
-              apiCreateUrl: this.props.apiCreateUrl,
-              apiDetailUrl: this.props.apiDetailUrl,
-              apiDetailUrlPath: this.props.apiDetailUrlPath,
-              defaultValues: this.props.defaults,
-              entityType: this.props.entityType,
-              fields: this.props.fields,
-              fieldArrangement: this.props.fieldArrangement,
+              apiCreateUrl: apiCreateUrl,
+              apiDetailUrl: apiDetailUrl,
+              apiDetailUrlPath: apiDetailUrlPath,
+              defaultValues: defaults,
+              entityType: entityType,
+              fields: fields,
+              fieldArrangement: fieldArrangement,
               onLoad: this.handleFormLoad,
               onSave: this.handleFormSave,
               onError: this.handleFormError,
-              representedObjectId: this.props.representedObjectId,
+              representedObjectId: representedObjectId,
               serviceAgent: new this.props.ServiceAgent()
             },
             _react2.default.createElement(

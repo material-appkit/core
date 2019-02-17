@@ -58,7 +58,17 @@ class EditDialog extends React.Component {
       return <Redirect to={this.state.redirectTo} />;
     }
 
-    const { classes } = this.props;
+    const {
+      apiCreateUrl,
+      apiDetailUrl,
+      apiDetailUrlPath,
+      classes,
+      defaults,
+      entityType,
+      fields,
+      fieldArrangement,
+      representedObjectId,
+    } = this.props;
     return (
       <Dialog open
         classes={{ paper: classes.paper }}
@@ -67,17 +77,17 @@ class EditDialog extends React.Component {
         <DialogTitle id="form-dialog-title">{this.state.title}</DialogTitle>
         <DialogContent>
           <Form
-            apiCreateUrl={this.props.apiCreateUrl}
-            apiDetailUrl={this.props.apiDetailUrl}
-            apiDetailUrlPath={this.props.apiDetailUrlPath}
-            defaultValues={this.props.defaults}
-            entityType={this.props.entityType}
-            fields={this.props.fields}
-            fieldArrangement={this.props.fieldArrangement}
+            apiCreateUrl={apiCreateUrl}
+            apiDetailUrl={apiDetailUrl}
+            apiDetailUrlPath={apiDetailUrlPath}
+            defaultValues={defaults}
+            entityType={entityType}
+            fields={fields}
+            fieldArrangement={fieldArrangement}
             onLoad={this.handleFormLoad}
             onSave={this.handleFormSave}
             onError={this.handleFormError}
-            representedObjectId={this.props.representedObjectId}
+            representedObjectId={representedObjectId}
             serviceAgent={new this.props.ServiceAgent()}
           >
             <FormActions>
