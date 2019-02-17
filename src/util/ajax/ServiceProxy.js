@@ -15,6 +15,23 @@ export default class ServiceProxy {
     }
   }
 
+  getRequestHeaders() {
+    const headers = {};
+
+    const accessToken = this.getAccessToken();
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    const csrfToken = cookie.get('csrftoken');
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken;
+    }
+
+    return headers;
+  }
+
+
   buildRequestUrl(endpoint) {
     // If this is already an absolute URL, leave it as is.
     if (endpoint.startsWith('http')) {
@@ -30,6 +47,7 @@ export default class ServiceProxy {
 
     return requestURL;
   }
+
 
   async request(method, endpoint, params, context) {
     const requestURL = this.buildRequestUrl(endpoint);
@@ -66,15 +84,7 @@ export default class ServiceProxy {
         throw new Error(`Unsupported request method: ${method}`);
     }
     req.accept('application/json');
-    const accessToken = this.getAccessToken();
-    if (accessToken) {
-      req.set('Authorization', `Bearer ${accessToken}`);
-    }
-
-    const csrfToken = cookie.get('csrftoken');
-    if (csrfToken) {
-      req.set('X-CSRFToken', csrfToken);
-    }
+    req.set(this.getRequestHeaders());
 
     if (context) {
       context.request = req;

@@ -42,6 +42,23 @@ var ServiceProxy = function () {
       }
     }
   }, {
+    key: 'getRequestHeaders',
+    value: function getRequestHeaders() {
+      var headers = {};
+
+      var accessToken = this.getAccessToken();
+      if (accessToken) {
+        headers.Authorization = 'Bearer ' + accessToken;
+      }
+
+      var csrfToken = _jsCookie2.default.get('csrftoken');
+      if (csrfToken) {
+        headers['X-CSRFToken'] = csrfToken;
+      }
+
+      return headers;
+    }
+  }, {
     key: 'buildRequestUrl',
     value: function buildRequestUrl(endpoint) {
       // If this is already an absolute URL, leave it as is.
@@ -62,7 +79,7 @@ var ServiceProxy = function () {
     key: 'request',
     value: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(method, endpoint, params, context) {
-        var requestURL, requestParams, req, accessToken, csrfToken;
+        var requestURL, requestParams, req;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -112,24 +129,14 @@ var ServiceProxy = function () {
 
               case 22:
                 req.accept('application/json');
-                accessToken = this.getAccessToken();
-
-                if (accessToken) {
-                  req.set('Authorization', 'Bearer ' + accessToken);
-                }
-
-                csrfToken = _jsCookie2.default.get('csrftoken');
-
-                if (csrfToken) {
-                  req.set('X-CSRFToken', csrfToken);
-                }
+                req.set(this.getRequestHeaders());
 
                 if (context) {
                   context.request = req;
                 }
                 return _context.abrupt('return', req);
 
-              case 29:
+              case 26:
               case 'end':
                 return _context.stop();
             }
