@@ -131,12 +131,30 @@ var DataCard = function (_React$PureComponent) {
     value: function render() {
       var _this3 = this;
 
-      var classes = this.props.classes;
+      var _props = this.props,
+          classes = _props.classes,
+          variant = _props.variant;
 
+
+      var cardClasses = {};
+      var cardHeaderClasses = {
+        action: classes.cardHeaderAction,
+        title: classes.cardHeaderTitle
+      };
+      var cardContentClasses = {};
+
+      if (variant === 'card') {
+        cardHeaderClasses.root = classes.cardHeaderRoot;
+      }
+      if (variant === 'plain') {
+        cardClasses.root = classes.plainCardRoot;
+        cardHeaderClasses.root = classes.plainCardHeaderRoot;
+        cardContentClasses.root = classes.plainCardContentRoot;
+      }
 
       return _react2.default.createElement(
         _Card2.default,
-        null,
+        { classes: cardClasses },
         _react2.default.createElement(_CardHeader2.default, {
           action: _react2.default.createElement(
             _IconButton2.default,
@@ -148,16 +166,12 @@ var DataCard = function (_React$PureComponent) {
             },
             this.state.mode === 'view' ? _react2.default.createElement(_Edit2.default, { fontSize: 'small' }) : _react2.default.createElement(_Check2.default, { fontSize: 'small' })
           ),
-          classes: {
-            action: classes.cardHeaderAction,
-            root: classes.cardHeaderRoot,
-            title: classes.cardHeaderTitle
-          },
+          classes: cardHeaderClasses,
           title: this.props.title
         }),
         _react2.default.createElement(
           _CardContent2.default,
-          null,
+          { classes: cardContentClasses },
           this.activeView
         )
       );
@@ -196,21 +210,35 @@ DataCard.propTypes = {
   children: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.array]),
   classes: _propTypes2.default.object.isRequired,
   formConfig: _propTypes2.default.object,
-  title: _propTypes2.default.string
+  title: _propTypes2.default.string,
+  variant: _propTypes2.default.oneOf(['card', 'plain'])
+};
+
+DataCard.defaultProps = {
+  variant: 'card'
 };
 
 exports.default = (0, _withStyles2.default)({
   cardHeaderAction: {
     marginTop: 0
   },
-
   cardHeaderRoot: {
     backgroundColor: '#fafafa',
     padding: '2px 16px'
   },
-
   cardHeaderTitle: {
     fontSize: '1.1rem',
     fontWeight: 500
+  },
+
+  plainCardRoot: {
+    backgroundColor: 'inherit',
+    boxShadow: 'none'
+  },
+  plainCardHeaderRoot: {
+    padding: '0px 8px 0px 0px'
+  },
+  plainCardContentRoot: {
+    padding: '0 !important'
   }
 })(DataCard);

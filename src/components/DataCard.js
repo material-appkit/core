@@ -75,10 +75,26 @@ class DataCard extends React.PureComponent {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, variant } = this.props;
+
+    const cardClasses = {};
+    const cardHeaderClasses = {
+      action: classes.cardHeaderAction,
+      title: classes.cardHeaderTitle,
+    };
+    const cardContentClasses = {};
+
+    if (variant === 'card') {
+      cardHeaderClasses.root = classes.cardHeaderRoot;
+    }
+    if (variant === 'plain') {
+      cardClasses.root = classes.plainCardRoot;
+      cardHeaderClasses.root = classes.plainCardHeaderRoot;
+      cardContentClasses.root = classes.plainCardContentRoot;
+    }
 
     return (
-      <Card>
+      <Card classes={cardClasses}>
         <CardHeader
           action={(
             <IconButton
@@ -92,14 +108,10 @@ class DataCard extends React.PureComponent {
               )}
             </IconButton>
           )}
-          classes={{
-            action: classes.cardHeaderAction,
-            root: classes.cardHeaderRoot,
-            title: classes.cardHeaderTitle,
-          }}
+          classes={cardHeaderClasses}
           title={this.props.title}
         />
-        <CardContent>
+        <CardContent classes={cardContentClasses}>
           {this.activeView}
         </CardContent>
       </Card>
@@ -112,20 +124,34 @@ DataCard.propTypes = {
   classes: PropTypes.object.isRequired,
   formConfig: PropTypes.object,
   title: PropTypes.string,
+  variant: PropTypes.oneOf(['card', 'plain'])
+};
+
+DataCard.defaultProps = {
+  variant: 'card',
 };
 
 export default withStyles({
   cardHeaderAction: {
     marginTop: 0,
   },
-
   cardHeaderRoot: {
     backgroundColor: '#fafafa',
     padding: '2px 16px',
   },
-
   cardHeaderTitle: {
     fontSize: '1.1rem',
     fontWeight: 500,
   },
+
+  plainCardRoot: {
+    backgroundColor: 'inherit',
+    boxShadow: 'none',
+  },
+  plainCardHeaderRoot: {
+    padding: '0px 8px 0px 0px',
+  },
+  plainCardContentRoot: {
+    padding: '0 !important',
+  }
 })(DataCard);
