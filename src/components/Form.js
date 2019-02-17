@@ -179,7 +179,6 @@ class Form extends React.PureComponent {
             pendingChanges[key] = value;
           }
         });
-        console.log(pendingChanges);
         saveRequest = ServiceAgent.patch(detailUrl, pendingChanges);
       } else {
         saveRequest = ServiceAgent.put(detailUrl, formData);

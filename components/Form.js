@@ -405,7 +405,6 @@ var _initialiseProps = function _initialiseProps() {
                     pendingChanges[key] = value;
                   }
                 });
-                console.log(pendingChanges);
                 saveRequest = _util.ServiceAgent.patch(detailUrl, pendingChanges);
               } else {
                 saveRequest = _util.ServiceAgent.put(detailUrl, formData);
