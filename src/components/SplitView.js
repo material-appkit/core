@@ -44,6 +44,7 @@ export default withStyles((theme) => ({
       borderBottomWidth: 0,
       order: 1,
       minHeight: `calc(100vh - ${theme.topBar.height + theme.navigationController.navBar.height}px)`,
+      minWidth: theme.sidebar.width,
       width: theme.sidebar.width,
     },
   },
