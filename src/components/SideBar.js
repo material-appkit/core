@@ -21,7 +21,7 @@ _SidebarSection.propTypes = {
 const SidebarSection = withStyles({
   section: {
     '&:not(:last-child)': {
-      marginBottom: 24,
+      marginBottom: 16,
     },
   },
 })(_SidebarSection);
