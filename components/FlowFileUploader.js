@@ -302,7 +302,7 @@ var FlowFileUploader = function (_React$PureComponent) {
           { title: uploadButtonTooltip },
           _react2.default.createElement(
             _IconButton2.default,
-            null,
+            { className: classes.uploadButton },
             _react2.default.createElement(UploadButtonIcon, null)
           )
         )
@@ -412,6 +412,10 @@ exports.default = (0, _withStyles2.default)(function (theme) {
     // Variant: any
     linearProgress: {
       flexGrow: 1
+    },
+
+    uploadButton: {
+      padding: 4
     },
 
     // --------------------------------------------------------------------------

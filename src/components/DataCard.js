@@ -98,6 +98,7 @@ class DataCard extends React.PureComponent {
         <CardHeader
           action={(
             <IconButton
+              classes={{ root: classes.modeToggleButton }}
               color="primary"
               onClick={() => { this.toggleMode(); }}
             >
@@ -132,6 +133,10 @@ DataCard.defaultProps = {
 };
 
 export default withStyles({
+  modeToggleButton: {
+    padding: 4,
+  },
+
   cardHeaderAction: {
     marginTop: 0,
   },
@@ -149,7 +154,7 @@ export default withStyles({
     boxShadow: 'none',
   },
   plainCardHeaderRoot: {
-    padding: '0px 8px 0px 0px',
+    padding: '2px 8px 2px 0px',
   },
   plainCardContentRoot: {
     padding: '0 !important',

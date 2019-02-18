@@ -205,7 +205,7 @@ class FlowFileUploader extends React.PureComponent {
     const uploadButton = (
       <RootRef rootRef={this.browseButtonRef}>
         <Tooltip title={uploadButtonTooltip}>
-          <IconButton>
+          <IconButton className={classes.uploadButton}>
             <UploadButtonIcon />
           </IconButton>
         </Tooltip>
@@ -309,6 +309,10 @@ export default withStyles((theme) => ({
   // Variant: any
   linearProgress: {
     flexGrow: 1,
+  },
+
+  uploadButton: {
+    padding: 4,
   },
 
   // --------------------------------------------------------------------------

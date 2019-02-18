@@ -159,6 +159,7 @@ var DataCard = function (_React$PureComponent) {
           action: _react2.default.createElement(
             _IconButton2.default,
             {
+              classes: { root: classes.modeToggleButton },
               color: 'primary',
               onClick: function onClick() {
                 _this3.toggleMode();
@@ -219,6 +220,10 @@ DataCard.defaultProps = {
 };
 
 exports.default = (0, _withStyles2.default)({
+  modeToggleButton: {
+    padding: 4
+  },
+
   cardHeaderAction: {
     marginTop: 0
   },
@@ -236,7 +241,7 @@ exports.default = (0, _withStyles2.default)({
     boxShadow: 'none'
   },
   plainCardHeaderRoot: {
-    padding: '0px 8px 0px 0px'
+    padding: '2px 8px 2px 0px'
   },
   plainCardContentRoot: {
     padding: '0 !important'
