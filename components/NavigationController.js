@@ -370,18 +370,22 @@ var NavigationController = function (_React$Component) {
 
       return _react2.default.createElement(
         _Toolbar2.default,
-        { variant: 'dense', className: this.props.classes.toolBar },
+        {
+          className: this.props.classes.toolBar,
+          disableGutters: true,
+          variant: 'dense'
+        },
         toolbarItems
       );
     }
   }, {
     key: 'tabPanelContainerPaddingTop',
     get: function get() {
-      var theme = this.props.theme.navigationController;
+      var navControllerTheme = this.props.theme.navigationController;
 
-      var tabPanelContainerHeight = theme.navBar.height;
+      var tabPanelContainerHeight = navControllerTheme.navBar.height;
       if (this.contextToolbar) {
-        tabPanelContainerHeight += theme.toolBar.height;
+        tabPanelContainerHeight += navControllerTheme.toolBar.height;
       }
 
       return tabPanelContainerHeight;

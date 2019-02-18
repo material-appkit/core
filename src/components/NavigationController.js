@@ -97,18 +97,22 @@ class NavigationController extends React.Component {
     }
 
     return (
-      <Toolbar variant="dense" className={this.props.classes.toolBar}>
+      <Toolbar
+        className={this.props.classes.toolBar}
+        disableGutters
+        variant="dense"
+      >
         {toolbarItems}
       </Toolbar>
     );
   }
 
   get tabPanelContainerPaddingTop() {
-    const theme = this.props.theme.navigationController;
+    const navControllerTheme = this.props.theme.navigationController;
 
-    let tabPanelContainerHeight = theme.navBar.height;
+    let tabPanelContainerHeight = navControllerTheme.navBar.height;
     if (this.contextToolbar) {
-      tabPanelContainerHeight += theme.toolBar.height;
+      tabPanelContainerHeight += navControllerTheme.toolBar.height;
     }
 
     return tabPanelContainerHeight;
