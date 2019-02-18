@@ -1,55 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Drawer from '@material-ui/core/Drawer';
 import Typography from '@material-ui/core/Typography';
-import withWidth from '@material-ui/core/withWidth';
 import { withStyles } from '@material-ui/core/styles';
-
-//------------------------------------------------------------------------------
-function SideBar(props) {
-  const { classes, width } = props;
-
-  if (width === 'xs' || width === 'sm') {
-    return (
-      <div className={classes.smallContainer}>
-        {props.children}
-      </div>
-    );
-  }
-
-  return (
-    <Drawer
-      variant="permanent"
-      classes={{ paper: classes.drawerPaper }}
-      anchor="right"
-    >
-      {props.children}
-    </Drawer>
-  );
-}
-
-SideBar.propTypes = {
-  classes: PropTypes.object.isRequired,
-  children: PropTypes.any,
-  width: PropTypes.string.isRequired,
-};
-
-export default withStyles((theme) => ({
-  drawerPaper: {
-    backgroundColor: '#fafafa',
-    width: theme.sidebar.width,
-    paddingLeft: theme.spacing.unit * 2,
-    paddingRight: theme.spacing.unit * 2,
-    paddingTop: theme.topBar.height + theme.navigationController.navBar.height + 20,
-  },
-
-  smallContainer: {
-    backgroundColor: '#fafafa',
-    borderBottom: '1px solid #cacaca',
-    padding: 20,
-  },
-}))(withWidth()(SideBar));
 
 //------------------------------------------------------------------------------
 function _SidebarSection(props) {
