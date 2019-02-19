@@ -3,6 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 exports.recursiveMap = recursiveMap;
 exports.decorateErrors = decorateErrors;
 
@@ -30,7 +33,11 @@ function recursiveMap(children, transform, maxDepth, depth) {
 }
 
 function decorateErrors(rootComponent, errorMap) {
-  if (errorMap === null) {
+  if ((typeof errorMap === 'undefined' ? 'undefined' : _typeof(errorMap)) !== 'object') {
+    throw new Error('Expected param "errorMap" to be an object');
+  }
+
+  if (!Object.keys(errorMap).length) {
     return rootComponent;
   }
 

@@ -133,7 +133,7 @@ var EditDialog = function (_React$Component) {
           classes = _props.classes,
           defaults = _props.defaults,
           entityType = _props.entityType,
-          fields = _props.fields,
+          FieldSet = _props.FieldSet,
           fieldArrangement = _props.fieldArrangement,
           representedObjectId = _props.representedObjectId;
 
@@ -160,7 +160,7 @@ var EditDialog = function (_React$Component) {
             defaultValues: defaults,
             entityType: entityType,
             innerRef: this.formRef,
-            fields: fields,
+            FieldSet: FieldSet,
             fieldArrangement: fieldArrangement,
             onLoad: this.handleFormLoad,
             onSave: this.handleFormSave,
@@ -200,7 +200,7 @@ EditDialog.propTypes = {
   classes: _propTypes2.default.object,
   defaults: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
-  fields: _propTypes2.default.any,
+  FieldSet: _propTypes2.default.any,
   fieldArrangement: _propTypes2.default.array,
   onLoad: _propTypes2.default.func,
   onSave: _propTypes2.default.func,

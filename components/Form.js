@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -26,10 +24,6 @@ var _CircularProgress = require('@material-ui/core/CircularProgress');
 
 var _CircularProgress2 = _interopRequireDefault(_CircularProgress);
 
-var _TextField = require('@material-ui/core/TextField');
-
-var _TextField2 = _interopRequireDefault(_TextField);
-
 var _withStyles = require('@material-ui/core/styles/withStyles');
 
 var _withStyles2 = _interopRequireDefault(_withStyles);
@@ -44,9 +38,9 @@ var _form = require('../util/form');
 
 var _urls = require('../util/urls');
 
-var _ItemListField = require('./ItemListField');
+var _FormFieldSet = require('./FormFieldSet');
 
-var _ItemListField2 = _interopRequireDefault(_ItemListField);
+var _FormFieldSet2 = _interopRequireDefault(_FormFieldSet);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -180,7 +174,7 @@ var Form = function (_React$PureComponent) {
           onChange: this.handleFormChange,
           ref: this.formRef
         },
-        (0, _component.decorateErrors)(this.fields, this.state.errors),
+        this.fields,
         this.children
       );
     }
@@ -220,92 +214,14 @@ var Form = function (_React$PureComponent) {
   }, {
     key: 'fields',
     get: function get() {
-      var _this2 = this;
-
-      var _props = this.props,
-          classes = _props.classes,
-          FieldSet = _props.FieldSet;
-
-      var referenceObject = this.state.referenceObject;
-
-      if (FieldSet) {
-        // If a field set was explicitly provided, simply use it.
-        return _react2.default.createElement(FieldSet, {
-          representedObject: referenceObject,
-          fieldInfoMap: this.fieldInfoMap
-        });
-      }
-
-      var fields = [];
-      this.fieldNames.forEach(function (fieldName) {
-        var fieldInfo = _this2.fieldInfoMap[fieldName];
-        if (!fieldInfo.read_only) {
-          var field = null;
-          var defaultValue = _this2.state.referenceObject[fieldName] || '';
-
-          if (fieldInfo.hidden) {
-            field = _react2.default.createElement('input', { type: 'hidden', name: fieldName, defaultValue: defaultValue });
-          } else if (fieldInfo.type === 'itemlist') {
-            var fieldArrangementInfo = _this2.fieldArrangementMap[fieldName];
-            field = _react2.default.createElement(_ItemListField2.default, _extends({
-              defaultItems: referenceObject[fieldName],
-              listUrl: fieldInfo.related_endpoint.singular + '/',
-              name: fieldName,
-              label: fieldInfo.ui.label
-            }, fieldArrangementInfo));
-          } else {
-            var textFieldProps = {
-              disabled: _this2.state.saving,
-              key: fieldName,
-              fullWidth: true,
-              InputLabelProps: { classes: { root: classes.inputLabel } },
-              label: fieldInfo.ui.label,
-              margin: "normal",
-              name: fieldName,
-              defaultValue: defaultValue,
-              variant: "outlined"
-            };
-
-            if (fieldInfo.choices) {
-              textFieldProps.select = true;
-              textFieldProps.SelectProps = { native: true };
-            } else {
-              var inputType = fieldInfo.type;
-              if (inputType === 'textarea') {
-                textFieldProps.multiline = true;
-                textFieldProps.rows = 2;
-                textFieldProps.rowsMax = 4;
-              } else {
-                textFieldProps.type = inputType;
-              }
-            }
-
-            if (fieldInfo.type === 'number') {
-              textFieldProps.inputProps = { min: 0, step: 'any' };
-            }
-
-            field = _react2.default.createElement(
-              _TextField2.default,
-              textFieldProps,
-              fieldInfo.choices && _react2.default.createElement(
-                _react2.default.Fragment,
-                null,
-                _react2.default.createElement('option', null),
-                fieldInfo.choices.map(function (choice) {
-                  return _react2.default.createElement(
-                    'option',
-                    { key: choice.value, value: choice.value },
-                    choice.display_name
-                  );
-                })
-              )
-            );
-          }
-
-          fields.push(field);
-        }
+      return _react2.default.createElement(this.props.FieldSet, {
+        errors: this.state.errors,
+        fieldArrangementMap: this.fieldArrangementMap,
+        fieldInfoMap: this.fieldInfoMap,
+        fieldNames: this.fieldNames,
+        representedObject: this.state.referenceObject,
+        saving: this.state.saving
       });
-      return fields;
     }
 
     /**
@@ -326,7 +242,7 @@ var Form = function (_React$PureComponent) {
 }(_react2.default.PureComponent);
 
 var _initialiseProps = function _initialiseProps() {
-  var _this3 = this;
+  var _this2 = this;
 
   this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
     var referenceObject, metadata, requests, optionsUrl, responses;
@@ -334,25 +250,25 @@ var _initialiseProps = function _initialiseProps() {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _this3.setState({ loading: true });
+            _this2.setState({ loading: true });
 
-            referenceObject = _this3.props.persistedObject;
+            referenceObject = _this2.props.persistedObject;
             metadata = null;
             requests = [];
 
             // If the fields have not been explicitly provided, issue an OPTIONS request for
             // metadata about the represented object so the fields can be generated dynamically.
 
-            optionsUrl = _this3.detailUrl || _this3.props.apiCreateUrl;
+            optionsUrl = _this2.detailUrl || _this2.props.apiCreateUrl;
 
             requests.push(_util.ServiceAgent.options(optionsUrl));
 
             if (!referenceObject) {
-              if (_this3.detailUrl) {
+              if (_this2.detailUrl) {
                 // If an original object was not explicitly provided, attempt to load one from the given detailUrl
-                requests.push(_util.ServiceAgent.get(_this3.detailUrl));
+                requests.push(_util.ServiceAgent.get(_this2.detailUrl));
               } else {
-                referenceObject = _this3.props.defaultValues;
+                referenceObject = _this2.props.defaultValues;
               }
             }
 
@@ -380,14 +296,14 @@ var _initialiseProps = function _initialiseProps() {
 
           case 13:
 
-            _this3.setState({
+            _this2.setState({
               metadata: metadata,
               referenceObject: referenceObject,
               loading: false
             });
 
-            if (_this3.props.onLoad) {
-              _this3.props.onLoad(referenceObject, _this3.fieldInfoMap);
+            if (_this2.props.onLoad) {
+              _this2.props.onLoad(referenceObject, _this2.fieldInfoMap);
             }
 
           case 15:
@@ -395,7 +311,7 @@ var _initialiseProps = function _initialiseProps() {
             return _context.stop();
         }
       }
-    }, _callee, _this3);
+    }, _callee, _this2);
   }));
   this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
     var updateMethod, form, formData, requestUrl, requestMethod, requestData, detailUrl, changedData, response, persistedObject;
@@ -403,17 +319,17 @@ var _initialiseProps = function _initialiseProps() {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            updateMethod = _this3.props.updateMethod;
+            updateMethod = _this2.props.updateMethod;
 
 
-            _this3.setState({ errors: {}, saving: true });
+            _this2.setState({ errors: {}, saving: true });
 
-            form = _this3.formRef.current;
+            form = _this2.formRef.current;
             formData = (0, _form.formToObject)(form);
             requestUrl = null;
             requestMethod = null;
             requestData = null;
-            detailUrl = _this3.detailUrl;
+            detailUrl = _this2.detailUrl;
 
             if (detailUrl) {
               requestUrl = detailUrl;
@@ -422,7 +338,7 @@ var _initialiseProps = function _initialiseProps() {
 
                 Object.keys(formData).forEach(function (key) {
                   var value = formData[key];
-                  if (!(0, _lodash2.default)(value, _this3._initialData[key])) {
+                  if (!(0, _lodash2.default)(value, _this2._initialData[key])) {
                     changedData[key] = value;
                   }
                 });
@@ -433,7 +349,7 @@ var _initialiseProps = function _initialiseProps() {
                 requestMethod = 'PUT';
               }
             } else {
-              requestUrl = _this3.props.apiCreateUrl;
+              requestUrl = _this2.props.apiCreateUrl;
               requestData = formData;
               requestMethod = 'POST';
             }
@@ -448,7 +364,7 @@ var _initialiseProps = function _initialiseProps() {
           case 11:
             _context2.prev = 11;
 
-            requestData = _this3.coerceRequestData(requestData);
+            requestData = _this2.coerceRequestData(requestData);
             _context2.next = 15;
             return _util.ServiceAgent.request(requestMethod, requestUrl, requestData);
 
@@ -460,15 +376,15 @@ var _initialiseProps = function _initialiseProps() {
             // we clear the initialData so that on the next componentDidUpdate it gets
             // reset to the new persisted values.
 
-            _this3._initialData = null;
+            _this2._initialData = null;
 
-            _this3.setState({
+            _this2.setState({
               saving: false,
               referenceObject: persistedObject
             });
 
-            if (_this3.props.onSave) {
-              _this3.props.onSave(persistedObject);
+            if (_this2.props.onSave) {
+              _this2.props.onSave(persistedObject);
             }
 
             return _context2.abrupt('return', persistedObject);
@@ -477,13 +393,13 @@ var _initialiseProps = function _initialiseProps() {
             _context2.prev = 23;
             _context2.t0 = _context2['catch'](11);
 
-            _this3.setState({
+            _this2.setState({
               saving: false,
               errors: _context2.t0.response ? _context2.t0.response.body : {}
             });
 
-            if (_this3.props.onError) {
-              _this3.props.onError(_context2.t0);
+            if (_this2.props.onError) {
+              _this2.props.onError(_context2.t0);
             }
 
           case 27:
@@ -491,22 +407,22 @@ var _initialiseProps = function _initialiseProps() {
             return _context2.stop();
         }
       }
-    }, _callee2, _this3, [[11, 23]]);
+    }, _callee2, _this2, [[11, 23]]);
   }));
 
   this.handleFormSubmit = function (e) {
     e.preventDefault();
-    _this3.save();
+    _this2.save();
   };
 
   this.handleFormChange = function (e) {
-    if (_this3.props.autosaveDelay !== null) {
-      if (_this3.autoSaveTimer) {
-        clearTimeout(_this3.autoSaveTimer);
+    if (_this2.props.autosaveDelay !== null) {
+      if (_this2.autoSaveTimer) {
+        clearTimeout(_this2.autoSaveTimer);
       }
-      _this3.autoSaveTimer = setTimeout(function () {
-        _this3.save();
-      }, _this3.props.autosaveDelay);
+      _this2.autoSaveTimer = setTimeout(function () {
+        _this2.save();
+      }, _this2.props.autosaveDelay);
     }
   };
 };
@@ -517,10 +433,9 @@ Form.propTypes = {
   apiDetailUrlPath: _propTypes2.default.string,
   autosaveDelay: _propTypes2.default.number,
   children: _propTypes2.default.any,
-  classes: _propTypes2.default.object.isRequired,
   defaultValues: _propTypes2.default.object,
   entityType: _propTypes2.default.string,
-  fieldset: _propTypes2.default.any,
+  FieldSet: _propTypes2.default.func,
   fieldArrangement: _propTypes2.default.array,
   representedObjectId: _propTypes2.default.number,
   onMount: _propTypes2.default.func,
@@ -534,10 +449,11 @@ Form.propTypes = {
 };
 
 Form.defaultProps = {
+  autosave: false,
   autosaveDelay: null,
   defaultValues: {},
-  autosave: false,
   entityType: '',
+  FieldSet: _FormFieldSet2.default,
   updateMethod: 'PATCH'
 };
 

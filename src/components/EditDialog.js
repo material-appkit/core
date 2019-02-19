@@ -72,7 +72,7 @@ class EditDialog extends React.Component {
       classes,
       defaults,
       entityType,
-      fields,
+      FieldSet,
       fieldArrangement,
       representedObjectId,
     } = this.props;
@@ -90,7 +90,7 @@ class EditDialog extends React.Component {
             defaultValues={defaults}
             entityType={entityType}
             innerRef={this.formRef}
-            fields={fields}
+            FieldSet={FieldSet}
             fieldArrangement={fieldArrangement}
             onLoad={this.handleFormLoad}
             onSave={this.handleFormSave}
@@ -118,7 +118,7 @@ EditDialog.propTypes = {
   classes: PropTypes.object,
   defaults: PropTypes.object,
   entityType: PropTypes.string.isRequired,
-  fields: PropTypes.any,
+  FieldSet: PropTypes.any,
   fieldArrangement: PropTypes.array,
   onLoad: PropTypes.func,
   onSave: PropTypes.func,

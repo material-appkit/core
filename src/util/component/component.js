@@ -26,7 +26,11 @@ export function recursiveMap(children, transform, maxDepth, depth) {
 }
 
 export function decorateErrors(rootComponent, errorMap) {
-  if (errorMap === null) {
+  if (typeof(errorMap) !== 'object') {
+    throw new Error('Expected param "errorMap" to be an object');
+  }
+
+  if (!Object.keys(errorMap).length) {
     return rootComponent;
   }
 

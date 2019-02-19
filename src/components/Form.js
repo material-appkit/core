@@ -4,16 +4,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import TextField from '@material-ui/core/TextField';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import { ServiceAgent } from '../util';
 import { arrayToObject } from '../util/array';
-import { decorateErrors, recursiveMap } from '../util/component';
+import { recursiveMap } from '../util/component';
 import { formToObject } from '../util/form';
 import { reverse } from '../util/urls';
 
-import ItemListField from './ItemListField';
+import FormFieldSet from './FormFieldSet';
 
 class Form extends React.PureComponent {
   constructor(props) {
@@ -254,90 +253,16 @@ class Form extends React.PureComponent {
   };
 
   get fields() {
-    const { classes, FieldSet } = this.props;
-    const referenceObject = this.state.referenceObject;
-
-    if (FieldSet) {
-      // If a field set was explicitly provided, simply use it.
-      return (
-        <FieldSet
-          representedObject={referenceObject}
-          fieldInfoMap={this.fieldInfoMap}
-        />
-      );
-    }
-
-    const fields = [];
-    this.fieldNames.forEach((fieldName) => {
-      const fieldInfo = this.fieldInfoMap[fieldName];
-      if (!fieldInfo.read_only) {
-        let field = null;
-        const defaultValue = this.state.referenceObject[fieldName] || '';
-
-        if (fieldInfo.hidden) {
-          field = (
-            <input type="hidden" name={fieldName} defaultValue={defaultValue} />
-          );
-        } else if (fieldInfo.type === 'itemlist') {
-          const fieldArrangementInfo = this.fieldArrangementMap[fieldName];
-          field = (
-            <ItemListField
-              defaultItems={referenceObject[fieldName]}
-              listUrl={`${fieldInfo.related_endpoint.singular}/`}
-              name={fieldName}
-              label={fieldInfo.ui.label}
-              {...fieldArrangementInfo}
-            />
-          );
-        } else {
-          const textFieldProps = {
-            disabled: this.state.saving,
-            key: fieldName,
-            fullWidth: true,
-            InputLabelProps: { classes: { root: classes.inputLabel } },
-            label: fieldInfo.ui.label,
-            margin: "normal",
-            name: fieldName,
-            defaultValue,
-            variant: "outlined",
-          };
-
-          if (fieldInfo.choices) {
-            textFieldProps.select = true;
-            textFieldProps.SelectProps = { native: true };
-          } else {
-            const inputType = fieldInfo.type;
-            if (inputType === 'textarea') {
-              textFieldProps.multiline = true;
-              textFieldProps.rows = 2;
-              textFieldProps.rowsMax = 4;
-            } else {
-              textFieldProps.type = inputType;
-            }
-          }
-
-          if (fieldInfo.type === 'number') {
-            textFieldProps.inputProps = { min: 0, step: 'any' };
-          }
-
-          field = (
-            <TextField {...textFieldProps }>
-              {fieldInfo.choices &&
-                <React.Fragment>
-                  <option />
-                  {fieldInfo.choices.map((choice) => (
-                    <option key={choice.value} value={choice.value}>{choice.display_name}</option>
-                  ))}
-                </React.Fragment>
-              }
-            </TextField>
-          );
-        }
-
-        fields.push(field);
-      }
-    });
-    return fields;
+    return (
+      <this.props.FieldSet
+        errors={this.state.errors}
+        fieldArrangementMap={this.fieldArrangementMap}
+        fieldInfoMap={this.fieldInfoMap}
+        fieldNames={this.fieldNames}
+        representedObject={this.state.referenceObject}
+        saving={this.state.saving}
+      />
+    );
   }
 
   /**
@@ -384,7 +309,7 @@ class Form extends React.PureComponent {
         onChange={this.handleFormChange}
         ref={this.formRef}
       >
-        {decorateErrors(this.fields, this.state.errors)}
+        {this.fields}
         {this.children}
       </form>
     );
@@ -397,10 +322,9 @@ Form.propTypes = {
   apiDetailUrlPath: PropTypes.string,
   autosaveDelay: PropTypes.number,
   children: PropTypes.any,
-  classes: PropTypes.object.isRequired,
   defaultValues: PropTypes.object,
   entityType: PropTypes.string,
-  fieldset: PropTypes.any,
+  FieldSet: PropTypes.func,
   fieldArrangement: PropTypes.array,
   representedObjectId: PropTypes.number,
   onMount: PropTypes.func,
@@ -414,10 +338,11 @@ Form.propTypes = {
 };
 
 Form.defaultProps = {
+  autosave: false,
   autosaveDelay: null,
   defaultValues: {},
-  autosave: false,
   entityType: '',
+  FieldSet: FormFieldSet,
   updateMethod: 'PATCH',
 };
 
