@@ -153,25 +153,25 @@ class NavigationController extends React.Component {
     );
   };
 
-  createContextMenuItem = (itemConfig) => {
+  createContextMenuItem = (menuItemConfig) => {
     const { classes } = this.props;
     const menuItemProps = {
       className: classes.contextMenuItem,
-      key: itemConfig.key,
-      onClick: () => { this.handleContextMenuClick(itemConfig); },
+      key: menuItemConfig.key,
+      onClick: () => { this.handleContextMenuClick(menuItemConfig); },
     };
-    if (itemConfig.link) {
-      menuItemProps.to = itemConfig.link;
+    if (menuItemConfig.link) {
+      menuItemProps.to = menuItemConfig.link;
       menuItemProps.component = Link;
     }
     return (
       <MenuItem {...menuItemProps}>
-        {itemConfig.icon &&
+        {menuItemConfig.icon &&
           <ListItemIcon className={classes.contextMenuIcon}>
-            <itemConfig.icon />
+            <menuItemConfig.icon />
           </ListItemIcon>
         }
-        <ListItemText primary={itemConfig.title} className={classes.contextMenuText} />
+        <ListItemText primary={menuItemConfig.title} className={classes.contextMenuText} />
       </MenuItem>
     );
   };
