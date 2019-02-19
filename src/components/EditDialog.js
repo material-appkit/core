@@ -65,17 +65,7 @@ class EditDialog extends React.Component {
       return <Redirect to={this.state.redirectTo} />;
     }
 
-    const {
-      apiCreateUrl,
-      apiDetailUrl,
-      apiDetailUrlPath,
-      classes,
-      defaults,
-      entityType,
-      FieldSet,
-      fieldArrangement,
-      representedObjectId,
-    } = this.props;
+    const { classes, ...rest } = this.props;
     return (
       <Dialog open
         classes={{ paper: classes.paper }}
@@ -84,18 +74,11 @@ class EditDialog extends React.Component {
         <DialogTitle id="form-dialog-title">{this.state.title}</DialogTitle>
         <DialogContent>
           <Form
-            apiCreateUrl={apiCreateUrl}
-            apiDetailUrl={apiDetailUrl}
-            apiDetailUrlPath={apiDetailUrlPath}
-            defaultValues={defaults}
-            entityType={entityType}
             innerRef={this.formRef}
-            FieldSet={FieldSet}
-            fieldArrangement={fieldArrangement}
             onLoad={this.handleFormLoad}
             onSave={this.handleFormSave}
             onError={this.handleFormError}
-            representedObjectId={representedObjectId}
+            {...rest}
           />
         </DialogContent>
         <DialogActions>
@@ -112,20 +95,11 @@ class EditDialog extends React.Component {
 }
 
 EditDialog.propTypes = {
-  apiCreateUrl: PropTypes.string,
-  apiDetailUrl: PropTypes.string,
-  apiDetailUrlPath: PropTypes.string,
   classes: PropTypes.object,
-  defaults: PropTypes.object,
   entityType: PropTypes.string.isRequired,
-  FieldSet: PropTypes.any,
-  fieldArrangement: PropTypes.array,
   onLoad: PropTypes.func,
   onSave: PropTypes.func,
   onClose: PropTypes.func.isRequired,
-  representedObjectId: PropTypes.number,
-  title: PropTypes.any,
-  titleKey: PropTypes.string,
 };
 
 EditDialog.defaultProps = {
