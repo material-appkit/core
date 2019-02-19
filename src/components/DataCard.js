@@ -142,7 +142,7 @@ export default withStyles({
   },
   cardHeaderRoot: {
     backgroundColor: '#fafafa',
-    padding: '2px 16px',
+    padding: '4px 16px',
   },
   cardHeaderTitle: {
     fontSize: '1.1rem',
