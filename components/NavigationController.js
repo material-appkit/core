@@ -154,29 +154,29 @@ var NavigationController = function (_React$Component) {
       );
     };
 
-    _this.createContextMenuItem = function (itemConfig) {
+    _this.createContextMenuItem = function (menuItemConfig) {
       var classes = _this.props.classes;
 
       var menuItemProps = {
         className: classes.contextMenuItem,
-        key: itemConfig.key,
+        key: menuItemConfig.key,
         onClick: function onClick() {
-          _this.handleContextMenuClick(itemConfig);
+          _this.handleContextMenuClick(menuItemConfig);
         }
       };
-      if (itemConfig.link) {
-        menuItemProps.to = itemConfig.link;
+      if (menuItemConfig.link) {
+        menuItemProps.to = menuItemConfig.link;
         menuItemProps.component = _reactRouterDom.Link;
       }
       return _react2.default.createElement(
         _MenuItem2.default,
         menuItemProps,
-        itemConfig.icon && _react2.default.createElement(
+        menuItemConfig.icon && _react2.default.createElement(
           _ListItemIcon2.default,
           { className: classes.contextMenuIcon },
-          _react2.default.createElement(itemConfig.icon, null)
+          _react2.default.createElement(menuItemConfig.icon, null)
         ),
-        _react2.default.createElement(_ListItemText2.default, { primary: itemConfig.title, className: classes.contextMenuText })
+        _react2.default.createElement(_ListItemText2.default, { primary: menuItemConfig.title, className: classes.contextMenuText })
       );
     };
 

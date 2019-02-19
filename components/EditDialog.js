@@ -28,6 +28,10 @@ var _Dialog = require('@material-ui/core/Dialog');
 
 var _Dialog2 = _interopRequireDefault(_Dialog);
 
+var _DialogActions = require('@material-ui/core/DialogActions');
+
+var _DialogActions2 = _interopRequireDefault(_DialogActions);
+
 var _DialogContent = require('@material-ui/core/DialogContent');
 
 var _DialogContent2 = _interopRequireDefault(_DialogContent);
@@ -87,12 +91,15 @@ var EditDialog = function (_React$Component) {
       _SnackbarManager2.default.error(errorMessage);
     };
 
+    _this.formRef = _react2.default.createRef();
+
     var title = props.entityType;
     if (props.apiDetailUrl || props.representedObjectId) {
       title = _reactIntlUniversal2.default.get('UPDATE').defaultMessage('Update') + ' ' + title;
     } else {
       title = _reactIntlUniversal2.default.get('ADD').defaultMessage('Add') + ' ' + title;
     }
+
     _this.state = {
       title: title,
       redirectTo: null
@@ -104,6 +111,11 @@ var EditDialog = function (_React$Component) {
     key: 'dismiss',
     value: function dismiss() {
       this.props.onClose(this);
+    }
+  }, {
+    key: 'commit',
+    value: function commit() {
+      this.formRef.current.save();
     }
   }, {
     key: 'render',
@@ -141,37 +153,37 @@ var EditDialog = function (_React$Component) {
         _react2.default.createElement(
           _DialogContent2.default,
           null,
+          _react2.default.createElement(_Form2.default, {
+            apiCreateUrl: apiCreateUrl,
+            apiDetailUrl: apiDetailUrl,
+            apiDetailUrlPath: apiDetailUrlPath,
+            defaultValues: defaults,
+            entityType: entityType,
+            innerRef: this.formRef,
+            fields: fields,
+            fieldArrangement: fieldArrangement,
+            onLoad: this.handleFormLoad,
+            onSave: this.handleFormSave,
+            onError: this.handleFormError,
+            representedObjectId: representedObjectId
+          })
+        ),
+        _react2.default.createElement(
+          _DialogActions2.default,
+          null,
           _react2.default.createElement(
-            _Form2.default,
-            {
-              apiCreateUrl: apiCreateUrl,
-              apiDetailUrl: apiDetailUrl,
-              apiDetailUrlPath: apiDetailUrlPath,
-              defaultValues: defaults,
-              entityType: entityType,
-              fields: fields,
-              fieldArrangement: fieldArrangement,
-              onLoad: this.handleFormLoad,
-              onSave: this.handleFormSave,
-              onError: this.handleFormError,
-              representedObjectId: representedObjectId
-            },
-            _react2.default.createElement(
-              _FormActions2.default,
-              null,
-              _react2.default.createElement(
-                _Button2.default,
-                { onClick: function onClick() {
-                    _this2.dismiss();
-                  } },
-                _reactIntlUniversal2.default.get('CANCEL').defaultMessage('Cancel')
-              ),
-              _react2.default.createElement(
-                _Button2.default,
-                { color: 'primary', type: 'submit' },
-                _reactIntlUniversal2.default.get('SAVE').defaultMessage('Save')
-              )
-            )
+            _Button2.default,
+            { onClick: function onClick() {
+                _this2.dismiss();
+              } },
+            _reactIntlUniversal2.default.get('CANCEL').defaultMessage('Cancel')
+          ),
+          _react2.default.createElement(
+            _Button2.default,
+            { onClick: function onClick() {
+                _this2.commit();
+              }, color: 'primary' },
+            _reactIntlUniversal2.default.get('SAVE').defaultMessage('Save')
           )
         )
       );

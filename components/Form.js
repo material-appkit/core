@@ -222,14 +222,19 @@ var Form = function (_React$PureComponent) {
     get: function get() {
       var _this2 = this;
 
-      if (this.props.fields) {
-        // If a field set was explicitly provided, simply use it.
-        return this.props.fields;
-      }
-
-      var classes = this.props.classes;
+      var _props = this.props,
+          classes = _props.classes,
+          FieldSet = _props.FieldSet;
 
       var referenceObject = this.state.referenceObject;
+
+      if (FieldSet) {
+        // If a field set was explicitly provided, simply use it.
+        return _react2.default.createElement(FieldSet, {
+          representedObject: referenceObject,
+          fieldInfoMap: this.fieldInfoMap
+        });
+      }
 
       var fields = [];
       this.fieldNames.forEach(function (fieldName) {
@@ -255,7 +260,7 @@ var Form = function (_React$PureComponent) {
               fullWidth: true,
               InputLabelProps: { classes: { root: classes.inputLabel } },
               label: fieldInfo.ui.label,
-              margin: "dense",
+              margin: "normal",
               name: fieldName,
               defaultValue: defaultValue,
               variant: "outlined"
@@ -515,7 +520,7 @@ Form.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   defaultValues: _propTypes2.default.object,
   entityType: _propTypes2.default.string,
-  fields: _propTypes2.default.any,
+  fieldset: _propTypes2.default.any,
   fieldArrangement: _propTypes2.default.array,
   representedObjectId: _propTypes2.default.number,
   onMount: _propTypes2.default.func,
