@@ -261,6 +261,7 @@ class Form extends React.PureComponent {
         fieldNames={this.fieldNames}
         representedObject={this.state.referenceObject}
         saving={this.state.saving}
+        {...this.props.FieldSetProps}
       />
     );
   }
@@ -325,6 +326,7 @@ Form.propTypes = {
   defaultValues: PropTypes.object,
   entityType: PropTypes.string,
   FieldSet: PropTypes.func,
+  FieldSetProps: PropTypes.object,
   fieldArrangement: PropTypes.array,
   representedObjectId: PropTypes.number,
   onMount: PropTypes.func,
@@ -343,6 +345,7 @@ Form.defaultProps = {
   defaultValues: {},
   entityType: '',
   FieldSet: FormFieldSet,
+  FieldSetProps: {},
   updateMethod: 'PATCH',
 };
 

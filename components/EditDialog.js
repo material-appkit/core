@@ -132,7 +132,8 @@ var EditDialog = function (_React$Component) {
 
       var _props = this.props,
           classes = _props.classes,
-          rest = _objectWithoutProperties(_props, ['classes']);
+          FormProps = _props.FormProps,
+          rest = _objectWithoutProperties(_props, ['classes', 'FormProps']);
 
       return _react2.default.createElement(
         _Dialog2.default,
@@ -155,7 +156,7 @@ var EditDialog = function (_React$Component) {
             onLoad: this.handleFormLoad,
             onSave: this.handleFormSave,
             onError: this.handleFormError
-          }, rest))
+          }, FormProps, rest))
         ),
         _react2.default.createElement(
           _DialogActions2.default,
@@ -185,13 +186,15 @@ var EditDialog = function (_React$Component) {
 EditDialog.propTypes = {
   classes: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
+  FormProps: _propTypes2.default.object,
   onLoad: _propTypes2.default.func,
   onSave: _propTypes2.default.func,
   onClose: _propTypes2.default.func.isRequired
 };
 
 EditDialog.defaultProps = {
-  defaults: {}
+  defaults: {},
+  FormProps: {}
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

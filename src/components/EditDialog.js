@@ -65,7 +65,7 @@ class EditDialog extends React.Component {
       return <Redirect to={this.state.redirectTo} />;
     }
 
-    const { classes, ...rest } = this.props;
+    const { classes, FormProps, ...rest } = this.props;
     return (
       <Dialog open
         classes={{ paper: classes.paper }}
@@ -78,6 +78,7 @@ class EditDialog extends React.Component {
             onLoad={this.handleFormLoad}
             onSave={this.handleFormSave}
             onError={this.handleFormError}
+            {...FormProps}
             {...rest}
           />
         </DialogContent>
@@ -97,6 +98,7 @@ class EditDialog extends React.Component {
 EditDialog.propTypes = {
   classes: PropTypes.object,
   entityType: PropTypes.string.isRequired,
+  FormProps: PropTypes.object,
   onLoad: PropTypes.func,
   onSave: PropTypes.func,
   onClose: PropTypes.func.isRequired,
@@ -104,6 +106,7 @@ EditDialog.propTypes = {
 
 EditDialog.defaultProps = {
   defaults: {},
+  FormProps: {},
 };
 
 
