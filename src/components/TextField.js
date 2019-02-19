@@ -63,7 +63,19 @@ class TextField extends React.Component {
   }
 
   handleOnChange = (e) => {
-    const { onChange, onTimeout, timeoutDelay } = this.props;
+    const {
+      name,
+      onChange,
+      onTimeout,
+      owner,
+      timeoutDelay
+    } = this.props;
+
+    const value = e.target.value;
+
+    if (name && owner && owner.setState) {
+      owner.setState({ [name]: value });
+    }
 
     if (onChange) {
       onChange(e);
@@ -73,8 +85,6 @@ class TextField extends React.Component {
       // If there's no change handler there's no need for action.
       return;
     }
-
-    const value = e.target.value;
 
     if (timeoutDelay) {
       if (this.delayedChangeTimer) {
@@ -113,6 +123,7 @@ class TextField extends React.Component {
       onChange,
       onFocus,
       onTimeout,
+      owner,
       placeholder,
       required,
       rows,
@@ -121,7 +132,6 @@ class TextField extends React.Component {
       SelectProps,
       timeoutDelay,
       type,
-      value,
       variant,
       ...other
     } = this.props;
@@ -139,6 +149,11 @@ class TextField extends React.Component {
       }
 
       InputMore.labelWidth = (this.labelNode && this.labelNode.offsetWidth) || 0;
+    }
+
+    let value = this.props.value;
+    if (!value && name && owner && owner.state) {
+      value = owner.state[name];
     }
 
     const helperTextId = helperText && id ? `${id}-helper-text` : undefined;
@@ -305,6 +320,10 @@ TextField.propTypes = {
    */
   onTimeout: PropTypes.func,
   /**
+   * Component to which this field is bound
+   */
+  owner: PropTypes.object,
+  /**
    * The short hint displayed in the input before the user enters a value.
    */
   placeholder: PropTypes.string,
@@ -331,6 +350,13 @@ TextField.propTypes = {
   SelectProps: PropTypes.object,
   /**
    * Number of seconds to wait before firing the onTimeout event
+   */
+  /**
+   * State property to which this field is bound
+   */
+  stateKey: PropTypes.string,
+  /**
+   * Number of milliseconds of inactivity before the onTimeout callback is invoked.
    */
   timeoutDelay: PropTypes.number,
   /**

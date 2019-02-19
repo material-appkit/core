@@ -56,6 +56,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -107,10 +109,18 @@ var TextField = function (_React$Component) {
 
     _this.handleOnChange = function (e) {
       var _this$props = _this.props,
+          name = _this$props.name,
           onChange = _this$props.onChange,
           onTimeout = _this$props.onTimeout,
+          owner = _this$props.owner,
           timeoutDelay = _this$props.timeoutDelay;
 
+
+      var value = e.target.value;
+
+      if (name && owner && owner.setState) {
+        owner.setState(_defineProperty({}, name, value));
+      }
 
       if (onChange) {
         onChange(e);
@@ -120,8 +130,6 @@ var TextField = function (_React$Component) {
         // If there's no change handler there's no need for action.
         return;
       }
-
-      var value = e.target.value;
 
       if (timeoutDelay) {
         if (_this.delayedChangeTimer) {
@@ -175,6 +183,7 @@ var TextField = function (_React$Component) {
           onChange = _props.onChange,
           onFocus = _props.onFocus,
           onTimeout = _props.onTimeout,
+          owner = _props.owner,
           placeholder = _props.placeholder,
           required = _props.required,
           rows = _props.rows,
@@ -183,9 +192,8 @@ var TextField = function (_React$Component) {
           SelectProps = _props.SelectProps,
           timeoutDelay = _props.timeoutDelay,
           type = _props.type,
-          value = _props.value,
           variant = _props.variant,
-          other = _objectWithoutProperties(_props, ['autoComplete', 'autoFocus', 'children', 'className', 'defaultValue', 'error', 'FormHelperTextProps', 'fullWidth', 'helperText', 'id', 'InputLabelProps', 'inputProps', 'InputProps', 'inputRef', 'label', 'multiline', 'name', 'onBlur', 'onChange', 'onFocus', 'onTimeout', 'placeholder', 'required', 'rows', 'rowsMax', 'select', 'SelectProps', 'timeoutDelay', 'type', 'value', 'variant']);
+          other = _objectWithoutProperties(_props, ['autoComplete', 'autoFocus', 'children', 'className', 'defaultValue', 'error', 'FormHelperTextProps', 'fullWidth', 'helperText', 'id', 'InputLabelProps', 'inputProps', 'InputProps', 'inputRef', 'label', 'multiline', 'name', 'onBlur', 'onChange', 'onFocus', 'onTimeout', 'owner', 'placeholder', 'required', 'rows', 'rowsMax', 'select', 'SelectProps', 'timeoutDelay', 'type', 'variant']);
 
       (0, _warning2.default)(!select || Boolean(children), 'Material-UI: `children` must be passed when using the `TextField` component with `select`.');
 
@@ -197,6 +205,11 @@ var TextField = function (_React$Component) {
         }
 
         InputMore.labelWidth = this.labelNode && this.labelNode.offsetWidth || 0;
+      }
+
+      var value = this.props.value;
+      if (!value && name && owner && owner.state) {
+        value = owner.state[name];
       }
 
       var helperTextId = helperText && id ? id + '-helper-text' : undefined;
@@ -358,6 +371,10 @@ TextField.propTypes = {
    */
   onTimeout: _propTypes2.default.func,
   /**
+   * Component to which this field is bound
+   */
+  owner: _propTypes2.default.object,
+  /**
    * The short hint displayed in the input before the user enters a value.
    */
   placeholder: _propTypes2.default.string,
@@ -384,6 +401,13 @@ TextField.propTypes = {
   SelectProps: _propTypes2.default.object,
   /**
    * Number of seconds to wait before firing the onTimeout event
+   */
+  /**
+   * State property to which this field is bound
+   */
+  stateKey: _propTypes2.default.string,
+  /**
+   * Number of milliseconds of inactivity before the onTimeout callback is invoked.
    */
   timeoutDelay: _propTypes2.default.number,
   /**
