@@ -5,6 +5,7 @@ import { Redirect } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -17,12 +18,15 @@ class EditDialog extends React.Component {
   constructor(props) {
     super(props);
 
+    this.formRef = React.createRef();
+
     let title = props.entityType;
     if (props.apiDetailUrl || props.representedObjectId) {
       title = `${intl.get('UPDATE').defaultMessage('Update')} ${title}`;
     } else {
       title = `${intl.get('ADD').defaultMessage('Add')} ${title}`;
     }
+
     this.state = {
       title,
       redirectTo: null,
@@ -50,6 +54,10 @@ class EditDialog extends React.Component {
 
   dismiss() {
     this.props.onClose(this);
+  }
+
+  commit() {
+    this.formRef.current.save();
   }
 
   render() {
@@ -81,23 +89,23 @@ class EditDialog extends React.Component {
             apiDetailUrlPath={apiDetailUrlPath}
             defaultValues={defaults}
             entityType={entityType}
+            innerRef={this.formRef}
             fields={fields}
             fieldArrangement={fieldArrangement}
             onLoad={this.handleFormLoad}
             onSave={this.handleFormSave}
             onError={this.handleFormError}
             representedObjectId={representedObjectId}
-          >
-            <FormActions>
-              <Button onClick={() => { this.dismiss(); }}>
-                {intl.get('CANCEL').defaultMessage('Cancel')}
-              </Button>
-              <Button color="primary" type="submit">
-                {intl.get('SAVE').defaultMessage('Save')}
-              </Button>
-            </FormActions>
-          </Form>
+          />
         </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { this.dismiss(); }}>
+            {intl.get('CANCEL').defaultMessage('Cancel')}
+          </Button>
+          <Button onClick={() => { this.commit(); }} color="primary">
+            {intl.get('SAVE').defaultMessage('Save')}
+          </Button>
+        </DialogActions>
       </Dialog>
     );
   }
