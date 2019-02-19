@@ -254,13 +254,18 @@ class Form extends React.PureComponent {
   };
 
   get fields() {
-    if (this.props.fields) {
-      // If a field set was explicitly provided, simply use it.
-      return this.props.fields;
-    }
-
-    const { classes } = this.props;
+    const { classes, FieldSet } = this.props;
     const referenceObject = this.state.referenceObject;
+
+    if (FieldSet) {
+      // If a field set was explicitly provided, simply use it.
+      return (
+        <FieldSet
+          representedObject={referenceObject}
+          fieldInfoMap={this.fieldInfoMap}
+        />
+      );
+    }
 
     const fields = [];
     this.fieldNames.forEach((fieldName) => {
@@ -291,7 +296,7 @@ class Form extends React.PureComponent {
             fullWidth: true,
             InputLabelProps: { classes: { root: classes.inputLabel } },
             label: fieldInfo.ui.label,
-            margin: "dense",
+            margin: "normal",
             name: fieldName,
             defaultValue,
             variant: "outlined",
@@ -395,7 +400,7 @@ Form.propTypes = {
   classes: PropTypes.object.isRequired,
   defaultValues: PropTypes.object,
   entityType: PropTypes.string,
-  fields: PropTypes.any,
+  fieldset: PropTypes.any,
   fieldArrangement: PropTypes.array,
   representedObjectId: PropTypes.number,
   onMount: PropTypes.func,
