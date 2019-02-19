@@ -47,7 +47,7 @@ function FormFieldSet(props) {
           fullWidth: true,
           InputLabelProps: { classes: { root: classes.inputLabel } },
           label: fieldInfo.ui.label,
-          margin: "normal",
+          margin: "dense",
           name: fieldName,
           defaultValue,
           variant: "outlined",
