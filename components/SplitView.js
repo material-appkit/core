@@ -63,12 +63,12 @@ exports.default = (0, _styles.withStyles)(function (theme) {
       borderBottomWidth: 0,
       order: 1,
       minHeight: 'calc(100vh - ' + (theme.topBar.height + theme.navigationController.navBar.height) + 'px)',
-      minWidth: theme.sidebar.width,
       width: theme.sidebar.width
     }),
 
-    mainContent: {
-      flexGrow: 1
-    }
+    mainContent: _defineProperty({}, theme.breakpoints.up('md'), {
+      width: 'calc(100vw - ' + theme.navbar.width + 'px - ' + theme.sidebar.width + 'px)'
+    })
+
   };
 })(SplitView);
