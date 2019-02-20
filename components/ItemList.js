@@ -388,7 +388,7 @@ ItemList.propTypes = {
   clickAction: _propTypes2.default.oneOf(['link', 'edit']),
   EditDialogComponent: _propTypes2.default.func,
   editDialogProps: _propTypes2.default.object,
-  entityType: _propTypes2.default.string.isRequired,
+  entityType: _propTypes2.default.string,
   filterBy: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
   items: _propTypes2.default.array.isRequired,
   onItemClick: _propTypes2.default.func,
