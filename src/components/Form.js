@@ -42,16 +42,6 @@ class Form extends React.PureComponent {
       detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.representedObjectId });
     }
     this.detailUrl = detailUrl;
-
-    this.fieldArrangementMap = {};
-    if (props.fieldArrangement) {
-      props.fieldArrangement.forEach((fieldInfo) => {
-        if (typeof(fieldInfo) === 'string') {
-          fieldInfo = { name: fieldInfo };
-        }
-        this.fieldArrangementMap[fieldInfo.name] = fieldInfo;
-      });
-    }
   }
 
   componentDidMount() {
@@ -92,6 +82,26 @@ class Form extends React.PureComponent {
     } else {
       return [];
     }
+  }
+
+  get fieldArrangementMap() {
+    const fieldArrangementMap = {};
+    if (this.props.fieldArrangement) {
+      this.props.fieldArrangement.forEach((fieldInfo) => {
+        if (typeof(fieldInfo) === 'string') {
+          fieldInfo = { name: fieldInfo };
+        }
+        fieldArrangementMap[fieldInfo.name] = fieldInfo;
+      });
+    } else if (this.state.metadata) {
+      this.state.metadata.forEach((fieldInfo) => {
+        if (!fieldInfo.read_only) {
+          const fieldName = fieldInfo.key;
+          fieldArrangementMap[fieldName] = { name: fieldName };
+        }
+      });
+    }
+    return fieldArrangementMap;
   }
 
   get formData() {

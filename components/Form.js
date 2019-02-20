@@ -88,16 +88,6 @@ var Form = function (_React$PureComponent) {
       detailUrl = (0, _urls.reverse)(_this.props.apiDetailUrlPath, { pk: props.representedObjectId });
     }
     _this.detailUrl = detailUrl;
-
-    _this.fieldArrangementMap = {};
-    if (props.fieldArrangement) {
-      props.fieldArrangement.forEach(function (fieldInfo) {
-        if (typeof fieldInfo === 'string') {
-          fieldInfo = { name: fieldInfo };
-        }
-        _this.fieldArrangementMap[fieldInfo.name] = fieldInfo;
-      });
-    }
     return _this;
   }
 
@@ -200,6 +190,27 @@ var Form = function (_React$PureComponent) {
       } else {
         return [];
       }
+    }
+  }, {
+    key: 'fieldArrangementMap',
+    get: function get() {
+      var fieldArrangementMap = {};
+      if (this.props.fieldArrangement) {
+        this.props.fieldArrangement.forEach(function (fieldInfo) {
+          if (typeof fieldInfo === 'string') {
+            fieldInfo = { name: fieldInfo };
+          }
+          fieldArrangementMap[fieldInfo.name] = fieldInfo;
+        });
+      } else if (this.state.metadata) {
+        this.state.metadata.forEach(function (fieldInfo) {
+          if (!fieldInfo.read_only) {
+            var fieldName = fieldInfo.key;
+            fieldArrangementMap[fieldName] = { name: fieldName };
+          }
+        });
+      }
+      return fieldArrangementMap;
     }
   }, {
     key: 'formData',
