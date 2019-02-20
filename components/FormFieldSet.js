@@ -52,6 +52,7 @@ function FormFieldSet(props) {
         var fieldArrangementInfo = fieldArrangementMap[fieldName];
         field = _react2.default.createElement(_ItemListField2.default, _extends({
           defaultItems: representedObject[fieldName],
+          key: fieldName,
           listUrl: fieldInfo.related_endpoint.singular + '/',
           name: fieldName,
           label: fieldInfo.ui.label
@@ -77,7 +78,7 @@ function FormFieldSet(props) {
           if (inputType === 'textarea') {
             textFieldProps.multiline = true;
             textFieldProps.rows = 2;
-            textFieldProps.rowsMax = 4;
+            textFieldProps.rowsMax = 20;
           } else {
             textFieldProps.type = inputType;
           }
