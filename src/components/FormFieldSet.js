@@ -7,6 +7,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { decorateErrors } from '../util/component';
 
 import ItemListField from './ItemListField';
+import { valueForKeyPath } from '../util/object';
 
 function FormFieldSet(props) {
   const {
@@ -23,14 +24,18 @@ function FormFieldSet(props) {
     const fieldInfo = fieldInfoMap[fieldName];
     if (!fieldInfo.read_only) {
       let field = null;
-      const defaultValue = representedObject[fieldName] || '';
+      const fieldArrangementInfo = fieldArrangementMap[fieldName];
+
+      // Establish the field's default value by _EITHER_ following a given key path
+      // from the field arrangement or simply the parameter
+      const defaultValueKeyPath = fieldArrangementInfo.defaultValueKeyPath || fieldName;
+      const defaultValue = valueForKeyPath(representedObject, defaultValueKeyPath) || '';
 
       if (fieldInfo.hidden) {
         field = (
           <input type="hidden" name={fieldName} defaultValue={defaultValue} />
         );
       } else if (fieldInfo.type === 'itemlist') {
-        const fieldArrangementInfo = fieldArrangementMap[fieldName];
         field = (
           <ItemListField
             defaultItems={representedObject[fieldName]}
@@ -97,6 +102,7 @@ function FormFieldSet(props) {
 FormFieldSet.propTypes = {
   classes: PropTypes.object.isRequired,
   errors: PropTypes.object,
+  fieldArrangementMap: PropTypes.object,
   fieldInfoMap: PropTypes.object,
   fieldNames: PropTypes.array,
   representedObject: PropTypes.object,

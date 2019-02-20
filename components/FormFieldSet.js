@@ -28,6 +28,8 @@ var _ItemListField = require('./ItemListField');
 
 var _ItemListField2 = _interopRequireDefault(_ItemListField);
 
+var _object = require('../util/object');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function FormFieldSet(props) {
@@ -44,12 +46,16 @@ function FormFieldSet(props) {
     var fieldInfo = fieldInfoMap[fieldName];
     if (!fieldInfo.read_only) {
       var field = null;
-      var defaultValue = representedObject[fieldName] || '';
+      var fieldArrangementInfo = fieldArrangementMap[fieldName];
+
+      // Establish the field's default value by _EITHER_ following a given key path
+      // from the field arrangement or simply the parameter
+      var defaultValueKeyPath = fieldArrangementInfo.defaultValueKeyPath || fieldName;
+      var defaultValue = (0, _object.valueForKeyPath)(representedObject, defaultValueKeyPath) || '';
 
       if (fieldInfo.hidden) {
         field = _react2.default.createElement('input', { type: 'hidden', name: fieldName, defaultValue: defaultValue });
       } else if (fieldInfo.type === 'itemlist') {
-        var fieldArrangementInfo = fieldArrangementMap[fieldName];
         field = _react2.default.createElement(_ItemListField2.default, _extends({
           defaultItems: representedObject[fieldName],
           key: fieldName,
@@ -116,6 +122,7 @@ function FormFieldSet(props) {
 FormFieldSet.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   errors: _propTypes2.default.object,
+  fieldArrangementMap: _propTypes2.default.object,
   fieldInfoMap: _propTypes2.default.object,
   fieldNames: _propTypes2.default.array,
   representedObject: _propTypes2.default.object,
