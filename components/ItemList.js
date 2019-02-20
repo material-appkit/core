@@ -164,35 +164,53 @@ var ItemList = function (_React$PureComponent) {
       editDialogOpen: false,
       editingObject: null,
       listDialogOpen: false
-    }, _this.attachItem = function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(item) {
-        var attachUrl, res;
+    }, _this.attachRecord = function () {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(record) {
+        var recordIndex, attachUrl, res;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                attachUrl = _this.attachUrl;
+                recordIndex = _this.props.items.findIndex(function (item) {
+                  return item.id === record.id;
+                });
 
-                if (!attachUrl) {
-                  _context.next = 6;
+                if (!(recordIndex !== -1)) {
+                  _context.next = 5;
                   break;
                 }
 
-                _context.next = 4;
-                return _ServiceAgent2.default.post(_this.attachUrl, { item_id: item.id });
+                _this.props.items[recordIndex] = record;
+                _context.next = 12;
+                break;
 
-              case 4:
-                res = _context.sent;
+              case 5:
+                attachUrl = _this.attachUrl;
 
-                item = res.body;
-
-              case 6:
-
-                if (_this.props.onAdd) {
-                  _this.props.onAdd(item);
+                if (!attachUrl) {
+                  _context.next = 11;
+                  break;
                 }
 
-              case 7:
+                _context.next = 9;
+                return _ServiceAgent2.default.post(_this.attachUrl, { item_id: record.id });
+
+              case 9:
+                res = _context.sent;
+
+                record = res.body;
+
+              case 11:
+
+                if (_this.props.onAdd) {
+                  _this.props.onAdd(record);
+                }
+
+              case 12:
+
+                _this.handleEditDialogClose();
+
+              case 13:
               case 'end':
                 return _context.stop();
             }
@@ -251,7 +269,7 @@ var ItemList = function (_React$PureComponent) {
     }, _this.handleListDialogDismiss = function (selection) {
       _this.setState({ listDialogOpen: false });
       if (selection) {
-        _this.attachItem(selection);
+        _this.attachRecord(selection);
       }
     }, _this.handleItemClick = function (item) {
       if (_this.props.mode === 'edit' && _this.props.clickAction === 'edit') {
@@ -263,16 +281,6 @@ var ItemList = function (_React$PureComponent) {
       }
     }, _this.handleEditDialogClose = function () {
       _this.setState({ editDialogOpen: false });
-    }, _this.handleEditDialogSave = function (record) {
-      var recordIndex = _this.props.items.findIndex(function (item) {
-        return item.id === record.id;
-      });
-
-      if (recordIndex !== -1) {
-        _this.props.items[recordIndex] = record;
-      } else if (_this.props.onAdd) {
-        _this.props.onAdd(record);
-      }
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
@@ -334,10 +342,11 @@ var ItemList = function (_React$PureComponent) {
           ),
           this.state.editDialogOpen && _react2.default.createElement(this.props.EditDialogComponent, {
             apiDetailUrl: this.state.editingObject ? this.state.editingObject.url : null,
-            attachUrl: this.attachUrl,
             entityType: this.props.entityType,
             onClose: this.handleEditDialogClose,
-            onSave: this.handleEditDialogSave
+            onSave: function onSave(record) {
+              _this3.attachRecord(record);
+            }
           })
         )
       );

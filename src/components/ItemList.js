@@ -111,16 +111,27 @@ class ItemList extends React.PureComponent {
     return `${baseUrl}${this.props.apiDetachSuffix}`;
   }
 
-  attachItem = async(item) => {
-    const attachUrl = this.attachUrl;
-    if (attachUrl) {
-      const res = await ServiceAgent.post(this.attachUrl, { item_id: item.id });
-      item = res.body;
+  attachRecord = async(record) => {
+    const recordIndex = this.props.items.findIndex((item) => {
+      return item.id === record.id;
+    });
+
+    if (recordIndex !== -1) {
+      this.props.items[recordIndex] = record;
+    } else {
+      const attachUrl = this.attachUrl;
+      if (attachUrl) {
+        const res = await ServiceAgent.post(this.attachUrl, { item_id: record.id });
+        record = res.body;
+      }
+
+      if (this.props.onAdd) {
+        this.props.onAdd(record);
+      }
     }
 
-    if (this.props.onAdd) {
-      this.props.onAdd(item);
-    }
+    this.handleEditDialogClose();
+
   };
 
   detachItem = async(item) => {
@@ -146,7 +157,7 @@ class ItemList extends React.PureComponent {
   handleListDialogDismiss = (selection) => {
     this.setState({ listDialogOpen: false });
     if (selection) {
-      this.attachItem(selection);
+      this.attachRecord(selection);
     }
   };
 
@@ -162,18 +173,6 @@ class ItemList extends React.PureComponent {
 
   handleEditDialogClose = () => {
     this.setState({ editDialogOpen: false });
-  };
-
-  handleEditDialogSave = (record) => {
-    const recordIndex = this.props.items.findIndex((item) => {
-      return item.id === record.id;
-    });
-
-    if (recordIndex !== -1) {
-      this.props.items[recordIndex] = record;
-    } else if (this.props.onAdd) {
-      this.props.onAdd(record);
-    }
   };
 
   render() {
@@ -225,10 +224,9 @@ class ItemList extends React.PureComponent {
             {this.state.editDialogOpen &&
               <this.props.EditDialogComponent
                 apiDetailUrl={this.state.editingObject ? this.state.editingObject.url : null}
-                attachUrl={this.attachUrl}
                 entityType={this.props.entityType}
                 onClose={this.handleEditDialogClose}
-                onSave={this.handleEditDialogSave}
+                onSave={(record) => { this.attachRecord(record) }}
               />
             }
           </React.Fragment>
