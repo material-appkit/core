@@ -31,15 +31,17 @@ function ItemListItem(props) {
     Component = Button;
     componentProps.className = classes.itemButton;
   } else {
-    Component = Link;
-
     if (item.path) {
+      Component = Link;
       componentProps.component = RouterLink;
       componentProps.to = item.path;
     } else if (item.media_url) {
+      Component = Link;
       componentProps.href = item.media_url;
       componentProps.rel = 'noopener';
       componentProps.target = '_blank';
+    } else {
+      Component = 'span';
     }
   }
 

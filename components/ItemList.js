@@ -85,15 +85,17 @@ function ItemListItem(props) {
     Component = _Button2.default;
     componentProps.className = classes.itemButton;
   } else {
-    Component = _Link2.default;
-
     if (item.path) {
+      Component = _Link2.default;
       componentProps.component = _reactRouterDom.Link;
       componentProps.to = item.path;
     } else if (item.media_url) {
+      Component = _Link2.default;
       componentProps.href = item.media_url;
       componentProps.rel = 'noopener';
       componentProps.target = '_blank';
+    } else {
+      Component = 'span';
     }
   }
 
