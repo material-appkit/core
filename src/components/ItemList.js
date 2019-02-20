@@ -9,8 +9,9 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
-import Link from '@material-ui/core/Link';
 import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -20,16 +21,17 @@ import ListDialog from './ListDialog';
 import ServiceAgent from '../util/ServiceAgent';
 
 function ItemListItem(props) {
-  const { classes, clickAction, item } = props;
+  const { classes, clickAction, item, mode } = props;
 
   let Component = null;
   let componentProps = {
     onClick: () => { props.onClick(item) },
   };
 
-  if (clickAction === 'edit') {
+  if (mode === 'edit' && clickAction === 'edit') {
     Component = Button;
     componentProps.className = classes.itemButton;
+    componentProps.color = 'primary';
   } else {
     if (item.path) {
       Component = Link;
@@ -41,7 +43,7 @@ function ItemListItem(props) {
       componentProps.rel = 'noopener';
       componentProps.target = '_blank';
     } else {
-      Component = 'span';
+      Component = Typography;
     }
   }
 

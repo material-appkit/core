@@ -85,6 +85,7 @@ class ItemListField extends React.PureComponent {
           <ItemList
             apiCreateUrl={this.props.createUrl}
             apiListUrl={this.props.listUrl}
+            clickAction="edit"
             entityType={this.props.entityType}
             filterBy={this.props.filterBy}
             items={this.state.items}

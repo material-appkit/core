@@ -22,13 +22,17 @@ var _Button = require('@material-ui/core/Button');
 
 var _Button2 = _interopRequireDefault(_Button);
 
+var _IconButton = require('@material-ui/core/IconButton');
+
+var _IconButton2 = _interopRequireDefault(_IconButton);
+
 var _Link = require('@material-ui/core/Link');
 
 var _Link2 = _interopRequireDefault(_Link);
 
-var _IconButton = require('@material-ui/core/IconButton');
+var _Typography = require('@material-ui/core/Typography');
 
-var _IconButton2 = _interopRequireDefault(_IconButton);
+var _Typography2 = _interopRequireDefault(_Typography);
 
 var _withStyles = require('@material-ui/core/styles/withStyles');
 
@@ -71,7 +75,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function ItemListItem(props) {
   var classes = props.classes,
       clickAction = props.clickAction,
-      item = props.item;
+      item = props.item,
+      mode = props.mode;
 
 
   var Component = null;
@@ -81,9 +86,10 @@ function ItemListItem(props) {
     }
   };
 
-  if (clickAction === 'edit') {
+  if (mode === 'edit' && clickAction === 'edit') {
     Component = _Button2.default;
     componentProps.className = classes.itemButton;
+    componentProps.color = 'primary';
   } else {
     if (item.path) {
       Component = _Link2.default;
@@ -95,7 +101,7 @@ function ItemListItem(props) {
       componentProps.rel = 'noopener';
       componentProps.target = '_blank';
     } else {
-      Component = 'span';
+      Component = _Typography2.default;
     }
   }
 

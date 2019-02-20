@@ -132,6 +132,7 @@ var ItemListField = function (_React$PureComponent) {
           _react2.default.createElement(_ItemList2.default, {
             apiCreateUrl: this.props.createUrl,
             apiListUrl: this.props.listUrl,
+            clickAction: 'edit',
             entityType: this.props.entityType,
             filterBy: this.props.filterBy,
             items: this.state.items,
