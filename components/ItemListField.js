@@ -135,6 +135,7 @@ var ItemListField = function (_React$PureComponent) {
             filterBy: this.props.filterBy,
             items: this.state.items,
             listItemComponent: this.props.listItemComponent,
+            listItemProps: this.props.listItemProps,
             mode: 'edit',
             onAdd: this.handleItemListAdd,
             onRemove: this.handleItemListRemove,
@@ -155,13 +156,15 @@ ItemListField.propTypes = {
   filterBy: _propTypes2.default.string,
   listUrl: _propTypes2.default.string.isRequired,
   listItemComponent: _propTypes2.default.func,
+  listItemProps: _propTypes2.default.object,
   label: _propTypes2.default.string,
   name: _propTypes2.default.string.isRequired,
   titleKey: _propTypes2.default.any.isRequired
 };
 
 ItemListField.defaultProps = {
-  listItemComponent: _VirtualizedListItem2.default
+  listItemComponent: _VirtualizedListItem2.default,
+  listItemProps: {}
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

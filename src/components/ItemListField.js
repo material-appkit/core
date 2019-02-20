@@ -88,6 +88,7 @@ class ItemListField extends React.PureComponent {
             filterBy={this.props.filterBy}
             items={this.state.items}
             listItemComponent={this.props.listItemComponent}
+            listItemProps={this.props.listItemProps}
             mode="edit"
             onAdd={this.handleItemListAdd}
             onRemove={this.handleItemListRemove}
@@ -106,6 +107,7 @@ ItemListField.propTypes = {
   filterBy: PropTypes.string,
   listUrl: PropTypes.string.isRequired,
   listItemComponent: PropTypes.func,
+  listItemProps: PropTypes.object,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   titleKey: PropTypes.any.isRequired,
@@ -113,6 +115,7 @@ ItemListField.propTypes = {
 
 ItemListField.defaultProps = {
   listItemComponent: VirtualizedListItem,
+  listItemProps: {},
 };
 
 export default withStyles((theme) => ({
