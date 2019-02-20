@@ -51,14 +51,16 @@ function valueForKeyPath(object, keyPath) {
   var keys = keyPath.split('.');
   var value = object;
 
-  keys.forEach(function (key) {
+  for (var i = 0, n = keys.length; i < n; ++i) {
+    var key = keys[i];
+
     // If the encoutnered property doesn't exist, bail out.
     if (value === null || value.hasOwnProperty(key) === false) {
       return null;
     }
 
     value = value[key];
-  });
+  }
 
   return value;
 }

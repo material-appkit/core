@@ -43,14 +43,16 @@ export function valueForKeyPath(object, keyPath) {
   const keys = keyPath.split('.');
   let value = object;
 
-  keys.forEach((key) => {
+  for (let i = 0, n = keys.length; i < n; ++i) {
+    const key = keys[i];
+
     // If the encoutnered property doesn't exist, bail out.
     if (value === null || value.hasOwnProperty(key) === false) {
       return null;
     }
 
     value = value[key];
-  });
+  }
 
   return value;
 }
