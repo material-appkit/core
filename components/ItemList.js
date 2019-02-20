@@ -341,8 +341,10 @@ var ItemList = function (_React$PureComponent) {
             })
           ),
           this.state.editDialogOpen && _react2.default.createElement(this.props.EditDialogComponent, {
+            apiCreateUrl: this.props.apiCreateUrl,
             apiDetailUrl: this.state.editingObject ? this.state.editingObject.url : null,
             entityType: this.props.entityType,
+            FormProps: this.props.editDialogFormProps,
             onClose: this.handleEditDialogClose,
             onSave: function onSave(record) {
               _this3.attachRecord(record);
@@ -384,6 +386,7 @@ ItemList.propTypes = {
   classes: _propTypes2.default.object,
   clickAction: _propTypes2.default.oneOf(['link', 'edit']),
   EditDialogComponent: _propTypes2.default.func,
+  editDialogFormProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
   filterBy: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
   items: _propTypes2.default.array.isRequired,
@@ -400,6 +403,7 @@ ItemList.propTypes = {
 ItemList.defaultProps = {
   clickAction: 'link',
   EditDialogComponent: _EditDialog2.default,
+  editDialogFormProps: {},
   listItemProps: {},
   mode: 'view'
 };
