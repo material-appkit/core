@@ -195,7 +195,7 @@ var ListDialog = function (_React$Component) {
     };
 
     _this.handleEditDialogSave = function (record) {
-      _this.store.prepend(record);
+      _this.dismiss(record);
     };
 
     _this.store = new _RemoteStore2.default({ endpoint: _this.props.apiListUrl });

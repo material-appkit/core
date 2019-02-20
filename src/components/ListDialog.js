@@ -125,7 +125,7 @@ class ListDialog extends React.Component {
   };
 
   handleEditDialogSave = (record) => {
-    this.store.prepend(record);
+    this.dismiss(record);
   };
 
   render() {
