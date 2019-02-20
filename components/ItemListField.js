@@ -130,6 +130,7 @@ var ItemListField = function (_React$PureComponent) {
             style: { display: 'none' }
           }),
           _react2.default.createElement(_ItemList2.default, {
+            apiCreateUrl: this.props.createUrl,
             apiListUrl: this.props.listUrl,
             entityType: this.props.entityType,
             filterBy: this.props.filterBy,
@@ -151,6 +152,7 @@ var ItemListField = function (_React$PureComponent) {
 
 ItemListField.propTypes = {
   classes: _propTypes2.default.object.isRequired,
+  createUrl: _propTypes2.default.string,
   defaultItems: _propTypes2.default.array,
   entityType: _propTypes2.default.string.isRequired,
   filterBy: _propTypes2.default.string,

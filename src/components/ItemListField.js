@@ -83,6 +83,7 @@ class ItemListField extends React.PureComponent {
           />
 
           <ItemList
+            apiCreateUrl={this.props.createUrl}
             apiListUrl={this.props.listUrl}
             entityType={this.props.entityType}
             filterBy={this.props.filterBy}
@@ -102,6 +103,7 @@ class ItemListField extends React.PureComponent {
 
 ItemListField.propTypes = {
   classes: PropTypes.object.isRequired,
+  createUrl: PropTypes.string,
   defaultItems: PropTypes.array,
   entityType: PropTypes.string.isRequired,
   filterBy: PropTypes.string,
