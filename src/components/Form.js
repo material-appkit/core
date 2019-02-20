@@ -28,7 +28,6 @@ class Form extends React.PureComponent {
 
     this.autoSaveTimer = null;
     this.formRef = React.createRef();
-    this._initialData = null;
 
     let detailUrl = null;
     if (props.apiDetailUrl) {
@@ -74,15 +73,6 @@ class Form extends React.PureComponent {
     }
   }
 
-  componentDidUpdate() {
-    const form = this.formRef.current;
-    if (form && !this._initialData) {
-      // When the form is rendered for the first time, gather its fields
-      // values to serve as the initial data.
-      this._initialData = this.formData;
-    }
-  }
-
   get fieldNames() {
     if (this.props.fieldArrangement) {
       const fieldNames = [];
@@ -105,8 +95,11 @@ class Form extends React.PureComponent {
   }
 
   get formData() {
-    const form = this.formRef.current;
-    return formToObject(form);
+    if (!this.formRef.current) {
+      return null;
+    }
+
+    return formToObject(this.formRef.current);
   }
 
   get fieldInfoMap() {
@@ -117,20 +110,6 @@ class Form extends React.PureComponent {
     return arrayToObject(this.state.metadata, 'key');
   }
 
-  get fields() {
-    return (
-      <this.props.FieldSet
-        errors={this.state.errors}
-        fieldArrangementMap={this.fieldArrangementMap}
-        fieldInfoMap={this.fieldInfoMap}
-        fieldNames={this.fieldNames}
-        form={this}
-        representedObject={this.state.referenceObject}
-        saving={this.state.saving}
-        {...this.props.FieldSetProps}
-      />
-    );
-  }
 
   /**
    * Decorate any given children with a 'disabled' prop while saving
@@ -228,7 +207,7 @@ class Form extends React.PureComponent {
         const changedData = {};
         Object.keys(formData).forEach((key) => {
           const value = formData[key];
-          if (!isEqual(value, this._initialData[key])) {
+          if (!isEqual(value, this.state.referenceObject[key])) {
             changedData[key] = value;
           }
         });
@@ -253,11 +232,6 @@ class Form extends React.PureComponent {
       requestData = this.coerceRequestData(requestData);
       const response = await ServiceAgent.request(requestMethod, requestUrl, requestData);
       const persistedObject = response.body;
-
-      // When the form is saved and a new persisted object has been established,
-      // we clear the initialData so that on the next componentDidUpdate it gets
-      // reset to the new persisted values.
-      this._initialData = null;
 
       this.setState({
         saving: false,
@@ -305,7 +279,9 @@ class Form extends React.PureComponent {
         justifyContent: 'center',
       };
       return (
-        <div style={loadingIndicatorContainerStyle}><CircularProgress /></div>
+        <div style={loadingIndicatorContainerStyle}>
+          <CircularProgress />
+        </div>
       );
     }
 
@@ -315,7 +291,16 @@ class Form extends React.PureComponent {
         onChange={this.handleFormChange}
         ref={this.formRef}
       >
-        {this.fields}
+        <this.props.FieldSet
+          errors={this.state.errors}
+          fieldArrangementMap={this.fieldArrangementMap}
+          fieldInfoMap={this.fieldInfoMap}
+          fieldNames={this.fieldNames}
+          form={this}
+          representedObject={this.state.referenceObject}
+          saving={this.state.saving}
+          {...this.props.FieldSetProps}
+        />
         {this.children}
       </form>
     );

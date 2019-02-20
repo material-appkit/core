@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -74,7 +74,6 @@ var Form = function (_React$PureComponent) {
 
     _this.autoSaveTimer = null;
     _this.formRef = _react2.default.createRef();
-    _this._initialData = null;
 
     var detailUrl = null;
     if (props.apiDetailUrl) {
@@ -124,16 +123,6 @@ var Form = function (_React$PureComponent) {
       }
     }
   }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate() {
-      var form = this.formRef.current;
-      if (form && !this._initialData) {
-        // When the form is rendered for the first time, gather its fields
-        // values to serve as the initial data.
-        this._initialData = this.formData;
-      }
-    }
-  }, {
     key: 'coerceRequestData',
     value: function coerceRequestData(data) {
       var fieldInfoMap = this.fieldInfoMap;
@@ -176,7 +165,15 @@ var Form = function (_React$PureComponent) {
           onChange: this.handleFormChange,
           ref: this.formRef
         },
-        this.fields,
+        _react2.default.createElement(this.props.FieldSet, _extends({
+          errors: this.state.errors,
+          fieldArrangementMap: this.fieldArrangementMap,
+          fieldInfoMap: this.fieldInfoMap,
+          fieldNames: this.fieldNames,
+          form: this,
+          representedObject: this.state.referenceObject,
+          saving: this.state.saving
+        }, this.props.FieldSetProps)),
         this.children
       );
     }
@@ -207,8 +204,11 @@ var Form = function (_React$PureComponent) {
   }, {
     key: 'formData',
     get: function get() {
-      var form = this.formRef.current;
-      return (0, _form.formToObject)(form);
+      if (!this.formRef.current) {
+        return null;
+      }
+
+      return (0, _form.formToObject)(this.formRef.current);
     }
   }, {
     key: 'fieldInfoMap',
@@ -218,19 +218,6 @@ var Form = function (_React$PureComponent) {
       }
 
       return (0, _array.arrayToObject)(this.state.metadata, 'key');
-    }
-  }, {
-    key: 'fields',
-    get: function get() {
-      return _react2.default.createElement(this.props.FieldSet, _extends({
-        errors: this.state.errors,
-        fieldArrangementMap: this.fieldArrangementMap,
-        fieldInfoMap: this.fieldInfoMap,
-        fieldNames: this.fieldNames,
-        form: this,
-        representedObject: this.state.referenceObject,
-        saving: this.state.saving
-      }, this.props.FieldSetProps));
     }
 
     /**
@@ -346,7 +333,7 @@ var _initialiseProps = function _initialiseProps() {
 
                 Object.keys(formData).forEach(function (key) {
                   var value = formData[key];
-                  if (!(0, _lodash2.default)(value, _this2._initialData[key])) {
+                  if (!(0, _lodash2.default)(value, _this2.state.referenceObject[key])) {
                     changedData[key] = value;
                   }
                 });
@@ -380,11 +367,6 @@ var _initialiseProps = function _initialiseProps() {
             response = _context2.sent;
             persistedObject = response.body;
 
-            // When the form is saved and a new persisted object has been established,
-            // we clear the initialData so that on the next componentDidUpdate it gets
-            // reset to the new persisted values.
-
-            _this2._initialData = null;
 
             _this2.setState({
               saving: false,
@@ -397,8 +379,8 @@ var _initialiseProps = function _initialiseProps() {
 
             return _context2.abrupt('return', persistedObject);
 
-          case 22:
-            _context2.prev = 22;
+          case 21:
+            _context2.prev = 21;
             _context2.t0 = _context2['catch'](10);
 
             _this2.setState({
@@ -410,12 +392,12 @@ var _initialiseProps = function _initialiseProps() {
               _this2.props.onError(_context2.t0);
             }
 
-          case 26:
+          case 25:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, _this2, [[10, 22]]);
+    }, _callee2, _this2, [[10, 21]]);
   }));
 
   this.handleFormSubmit = function (e) {
