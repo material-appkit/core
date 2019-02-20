@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _propTypes = require('prop-types');
@@ -340,16 +342,15 @@ var ItemList = function (_React$PureComponent) {
               onDismiss: this.handleListDialogDismiss
             })
           ),
-          this.state.editDialogOpen && _react2.default.createElement(this.props.EditDialogComponent, {
+          this.state.editDialogOpen && _react2.default.createElement(this.props.EditDialogComponent, _extends({
             apiCreateUrl: this.props.apiCreateUrl,
             apiDetailUrl: this.state.editingObject ? this.state.editingObject.url : null,
             entityType: this.props.entityType,
-            FormProps: this.props.editDialogFormProps,
             onClose: this.handleEditDialogClose,
             onSave: function onSave(record) {
               _this3.attachRecord(record);
             }
-          })
+          }, this.props.editDialogProps))
         )
       );
     }
@@ -386,7 +387,7 @@ ItemList.propTypes = {
   classes: _propTypes2.default.object,
   clickAction: _propTypes2.default.oneOf(['link', 'edit']),
   EditDialogComponent: _propTypes2.default.func,
-  editDialogFormProps: _propTypes2.default.object,
+  editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
   filterBy: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
   items: _propTypes2.default.array.isRequired,
@@ -403,7 +404,7 @@ ItemList.propTypes = {
 ItemList.defaultProps = {
   clickAction: 'link',
   EditDialogComponent: _EditDialog2.default,
-  editDialogFormProps: {},
+  editDialogProps: {},
   listItemProps: {},
   mode: 'view'
 };

@@ -226,9 +226,9 @@ class ItemList extends React.PureComponent {
                 apiCreateUrl={this.props.apiCreateUrl}
                 apiDetailUrl={this.state.editingObject ? this.state.editingObject.url : null}
                 entityType={this.props.entityType}
-                FormProps={this.props.editDialogFormProps}
                 onClose={this.handleEditDialogClose}
                 onSave={(record) => { this.attachRecord(record) }}
+                {...this.props.editDialogProps}
               />
             }
           </React.Fragment>
@@ -246,7 +246,7 @@ ItemList.propTypes = {
   classes: PropTypes.object,
   clickAction: PropTypes.oneOf(['link', 'edit']),
   EditDialogComponent: PropTypes.func,
-  editDialogFormProps: PropTypes.object,
+  editDialogProps: PropTypes.object,
   entityType: PropTypes.string.isRequired,
   filterBy: PropTypes.oneOfType([
     PropTypes.string,
@@ -266,7 +266,7 @@ ItemList.propTypes = {
 ItemList.defaultProps = {
   clickAction: 'link',
   EditDialogComponent: EditDialog,
-  editDialogFormProps: {},
+  editDialogProps: {},
   listItemProps: {},
   mode: 'view',
 };
