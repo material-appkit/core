@@ -130,7 +130,7 @@ var Form = function (_React$PureComponent) {
       if (form && !this._initialData) {
         // When the form is rendered for the first time, gather its fields
         // values to serve as the initial data.
-        this._initialData = (0, _form.formToObject)(form);
+        this._initialData = this.formData;
       }
     }
   }, {
@@ -205,6 +205,12 @@ var Form = function (_React$PureComponent) {
       }
     }
   }, {
+    key: 'formData',
+    get: function get() {
+      var form = this.formRef.current;
+      return (0, _form.formToObject)(form);
+    }
+  }, {
     key: 'fieldInfoMap',
     get: function get() {
       if (!this.state.metadata) {
@@ -221,6 +227,7 @@ var Form = function (_React$PureComponent) {
         fieldArrangementMap: this.fieldArrangementMap,
         fieldInfoMap: this.fieldInfoMap,
         fieldNames: this.fieldNames,
+        form: this,
         representedObject: this.state.referenceObject,
         saving: this.state.saving
       }, this.props.FieldSetProps));
@@ -316,7 +323,7 @@ var _initialiseProps = function _initialiseProps() {
     }, _callee, _this2);
   }));
   this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-    var updateMethod, form, formData, requestUrl, requestMethod, requestData, detailUrl, changedData, response, persistedObject;
+    var updateMethod, formData, requestUrl, requestMethod, requestData, detailUrl, changedData, response, persistedObject;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -326,8 +333,7 @@ var _initialiseProps = function _initialiseProps() {
 
             _this2.setState({ errors: {}, saving: true });
 
-            form = _this2.formRef.current;
-            formData = (0, _form.formToObject)(form);
+            formData = _this2.formData;
             requestUrl = null;
             requestMethod = null;
             requestData = null;
@@ -357,20 +363,20 @@ var _initialiseProps = function _initialiseProps() {
             }
 
             if (requestMethod && requestUrl && requestData) {
-              _context2.next = 11;
+              _context2.next = 10;
               break;
             }
 
             throw new Error('Missing one or more required paramers for form request');
 
-          case 11:
-            _context2.prev = 11;
+          case 10:
+            _context2.prev = 10;
 
             requestData = _this2.coerceRequestData(requestData);
-            _context2.next = 15;
+            _context2.next = 14;
             return _util.ServiceAgent.request(requestMethod, requestUrl, requestData);
 
-          case 15:
+          case 14:
             response = _context2.sent;
             persistedObject = response.body;
 
@@ -391,9 +397,9 @@ var _initialiseProps = function _initialiseProps() {
 
             return _context2.abrupt('return', persistedObject);
 
-          case 23:
-            _context2.prev = 23;
-            _context2.t0 = _context2['catch'](11);
+          case 22:
+            _context2.prev = 22;
+            _context2.t0 = _context2['catch'](10);
 
             _this2.setState({
               saving: false,
@@ -404,12 +410,12 @@ var _initialiseProps = function _initialiseProps() {
               _this2.props.onError(_context2.t0);
             }
 
-          case 27:
+          case 26:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, _this2, [[11, 23]]);
+    }, _callee2, _this2, [[10, 22]]);
   }));
 
   this.handleFormSubmit = function (e) {

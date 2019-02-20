@@ -79,7 +79,7 @@ class Form extends React.PureComponent {
     if (form && !this._initialData) {
       // When the form is rendered for the first time, gather its fields
       // values to serve as the initial data.
-      this._initialData = formToObject(form);
+      this._initialData = this.formData;
     }
   }
 
@@ -104,12 +104,42 @@ class Form extends React.PureComponent {
     }
   }
 
+  get formData() {
+    const form = this.formRef.current;
+    return formToObject(form);
+  }
+
   get fieldInfoMap() {
     if (!this.state.metadata) {
       return null;
     }
 
     return arrayToObject(this.state.metadata, 'key');
+  }
+
+  get fields() {
+    return (
+      <this.props.FieldSet
+        errors={this.state.errors}
+        fieldArrangementMap={this.fieldArrangementMap}
+        fieldInfoMap={this.fieldInfoMap}
+        fieldNames={this.fieldNames}
+        form={this}
+        representedObject={this.state.referenceObject}
+        saving={this.state.saving}
+        {...this.props.FieldSetProps}
+      />
+    );
+  }
+
+  /**
+   * Decorate any given children with a 'disabled' prop while saving
+   */
+  get children() {
+    const disabled = this.state.saving;
+    return recursiveMap(this.props.children, (child) => {
+      return React.cloneElement(child, { disabled });
+    });
   }
 
   coerceRequestData(data) {
@@ -185,8 +215,7 @@ class Form extends React.PureComponent {
 
     this.setState({ errors: {}, saving: true });
 
-    const form = this.formRef.current;
-    const formData = formToObject(form);
+    const formData = this.formData;
 
     let requestUrl = null;
     let requestMethod = null;
@@ -251,30 +280,6 @@ class Form extends React.PureComponent {
       }
     }
   };
-
-  get fields() {
-    return (
-      <this.props.FieldSet
-        errors={this.state.errors}
-        fieldArrangementMap={this.fieldArrangementMap}
-        fieldInfoMap={this.fieldInfoMap}
-        fieldNames={this.fieldNames}
-        representedObject={this.state.referenceObject}
-        saving={this.state.saving}
-        {...this.props.FieldSetProps}
-      />
-    );
-  }
-
-  /**
-   * Decorate any given children with a 'disabled' prop while saving
-   */
-  get children() {
-    const disabled = this.state.saving;
-    return recursiveMap(this.props.children, (child) => {
-      return React.cloneElement(child, { disabled });
-    });
-  }
 
   handleFormSubmit = (e) => {
     e.preventDefault();
