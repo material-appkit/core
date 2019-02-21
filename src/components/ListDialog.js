@@ -203,6 +203,7 @@ class ListDialog extends React.Component {
             entityType={this.props.entityType}
             onClose={this.handleEditDialogClose}
             onSave={this.handleEditDialogSave}
+            {...this.props.editDialogProps}
           />
         }
       </React.Fragment>
@@ -214,6 +215,7 @@ ListDialog.propTypes = {
   apiCreateUrl: PropTypes.string,
   apiListUrl: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
+  editDialogProps: PropTypes.object,
   entityType: PropTypes.string.isRequired,
   filterBy: PropTypes.oneOfType([
     PropTypes.string,
@@ -225,6 +227,7 @@ ListDialog.propTypes = {
 };
 
 ListDialog.defaultProps = {
+  editDialogProps: {},
   listItemProps: {},
 };
 

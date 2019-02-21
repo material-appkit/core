@@ -312,12 +312,12 @@ var ListDialog = function (_React$Component) {
             )
           )
         ),
-        this.state.addDialogIsOpen && _react2.default.createElement(_EditDialog2.default, {
+        this.state.addDialogIsOpen && _react2.default.createElement(_EditDialog2.default, _extends({
           apiCreateUrl: this.props.apiCreateUrl,
           entityType: this.props.entityType,
           onClose: this.handleEditDialogClose,
           onSave: this.handleEditDialogSave
-        })
+        }, this.props.editDialogProps))
       );
     }
   }]);
@@ -329,6 +329,7 @@ ListDialog.propTypes = {
   apiCreateUrl: _propTypes2.default.string,
   apiListUrl: _propTypes2.default.string.isRequired,
   classes: _propTypes2.default.object.isRequired,
+  editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
   filterBy: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
   listItemComponent: _propTypes2.default.func.isRequired,
@@ -337,6 +338,7 @@ ListDialog.propTypes = {
 };
 
 ListDialog.defaultProps = {
+  editDialogProps: {},
   listItemProps: {}
 };
 

@@ -216,6 +216,7 @@ class ItemList extends React.PureComponent {
                 <ListDialog
                   apiCreateUrl={this.props.apiCreateUrl}
                   apiListUrl={this.props.apiListUrl}
+                  editDialogProps={this.props.editDialogProps}
                   entityType={this.props.entityType}
                   filterBy={this.props.filterBy}
                   listItemComponent={this.props.listItemComponent}

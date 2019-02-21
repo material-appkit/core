@@ -343,6 +343,7 @@ var ItemList = function (_React$PureComponent) {
             this.props.apiListUrl && this.state.listDialogOpen && _react2.default.createElement(_ListDialog2.default, {
               apiCreateUrl: this.props.apiCreateUrl,
               apiListUrl: this.props.apiListUrl,
+              editDialogProps: this.props.editDialogProps,
               entityType: this.props.entityType,
               filterBy: this.props.filterBy,
               listItemComponent: this.props.listItemComponent,
