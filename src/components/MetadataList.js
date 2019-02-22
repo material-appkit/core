@@ -3,12 +3,38 @@ import titleCase from 'title-case';
 
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import { valueForKeyPath } from '../util/object';
 
 // -----------------------------------------------------------------------------
-function _MetadataListItem(props) {
+const MetadataListItem = withStyles({
+  listItemRoot: {
+    padding: '2px 0',
+  },
+
+  listItemTextRoot: {
+    padding: 0,
+  },
+
+  listItemTextPrimary: {
+    fontSize: '0.8rem',
+  },
+
+  label: {
+    fontSize: '0.8rem',
+    fontWeight: 600,
+    "&:after": {
+      content: '":"',
+    },
+    marginRight: 5,
+  },
+})((props) => {
   const { classes, fieldInfo, nullValue, representedObject } = props;
 
   let value = representedObject[fieldInfo.name];
@@ -21,8 +47,6 @@ function _MetadataListItem(props) {
       value = nullValue;
     }
   }
-
-  const listItemId = `${fieldInfo.name}MetadataListItem`;
 
   let label = fieldInfo.label;
   if (label === undefined) {
@@ -38,40 +62,30 @@ function _MetadataListItem(props) {
   }
 
   return (
-    <li key={fieldInfo.name} id={listItemId} className={classes.li}>
-      <label htmlFor={listItemId} className={classes.label}>{label}</label>
-      {value}
-    </li>
+    <ListItem classes={{ root: classes.listItemRoot }}>
+      <Typography className={classes.label}>{label}</Typography>
+      <ListItemText
+        classes={{
+          root: classes.listItemTextRoot,
+          primary: classes.listItemTextPrimary,
+        }}
+        primary={value}
+      />
+    </ListItem>
   );
-}
+});
 
-_MetadataListItem.propTypes = {
+MetadataListItem.propTypes = {
   classes: PropTypes.object.isRequired,
   fieldInfo: PropTypes.object.isRequired,
   nullValue: PropTypes.string,
   representedObject: PropTypes.object.isRequired,
 };
 
-const MetadataListItem = withStyles({
-  li: {
-    fontSize: '0.85rem',
-    margin: '2px 0',
-  },
-
-  label: {
-    display: 'inline-block',
-    fontWeight: 500,
-    "&:after": {
-      content: '":"',
-    },
-    marginRight: 5,
-  },
-})(_MetadataListItem);
-
 // -----------------------------------------------------------------------------
 function MetadataList(props) {
   return (
-    <ul>
+    <List disablePadding>
       {props.arrangement.map((fieldInfo) => (
         <MetadataListItem
           key={fieldInfo.name}
@@ -80,7 +94,7 @@ function MetadataList(props) {
           representedObject={props.representedObject}
         />
       ))}
-    </ul>
+    </List>
   );
 }
 

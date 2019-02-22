@@ -20,6 +20,22 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _List = require('@material-ui/core/List');
+
+var _List2 = _interopRequireDefault(_List);
+
+var _ListItem = require('@material-ui/core/ListItem');
+
+var _ListItem2 = _interopRequireDefault(_ListItem);
+
+var _ListItemText = require('@material-ui/core/ListItemText');
+
+var _ListItemText2 = _interopRequireDefault(_ListItemText);
+
+var _Typography = require('@material-ui/core/Typography');
+
+var _Typography2 = _interopRequireDefault(_Typography);
+
 var _withStyles = require('@material-ui/core/styles/withStyles');
 
 var _withStyles2 = _interopRequireDefault(_withStyles);
@@ -29,7 +45,28 @@ var _object = require('../util/object');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // -----------------------------------------------------------------------------
-function _MetadataListItem(props) {
+var MetadataListItem = (0, _withStyles2.default)({
+  listItemRoot: {
+    padding: '2px 0'
+  },
+
+  listItemTextRoot: {
+    padding: 0
+  },
+
+  listItemTextPrimary: {
+    fontSize: '0.8rem'
+  },
+
+  label: {
+    fontSize: '0.8rem',
+    fontWeight: 600,
+    "&:after": {
+      content: '":"'
+    },
+    marginRight: 5
+  }
+})(function (props) {
   var classes = props.classes,
       fieldInfo = props.fieldInfo,
       nullValue = props.nullValue,
@@ -47,8 +84,6 @@ function _MetadataListItem(props) {
     }
   }
 
-  var listItemId = fieldInfo.name + 'MetadataListItem';
-
   var label = fieldInfo.label;
   if (label === undefined) {
     label = (0, _titleCase2.default)(fieldInfo.name);
@@ -63,45 +98,35 @@ function _MetadataListItem(props) {
   }
 
   return _react2.default.createElement(
-    'li',
-    { key: fieldInfo.name, id: listItemId, className: classes.li },
+    _ListItem2.default,
+    { classes: { root: classes.listItemRoot } },
     _react2.default.createElement(
-      'label',
-      { htmlFor: listItemId, className: classes.label },
+      _Typography2.default,
+      { className: classes.label },
       label
     ),
-    value
+    _react2.default.createElement(_ListItemText2.default, {
+      classes: {
+        root: classes.listItemTextRoot,
+        primary: classes.listItemTextPrimary
+      },
+      primary: value
+    })
   );
-}
+});
 
-_MetadataListItem.propTypes = {
+MetadataListItem.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   fieldInfo: _propTypes2.default.object.isRequired,
   nullValue: _propTypes2.default.string,
   representedObject: _propTypes2.default.object.isRequired
 };
 
-var MetadataListItem = (0, _withStyles2.default)({
-  li: {
-    fontSize: '0.85rem',
-    margin: '2px 0'
-  },
-
-  label: {
-    display: 'inline-block',
-    fontWeight: 500,
-    "&:after": {
-      content: '":"'
-    },
-    marginRight: 5
-  }
-})(_MetadataListItem);
-
 // -----------------------------------------------------------------------------
 function MetadataList(props) {
   return _react2.default.createElement(
-    'ul',
-    null,
+    _List2.default,
+    { disablePadding: true },
     props.arrangement.map(function (fieldInfo) {
       return _react2.default.createElement(MetadataListItem, {
         key: fieldInfo.name,
