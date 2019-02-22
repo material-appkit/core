@@ -62,7 +62,9 @@ exports.default = (0, _styles.withStyles)(function (theme) {
       borderLeft: '1px solid #cacaca',
       borderBottomWidth: 0,
       order: 1,
+      position: 'fixed',
       minHeight: 'calc(100vh - ' + (theme.topBar.height + theme.navigationController.navBar.height) + 'px)',
+      right: 0,
       width: theme.sidebar.width
     }),
 
