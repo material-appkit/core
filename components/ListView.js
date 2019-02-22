@@ -281,7 +281,7 @@ exports.default = (0, _withStyles2.default)(function (theme) {
       borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
     },
     tab: {
-      padding: '0 10px'
+      minWidth: 100
     }
   };
 })(ListView);
