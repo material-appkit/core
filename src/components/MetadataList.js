@@ -3,7 +3,9 @@ import titleCase from 'title-case';
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
+import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -23,11 +25,11 @@ const MetadataListItem = withStyles({
   },
 
   listItemTextPrimary: {
-    fontSize: '0.8rem',
+    fontSize: '0.85rem',
   },
 
   label: {
-    fontSize: '0.8rem',
+    fontSize: '0.85rem',
     fontWeight: 600,
     "&:after": {
       content: '":"',
@@ -61,6 +63,18 @@ const MetadataListItem = withStyles({
     value = valueForKeyPath(value, fieldInfo.keyPath);
   }
 
+  let PrimaryComponent = Typography;
+  const primaryComponentProps = {};
+  if (fieldInfo.type === 'link' && representedObject.path) {
+    PrimaryComponent = Link;
+    primaryComponentProps.component = RouterLink;
+    primaryComponentProps.to = representedObject.path;
+  }
+
+  const primaryContent = (
+    <PrimaryComponent {...primaryComponentProps}>{value}</PrimaryComponent>
+  );
+
   return (
     <ListItem classes={{ root: classes.listItemRoot }}>
       <Typography className={classes.label}>{label}</Typography>
@@ -69,7 +83,7 @@ const MetadataListItem = withStyles({
           root: classes.listItemTextRoot,
           primary: classes.listItemTextPrimary,
         }}
-        primary={value}
+        primary={primaryContent}
       />
     </ListItem>
   );

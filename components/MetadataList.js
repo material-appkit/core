@@ -20,6 +20,12 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactRouterDom = require('react-router-dom');
+
+var _Link = require('@material-ui/core/Link');
+
+var _Link2 = _interopRequireDefault(_Link);
+
 var _List = require('@material-ui/core/List');
 
 var _List2 = _interopRequireDefault(_List);
@@ -55,11 +61,11 @@ var MetadataListItem = (0, _withStyles2.default)({
   },
 
   listItemTextPrimary: {
-    fontSize: '0.8rem'
+    fontSize: '0.85rem'
   },
 
   label: {
-    fontSize: '0.8rem',
+    fontSize: '0.85rem',
     fontWeight: 600,
     "&:after": {
       content: '":"'
@@ -97,6 +103,20 @@ var MetadataListItem = (0, _withStyles2.default)({
     value = (0, _object.valueForKeyPath)(value, fieldInfo.keyPath);
   }
 
+  var PrimaryComponent = _Typography2.default;
+  var primaryComponentProps = {};
+  if (fieldInfo.type === 'link' && representedObject.path) {
+    PrimaryComponent = _Link2.default;
+    primaryComponentProps.component = _reactRouterDom.Link;
+    primaryComponentProps.to = representedObject.path;
+  }
+
+  var primaryContent = _react2.default.createElement(
+    PrimaryComponent,
+    primaryComponentProps,
+    value
+  );
+
   return _react2.default.createElement(
     _ListItem2.default,
     { classes: { root: classes.listItemRoot } },
@@ -110,7 +130,7 @@ var MetadataListItem = (0, _withStyles2.default)({
         root: classes.listItemTextRoot,
         primary: classes.listItemTextPrimary
       },
-      primary: value
+      primary: primaryContent
     })
   );
 });
