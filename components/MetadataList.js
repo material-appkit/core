@@ -124,7 +124,7 @@ _MetadataListItem.propTypes = {
 var MetadataListItem = (0, _withStyles2.default)(function (theme) {
   return {
     listItemRoot: {
-      padding: '2px 0'
+      padding: '1px 0'
     },
 
     listItemTextRoot: {
