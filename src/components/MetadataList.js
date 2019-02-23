@@ -30,7 +30,7 @@ const MetadataListItem = withStyles({
 
   label: {
     fontSize: '0.85rem',
-    fontWeight: 600,
+    fontWeight: 500,
     "&:after": {
       content: '":"',
     },

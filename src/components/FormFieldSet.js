@@ -83,7 +83,7 @@ function FormFieldSet(props) {
               <React.Fragment>
                 <option />
                 {fieldInfo.choices.map((choice) => (
-                  <option key={choice.value} value={choice.value}>{choice.display_name}</option>
+                  <option key={choice.value} value={choice.value}>{choice.label}</option>
                 ))}
               </React.Fragment>
             }

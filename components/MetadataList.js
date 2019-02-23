@@ -66,7 +66,7 @@ var MetadataListItem = (0, _withStyles2.default)({
 
   label: {
     fontSize: '0.85rem',
-    fontWeight: 600,
+    fontWeight: 500,
     "&:after": {
       content: '":"'
     },

@@ -105,7 +105,7 @@ function FormFieldSet(props) {
               return _react2.default.createElement(
                 'option',
                 { key: choice.value, value: choice.value },
-                choice.display_name
+                choice.label
               );
             })
           )
