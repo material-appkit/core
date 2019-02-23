@@ -84,9 +84,11 @@ const DialogActions = withStyles((theme) => ({
 }))(MuiDialogActions);
 
 
-class ListDialog extends React.Component {
+class ListDialog extends React.PureComponent {
   constructor(props) {
     super(props);
+
+    this.dialogContentRef = React.createRef();
 
     this.store = new RemoteStore({ endpoint: this.props.apiListUrl });
     this.store.load({});
@@ -96,8 +98,6 @@ class ListDialog extends React.Component {
       selection: null,
       addDialogIsOpen: false,
     };
-
-    this.dialogContentRef = React.createRef();
   }
 
   dismiss = (value) => {

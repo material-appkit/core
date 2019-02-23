@@ -162,8 +162,8 @@ var DialogActions = (0, _withStyles2.default)(function (theme) {
   };
 })(_DialogActions2.default);
 
-var ListDialog = function (_React$Component) {
-  _inherits(ListDialog, _React$Component);
+var ListDialog = function (_React$PureComponent) {
+  _inherits(ListDialog, _React$PureComponent);
 
   function ListDialog(props) {
     _classCallCheck(this, ListDialog);
@@ -198,6 +198,8 @@ var ListDialog = function (_React$Component) {
       _this.dismiss(record);
     };
 
+    _this.dialogContentRef = _react2.default.createRef();
+
     _this.store = new _RemoteStore2.default({ endpoint: _this.props.apiListUrl });
     _this.store.load({});
 
@@ -206,8 +208,6 @@ var ListDialog = function (_React$Component) {
       selection: null,
       addDialogIsOpen: false
     };
-
-    _this.dialogContentRef = _react2.default.createRef();
     return _this;
   }
 
@@ -323,7 +323,7 @@ var ListDialog = function (_React$Component) {
   }]);
 
   return ListDialog;
-}(_react2.default.Component);
+}(_react2.default.PureComponent);
 
 ListDialog.propTypes = {
   apiCreateUrl: _propTypes2.default.string,

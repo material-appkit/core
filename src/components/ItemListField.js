@@ -86,6 +86,7 @@ class ItemListField extends React.PureComponent {
             apiCreateUrl={this.props.createUrl}
             apiListUrl={this.props.listUrl}
             clickAction="edit"
+            editDialogProps={this.props.editDialogProps}
             entityType={this.props.entityType}
             filterBy={this.props.filterBy}
             items={this.state.items}
@@ -106,6 +107,7 @@ ItemListField.propTypes = {
   classes: PropTypes.object.isRequired,
   createUrl: PropTypes.string,
   defaultItems: PropTypes.array,
+  editDialogProps: PropTypes.object,
   entityType: PropTypes.string.isRequired,
   filterBy: PropTypes.string,
   listUrl: PropTypes.string.isRequired,
@@ -117,6 +119,7 @@ ItemListField.propTypes = {
 };
 
 ItemListField.defaultProps = {
+  editDialogProps: {},
   listItemComponent: VirtualizedListItem,
   listItemProps: {},
 };

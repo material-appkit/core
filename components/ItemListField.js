@@ -133,6 +133,7 @@ var ItemListField = function (_React$PureComponent) {
             apiCreateUrl: this.props.createUrl,
             apiListUrl: this.props.listUrl,
             clickAction: 'edit',
+            editDialogProps: this.props.editDialogProps,
             entityType: this.props.entityType,
             filterBy: this.props.filterBy,
             items: this.state.items,
@@ -155,6 +156,7 @@ ItemListField.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   createUrl: _propTypes2.default.string,
   defaultItems: _propTypes2.default.array,
+  editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
   filterBy: _propTypes2.default.string,
   listUrl: _propTypes2.default.string.isRequired,
@@ -166,6 +168,7 @@ ItemListField.propTypes = {
 };
 
 ItemListField.defaultProps = {
+  editDialogProps: {},
   listItemComponent: _VirtualizedListItem2.default,
   listItemProps: {}
 };
