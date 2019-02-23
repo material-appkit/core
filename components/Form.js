@@ -413,7 +413,14 @@ var _initialiseProps = function _initialiseProps() {
 
   this.handleFormSubmit = function (e) {
     e.preventDefault();
-    _this2.save();
+
+    if (e.target === _this2.formRef.current) {
+      // For some reason when a <form> is submitted within a dialog that
+      // is rendered atop a view that also has a <form>, the underlying
+      // form also gets submitted.
+      // This check ensures that only the intended save method is invoked.
+      _this2.save();
+    }
   };
 
   this.handleFormChange = function (e) {

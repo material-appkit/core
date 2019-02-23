@@ -267,7 +267,14 @@ class Form extends React.PureComponent {
 
   handleFormSubmit = (e) => {
     e.preventDefault();
-    this.save();
+
+    if (e.target === this.formRef.current) {
+      // For some reason when a <form> is submitted within a dialog that
+      // is rendered atop a view that also has a <form>, the underlying
+      // form also gets submitted.
+      // This check ensures that only the intended save method is invoked.
+      this.save();
+    }
   };
 
 
