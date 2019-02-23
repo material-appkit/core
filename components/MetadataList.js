@@ -95,20 +95,20 @@ var MetadataListItem = (0, _withStyles2.default)({
     label = (0, _titleCase2.default)(fieldInfo.name);
   }
 
+  var PrimaryComponent = _Typography2.default;
+  var primaryComponentProps = {};
+  if (fieldInfo.type === 'link' && value.path) {
+    PrimaryComponent = _Link2.default;
+    primaryComponentProps.component = _reactRouterDom.Link;
+    primaryComponentProps.to = value.path;
+  }
+
   if (fieldInfo.transform) {
     value = fieldInfo.transform(value);
   } else if (fieldInfo.dateFormat) {
     value = (0, _moment2.default)(value).format(fieldInfo.dateFormat);
   } else if (fieldInfo.keyPath) {
     value = (0, _object.valueForKeyPath)(value, fieldInfo.keyPath);
-  }
-
-  var PrimaryComponent = _Typography2.default;
-  var primaryComponentProps = {};
-  if (fieldInfo.type === 'link' && representedObject.path) {
-    PrimaryComponent = _Link2.default;
-    primaryComponentProps.component = _reactRouterDom.Link;
-    primaryComponentProps.to = representedObject.path;
   }
 
   var primaryContent = _react2.default.createElement(

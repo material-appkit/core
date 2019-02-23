@@ -55,20 +55,21 @@ const MetadataListItem = withStyles({
     label = titleCase(fieldInfo.name);
   }
 
+  let PrimaryComponent = Typography;
+  const primaryComponentProps = {};
+  if (fieldInfo.type === 'link' && value.path) {
+    PrimaryComponent = Link;
+    primaryComponentProps.component = RouterLink;
+    primaryComponentProps.to = value.path;
+  }
+
+
   if (fieldInfo.transform) {
     value = fieldInfo.transform(value);
   } else if (fieldInfo.dateFormat) {
     value = moment(value).format(fieldInfo.dateFormat);
   } else if (fieldInfo.keyPath) {
     value = valueForKeyPath(value, fieldInfo.keyPath);
-  }
-
-  let PrimaryComponent = Typography;
-  const primaryComponentProps = {};
-  if (fieldInfo.type === 'link' && representedObject.path) {
-    PrimaryComponent = Link;
-    primaryComponentProps.component = RouterLink;
-    primaryComponentProps.to = representedObject.path;
   }
 
   const primaryContent = (
