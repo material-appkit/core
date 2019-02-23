@@ -14,10 +14,6 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _reactIntlUniversal = require('react-intl-universal');
-
-var _reactIntlUniversal2 = _interopRequireDefault(_reactIntlUniversal);
-
 var _docs = require('docs.flowjs');
 
 var _docs2 = _interopRequireDefault(_docs);
@@ -150,7 +146,7 @@ var FlowFileUploader = function (_React$PureComponent) {
       }
       var flowFile = files[0];
 
-      _this.setStatus(_reactIntlUniversal2.default.get('PREPARING') + '...', undefined);
+      _this.setStatus(_this.props.messages.PREPARING + '...', undefined);
 
       if (_this.reader) {
         _this.reader.readAsDataURL(flowFile.file);
@@ -161,11 +157,11 @@ var FlowFileUploader = function (_React$PureComponent) {
     };
 
     _this.handleFileProgress = function (file) {
-      _this.setStatus(_reactIntlUniversal2.default.get('UPLOADING') + '...', file.progress());
+      _this.setStatus(_this.props.messages.UPLOADING + '...', file.progress());
     };
 
     _this.handleFileSuccess = function (file, message) {
-      _this.setStatus(_reactIntlUniversal2.default.get('UPLOAD_COMPLETE') + '...', null);
+      _this.setStatus(_this.props.messages.UPLOAD_COMPLETE + '...', null);
 
       _this.flow.removeFile(file);
 
@@ -381,6 +377,7 @@ FlowFileUploader.propTypes = {
   defaultImage: _propTypes2.default.any,
   defaultSrc: _propTypes2.default.string,
   headers: _propTypes2.default.object,
+  messages: _propTypes2.default.object,
   multiple: _propTypes2.default.bool,
   onError: _propTypes2.default.func,
   onComplete: _propTypes2.default.func,
@@ -395,6 +392,11 @@ FlowFileUploader.defaultProps = {
   attributes: {},
   chunkSize: DEFAULT_CHUNK_SIZE,
   headers: {},
+  messages: {
+    PREPARING: 'Preparing',
+    UPLOADING: 'Uploading',
+    UPLOAD_COMPLETE: 'Upload Complete'
+  },
   multiple: false,
   query: {},
   uploadButtonTooltip: 'Upload',

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import intl from 'react-intl-universal';
 import { Redirect } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
@@ -22,9 +21,9 @@ class EditDialog extends React.Component {
 
     let title = props.entityType;
     if (props.apiDetailUrl || props.representedObjectId) {
-      title = `${intl.get('UPDATE').defaultMessage('Update')} ${title}`;
+      title = `${this.props.labels.UPDATE} ${title}`;
     } else {
-      title = `${intl.get('ADD').defaultMessage('Add')} ${title}`;
+      title = `${this.props.labels.ADD} ${title}`;
     }
 
     this.state = {
@@ -48,7 +47,7 @@ class EditDialog extends React.Component {
   };
 
   handleFormError = (err) => {
-    const errorMessage = intl.get('SAVE_FAIL_NOTIFICATION').defaultMessage('Unable to Save');
+    const errorMessage = this.props.labels.SAVE_FAIL_NOTIFICATION;
     SnackbarManager.error(errorMessage);
   };
 
@@ -84,10 +83,10 @@ class EditDialog extends React.Component {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => { this.dismiss(); }}>
-            {intl.get('CANCEL').defaultMessage('Cancel')}
+            {this.props.labels.CANCEL}
           </Button>
           <Button onClick={() => { this.commit(); }} color="primary">
-            {intl.get('SAVE').defaultMessage('Save')}
+            {this.props.labels.SAVE}
           </Button>
         </DialogActions>
       </Dialog>
@@ -99,6 +98,7 @@ EditDialog.propTypes = {
   classes: PropTypes.object,
   entityType: PropTypes.string.isRequired,
   FormProps: PropTypes.object,
+  labels: PropTypes.object,
   onLoad: PropTypes.func,
   onSave: PropTypes.func,
   onClose: PropTypes.func.isRequired,
@@ -107,6 +107,13 @@ EditDialog.propTypes = {
 EditDialog.defaultProps = {
   defaults: {},
   FormProps: {},
+  labels: {
+    ADD: 'dd',
+    CANCEL: 'Cancel',
+    SAVE: 'Save',
+    SAVE_FAIL_NOTIFICATION: 'Unable to Save',
+    UPDATE: 'Update',
+  },
 };
 
 

@@ -16,10 +16,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactIntlUniversal = require('react-intl-universal');
-
-var _reactIntlUniversal2 = _interopRequireDefault(_reactIntlUniversal);
-
 var _reactRouterDom = require('react-router-dom');
 
 var _Button = require('@material-ui/core/Button');
@@ -91,7 +87,7 @@ var EditDialog = function (_React$Component) {
     };
 
     _this.handleFormError = function (err) {
-      var errorMessage = _reactIntlUniversal2.default.get('SAVE_FAIL_NOTIFICATION').defaultMessage('Unable to Save');
+      var errorMessage = _this.props.labels.SAVE_FAIL_NOTIFICATION;
       _SnackbarManager2.default.error(errorMessage);
     };
 
@@ -99,9 +95,9 @@ var EditDialog = function (_React$Component) {
 
     var title = props.entityType;
     if (props.apiDetailUrl || props.representedObjectId) {
-      title = _reactIntlUniversal2.default.get('UPDATE').defaultMessage('Update') + ' ' + title;
+      title = _this.props.labels.UPDATE + ' ' + title;
     } else {
-      title = _reactIntlUniversal2.default.get('ADD').defaultMessage('Add') + ' ' + title;
+      title = _this.props.labels.ADD + ' ' + title;
     }
 
     _this.state = {
@@ -166,14 +162,14 @@ var EditDialog = function (_React$Component) {
             { onClick: function onClick() {
                 _this2.dismiss();
               } },
-            _reactIntlUniversal2.default.get('CANCEL').defaultMessage('Cancel')
+            this.props.labels.CANCEL
           ),
           _react2.default.createElement(
             _Button2.default,
             { onClick: function onClick() {
                 _this2.commit();
               }, color: 'primary' },
-            _reactIntlUniversal2.default.get('SAVE').defaultMessage('Save')
+            this.props.labels.SAVE
           )
         )
       );
@@ -187,6 +183,7 @@ EditDialog.propTypes = {
   classes: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
   FormProps: _propTypes2.default.object,
+  labels: _propTypes2.default.object,
   onLoad: _propTypes2.default.func,
   onSave: _propTypes2.default.func,
   onClose: _propTypes2.default.func.isRequired
@@ -194,7 +191,14 @@ EditDialog.propTypes = {
 
 EditDialog.defaultProps = {
   defaults: {},
-  FormProps: {}
+  FormProps: {},
+  labels: {
+    ADD: 'dd',
+    CANCEL: 'Cancel',
+    SAVE: 'Save',
+    SAVE_FAIL_NOTIFICATION: 'Unable to Save',
+    UPDATE: 'Update'
+  }
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

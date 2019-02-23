@@ -6,7 +6,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import intl from 'react-intl-universal';
 
 import Flow from 'docs.flowjs';
 
@@ -152,7 +151,7 @@ class FlowFileUploader extends React.PureComponent {
     }
     const flowFile = files[0];
 
-    this.setStatus(`${intl.get('PREPARING')}...`, undefined);
+    this.setStatus(`${this.props.messages.PREPARING}...`, undefined);
 
     if (this.reader) {
       this.reader.readAsDataURL(flowFile.file);
@@ -163,11 +162,11 @@ class FlowFileUploader extends React.PureComponent {
   };
 
   handleFileProgress = (file) => {
-    this.setStatus(`${intl.get('UPLOADING')}...`, file.progress());
+    this.setStatus(`${this.props.messages.UPLOADING}...`, file.progress());
   };
 
   handleFileSuccess = (file, message) => {
-    this.setStatus(`${intl.get('UPLOAD_COMPLETE')}...`, null);
+    this.setStatus(`${this.props.messages.UPLOAD_COMPLETE}...`, null);
 
     this.flow.removeFile(file);
 
@@ -279,6 +278,7 @@ FlowFileUploader.propTypes = {
   defaultImage: PropTypes.any,
   defaultSrc: PropTypes.string,
   headers: PropTypes.object,
+  messages: PropTypes.object,
   multiple: PropTypes.bool,
   onError: PropTypes.func,
   onComplete: PropTypes.func,
@@ -293,6 +293,11 @@ FlowFileUploader.defaultProps = {
   attributes: {},
   chunkSize: DEFAULT_CHUNK_SIZE,
   headers: {},
+  messages: {
+    PREPARING: 'Preparing',
+    UPLOADING: 'Uploading',
+    UPLOAD_COMPLETE: 'Upload Complete',
+  },
   multiple: false,
   query: {},
   uploadButtonTooltip: 'Upload',
