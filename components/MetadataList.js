@@ -51,28 +51,7 @@ var _object = require('../util/object');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // -----------------------------------------------------------------------------
-var MetadataListItem = (0, _withStyles2.default)({
-  listItemRoot: {
-    padding: '2px 0'
-  },
-
-  listItemTextRoot: {
-    padding: 0
-  },
-
-  listItemTextPrimary: {
-    fontSize: '0.85rem'
-  },
-
-  label: {
-    fontSize: '0.85rem',
-    fontWeight: 500,
-    "&:after": {
-      content: '":"'
-    },
-    marginRight: 5
-  }
-})(function (props) {
+function _MetadataListItem(props) {
   var classes = props.classes,
       fieldInfo = props.fieldInfo,
       nullValue = props.nullValue,
@@ -133,14 +112,39 @@ var MetadataListItem = (0, _withStyles2.default)({
       primary: primaryContent
     })
   );
-});
+}
 
-MetadataListItem.propTypes = {
+_MetadataListItem.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   fieldInfo: _propTypes2.default.object.isRequired,
   nullValue: _propTypes2.default.string,
   representedObject: _propTypes2.default.object.isRequired
 };
+
+var MetadataListItem = (0, _withStyles2.default)(function (theme) {
+  return {
+    listItemRoot: {
+      padding: '2px 0'
+    },
+
+    listItemTextRoot: {
+      padding: 0
+    },
+
+    listItemTextPrimary: {
+      fontSize: '0.85rem'
+    },
+
+    label: {
+      fontSize: '0.85rem',
+      fontWeight: 500,
+      "&:after": {
+        content: '":"'
+      },
+      marginRight: 5
+    }
+  };
+})(_MetadataListItem);
 
 // -----------------------------------------------------------------------------
 function MetadataList(props) {

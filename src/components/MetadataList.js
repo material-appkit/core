@@ -15,28 +15,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { valueForKeyPath } from '../util/object';
 
 // -----------------------------------------------------------------------------
-const MetadataListItem = withStyles({
-  listItemRoot: {
-    padding: '2px 0',
-  },
-
-  listItemTextRoot: {
-    padding: 0,
-  },
-
-  listItemTextPrimary: {
-    fontSize: '0.85rem',
-  },
-
-  label: {
-    fontSize: '0.85rem',
-    fontWeight: 500,
-    "&:after": {
-      content: '":"',
-    },
-    marginRight: 5,
-  },
-})((props) => {
+function _MetadataListItem(props) {
   const { classes, fieldInfo, nullValue, representedObject } = props;
 
   let value = representedObject[fieldInfo.name];
@@ -88,14 +67,37 @@ const MetadataListItem = withStyles({
       />
     </ListItem>
   );
-});
+}
 
-MetadataListItem.propTypes = {
+_MetadataListItem.propTypes = {
   classes: PropTypes.object.isRequired,
   fieldInfo: PropTypes.object.isRequired,
   nullValue: PropTypes.string,
   representedObject: PropTypes.object.isRequired,
 };
+
+const MetadataListItem = withStyles((theme) => ({
+  listItemRoot: {
+    padding: '2px 0',
+  },
+
+  listItemTextRoot: {
+    padding: 0,
+  },
+
+  listItemTextPrimary: {
+    fontSize: '0.85rem',
+  },
+
+  label: {
+    fontSize: '0.85rem',
+    fontWeight: 500,
+    "&:after": {
+      content: '":"',
+    },
+    marginRight: 5,
+  },
+}))(_MetadataListItem);
 
 // -----------------------------------------------------------------------------
 function MetadataList(props) {
