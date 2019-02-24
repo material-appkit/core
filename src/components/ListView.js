@@ -133,15 +133,19 @@ class ListView extends React.PureComponent {
   }
 
   get filterParams() {
-    const filterParams = this.props.filterParams || {};
-    Object.assign(filterParams, filterByKeys(this.qsParams, this.props.qsFilterParamNames));
+    const { filterParams, qsFilterParamNames } = this.props;
+
+    const params = filterParams || {};
+    if (qsFilterParamNames) {
+      Object.assign(params, filterByKeys(this.qsParams, qsFilterParamNames));
+    }
 
     const arrangementInfo = this.activeTabArrangement;
     if (arrangementInfo) {
-      Object.assign(filterParams, arrangementInfo.apiQueryParams);
+      Object.assign(params, arrangementInfo.apiQueryParams);
     }
 
-    return filterParams;
+    return params;
   }
 
   reloadItemStore = async() => {
@@ -195,7 +199,6 @@ ListView.propTypes = {
 
 ListView.defaultProps = {
   itemProps: {},
-  qsFilterParamNames: [],
 };
 
 export default withStyles((theme) => ({

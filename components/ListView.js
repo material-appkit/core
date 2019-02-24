@@ -235,15 +235,22 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'filterParams',
     get: function get() {
-      var filterParams = this.props.filterParams || {};
-      Object.assign(filterParams, (0, _object.filterByKeys)(this.qsParams, this.props.qsFilterParamNames));
+      var _props = this.props,
+          filterParams = _props.filterParams,
+          qsFilterParamNames = _props.qsFilterParamNames;
+
+
+      var params = filterParams || {};
+      if (qsFilterParamNames) {
+        Object.assign(params, (0, _object.filterByKeys)(this.qsParams, qsFilterParamNames));
+      }
 
       var arrangementInfo = this.activeTabArrangement;
       if (arrangementInfo) {
-        Object.assign(filterParams, arrangementInfo.apiQueryParams);
+        Object.assign(params, arrangementInfo.apiQueryParams);
       }
 
-      return filterParams;
+      return params;
     }
   }]);
 
@@ -270,8 +277,7 @@ ListView.propTypes = {
 };
 
 ListView.defaultProps = {
-  itemProps: {},
-  qsFilterParamNames: []
+  itemProps: {}
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {
