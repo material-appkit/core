@@ -126,6 +126,13 @@ class RemoteStore extends DataStore {
     req.then((res) => {
       this.requestContext = null;
 
+      // If no response data is available (ex: due to the request having been
+      // aborted, unload the store.
+      if (res === null) {
+        this.unload();
+        return null;
+      }
+
       const responseData = res.body;
 
       // Notify subscribers

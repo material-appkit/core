@@ -253,6 +253,13 @@ var RemoteStore = function (_DataStore) {
                 req.then(function (res) {
                   _this2.requestContext = null;
 
+                  // If no response data is available (ex: due to the request having been
+                  // aborted, unload the store.
+                  if (res === null) {
+                    _this2.unload();
+                    return null;
+                  }
+
                   var responseData = res.body;
 
                   // Notify subscribers
