@@ -157,6 +157,9 @@ var ListView = function (_React$PureComponent) {
       } else {
         if (tabIndex !== this.state.selectedTabIndex) {
           this.setState({ selectedTabIndex: tabIndex });
+          if (this.props.onTabChange) {
+            this.props.onTabChange(tabIndex, this.state.selectedTabIndex);
+          }
         }
         this.props.store.update(this.filterParams);
       }
@@ -268,6 +271,7 @@ ListView.propTypes = {
   itemProps: _propTypes2.default.object,
   onItemClick: _propTypes2.default.func,
   onSelectionChange: _propTypes2.default.func,
+  onTabChange: _propTypes2.default.func,
   location: _propTypes2.default.object.isRequired,
   mountPath: _propTypes2.default.string.isRequired,
   qsFilterParamNames: _propTypes2.default.array,
