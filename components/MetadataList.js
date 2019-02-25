@@ -58,6 +58,33 @@ function _MetadataListItem(props) {
       representedObject = props.representedObject;
 
 
+  function renderValue(value) {
+    if (Array.isArray(value)) {
+      return value.map(function (item) {
+        return _react2.default.createElement(
+          _ListItem2.default,
+          { key: item.id, classes: { root: classes.listItemRoot } },
+          _react2.default.createElement(_ListItemText2.default, {
+            classes: { root: classes.listItemTextRoot },
+            primary: _react2.default.createElement(
+              _Typography2.default,
+              null,
+              renderValue(item)
+            )
+          })
+        );
+      });
+    } else if (fieldInfo.transform) {
+      return fieldInfo.transform(value);
+    } else if (fieldInfo.dateFormat) {
+      return (0, _moment2.default)(value).format(fieldInfo.dateFormat);
+    } else if (fieldInfo.keyPath) {
+      return (0, _object.valueForKeyPath)(value, fieldInfo.keyPath);
+    } else {
+      return value;
+    }
+  }
+
   var value = representedObject[fieldInfo.name];
   if (!value) {
     if (!nullValue) {
@@ -80,20 +107,15 @@ function _MetadataListItem(props) {
     PrimaryComponent = _Link2.default;
     primaryComponentProps.component = _reactRouterDom.Link;
     primaryComponentProps.to = value.path;
-  }
-
-  if (fieldInfo.transform) {
-    value = fieldInfo.transform(value);
-  } else if (fieldInfo.dateFormat) {
-    value = (0, _moment2.default)(value).format(fieldInfo.dateFormat);
-  } else if (fieldInfo.keyPath) {
-    value = (0, _object.valueForKeyPath)(value, fieldInfo.keyPath);
+  } else if (Array.isArray(value)) {
+    PrimaryComponent = _List2.default;
+    primaryComponentProps.disablePadding = true;
   }
 
   var primaryContent = _react2.default.createElement(
     PrimaryComponent,
     primaryComponentProps,
-    value
+    renderValue(value)
   );
 
   return _react2.default.createElement(
@@ -105,10 +127,7 @@ function _MetadataListItem(props) {
       label
     ),
     _react2.default.createElement(_ListItemText2.default, {
-      classes: {
-        root: classes.listItemTextRoot,
-        primary: classes.listItemTextPrimary
-      },
+      classes: { root: classes.listItemTextRoot },
       primary: primaryContent
     })
   );
@@ -124,6 +143,8 @@ _MetadataListItem.propTypes = {
 var MetadataListItem = (0, _withStyles2.default)(function (theme) {
   return {
     listItemRoot: {
+      alignItems: 'start',
+      display: 'flex',
       padding: '1px 0'
     },
 
@@ -131,17 +152,12 @@ var MetadataListItem = (0, _withStyles2.default)(function (theme) {
       padding: 0
     },
 
-    listItemTextPrimary: {
-      fontSize: '0.85rem'
-    },
-
     label: {
-      fontSize: '0.85rem',
       fontWeight: 500,
+      marginRight: 5,
       "&:after": {
         content: '":"'
-      },
-      marginRight: 5
+      }
     }
   };
 })(_MetadataListItem);

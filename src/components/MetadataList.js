@@ -18,6 +18,27 @@ import { valueForKeyPath } from '../util/object';
 function _MetadataListItem(props) {
   const { classes, fieldInfo, nullValue, representedObject } = props;
 
+  function renderValue(value) {
+    if (Array.isArray(value)) {
+      return value.map((item) => (
+        <ListItem key={item.id} classes={{ root: classes.listItemRoot }}>
+          <ListItemText
+            classes={{ root: classes.listItemTextRoot }}
+            primary={<Typography>{renderValue(item)}</Typography>}
+          />
+        </ListItem>
+      ));
+    } else if (fieldInfo.transform) {
+      return fieldInfo.transform(value);
+    } else if (fieldInfo.dateFormat) {
+      return moment(value).format(fieldInfo.dateFormat);
+    } else if (fieldInfo.keyPath) {
+      return valueForKeyPath(value, fieldInfo.keyPath);
+    } else {
+      return value;
+    }
+  }
+
   let value = representedObject[fieldInfo.name];
   if (!value) {
     if (!nullValue) {
@@ -40,29 +61,22 @@ function _MetadataListItem(props) {
     PrimaryComponent = Link;
     primaryComponentProps.component = RouterLink;
     primaryComponentProps.to = value.path;
-  }
-
-
-  if (fieldInfo.transform) {
-    value = fieldInfo.transform(value);
-  } else if (fieldInfo.dateFormat) {
-    value = moment(value).format(fieldInfo.dateFormat);
-  } else if (fieldInfo.keyPath) {
-    value = valueForKeyPath(value, fieldInfo.keyPath);
+  } else if (Array.isArray(value)) {
+    PrimaryComponent = List;
+    primaryComponentProps.disablePadding = true;
   }
 
   const primaryContent = (
-    <PrimaryComponent {...primaryComponentProps}>{value}</PrimaryComponent>
+    <PrimaryComponent {...primaryComponentProps}>
+      {renderValue(value)}
+    </PrimaryComponent>
   );
 
   return (
     <ListItem classes={{ root: classes.listItemRoot }}>
       <Typography className={classes.label}>{label}</Typography>
       <ListItemText
-        classes={{
-          root: classes.listItemTextRoot,
-          primary: classes.listItemTextPrimary,
-        }}
+        classes={{ root: classes.listItemTextRoot }}
         primary={primaryContent}
       />
     </ListItem>
@@ -78,6 +92,8 @@ _MetadataListItem.propTypes = {
 
 const MetadataListItem = withStyles((theme) => ({
   listItemRoot: {
+    alignItems: 'start',
+    display: 'flex',
     padding: '1px 0',
   },
 
@@ -85,17 +101,12 @@ const MetadataListItem = withStyles((theme) => ({
     padding: 0,
   },
 
-  listItemTextPrimary: {
-    fontSize: '0.85rem',
-  },
-
   label: {
-    fontSize: '0.85rem',
     fontWeight: 500,
+    marginRight: 5,
     "&:after": {
       content: '":"',
     },
-    marginRight: 5,
   },
 }))(_MetadataListItem);
 
