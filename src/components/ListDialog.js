@@ -71,7 +71,6 @@ const DialogContent = withStyles((theme) => ({
     margin: 0,
     padding: 0,
     height: 300,
-    width: 300,
   },
 }))(MuiDialogContent);
 
@@ -140,9 +139,9 @@ class ListDialog extends React.PureComponent {
     return (
       <React.Fragment>
         <Dialog
-          open
+          classes={{ paper: classes.paper }}
           onClose={() => { this.dismiss(null); }}
-          PaperProps={{ id: 'listdialog-paper' }}
+          open
         >
           <DialogTitle
             onClose={() => { this.dismiss(); }}
@@ -168,6 +167,7 @@ class ListDialog extends React.PureComponent {
             <DialogContent className={classes.dialogContent}>
               <VirtualizedList
                 componentForItem={this.props.listItemComponent}
+                fullWidth
                 getScrollParent={() => this.dialogContentRef.current}
                 itemProps={itemProps}
                 itemContextProvider={this.listItemContextProvider}
@@ -231,16 +231,8 @@ ListDialog.defaultProps = {
   listItemProps: {},
 };
 
-export default withStyles({
-  filterField: {
-    backgroundColor: '#FFF',
-    borderRadius: 4,
-    height: 38,
-    padding: '0 16px',
-    marginBottom: 16,
-  },
-
-  progressBar: {
-    height: 2,
-  },
-})(ListDialog);
+export default withStyles((theme) => ({
+  filterField: theme.listDialog.filterField,
+  paper: theme.listDialog.paper,
+  progressBar: theme.listDialog.progressBar,
+}))(ListDialog);

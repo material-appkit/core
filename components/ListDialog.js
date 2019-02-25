@@ -146,8 +146,7 @@ var DialogContent = (0, _withStyles2.default)(function (theme) {
     root: {
       margin: 0,
       padding: 0,
-      height: 300,
-      width: 300
+      height: 300
     }
   };
 })(_DialogContent2.default);
@@ -232,11 +231,11 @@ var ListDialog = function (_React$PureComponent) {
         _react2.default.createElement(
           _Dialog2.default,
           {
-            open: true,
+            classes: { paper: classes.paper },
             onClose: function onClose() {
               _this2.dismiss(null);
             },
-            PaperProps: { id: 'listdialog-paper' }
+            open: true
           },
           _react2.default.createElement(
             DialogTitle,
@@ -270,6 +269,7 @@ var ListDialog = function (_React$PureComponent) {
               { className: classes.dialogContent },
               _react2.default.createElement(_VirtualizedList2.default, {
                 componentForItem: this.props.listItemComponent,
+                fullWidth: true,
                 getScrollParent: function getScrollParent() {
                   return _this2.dialogContentRef.current;
                 },
@@ -342,16 +342,10 @@ ListDialog.defaultProps = {
   listItemProps: {}
 };
 
-exports.default = (0, _withStyles2.default)({
-  filterField: {
-    backgroundColor: '#FFF',
-    borderRadius: 4,
-    height: 38,
-    padding: '0 16px',
-    marginBottom: 16
-  },
-
-  progressBar: {
-    height: 2
-  }
+exports.default = (0, _withStyles2.default)(function (theme) {
+  return {
+    filterField: theme.listDialog.filterField,
+    paper: theme.listDialog.paper,
+    progressBar: theme.listDialog.progressBar
+  };
 })(ListDialog);

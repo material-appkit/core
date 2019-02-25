@@ -193,7 +193,7 @@ EditDialog.defaultProps = {
   defaults: {},
   FormProps: {},
   labels: {
-    ADD: 'dd',
+    ADD: 'Add',
     CANCEL: 'Cancel',
     SAVE: 'Save',
     SAVE_FAIL_NOTIFICATION: 'Unable to Save',
