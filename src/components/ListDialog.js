@@ -90,7 +90,7 @@ class ListDialog extends React.PureComponent {
     this.dialogContentRef = React.createRef();
 
     this.store = new RemoteStore({ endpoint: this.props.apiListUrl });
-    this.store.load({});
+    this.store.load(this.props.filterParams);
 
     this.state = {
       loading: false,
@@ -103,17 +103,11 @@ class ListDialog extends React.PureComponent {
     this.props.onDismiss(value);
   };
 
-  updateFilterTerm = (filterTerm) => {
-    const filterParams = {};
+  handleSearchFilterChange = (filterTerm) => {
+    const filterParams = { ...this.props.filterParams };
+    console.log(filterParams);
     if (filterTerm) {
-      const filterBy = this.props.filterBy;
-      if (typeof(filterBy) === 'string') {
-        filterParams[filterBy] = filterTerm;
-      } else {
-        filterBy.forEach((paramName) => {
-          filterParams[paramName] = filterTerm;
-        });
-      }
+      filterParams[this.props.searchFilterParam] = filterTerm;
     }
 
     this.store.update(filterParams);
@@ -147,11 +141,11 @@ class ListDialog extends React.PureComponent {
             onClose={() => { this.dismiss(); }}
             text={`Select a ${this.props.entityType}`}
           >
-            {this.props.filterBy &&
+            {this.props.searchFilterParam &&
               <TextField
                 className={classes.filterField}
                 fullWidth
-                onTimeout={(value) => { this.updateFilterTerm(value); }}
+                onTimeout={this.handleSearchFilterChange}
                 timeoutDelay={500}
                 placeholder="Filter by search term..."
                 variant="outlined"
@@ -217,10 +211,8 @@ ListDialog.propTypes = {
   classes: PropTypes.object.isRequired,
   editDialogProps: PropTypes.object,
   entityType: PropTypes.string.isRequired,
-  filterBy: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.array,
-  ]),
+  filterParams: PropTypes.object,
+  searchFilterParam: PropTypes.string,
   listItemComponent: PropTypes.func.isRequired,
   listItemProps: PropTypes.object,
   onDismiss: PropTypes.func.isRequired,
@@ -228,6 +220,7 @@ ListDialog.propTypes = {
 
 ListDialog.defaultProps = {
   editDialogProps: {},
+  filterParams: {},
   listItemProps: {},
 };
 

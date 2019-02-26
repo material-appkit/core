@@ -173,17 +173,11 @@ var ListDialog = function (_React$PureComponent) {
       _this.props.onDismiss(value);
     };
 
-    _this.updateFilterTerm = function (filterTerm) {
-      var filterParams = {};
+    _this.handleSearchFilterChange = function (filterTerm) {
+      var filterParams = _extends({}, _this.props.filterParams);
+      console.log(filterParams);
       if (filterTerm) {
-        var filterBy = _this.props.filterBy;
-        if (typeof filterBy === 'string') {
-          filterParams[filterBy] = filterTerm;
-        } else {
-          filterBy.forEach(function (paramName) {
-            filterParams[paramName] = filterTerm;
-          });
-        }
+        filterParams[_this.props.searchFilterParam] = filterTerm;
       }
 
       _this.store.update(filterParams);
@@ -200,7 +194,7 @@ var ListDialog = function (_React$PureComponent) {
     _this.dialogContentRef = _react2.default.createRef();
 
     _this.store = new _RemoteStore2.default({ endpoint: _this.props.apiListUrl });
-    _this.store.load({});
+    _this.store.load(_this.props.filterParams);
 
     _this.state = {
       loading: false,
@@ -245,12 +239,10 @@ var ListDialog = function (_React$PureComponent) {
               },
               text: 'Select a ' + this.props.entityType
             },
-            this.props.filterBy && _react2.default.createElement(_TextField2.default, {
+            this.props.searchFilterParam && _react2.default.createElement(_TextField2.default, {
               className: classes.filterField,
               fullWidth: true,
-              onTimeout: function onTimeout(value) {
-                _this2.updateFilterTerm(value);
-              },
+              onTimeout: this.handleSearchFilterChange,
               timeoutDelay: 500,
               placeholder: 'Filter by search term...',
               variant: 'outlined'
@@ -331,7 +323,8 @@ ListDialog.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
-  filterBy: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
+  filterParams: _propTypes2.default.object,
+  searchFilterParam: _propTypes2.default.string,
   listItemComponent: _propTypes2.default.func.isRequired,
   listItemProps: _propTypes2.default.object,
   onDismiss: _propTypes2.default.func.isRequired
@@ -339,6 +332,7 @@ ListDialog.propTypes = {
 
 ListDialog.defaultProps = {
   editDialogProps: {},
+  filterParams: {},
   listItemProps: {}
 };
 

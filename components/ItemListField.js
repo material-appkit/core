@@ -144,7 +144,7 @@ var ItemListField = function (_React$PureComponent) {
             clickAction: 'edit',
             editDialogProps: this.props.editDialogProps,
             entityType: this.props.entityType,
-            filterBy: this.props.filterBy,
+            filterParams: this.props.filterParams,
             items: this.state.items,
             itemKeyPath: this.props.itemKeyPath,
             listItemComponent: this.props.listItemComponent,
@@ -153,6 +153,7 @@ var ItemListField = function (_React$PureComponent) {
             onAdd: this.handleItemListAdd,
             onRemove: this.handleItemListRemove,
             onUpdate: this.handleItemListUpdate,
+            searchFilterParam: this.props.searchFilterParam,
             titleKey: this.props.titleKey
           })
         )
@@ -169,18 +170,20 @@ ItemListField.propTypes = {
   defaultItems: _propTypes2.default.array,
   editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
-  filterBy: _propTypes2.default.string,
+  filterParams: _propTypes2.default.object,
   itemKeyPath: _propTypes2.default.string,
   listUrl: _propTypes2.default.string.isRequired,
   listItemComponent: _propTypes2.default.func,
   listItemProps: _propTypes2.default.object,
   label: _propTypes2.default.string,
   name: _propTypes2.default.string.isRequired,
+  searchFilterParam: _propTypes2.default.string,
   titleKey: _propTypes2.default.any.isRequired
 };
 
 ItemListField.defaultProps = {
   editDialogProps: {},
+  filterParams: {},
   listItemComponent: _VirtualizedListItem2.default,
   listItemProps: {}
 };

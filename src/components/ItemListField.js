@@ -95,7 +95,7 @@ class ItemListField extends React.PureComponent {
             clickAction="edit"
             editDialogProps={this.props.editDialogProps}
             entityType={this.props.entityType}
-            filterBy={this.props.filterBy}
+            filterParams={this.props.filterParams}
             items={this.state.items}
             itemKeyPath={this.props.itemKeyPath}
             listItemComponent={this.props.listItemComponent}
@@ -104,6 +104,7 @@ class ItemListField extends React.PureComponent {
             onAdd={this.handleItemListAdd}
             onRemove={this.handleItemListRemove}
             onUpdate={this.handleItemListUpdate}
+            searchFilterParam={this.props.searchFilterParam}
             titleKey={this.props.titleKey}
           />
         </fieldset>
@@ -118,18 +119,20 @@ ItemListField.propTypes = {
   defaultItems: PropTypes.array,
   editDialogProps: PropTypes.object,
   entityType: PropTypes.string.isRequired,
-  filterBy: PropTypes.string,
+  filterParams: PropTypes.object,
   itemKeyPath: PropTypes.string,
   listUrl: PropTypes.string.isRequired,
   listItemComponent: PropTypes.func,
   listItemProps: PropTypes.object,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
+  searchFilterParam: PropTypes.string,
   titleKey: PropTypes.any.isRequired,
 };
 
 ItemListField.defaultProps = {
   editDialogProps: {},
+  filterParams: {},
   listItemComponent: VirtualizedListItem,
   listItemProps: {},
 };

@@ -352,10 +352,11 @@ var ItemList = function (_React$PureComponent) {
               apiListUrl: this.props.apiListUrl,
               editDialogProps: this.props.editDialogProps,
               entityType: this.props.entityType,
-              filterBy: this.props.filterBy,
+              filterParams: this.props.filterParams,
               listItemComponent: this.props.listItemComponent,
               listItemProps: this.props.listItemProps,
-              onDismiss: this.handleListDialogDismiss
+              onDismiss: this.handleListDialogDismiss,
+              searchFilterParam: this.props.searchFilterParam
             })
           ),
           this.state.editDialogOpen && _react2.default.createElement(this.props.EditDialogComponent, _extends({
@@ -420,7 +421,7 @@ ItemList.propTypes = {
   EditDialogComponent: _propTypes2.default.func,
   editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string,
-  filterBy: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.array]),
+  filterParams: _propTypes2.default.object,
   items: _propTypes2.default.array.isRequired,
   itemKeyPath: _propTypes2.default.string,
   onItemClick: _propTypes2.default.func,
@@ -431,6 +432,7 @@ ItemList.propTypes = {
   listItemProps: _propTypes2.default.object,
   mode: _propTypes2.default.oneOf(['view', 'edit']),
   representedObject: _propTypes2.default.object,
+  searchFilterParam: _propTypes2.default.string,
   titleKey: _propTypes2.default.any.isRequired
 };
 
@@ -438,6 +440,7 @@ ItemList.defaultProps = {
   clickAction: 'link',
   EditDialogComponent: _EditDialog2.default,
   editDialogProps: {},
+  filterParams: {},
   listItemProps: {},
   mode: 'view'
 };

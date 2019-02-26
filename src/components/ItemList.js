@@ -234,10 +234,11 @@ class ItemList extends React.PureComponent {
                   apiListUrl={this.props.apiListUrl}
                   editDialogProps={this.props.editDialogProps}
                   entityType={this.props.entityType}
-                  filterBy={this.props.filterBy}
+                  filterParams={this.props.filterParams}
                   listItemComponent={this.props.listItemComponent}
                   listItemProps={this.props.listItemProps}
                   onDismiss={this.handleListDialogDismiss}
+                  searchFilterParam={this.props.searchFilterParam}
                 />
               }
             </React.Fragment>
@@ -269,10 +270,7 @@ ItemList.propTypes = {
   EditDialogComponent: PropTypes.func,
   editDialogProps: PropTypes.object,
   entityType: PropTypes.string,
-  filterBy: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.array,
-  ]),
+  filterParams: PropTypes.object,
   items: PropTypes.array.isRequired,
   itemKeyPath: PropTypes.string,
   onItemClick: PropTypes.func,
@@ -283,6 +281,7 @@ ItemList.propTypes = {
   listItemProps: PropTypes.object,
   mode: PropTypes.oneOf(['view', 'edit']),
   representedObject: PropTypes.object,
+  searchFilterParam: PropTypes.string,
   titleKey: PropTypes.any.isRequired,
 };
 
@@ -290,6 +289,7 @@ ItemList.defaultProps = {
   clickAction: 'link',
   EditDialogComponent: EditDialog,
   editDialogProps: {},
+  filterParams: {},
   listItemProps: {},
   mode: 'view',
 };
