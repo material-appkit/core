@@ -189,41 +189,44 @@ var ItemList = function (_React$PureComponent) {
                 });
 
                 if (!(recordIndex !== -1)) {
-                  _context.next = 6;
+                  _context.next = 7;
                   break;
                 }
 
                 items[recordIndex] = record;
-                _context.next = 13;
+                if (_this.props.onUpdate) {
+                  _this.props.onUpdate(record, recordIndex);
+                }
+                _context.next = 14;
                 break;
 
-              case 6:
+              case 7:
                 attachUrl = _this.attachUrl;
 
                 if (!attachUrl) {
-                  _context.next = 12;
+                  _context.next = 13;
                   break;
                 }
 
-                _context.next = 10;
+                _context.next = 11;
                 return _ServiceAgent2.default.post(_this.attachUrl, { item_id: record.id });
 
-              case 10:
+              case 11:
                 res = _context.sent;
 
                 record = res.body;
 
-              case 12:
+              case 13:
 
                 if (_this.props.onAdd) {
                   _this.props.onAdd(record);
                 }
 
-              case 13:
+              case 14:
 
                 _this.handleEditDialogClose();
 
-              case 14:
+              case 15:
               case 'end':
                 return _context.stop();
             }
@@ -421,8 +424,9 @@ ItemList.propTypes = {
   items: _propTypes2.default.array.isRequired,
   itemKeyPath: _propTypes2.default.string,
   onItemClick: _propTypes2.default.func,
-  onRemove: _propTypes2.default.func,
   onAdd: _propTypes2.default.func,
+  onRemove: _propTypes2.default.func,
+  onUpdate: _propTypes2.default.func,
   listItemComponent: _propTypes2.default.func,
   listItemProps: _propTypes2.default.object,
   mode: _propTypes2.default.oneOf(['view', 'edit']),

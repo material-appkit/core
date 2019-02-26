@@ -24,6 +24,7 @@ class ItemListField extends React.PureComponent {
 
     this.handleItemListAdd = this.handleItemListAdd.bind(this);
     this.handleItemListRemove = this.handleItemListRemove.bind(this);
+    this.handleItemListUpdate = this.handleItemListUpdate.bind(this);
 
     this.state = {
       items: [],
@@ -59,10 +60,16 @@ class ItemListField extends React.PureComponent {
     this.updateOptions(items);
   }
 
-  handleItemListRemove = (item) => {
+  handleItemListRemove(item) {
     const newItems = removeObject(this.state.items, 'id', item.id);
     this.updateOptions(newItems);
   };
+
+  handleItemListUpdate(item, itemIndex) {
+    const items = this.state.items.slice();
+    items[itemIndex] = item;
+    this.updateOptions(items);
+  }
 
 
   render() {
@@ -96,6 +103,7 @@ class ItemListField extends React.PureComponent {
             mode="edit"
             onAdd={this.handleItemListAdd}
             onRemove={this.handleItemListRemove}
+            onUpdate={this.handleItemListUpdate}
             titleKey={this.props.titleKey}
           />
         </fieldset>

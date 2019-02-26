@@ -134,6 +134,9 @@ class ItemList extends React.PureComponent {
 
     if (recordIndex !== -1) {
       items[recordIndex] = record;
+      if (this.props.onUpdate) {
+        this.props.onUpdate(record, recordIndex);
+      }
     } else {
       const attachUrl = this.attachUrl;
       if (attachUrl) {
@@ -273,8 +276,9 @@ ItemList.propTypes = {
   items: PropTypes.array.isRequired,
   itemKeyPath: PropTypes.string,
   onItemClick: PropTypes.func,
-  onRemove: PropTypes.func,
   onAdd: PropTypes.func,
+  onRemove: PropTypes.func,
+  onUpdate: PropTypes.func,
   listItemComponent: PropTypes.func,
   listItemProps: PropTypes.object,
   mode: PropTypes.oneOf(['view', 'edit']),

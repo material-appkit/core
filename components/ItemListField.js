@@ -56,15 +56,11 @@ var ItemListField = function (_React$PureComponent) {
 
     var _this = _possibleConstructorReturn(this, (ItemListField.__proto__ || Object.getPrototypeOf(ItemListField)).call(this, props));
 
-    _this.handleItemListRemove = function (item) {
-      var newItems = (0, _array.removeObject)(_this.state.items, 'id', item.id);
-      _this.updateOptions(newItems);
-    };
-
     _this.selectRef = _react2.default.createRef();
 
     _this.handleItemListAdd = _this.handleItemListAdd.bind(_this);
     _this.handleItemListRemove = _this.handleItemListRemove.bind(_this);
+    _this.handleItemListUpdate = _this.handleItemListUpdate.bind(_this);
 
     _this.state = {
       items: []
@@ -102,6 +98,19 @@ var ItemListField = function (_React$PureComponent) {
     value: function handleItemListAdd(item) {
       var items = this.state.items.slice();
       items.push(item);
+      this.updateOptions(items);
+    }
+  }, {
+    key: 'handleItemListRemove',
+    value: function handleItemListRemove(item) {
+      var newItems = (0, _array.removeObject)(this.state.items, 'id', item.id);
+      this.updateOptions(newItems);
+    }
+  }, {
+    key: 'handleItemListUpdate',
+    value: function handleItemListUpdate(item, itemIndex) {
+      var items = this.state.items.slice();
+      items[itemIndex] = item;
       this.updateOptions(items);
     }
   }, {
@@ -143,6 +152,7 @@ var ItemListField = function (_React$PureComponent) {
             mode: 'edit',
             onAdd: this.handleItemListAdd,
             onRemove: this.handleItemListRemove,
+            onUpdate: this.handleItemListUpdate,
             titleKey: this.props.titleKey
           })
         )
