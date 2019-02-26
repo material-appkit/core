@@ -54,7 +54,7 @@ exports.default = (0, _styles.withStyles)(function (theme) {
     }),
 
     sideBar: _defineProperty({
-      backgroundColor: '#fafafa',
+      backgroundColor: '#fcfcfc',
       borderBottom: '1px solid #cacaca',
       padding: theme.spacing.unit * 2
 
