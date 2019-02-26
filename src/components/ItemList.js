@@ -20,6 +20,8 @@ import EditDialog from './EditDialog';
 import ListDialog from './ListDialog';
 import ServiceAgent from '../util/ServiceAgent';
 
+import { valueForKeyPath } from '../util/object';
+
 function ItemListItem(props) {
   const { classes, clickAction, item, mode } = props;
 
@@ -115,13 +117,23 @@ class ItemList extends React.PureComponent {
     return `${baseUrl}${this.props.apiDetachSuffix}`;
   }
 
+  get items() {
+    const { items, itemKeyPath } = this.props;
+    if (!itemKeyPath) {
+      return items;
+    }
+
+    return items.map((item) => valueForKeyPath(item, itemKeyPath));
+  }
+
   attachRecord = async(record) => {
-    const recordIndex = this.props.items.findIndex((item) => {
+    const items = this.items;
+    const recordIndex = items.findIndex((item) => {
       return item.id === record.id;
     });
 
     if (recordIndex !== -1) {
-      this.props.items[recordIndex] = record;
+      items[recordIndex] = record;
     } else {
       const attachUrl = this.attachUrl;
       if (attachUrl) {
@@ -185,7 +197,7 @@ class ItemList extends React.PureComponent {
     return (
       <div>
         <ul>
-          {this.props.items.map((item) => (
+          {this.items.map((item) => (
             <StyledItemListItem
               clickAction={clickAction}
               key={item.id}
@@ -193,6 +205,7 @@ class ItemList extends React.PureComponent {
               onRemove={this.detachItem}
               mode={mode}
               item={item}
+              itemKeyPath={this.props.itemKeyPath}
               titleKey={this.props.titleKey}
             />
           ))}
@@ -258,6 +271,7 @@ ItemList.propTypes = {
     PropTypes.array,
   ]),
   items: PropTypes.array.isRequired,
+  itemKeyPath: PropTypes.string,
   onItemClick: PropTypes.func,
   onRemove: PropTypes.func,
   onAdd: PropTypes.func,
