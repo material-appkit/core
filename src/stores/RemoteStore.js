@@ -35,6 +35,8 @@ class RemoteStore extends DataStore {
       return;
     }
 
+    this.unload();
+
     this.params = filterEmptyValues(params);
     return this._load(page || 1, true);
   }
@@ -67,6 +69,13 @@ class RemoteStore extends DataStore {
     this.items = null;
     this.totalLength = null;
     this.pageCount = null;
+
+    if (this.requestContext) {
+      // Abort the currently in-flight request, if any
+      console.log('aborting request');
+      this.requestContext.request.abort();
+    }
+    this.requestContext = {};
   }
 
   subscribe(callback) {
@@ -116,12 +125,6 @@ class RemoteStore extends DataStore {
 
     this.isLoading = true;
 
-    if (this.requestContext) {
-      // Abort the currently in-flight request, if any
-      this.requestContext.request.abort();
-    }
-
-    this.requestContext = {};
     const req = ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
     req.then((res) => {
       this.requestContext = null;

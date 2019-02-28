@@ -70,10 +70,12 @@ var RemoteStore = function (_DataStore) {
 
               case 2:
 
+                this.unload();
+
                 this.params = (0, _object.filterEmptyValues)(params);
                 return _context.abrupt('return', this._load(page || 1, true));
 
-              case 4:
+              case 5:
               case 'end':
                 return _context.stop();
             }
@@ -176,6 +178,13 @@ var RemoteStore = function (_DataStore) {
       this.items = null;
       this.totalLength = null;
       this.pageCount = null;
+
+      if (this.requestContext) {
+        // Abort the currently in-flight request, if any
+        console.log('aborting request');
+        this.requestContext.request.abort();
+      }
+      this.requestContext = {};
     }
   }, {
     key: 'subscribe',
@@ -242,12 +251,6 @@ var RemoteStore = function (_DataStore) {
 
                 this.isLoading = true;
 
-                if (this.requestContext) {
-                  // Abort the currently in-flight request, if any
-                  this.requestContext.request.abort();
-                }
-
-                this.requestContext = {};
                 req = _util.ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
 
                 req.then(function (res) {
@@ -291,7 +294,7 @@ var RemoteStore = function (_DataStore) {
                   }
                 });
 
-              case 7:
+              case 5:
               case 'end':
                 return _context4.stop();
             }
