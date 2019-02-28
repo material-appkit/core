@@ -57,6 +57,12 @@ class ListView extends React.PureComponent {
 
 
   componentDidUpdate() {
+    if (this.props.location.pathname !== this.props.mountPath) {
+      // Since this component may be mounted in the background, only respond
+      // to location changes when it is "active"
+      return;
+    }
+
     if (this.subsetArrangement) {
       let tabIndex = indexOfKey(this.subsetKey, this.subsetArrangement);
       if (tabIndex === -1) {
@@ -144,12 +150,6 @@ class ListView extends React.PureComponent {
   }
 
   syncItemStore = () => {
-    if (this.props.location.pathname !== this.props.mountPath) {
-      // Since this component may be mounted in the background, only respond
-      // to location changes when it is "active"
-      return;
-    }
-
     const filterParams = this.filterParams;
     const storeParams = this.props.store.params;
     if (!filterParams || isEqual(filterParams, storeParams)) {

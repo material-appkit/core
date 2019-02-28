@@ -66,12 +66,6 @@ var ListView = function (_React$PureComponent) {
     };
 
     _this.syncItemStore = function () {
-      if (_this.props.location.pathname !== _this.props.mountPath) {
-        // Since this component may be mounted in the background, only respond
-        // to location changes when it is "active"
-        return;
-      }
-
       var filterParams = _this.filterParams;
       var storeParams = _this.props.store.params;
       if (!filterParams || (0, _lodash2.default)(filterParams, storeParams)) {
@@ -119,6 +113,12 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
+      if (this.props.location.pathname !== this.props.mountPath) {
+        // Since this component may be mounted in the background, only respond
+        // to location changes when it is "active"
+        return;
+      }
+
       if (this.subsetArrangement) {
         var tabIndex = (0, _map.indexOfKey)(this.subsetKey, this.subsetArrangement);
         if (tabIndex === -1) {
