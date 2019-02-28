@@ -1,3 +1,4 @@
+import isEqual from 'lodash.isequal';
 import qs from 'query-string';
 
 import PropTypes from 'prop-types';
@@ -56,39 +57,30 @@ class ListView extends React.PureComponent {
 
 
   componentDidUpdate() {
-    if (this.props.location.pathname !== this.props.mountPath) {
-      // Since this component may be mounted in the background, only respond
-      // to location changes when it is "active"
-      return;
-    }
-
-    if (!this.subsetArrangement) {
-      // If we have no subset arrangements, simply set the store update itself with
-      // respect to the current URL querystring
-      this.props.store.update(this.filterParams);
-      return;
-    }
-
-    let tabIndex = indexOfKey(this.subsetKey, this.subsetArrangement);
-    if (tabIndex === -1) {
-      // Decide whether we need to redirect.
-      // This will be the case when a subset arrangement is in effect and the
-      // querystring param does not match any of the existing subset names.
-      if (!this.state.redirectTo) {
-        const firstSubsetKey = this.subsetArrangement.keys().next().value;
-        let subsetConfig = this.subsetArrangement.get(firstSubsetKey);
-        this.setState({ redirectTo: subsetConfig.path });
+    if (this.subsetArrangement) {
+      let tabIndex = indexOfKey(this.subsetKey, this.subsetArrangement);
+      if (tabIndex === -1) {
+        // Decide whether we need to redirect.
+        // This will be the case when a subset arrangement is in effect and the
+        // querystring param does not match any of the existing subset names.
+        if (!this.state.redirectTo) {
+          const firstSubsetKey = this.subsetArrangement.keys().next().value;
+          let subsetConfig = this.subsetArrangement.get(firstSubsetKey);
+          this.setState({redirectTo: subsetConfig.path});
+        } else {
+          this.setState({redirectTo: null});
+        }
       } else {
-        this.setState({ redirectTo: null });
-      }
-    } else {
-      if (tabIndex !== this.state.selectedTabIndex) {
-        this.setState({ selectedTabIndex: tabIndex });
-        if (this.props.onTabChange) {
-          this.props.onTabChange(tabIndex, this.state.selectedTabIndex);
+        this.syncItemStore();
+        if (tabIndex !== this.state.selectedTabIndex) {
+          this.setState({ selectedTabIndex: tabIndex });
+          if (this.props.onTabChange) {
+            this.props.onTabChange(tabIndex, this.state.selectedTabIndex);
+          }
         }
       }
-      this.props.store.update(this.filterParams);
+    } else {
+      this.syncItemStore();
     }
   }
 
@@ -151,12 +143,20 @@ class ListView extends React.PureComponent {
     return params;
   }
 
-  reloadItemStore = async() => {
-    const filterParams = this.filterParams;
-    if (filterParams) {
+  syncItemStore = () => {
+    if (this.props.location.pathname !== this.props.mountPath) {
+      // Since this component may be mounted in the background, only respond
+      // to location changes when it is "active"
       return;
     }
-    this.props.store.update(filterParams);
+
+    const filterParams = this.filterParams;
+    const storeParams = this.props.store.params;
+    if (!filterParams || isEqual(filterParams, storeParams)) {
+      return;
+    }
+
+    this.props.store.load(filterParams);
   };
 
   render() {

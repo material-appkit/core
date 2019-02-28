@@ -6,6 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _lodash = require('lodash.isequal');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _queryString = require('query-string');
 
 var _queryString2 = _interopRequireDefault(_queryString);
@@ -42,8 +46,6 @@ var _object = require('../util/object');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -54,8 +56,6 @@ var ListView = function (_React$PureComponent) {
   _inherits(ListView, _React$PureComponent);
 
   function ListView(props) {
-    var _this2 = this;
-
     _classCallCheck(this, ListView);
 
     var _this = _possibleConstructorReturn(this, (ListView.__proto__ || Object.getPrototypeOf(ListView)).call(this, props));
@@ -64,32 +64,22 @@ var ListView = function (_React$PureComponent) {
       redirectTo: null,
       selectedTabIndex: null
     };
-    _this.reloadItemStore = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      var filterParams;
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              filterParams = _this.filterParams;
 
-              if (!filterParams) {
-                _context.next = 3;
-                break;
-              }
+    _this.syncItemStore = function () {
+      if (_this.props.location.pathname !== _this.props.mountPath) {
+        // Since this component may be mounted in the background, only respond
+        // to location changes when it is "active"
+        return;
+      }
 
-              return _context.abrupt('return');
+      var filterParams = _this.filterParams;
+      var storeParams = _this.props.store.params;
+      if (!filterParams || (0, _lodash2.default)(filterParams, storeParams)) {
+        return;
+      }
 
-            case 3:
-              _this.props.store.update(filterParams);
-
-            case 4:
-            case 'end':
-              return _context.stop();
-          }
-        }
-      }, _callee, _this2);
-    }));
-
+      _this.props.store.load(filterParams);
+    };
 
     _this.constructTabConfigList();
     return _this;
@@ -98,14 +88,14 @@ var ListView = function (_React$PureComponent) {
   _createClass(ListView, [{
     key: 'constructTabConfigList',
     value: function constructTabConfigList() {
-      var _this3 = this;
+      var _this2 = this;
 
       if (this.props.subsetArrangement) {
         var tabConfigList = [];
         var subsetArrangement = this.props.subsetArrangement;
 
         subsetArrangement.forEach(function (subset) {
-          var path = _this3.props.mountPath;
+          var path = _this2.props.mountPath;
 
           var subsetName = subset[0];
           if (subsetName) {
@@ -129,39 +119,30 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
-      if (this.props.location.pathname !== this.props.mountPath) {
-        // Since this component may be mounted in the background, only respond
-        // to location changes when it is "active"
-        return;
-      }
-
-      if (!this.subsetArrangement) {
-        // If we have no subset arrangements, simply set the store update itself with
-        // respect to the current URL querystring
-        this.props.store.update(this.filterParams);
-        return;
-      }
-
-      var tabIndex = (0, _map.indexOfKey)(this.subsetKey, this.subsetArrangement);
-      if (tabIndex === -1) {
-        // Decide whether we need to redirect.
-        // This will be the case when a subset arrangement is in effect and the
-        // querystring param does not match any of the existing subset names.
-        if (!this.state.redirectTo) {
-          var firstSubsetKey = this.subsetArrangement.keys().next().value;
-          var subsetConfig = this.subsetArrangement.get(firstSubsetKey);
-          this.setState({ redirectTo: subsetConfig.path });
+      if (this.subsetArrangement) {
+        var tabIndex = (0, _map.indexOfKey)(this.subsetKey, this.subsetArrangement);
+        if (tabIndex === -1) {
+          // Decide whether we need to redirect.
+          // This will be the case when a subset arrangement is in effect and the
+          // querystring param does not match any of the existing subset names.
+          if (!this.state.redirectTo) {
+            var firstSubsetKey = this.subsetArrangement.keys().next().value;
+            var subsetConfig = this.subsetArrangement.get(firstSubsetKey);
+            this.setState({ redirectTo: subsetConfig.path });
+          } else {
+            this.setState({ redirectTo: null });
+          }
         } else {
-          this.setState({ redirectTo: null });
-        }
-      } else {
-        if (tabIndex !== this.state.selectedTabIndex) {
-          this.setState({ selectedTabIndex: tabIndex });
-          if (this.props.onTabChange) {
-            this.props.onTabChange(tabIndex, this.state.selectedTabIndex);
+          this.syncItemStore();
+          if (tabIndex !== this.state.selectedTabIndex) {
+            this.setState({ selectedTabIndex: tabIndex });
+            if (this.props.onTabChange) {
+              this.props.onTabChange(tabIndex, this.state.selectedTabIndex);
+            }
           }
         }
-        this.props.store.update(this.filterParams);
+      } else {
+        this.syncItemStore();
       }
     }
   }, {
@@ -189,7 +170,7 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'tabs',
     get: function get() {
-      var _this4 = this;
+      var _this3 = this;
 
       if (!this.tabConfigList || this.state.selectedTabIndex === null) {
         return null;
@@ -208,7 +189,7 @@ var ListView = function (_React$PureComponent) {
         this.tabConfigList.map(function (tabConfig) {
           return _react2.default.createElement(_Tab2.default, {
             component: _reactRouterDom.Link,
-            className: _this4.props.classes.tab,
+            className: _this3.props.classes.tab,
             key: tabConfig.subsetName,
             label: tabConfig.label,
             to: tabConfig.path
