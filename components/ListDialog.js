@@ -175,7 +175,6 @@ var ListDialog = function (_React$PureComponent) {
 
     _this.handleSearchFilterChange = function (filterTerm) {
       var filterParams = _extends({}, _this.props.filterParams);
-      console.log(filterParams);
       if (filterTerm) {
         filterParams[_this.props.searchFilterParam] = filterTerm;
       }

@@ -105,7 +105,6 @@ class ListDialog extends React.PureComponent {
 
   handleSearchFilterChange = (filterTerm) => {
     const filterParams = { ...this.props.filterParams };
-    console.log(filterParams);
     if (filterTerm) {
       filterParams[this.props.searchFilterParam] = filterTerm;
     }
