@@ -113,7 +113,7 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
-      if (this.props.location.pathname !== this.props.mountPath) {
+      if (this.props.match.path !== this.props.mountPath) {
         // Since this component may be mounted in the background, only respond
         // to location changes when it is "active"
         return;
