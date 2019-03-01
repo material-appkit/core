@@ -27,10 +27,11 @@ function FormFieldSet(props) {
     if (!fieldInfo.read_only) {
       let field = null;
       const value = formData[fieldName];
+      const label = fieldInfo.ui ? fieldInfo.ui.label : null;
 
       const commonFieldProps = {
         key: fieldName,
-        label: fieldInfo.ui.label,
+        label,
         name: fieldName,
       };
 

@@ -104,7 +104,6 @@ EditDialog.propTypes = {
 };
 
 EditDialog.defaultProps = {
-  defaults: {},
   FormProps: {},
   labels: {
     ADD: 'Add',
