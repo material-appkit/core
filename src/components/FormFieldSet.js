@@ -16,46 +16,49 @@ function FormFieldSet(props) {
     fieldArrangementMap,
     fieldInfoMap,
     fieldNames,
-    representedObject,
+    form,
   } = props;
+
+  const formData = form.state.formData;
 
   const fields = [];
   fieldNames.forEach((fieldName) => {
     const fieldInfo = fieldInfoMap[fieldName];
     if (!fieldInfo.read_only) {
       let field = null;
-      const fieldArrangementInfo = fieldArrangementMap[fieldName];
+      const value = formData[fieldName];
 
-      // Establish the field's default value by _EITHER_ following a given key path
-      // from the field arrangement or simply the parameter
-      const defaultValueKeyPath = fieldArrangementInfo.defaultValueKeyPath || fieldName;
-      const defaultValue = valueForKeyPath(representedObject, defaultValueKeyPath) || '';
+      const commonFieldProps = {
+        key: fieldName,
+        label: fieldInfo.ui.label,
+        name: fieldName,
+      };
 
       if (fieldInfo.hidden) {
         field = (
-          <input type="hidden" name={fieldName} defaultValue={defaultValue} />
+          <input type="hidden" {...commonFieldProps} />
         );
       } else if (fieldInfo.type === 'itemlist') {
+        const fieldArrangementInfo = fieldArrangementMap[fieldName];
+
         field = (
           <ItemListField
-            defaultItems={representedObject[fieldName]}
-            key={fieldName}
+            items={value}
             listUrl={`${fieldInfo.related_endpoint.singular}/`}
-            name={fieldName}
-            label={fieldInfo.ui.label}
+            onChange={(value) => { form.setValue(fieldName, value); }}
+            {...commonFieldProps}
             {...fieldArrangementInfo}
           />
         );
       } else {
         const textFieldProps = {
+          ...commonFieldProps,
           disabled: props.saving,
-          key: fieldName,
           fullWidth: true,
           InputLabelProps: { classes: { root: classes.inputLabel } },
-          label: fieldInfo.ui.label,
           margin: "normal",
-          name: fieldName,
-          defaultValue,
+          onChange: (e) => { form.setValue(fieldName, e.target.value); },
+          value,
           variant: "outlined",
         };
 
@@ -91,7 +94,6 @@ function FormFieldSet(props) {
         );
       }
 
-
       fields.push(decorateErrors(field, errors));
     }
   });
@@ -102,10 +104,10 @@ function FormFieldSet(props) {
 FormFieldSet.propTypes = {
   classes: PropTypes.object.isRequired,
   errors: PropTypes.object,
+  form: PropTypes.object.isRequired,
   fieldArrangementMap: PropTypes.object,
   fieldInfoMap: PropTypes.object,
   fieldNames: PropTypes.array,
-  representedObject: PropTypes.object,
   saving: PropTypes.bool,
 };
 

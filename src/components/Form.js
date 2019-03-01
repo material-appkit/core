@@ -21,6 +21,7 @@ class Form extends React.PureComponent {
     this.state = {
       errors: {},
       referenceObject: null,
+      formData: null,
       metadata: null,
       loading: false,
       saving: false,
@@ -104,14 +105,6 @@ class Form extends React.PureComponent {
     return fieldArrangementMap;
   }
 
-  get formData() {
-    if (!this.formRef.current) {
-      return null;
-    }
-
-    return formToObject(this.formRef.current);
-  }
-
   get fieldInfoMap() {
     if (!this.state.metadata) {
       return null;
@@ -119,7 +112,6 @@ class Form extends React.PureComponent {
 
     return arrayToObject(this.state.metadata, 'key');
   }
-
 
   /**
    * Decorate any given children with a 'disabled' prop while saving
@@ -131,26 +123,62 @@ class Form extends React.PureComponent {
     });
   }
 
+  initialData(metadata, referenceObject) {
+    const data = {};
+    metadata.forEach((fieldInfo) => {
+      const fieldName = fieldInfo.key;
+      if (!fieldInfo.read_only) {
+        let value = referenceObject[fieldName];
+        if (value === undefined || value === null) {
+          switch (fieldInfo.type) {
+            case 'itemlist':
+              value = [];
+              break;
+            default:
+              value = '';
+              break;
+          }
+        }
+        data[fieldName] = value;
+      }
+    });
+
+    return data;
+  }
+
+
   coerceRequestData(data) {
     const fieldInfoMap = this.fieldInfoMap;
     if (!fieldInfoMap) {
       return data;
     }
 
-
+    const coercedData = {};
     Object.keys(data).forEach((fieldName) => {
       const fieldInfo = fieldInfoMap[fieldName];
       if (fieldInfo) {
         const value = data[fieldName];
         // For values representing dates, convert the empty string to null
         if (fieldInfo.type === 'date' && value === '') {
-          data[fieldName] = null;
+          coercedData[fieldName] = null;
+        } else if (fieldInfo.type === 'itemlist') {
+          coercedData[fieldName] = value.map((item) => item.url);
+        } else {
+          coercedData[fieldName] = value;
         }
       }
     });
-
-    return data;
+    return coercedData;
   }
+
+  setValues = (values) => {
+    const newValues = Object.assign({}, this.state.formData, values);
+    this.setState({ formData: newValues });
+  };
+
+  setValue = (fieldName, value) => {
+    this.setValues({ [fieldName]: value });
+  };
 
   load = async() => {
     this.setState({ loading: true });
@@ -183,15 +211,16 @@ class Form extends React.PureComponent {
       }
     });
 
-
-    if (!referenceObject) {
+    const initialData = this.initialData(metadata, referenceObject);
+    if (!initialData) {
       throw new Error('Failed to initialize form');
     }
 
     this.setState({
+      formData: initialData,
+      loading: false,
       metadata,
       referenceObject,
-      loading: false,
     });
 
     if (this.props.onLoad) {
@@ -201,10 +230,9 @@ class Form extends React.PureComponent {
 
   save = async() => {
     const { updateMethod } = this.props;
+    const { formData } = this.state;
 
     this.setState({ errors: {}, saving: true });
-
-    const formData = this.formData;
 
     let requestUrl = null;
     let requestMethod = null;

@@ -38,43 +38,48 @@ function FormFieldSet(props) {
       fieldArrangementMap = props.fieldArrangementMap,
       fieldInfoMap = props.fieldInfoMap,
       fieldNames = props.fieldNames,
-      representedObject = props.representedObject;
+      form = props.form;
 
+
+  var formData = form.state.formData;
 
   var fields = [];
   fieldNames.forEach(function (fieldName) {
     var fieldInfo = fieldInfoMap[fieldName];
     if (!fieldInfo.read_only) {
       var field = null;
-      var fieldArrangementInfo = fieldArrangementMap[fieldName];
+      var value = formData[fieldName];
 
-      // Establish the field's default value by _EITHER_ following a given key path
-      // from the field arrangement or simply the parameter
-      var defaultValueKeyPath = fieldArrangementInfo.defaultValueKeyPath || fieldName;
-      var defaultValue = (0, _object.valueForKeyPath)(representedObject, defaultValueKeyPath) || '';
+      var commonFieldProps = {
+        key: fieldName,
+        label: fieldInfo.ui.label,
+        name: fieldName
+      };
 
       if (fieldInfo.hidden) {
-        field = _react2.default.createElement('input', { type: 'hidden', name: fieldName, defaultValue: defaultValue });
+        field = _react2.default.createElement('input', _extends({ type: 'hidden' }, commonFieldProps));
       } else if (fieldInfo.type === 'itemlist') {
+        var fieldArrangementInfo = fieldArrangementMap[fieldName];
+
         field = _react2.default.createElement(_ItemListField2.default, _extends({
-          defaultItems: representedObject[fieldName],
-          key: fieldName,
+          items: value,
           listUrl: fieldInfo.related_endpoint.singular + '/',
-          name: fieldName,
-          label: fieldInfo.ui.label
-        }, fieldArrangementInfo));
+          onChange: function onChange(value) {
+            form.setValue(fieldName, value);
+          }
+        }, commonFieldProps, fieldArrangementInfo));
       } else {
-        var textFieldProps = {
+        var textFieldProps = _extends({}, commonFieldProps, {
           disabled: props.saving,
-          key: fieldName,
           fullWidth: true,
           InputLabelProps: { classes: { root: classes.inputLabel } },
-          label: fieldInfo.ui.label,
           margin: "normal",
-          name: fieldName,
-          defaultValue: defaultValue,
+          onChange: function onChange(e) {
+            form.setValue(fieldName, e.target.value);
+          },
+          value: value,
           variant: "outlined"
-        };
+        });
 
         if (fieldInfo.choices) {
           textFieldProps.select = true;
@@ -122,10 +127,10 @@ function FormFieldSet(props) {
 FormFieldSet.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   errors: _propTypes2.default.object,
+  form: _propTypes2.default.object.isRequired,
   fieldArrangementMap: _propTypes2.default.object,
   fieldInfoMap: _propTypes2.default.object,
   fieldNames: _propTypes2.default.array,
-  representedObject: _propTypes2.default.object,
   saving: _propTypes2.default.bool
 };
 

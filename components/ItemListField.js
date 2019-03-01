@@ -24,10 +24,6 @@ var _withStyles2 = _interopRequireDefault(_withStyles);
 
 var _array = require('../util/array');
 
-var _ServiceAgent = require('../util/ServiceAgent');
-
-var _ServiceAgent2 = _interopRequireDefault(_ServiceAgent);
-
 var _VirtualizedListItem = require('./VirtualizedListItem');
 
 var _VirtualizedListItem2 = _interopRequireDefault(_VirtualizedListItem);
@@ -61,22 +57,20 @@ var ItemListField = function (_React$PureComponent) {
     _this.handleItemListAdd = _this.handleItemListAdd.bind(_this);
     _this.handleItemListRemove = _this.handleItemListRemove.bind(_this);
     _this.handleItemListUpdate = _this.handleItemListUpdate.bind(_this);
-
-    _this.state = {
-      items: []
-    };
+    _this.dispatchChangeEvent = _this.dispatchChangeEvent.bind(_this);
     return _this;
   }
 
   _createClass(ItemListField, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var defaultItems = this.props.defaultItems || [];
-      this.updateOptions(defaultItems);
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      this.updateOptions();
     }
   }, {
     key: 'updateOptions',
-    value: function updateOptions(items) {
+    value: function updateOptions() {
+      var items = this.props.items;
+
       var select = this.selectRef.current;
       var options = select.options;
       for (var i = options.length - 1; i >= 0; --i) {
@@ -90,28 +84,33 @@ var ItemListField = function (_React$PureComponent) {
         option.selected = true;
         select.add(option);
       });
-
-      this.setState({ items: items });
     }
   }, {
     key: 'handleItemListAdd',
     value: function handleItemListAdd(item) {
-      var items = this.state.items.slice();
-      items.push(item);
-      this.updateOptions(items);
+      var newItems = this.props.items.slice();
+      newItems.push(item);
+      this.dispatchChangeEvent(newItems);
     }
   }, {
     key: 'handleItemListRemove',
     value: function handleItemListRemove(item) {
-      var newItems = (0, _array.removeObject)(this.state.items, 'id', item.id);
-      this.updateOptions(newItems);
+      var newItems = (0, _array.removeObject)(this.props.items, 'id', item.id);
+      this.dispatchChangeEvent(newItems);
     }
   }, {
     key: 'handleItemListUpdate',
     value: function handleItemListUpdate(item, itemIndex) {
-      var items = this.state.items.slice();
-      items[itemIndex] = item;
-      this.updateOptions(items);
+      var newItems = this.props.items.slice();
+      newItems[itemIndex] = item;
+      this.dispatchChangeEvent(newItems);
+    }
+  }, {
+    key: 'dispatchChangeEvent',
+    value: function dispatchChangeEvent(items) {
+      if (this.props.onChange) {
+        this.props.onChange(items);
+      }
     }
   }, {
     key: 'render',
@@ -145,7 +144,7 @@ var ItemListField = function (_React$PureComponent) {
             editDialogProps: this.props.editDialogProps,
             entityType: this.props.entityType,
             filterParams: this.props.filterParams,
-            items: this.state.items,
+            items: this.props.items,
             itemKeyPath: this.props.itemKeyPath,
             listItemComponent: this.props.listItemComponent,
             listItemProps: this.props.listItemProps,
@@ -167,16 +166,17 @@ var ItemListField = function (_React$PureComponent) {
 ItemListField.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   createUrl: _propTypes2.default.string,
-  defaultItems: _propTypes2.default.array,
   editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
   filterParams: _propTypes2.default.object,
   itemKeyPath: _propTypes2.default.string,
+  items: _propTypes2.default.array.isRequired,
   listUrl: _propTypes2.default.string.isRequired,
   listItemComponent: _propTypes2.default.func,
   listItemProps: _propTypes2.default.object,
   label: _propTypes2.default.string,
   name: _propTypes2.default.string.isRequired,
+  onChange: _propTypes2.default.func,
   searchFilterParam: _propTypes2.default.string,
   titleKey: _propTypes2.default.any.isRequired
 };

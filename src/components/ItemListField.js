@@ -12,7 +12,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import { removeObject } from '../util/array';
 
-import ServiceAgent from '../util/ServiceAgent';
 import VirtualizedListItem from './VirtualizedListItem';
 import ItemList from './ItemList';
 
@@ -25,18 +24,16 @@ class ItemListField extends React.PureComponent {
     this.handleItemListAdd = this.handleItemListAdd.bind(this);
     this.handleItemListRemove = this.handleItemListRemove.bind(this);
     this.handleItemListUpdate = this.handleItemListUpdate.bind(this);
-
-    this.state = {
-      items: [],
-    };
+    this.dispatchChangeEvent = this.dispatchChangeEvent.bind(this);
   }
 
-  componentDidMount() {
-    const defaultItems = this.props.defaultItems || [];
-    this.updateOptions(defaultItems);
+  componentDidUpdate() {
+    this.updateOptions();
   }
 
-  updateOptions(items) {
+  updateOptions() {
+    const items = this.props.items;
+
     const select = this.selectRef.current;
     const options = select.options;
     for (let i = options.length - 1; i >= 0; --i) {
@@ -50,27 +47,30 @@ class ItemListField extends React.PureComponent {
       option.selected = true;
       select.add(option);
     });
-
-    this.setState({ items });
   }
 
   handleItemListAdd(item) {
-    const items = this.state.items.slice();
-    items.push(item);
-    this.updateOptions(items);
+    const newItems = this.props.items.slice();
+    newItems.push(item);
+    this.dispatchChangeEvent(newItems);
   }
 
   handleItemListRemove(item) {
-    const newItems = removeObject(this.state.items, 'id', item.id);
-    this.updateOptions(newItems);
+    const newItems = removeObject(this.props.items, 'id', item.id);
+    this.dispatchChangeEvent(newItems);
   };
 
   handleItemListUpdate(item, itemIndex) {
-    const items = this.state.items.slice();
-    items[itemIndex] = item;
-    this.updateOptions(items);
+    const newItems = this.props.items.slice();
+    newItems[itemIndex] = item;
+    this.dispatchChangeEvent(newItems);
   }
 
+  dispatchChangeEvent(items) {
+    if (this.props.onChange) {
+      this.props.onChange(items);
+    }
+  }
 
   render() {
     const { classes, label } = this.props;
@@ -96,7 +96,7 @@ class ItemListField extends React.PureComponent {
             editDialogProps={this.props.editDialogProps}
             entityType={this.props.entityType}
             filterParams={this.props.filterParams}
-            items={this.state.items}
+            items={this.props.items}
             itemKeyPath={this.props.itemKeyPath}
             listItemComponent={this.props.listItemComponent}
             listItemProps={this.props.listItemProps}
@@ -116,16 +116,17 @@ class ItemListField extends React.PureComponent {
 ItemListField.propTypes = {
   classes: PropTypes.object.isRequired,
   createUrl: PropTypes.string,
-  defaultItems: PropTypes.array,
   editDialogProps: PropTypes.object,
   entityType: PropTypes.string.isRequired,
   filterParams: PropTypes.object,
   itemKeyPath: PropTypes.string,
+  items: PropTypes.array.isRequired,
   listUrl: PropTypes.string.isRequired,
   listItemComponent: PropTypes.func,
   listItemProps: PropTypes.object,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
+  onChange: PropTypes.func,
   searchFilterParam: PropTypes.string,
   titleKey: PropTypes.any.isRequired,
 };

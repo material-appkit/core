@@ -48,6 +48,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -67,6 +69,7 @@ var Form = function (_React$PureComponent) {
     _this.state = {
       errors: {},
       referenceObject: null,
+      formData: null,
       metadata: null,
       loading: false,
       saving: false
@@ -113,6 +116,30 @@ var Form = function (_React$PureComponent) {
       }
     }
   }, {
+    key: 'initialData',
+    value: function initialData(metadata, referenceObject) {
+      var data = {};
+      metadata.forEach(function (fieldInfo) {
+        var fieldName = fieldInfo.key;
+        if (!fieldInfo.read_only) {
+          var value = referenceObject[fieldName];
+          if (value === undefined || value === null) {
+            switch (fieldInfo.type) {
+              case 'itemlist':
+                value = [];
+                break;
+              default:
+                value = '';
+                break;
+            }
+          }
+          data[fieldName] = value;
+        }
+      });
+
+      return data;
+    }
+  }, {
     key: 'coerceRequestData',
     value: function coerceRequestData(data) {
       var fieldInfoMap = this.fieldInfoMap;
@@ -120,18 +147,24 @@ var Form = function (_React$PureComponent) {
         return data;
       }
 
+      var coercedData = {};
       Object.keys(data).forEach(function (fieldName) {
         var fieldInfo = fieldInfoMap[fieldName];
         if (fieldInfo) {
           var value = data[fieldName];
           // For values representing dates, convert the empty string to null
           if (fieldInfo.type === 'date' && value === '') {
-            data[fieldName] = null;
+            coercedData[fieldName] = null;
+          } else if (fieldInfo.type === 'itemlist') {
+            coercedData[fieldName] = value.map(function (item) {
+              return item.url;
+            });
+          } else {
+            coercedData[fieldName] = value;
           }
         }
       });
-
-      return data;
+      return coercedData;
     }
   }, {
     key: 'render',
@@ -213,15 +246,6 @@ var Form = function (_React$PureComponent) {
       return fieldArrangementMap;
     }
   }, {
-    key: 'formData',
-    get: function get() {
-      if (!this.formRef.current) {
-        return null;
-      }
-
-      return (0, _form.formToObject)(this.formRef.current);
-    }
-  }, {
     key: 'fieldInfoMap',
     get: function get() {
       if (!this.state.metadata) {
@@ -251,8 +275,17 @@ var Form = function (_React$PureComponent) {
 var _initialiseProps = function _initialiseProps() {
   var _this2 = this;
 
+  this.setValues = function (values) {
+    var newValues = Object.assign({}, _this2.state.formData, values);
+    _this2.setState({ formData: newValues });
+  };
+
+  this.setValue = function (fieldName, value) {
+    _this2.setValues(_defineProperty({}, fieldName, value));
+  };
+
   this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    var referenceObject, metadata, requests, optionsUrl, responses;
+    var referenceObject, metadata, requests, optionsUrl, responses, initialData;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -294,26 +327,29 @@ var _initialiseProps = function _initialiseProps() {
               }
             });
 
-            if (referenceObject) {
-              _context.next = 13;
+            initialData = _this2.initialData(metadata, referenceObject);
+
+            if (initialData) {
+              _context.next = 14;
               break;
             }
 
             throw new Error('Failed to initialize form');
 
-          case 13:
+          case 14:
 
             _this2.setState({
+              formData: initialData,
+              loading: false,
               metadata: metadata,
-              referenceObject: referenceObject,
-              loading: false
+              referenceObject: referenceObject
             });
 
             if (_this2.props.onLoad) {
               _this2.props.onLoad(referenceObject, _this2.fieldInfoMap);
             }
 
-          case 15:
+          case 16:
           case 'end':
             return _context.stop();
         }
@@ -327,11 +363,11 @@ var _initialiseProps = function _initialiseProps() {
         switch (_context2.prev = _context2.next) {
           case 0:
             updateMethod = _this2.props.updateMethod;
+            formData = _this2.state.formData;
 
 
             _this2.setState({ errors: {}, saving: true });
 
-            formData = _this2.formData;
             requestUrl = null;
             requestMethod = null;
             requestData = null;
