@@ -339,7 +339,7 @@ export default withStyles((theme) => ({
 
   previewImage: {
     height: '100%',
-    objectFit: 'cover',
+    objectFit: 'contain',
     position: 'absolute',
     width: '100%',
   },
@@ -353,6 +353,7 @@ export default withStyles((theme) => ({
   },
 
   cardMedia: {
+    backgroundSize: 'contain',
     borderRadius: 4,
     height: 250,
     margin: '16px 16px 0',

@@ -439,7 +439,7 @@ exports.default = (0, _withStyles2.default)(function (theme) {
 
     previewImage: {
       height: '100%',
-      objectFit: 'cover',
+      objectFit: 'contain',
       position: 'absolute',
       width: '100%'
     },
@@ -453,6 +453,7 @@ exports.default = (0, _withStyles2.default)(function (theme) {
     },
 
     cardMedia: {
+      backgroundSize: 'contain',
       borderRadius: 4,
       height: 250,
       margin: '16px 16px 0'
