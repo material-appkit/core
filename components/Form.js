@@ -301,7 +301,6 @@ var _initialiseProps = function _initialiseProps() {
 
             optionsUrl = _this2.props.apiCreateUrl || _this2.detailUrl;
 
-            console.log(optionsUrl);
             requests.push(_util.ServiceAgent.options(optionsUrl));
 
             if (!referenceObject) {
@@ -313,10 +312,10 @@ var _initialiseProps = function _initialiseProps() {
               }
             }
 
-            _context.next = 10;
+            _context.next = 9;
             return Promise.all(requests);
 
-          case 10:
+          case 9:
             responses = _context.sent;
 
 
@@ -331,13 +330,13 @@ var _initialiseProps = function _initialiseProps() {
             initialData = _this2.initialData(metadata, referenceObject);
 
             if (initialData) {
-              _context.next = 15;
+              _context.next = 14;
               break;
             }
 
             throw new Error('Failed to initialize form');
 
-          case 15:
+          case 14:
 
             _this2.setState({
               formData: initialData,
@@ -350,7 +349,7 @@ var _initialiseProps = function _initialiseProps() {
               _this2.props.onLoad(referenceObject, _this2.fieldInfoMap);
             }
 
-          case 17:
+          case 16:
           case 'end':
             return _context.stop();
         }
