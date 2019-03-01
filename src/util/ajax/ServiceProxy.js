@@ -16,23 +16,6 @@ export default class ServiceProxy {
     }
   }
 
-  getRequestHeaders() {
-    const headers = {};
-
-    const accessToken = this.constructor.getAccessToken();
-    if (accessToken) {
-      headers.Authorization = `Bearer ${accessToken}`;
-    }
-
-    const csrfToken = cookie.get('csrftoken');
-    if (csrfToken) {
-      headers['X-CSRFToken'] = csrfToken;
-    }
-
-    return headers;
-  }
-
-
   static buildRequestUrl(endpoint) {
     // If this is already an absolute URL, leave it as is.
     if (endpoint.startsWith('http')) {
@@ -49,6 +32,21 @@ export default class ServiceProxy {
     return requestURL;
   }
 
+  getRequestHeaders() {
+    const headers = {};
+
+    const accessToken = this.constructor.getAccessToken();
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    const csrfToken = cookie.get('csrftoken');
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken;
+    }
+
+    return headers;
+  }
 
   async request(method, endpoint, params, context) {
     const requestURL = this.constructor.buildRequestUrl(endpoint);
