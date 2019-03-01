@@ -26,27 +26,11 @@ var ServiceProxy = function () {
   }
 
   _createClass(ServiceProxy, [{
-    key: 'getAccessToken',
-    value: function getAccessToken() {
-      var cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
-      return _jsCookie2.default.get(cookieName);
-    }
-  }, {
-    key: 'setAccessToken',
-    value: function setAccessToken(value) {
-      var cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
-      if (value) {
-        _jsCookie2.default.set(cookieName, value);
-      } else {
-        _jsCookie2.default.remove(cookieName);
-      }
-    }
-  }, {
     key: 'getRequestHeaders',
     value: function getRequestHeaders() {
       var headers = {};
 
-      var accessToken = this.getAccessToken();
+      var accessToken = this.constructor.getAccessToken();
       if (accessToken) {
         headers.Authorization = 'Bearer ' + accessToken;
       }
@@ -59,23 +43,6 @@ var ServiceProxy = function () {
       return headers;
     }
   }, {
-    key: 'buildRequestUrl',
-    value: function buildRequestUrl(endpoint) {
-      // If this is already an absolute URL, leave it as is.
-      if (endpoint.startsWith('http')) {
-        return endpoint;
-      }
-
-      // Construct the AJAX request with the given params
-      var requestURL = process.env.REACT_APP_API_URL;
-      if (!endpoint.startsWith('/')) {
-        requestURL += process.env.REACT_APP_API_ENDPOINT_PREFIX;
-      }
-      requestURL += endpoint;
-
-      return requestURL;
-    }
-  }, {
     key: 'request',
     value: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(method, endpoint, params, context) {
@@ -84,7 +51,7 @@ var ServiceProxy = function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                requestURL = this.buildRequestUrl(endpoint);
+                requestURL = this.constructor.buildRequestUrl(endpoint);
 
 
                 if (typeof params === 'function') {
@@ -184,6 +151,39 @@ var ServiceProxy = function () {
     key: 'head',
     value: function head(endpoint, params, context) {
       return this.request('HEAD', endpoint, params, context);
+    }
+  }], [{
+    key: 'getAccessToken',
+    value: function getAccessToken() {
+      var cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
+      return _jsCookie2.default.get(cookieName);
+    }
+  }, {
+    key: 'setAccessToken',
+    value: function setAccessToken(value) {
+      var cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
+      if (value) {
+        _jsCookie2.default.set(cookieName, value);
+      } else {
+        _jsCookie2.default.remove(cookieName);
+      }
+    }
+  }, {
+    key: 'buildRequestUrl',
+    value: function buildRequestUrl(endpoint) {
+      // If this is already an absolute URL, leave it as is.
+      if (endpoint.startsWith('http')) {
+        return endpoint;
+      }
+
+      // Construct the AJAX request with the given params
+      var requestURL = process.env.REACT_APP_API_URL;
+      if (!endpoint.startsWith('/')) {
+        requestURL += process.env.REACT_APP_API_ENDPOINT_PREFIX;
+      }
+      requestURL += endpoint;
+
+      return requestURL;
     }
   }]);
 

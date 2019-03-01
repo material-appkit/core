@@ -2,11 +2,12 @@ import cookie from 'js-cookie';
 import request from 'superagent';
 
 export default class ServiceProxy {
-  getAccessToken() {
+  static getAccessToken() {
     const cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
     return cookie.get(cookieName);
   }
-  setAccessToken(value) {
+
+  static setAccessToken(value) {
     const cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
     if (value) {
       cookie.set(cookieName, value);
@@ -18,7 +19,7 @@ export default class ServiceProxy {
   getRequestHeaders() {
     const headers = {};
 
-    const accessToken = this.getAccessToken();
+    const accessToken = this.constructor.getAccessToken();
     if (accessToken) {
       headers.Authorization = `Bearer ${accessToken}`;
     }
@@ -32,7 +33,7 @@ export default class ServiceProxy {
   }
 
 
-  buildRequestUrl(endpoint) {
+  static buildRequestUrl(endpoint) {
     // If this is already an absolute URL, leave it as is.
     if (endpoint.startsWith('http')) {
       return endpoint;
@@ -50,7 +51,7 @@ export default class ServiceProxy {
 
 
   async request(method, endpoint, params, context) {
-    const requestURL = this.buildRequestUrl(endpoint);
+    const requestURL = this.constructor.buildRequestUrl(endpoint);
 
     if (typeof params === 'function') {
       params = params();
