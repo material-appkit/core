@@ -161,7 +161,7 @@ var FlowFileUploader = function (_React$PureComponent) {
     };
 
     _this.handleFileSuccess = function (file, message) {
-      _this.setStatus(_this.props.messages.UPLOAD_COMPLETE + '...', null);
+      _this.setStatus('' + _this.props.messages.UPLOAD_COMPLETE, null);
 
       _this.flow.removeFile(file);
 

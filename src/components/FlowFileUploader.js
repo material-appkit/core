@@ -166,7 +166,7 @@ class FlowFileUploader extends React.PureComponent {
   };
 
   handleFileSuccess = (file, message) => {
-    this.setStatus(`${this.props.messages.UPLOAD_COMPLETE}...`, null);
+    this.setStatus(`${this.props.messages.UPLOAD_COMPLETE}`, null);
 
     this.flow.removeFile(file);
 
