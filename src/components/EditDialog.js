@@ -10,7 +10,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 import Form from './Form';
-import FormActions from './FormActions';
 import SnackbarManager from '../managers/SnackbarManager';
 
 class EditDialog extends React.Component {
