@@ -189,7 +189,8 @@ class Form extends React.PureComponent {
 
     // If the fields have not been explicitly provided, issue an OPTIONS request for
     // metadata about the represented object so the fields can be generated dynamically.
-    const optionsUrl = this.detailUrl || this.props.apiCreateUrl;
+    const optionsUrl = this.props.apiCreateUrl || this.detailUrl;
+    console.log(optionsUrl);
     requests.push(ServiceAgent.options(optionsUrl));
 
     if (!referenceObject) {

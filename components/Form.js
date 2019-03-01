@@ -299,8 +299,9 @@ var _initialiseProps = function _initialiseProps() {
             // If the fields have not been explicitly provided, issue an OPTIONS request for
             // metadata about the represented object so the fields can be generated dynamically.
 
-            optionsUrl = _this2.detailUrl || _this2.props.apiCreateUrl;
+            optionsUrl = _this2.props.apiCreateUrl || _this2.detailUrl;
 
+            console.log(optionsUrl);
             requests.push(_util.ServiceAgent.options(optionsUrl));
 
             if (!referenceObject) {
@@ -312,10 +313,10 @@ var _initialiseProps = function _initialiseProps() {
               }
             }
 
-            _context.next = 9;
+            _context.next = 10;
             return Promise.all(requests);
 
-          case 9:
+          case 10:
             responses = _context.sent;
 
 
@@ -330,13 +331,13 @@ var _initialiseProps = function _initialiseProps() {
             initialData = _this2.initialData(metadata, referenceObject);
 
             if (initialData) {
-              _context.next = 14;
+              _context.next = 15;
               break;
             }
 
             throw new Error('Failed to initialize form');
 
-          case 14:
+          case 15:
 
             _this2.setState({
               formData: initialData,
@@ -349,7 +350,7 @@ var _initialiseProps = function _initialiseProps() {
               _this2.props.onLoad(referenceObject, _this2.fieldInfoMap);
             }
 
-          case 16:
+          case 17:
           case 'end':
             return _context.stop();
         }
