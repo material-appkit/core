@@ -20,19 +20,47 @@ class VirtualizedList extends React.Component {
     );
 
     this.state = {
-      selection: null,
+      selection: (props.selectionMode) ? {} : null,
     }
   }
 
-  handleSelectControlClick = (item) => {
-    let newSelection = null;
-    if (!this.state.selection || this.state.selection.id !== item.id) {
-      newSelection = item;
+  isSelected = (item) => {
+    const { selection } = this.state;
+    if (selection === null) {
+      return false;
     }
+
+    return !!selection[item.id];
+  };
+
+  handleSelectControlClick = (item) => {
+    const { onSelectionChange, selectionMode } = this.props;
+    const { selection } = this.state;
+    const itemId = item.id;
+
+    const newSelection = {};
+    if (selectionMode === 'single') {
+      if (!selection[itemId]) {
+        newSelection[itemId] = item;
+      }
+    } else {
+      Object.assign(newSelection, selection);
+      if (newSelection[itemId]) {
+        delete newSelection[itemId];
+      } else {
+        newSelection[itemId] = item;
+      }
+    }
+
     this.setState({ selection: newSelection });
 
-    if (this.props.onSelectionChange) {
-      this.props.onSelectionChange(newSelection);
+    if (onSelectionChange) {
+      const selectedItems = Object.values(newSelection);
+      if (selectionMode === 'single') {
+        onSelectionChange(selectedItems.pop());
+      } else {
+        onSelectionChange(selectedItems);
+      }
     }
   };
 
@@ -58,7 +86,7 @@ class VirtualizedList extends React.Component {
                 item={item}
                 onItemClick={this.props.onItemClick}
                 onSelectControlClick={this.handleSelectControlClick}
-                selected={this.state.selection ? item.id === this.state.selection.id : false}
+                selected={this.isSelected(item)}
                 selectionMode={this.props.selectionMode}
                 {...this.props.itemProps}
               />

@@ -54,15 +54,47 @@ var VirtualizedList = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (VirtualizedList.__proto__ || Object.getPrototypeOf(VirtualizedList)).call(this, props));
 
-    _this.handleSelectControlClick = function (item) {
-      var newSelection = null;
-      if (!_this.state.selection || _this.state.selection.id !== item.id) {
-        newSelection = item;
+    _this.isSelected = function (item) {
+      var selection = _this.state.selection;
+
+      if (selection === null) {
+        return false;
       }
+
+      return !!selection[item.id];
+    };
+
+    _this.handleSelectControlClick = function (item) {
+      var _this$props = _this.props,
+          onSelectionChange = _this$props.onSelectionChange,
+          selectionMode = _this$props.selectionMode;
+      var selection = _this.state.selection;
+
+      var itemId = item.id;
+
+      var newSelection = {};
+      if (selectionMode === 'single') {
+        if (!selection[itemId]) {
+          newSelection[itemId] = item;
+        }
+      } else {
+        Object.assign(newSelection, selection);
+        if (newSelection[itemId]) {
+          delete newSelection[itemId];
+        } else {
+          newSelection[itemId] = item;
+        }
+      }
+
       _this.setState({ selection: newSelection });
 
-      if (_this.props.onSelectionChange) {
-        _this.props.onSelectionChange(newSelection);
+      if (onSelectionChange) {
+        var selectedItems = Object.values(newSelection);
+        if (selectionMode === 'single') {
+          onSelectionChange(selectedItems.pop());
+        } else {
+          onSelectionChange(selectedItems);
+        }
       }
     };
 
@@ -73,7 +105,7 @@ var VirtualizedList = function (_React$Component) {
     );
 
     _this.state = {
-      selection: null
+      selection: props.selectionMode ? {} : null
     };
     return _this;
   }
@@ -109,7 +141,7 @@ var VirtualizedList = function (_React$Component) {
               item: item,
               onItemClick: _this2.props.onItemClick,
               onSelectControlClick: _this2.handleSelectControlClick,
-              selected: _this2.state.selection ? item.id === _this2.state.selection.id : false,
+              selected: _this2.isSelected(item),
               selectionMode: _this2.props.selectionMode
             }, _this2.props.itemProps));
           })

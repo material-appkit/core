@@ -165,7 +165,7 @@ class ListDialog extends React.PureComponent {
                 itemProps={itemProps}
                 itemContextProvider={this.listItemContextProvider}
                 onSelectionChange={(selection) => { this.setState({ selection }); }}
-                selectionMode="single"
+                selectionMode={this.props.selectionMode}
                 store={this.store}
                 useWindow={false}
               />
@@ -212,6 +212,7 @@ ListDialog.propTypes = {
   entityType: PropTypes.string.isRequired,
   filterParams: PropTypes.object,
   searchFilterParam: PropTypes.string,
+  selectionMode: PropTypes.oneOf(['single', 'multiple']),
   listItemComponent: PropTypes.func.isRequired,
   listItemProps: PropTypes.object,
   onDismiss: PropTypes.func.isRequired,
@@ -221,6 +222,7 @@ ListDialog.defaultProps = {
   editDialogProps: {},
   filterParams: {},
   listItemProps: {},
+  selectionMode: 'single',
 };
 
 export default withStyles((theme) => ({

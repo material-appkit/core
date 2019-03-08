@@ -269,7 +269,7 @@ var ListDialog = function (_React$PureComponent) {
                 onSelectionChange: function onSelectionChange(selection) {
                   _this2.setState({ selection: selection });
                 },
-                selectionMode: 'single',
+                selectionMode: this.props.selectionMode,
                 store: this.store,
                 useWindow: false
               })
@@ -324,6 +324,7 @@ ListDialog.propTypes = {
   entityType: _propTypes2.default.string.isRequired,
   filterParams: _propTypes2.default.object,
   searchFilterParam: _propTypes2.default.string,
+  selectionMode: _propTypes2.default.oneOf(['single', 'multiple']),
   listItemComponent: _propTypes2.default.func.isRequired,
   listItemProps: _propTypes2.default.object,
   onDismiss: _propTypes2.default.func.isRequired
@@ -332,7 +333,8 @@ ListDialog.propTypes = {
 ListDialog.defaultProps = {
   editDialogProps: {},
   filterParams: {},
-  listItemProps: {}
+  listItemProps: {},
+  selectionMode: 'single'
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {
