@@ -103,7 +103,7 @@ var NavigationController = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (NavigationController.__proto__ || Object.getPrototypeOf(NavigationController)).call(this, props));
 
     _this.createContextMenu = function (topbarConfig) {
-      if (!(topbarConfig && topbarConfig.contextMenuItems)) {
+      if (!(topbarConfig && topbarConfig.contextMenuItems && topbarConfig.contextMenuItems.length)) {
         return null;
       }
 

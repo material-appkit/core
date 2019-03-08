@@ -119,7 +119,7 @@ class NavigationController extends React.Component {
   }
 
   createContextMenu = (topbarConfig) => {
-    if (!(topbarConfig && topbarConfig.contextMenuItems)) {
+    if (!(topbarConfig && topbarConfig.contextMenuItems && topbarConfig.contextMenuItems.length)) {
       return null;
     }
 

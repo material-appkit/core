@@ -181,7 +181,6 @@ var RemoteStore = function (_DataStore) {
 
       if (this.requestContext) {
         // Abort the currently in-flight request, if any
-        console.log('aborting request');
         this.requestContext.request.abort();
       }
       this.requestContext = {};
