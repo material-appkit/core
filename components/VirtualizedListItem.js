@@ -84,7 +84,8 @@ function VirtualizedListItem(props) {
       _IconButton2.default,
       {
         className: classes.selectionControl,
-        onClick: function onClick() {
+        onClick: function onClick(e) {
+          e.preventDefault();
           onSelectControlClick(item);
         }
       },
@@ -105,6 +106,6 @@ VirtualizedListItem.propTypes = {
 
 exports.default = (0, _withStyles2.default)({
   selectionControl: {
-    // padding: 8,
+    padding: 4
   }
 })(VirtualizedListItem);
