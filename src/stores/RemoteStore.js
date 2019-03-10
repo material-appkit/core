@@ -41,6 +41,12 @@ class RemoteStore extends DataStore {
     return this._load(page || 1, true);
   }
 
+  async reload() {
+    const params = {...this.params};
+    this.unload();
+    this.load(params);
+  }
+
   async loadMore(page) {
     return this._load(page, false);
   }
@@ -74,7 +80,7 @@ class RemoteStore extends DataStore {
       // Abort the currently in-flight request, if any
       this.requestContext.request.abort();
     }
-    this.requestContext = {};
+    this.requestContext = null;
   }
 
   subscribe(callback) {

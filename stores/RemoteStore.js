@@ -90,16 +90,20 @@ var RemoteStore = function (_DataStore) {
       return load;
     }()
   }, {
-    key: 'loadMore',
+    key: 'reload',
     value: function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(page) {
+      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+        var params;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                return _context2.abrupt('return', this._load(page, false));
+                params = _extends({}, this.params);
 
-              case 1:
+                this.unload();
+                this.load(params);
+
+              case 3:
               case 'end':
                 return _context2.stop();
             }
@@ -107,8 +111,32 @@ var RemoteStore = function (_DataStore) {
         }, _callee2, this);
       }));
 
-      function loadMore(_x3) {
+      function reload() {
         return _ref2.apply(this, arguments);
+      }
+
+      return reload;
+    }()
+  }, {
+    key: 'loadMore',
+    value: function () {
+      var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(page) {
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                return _context3.abrupt('return', this._load(page, false));
+
+              case 1:
+              case 'end':
+                return _context3.stop();
+            }
+          }
+        }, _callee3, this);
+      }));
+
+      function loadMore(_x3) {
+        return _ref3.apply(this, arguments);
       }
 
       return loadMore;
@@ -116,38 +144,38 @@ var RemoteStore = function (_DataStore) {
   }, {
     key: 'update',
     value: function () {
-      var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(params) {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(params) {
         var updatedParams;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 if (params) {
-                  _context3.next = 2;
+                  _context4.next = 2;
                   break;
                 }
 
-                return _context3.abrupt('return');
+                return _context4.abrupt('return');
 
               case 2:
                 updatedParams = null;
 
                 if (!this.params) {
-                  _context3.next = 9;
+                  _context4.next = 9;
                   break;
                 }
 
                 updatedParams = (0, _object.filterEmptyValues)(params);
 
                 if (!(0, _lodash2.default)(updatedParams, this.params)) {
-                  _context3.next = 7;
+                  _context4.next = 7;
                   break;
                 }
 
-                return _context3.abrupt('return');
+                return _context4.abrupt('return');
 
               case 7:
-                _context3.next = 10;
+                _context4.next = 10;
                 break;
 
               case 9:
@@ -159,14 +187,14 @@ var RemoteStore = function (_DataStore) {
 
               case 11:
               case 'end':
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
       function update(_x4) {
-        return _ref3.apply(this, arguments);
+        return _ref4.apply(this, arguments);
       }
 
       return update;
@@ -183,7 +211,7 @@ var RemoteStore = function (_DataStore) {
         // Abort the currently in-flight request, if any
         this.requestContext.request.abort();
       }
-      this.requestContext = {};
+      this.requestContext = null;
     }
   }, {
     key: 'subscribe',
@@ -233,13 +261,13 @@ var RemoteStore = function (_DataStore) {
   }, {
     key: '_load',
     value: function () {
-      var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(page, replace) {
+      var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(page, replace) {
         var _this2 = this;
 
         var searchParams, req;
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
                 searchParams = _extends({ page: page }, this.params);
 
@@ -295,14 +323,14 @@ var RemoteStore = function (_DataStore) {
 
               case 5:
               case 'end':
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this);
+        }, _callee5, this);
       }));
 
       function _load(_x5, _x6) {
-        return _ref4.apply(this, arguments);
+        return _ref5.apply(this, arguments);
       }
 
       return _load;
