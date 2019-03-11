@@ -231,6 +231,13 @@ var Form = function (_React$PureComponent) {
       });
       return coercedData;
     }
+
+    /**
+     * Whenever a value in the form changes, if the form has been configured to
+     * autosave after a given delay period, set up a timer to do so.
+     * NOTE: This is only applicable when editing a persisted record.
+     */
+
   }, {
     key: 'render',
     value: function render() {
@@ -456,17 +463,27 @@ var _initialiseProps = function _initialiseProps() {
   this.handleFormSubmit = function (e) {
     e.preventDefault();
 
-    if (e.target === _this2.formRef.current) {
-      // For some reason when a <form> is submitted within a dialog that
+    if (e.target !== _this2.formRef.current) {
+      // Due to event bubbling, a <form> is submitted within a dialog that
       // is rendered atop a view that also has a <form>, the underlying
       // form also gets submitted.
       // This check ensures that only the intended save method is invoked.
-      _this2.save();
+      return;
     }
+
+    _this2.save();
   };
 
   this.handleFormChange = function (e) {
-    if (_this2.props.autosaveDelay !== null) {
+    if (e.currentTarget !== _this2.formRef.current) {
+      // Due to event bubbling, a <form> is submitted within a dialog that
+      // is rendered atop a view that also has a <form>, the underlying
+      // form also gets submitted.
+      // This check ensures that only the intended save method is invoked.
+      return;
+    }
+
+    if (_this2.detailUrl && _this2.props.autosaveDelay) {
       if (_this2.autoSaveTimer) {
         clearTimeout(_this2.autoSaveTimer);
       }
@@ -500,7 +517,6 @@ Form.propTypes = {
 };
 
 Form.defaultProps = {
-  autosave: false,
   autosaveDelay: null,
   defaultValues: {},
   entityType: '',

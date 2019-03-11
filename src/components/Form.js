@@ -272,7 +272,6 @@ class Form extends React.PureComponent {
       throw new Error('Missing one or more required paramers for form request');
     }
 
-
     try {
       requestData = this.coerceRequestData(requestData);
       const response = await ServiceAgent.request(requestMethod, requestUrl, requestData);
@@ -303,18 +302,32 @@ class Form extends React.PureComponent {
   handleFormSubmit = (e) => {
     e.preventDefault();
 
-    if (e.target === this.formRef.current) {
-      // For some reason when a <form> is submitted within a dialog that
+    if (e.target !== this.formRef.current) {
+      // Due to event bubbling, a <form> is submitted within a dialog that
       // is rendered atop a view that also has a <form>, the underlying
       // form also gets submitted.
       // This check ensures that only the intended save method is invoked.
-      this.save();
+      return;
     }
+
+    this.save();
   };
 
-
+  /**
+   * Whenever a value in the form changes, if the form has been configured to
+   * autosave after a given delay period, set up a timer to do so.
+   * NOTE: This is only applicable when editing a persisted record.
+   */
   handleFormChange = (e) => {
-    if (this.props.autosaveDelay !== null) {
+    if (e.currentTarget !== this.formRef.current) {
+      // Due to event bubbling, a <form> is submitted within a dialog that
+      // is rendered atop a view that also has a <form>, the underlying
+      // form also gets submitted.
+      // This check ensures that only the intended save method is invoked.
+      return;
+    }
+
+    if (this.detailUrl && this.props.autosaveDelay) {
       if (this.autoSaveTimer) {
         clearTimeout(this.autoSaveTimer);
       }
@@ -382,7 +395,6 @@ Form.propTypes = {
 };
 
 Form.defaultProps = {
-  autosave: false,
   autosaveDelay: null,
   defaultValues: {},
   entityType: '',
