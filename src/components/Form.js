@@ -135,7 +135,9 @@ class Form extends React.PureComponent {
           value = value || [];
           break;
         case 'select':
-          if (typeof(value) === 'object') {
+          if (!value) {
+            value = '';
+          } else if (typeof(value) === 'object') {
             value = value.url;
           }
           break;

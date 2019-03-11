@@ -187,7 +187,9 @@ var Form = function (_React$PureComponent) {
             value = value || [];
             break;
           case 'select':
-            if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+            if (!value) {
+              value = '';
+            } else if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
               value = value.url;
             }
             break;
