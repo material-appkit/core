@@ -4,9 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -35,8 +35,6 @@ var _util = require('../util');
 var _array = require('../util/array');
 
 var _component = require('../util/component');
-
-var _form = require('../util/form');
 
 var _urls = require('../util/urls');
 
@@ -116,25 +114,89 @@ var Form = function (_React$PureComponent) {
       }
     }
   }, {
+    key: 'getFieldNames',
+    value: function getFieldNames(metadata) {
+      if (this.props.fieldArrangement) {
+        var fieldNames = [];
+        this.props.fieldArrangement.forEach(function (fieldInfo) {
+          var fieldInfoType = typeof fieldInfo === 'undefined' ? 'undefined' : _typeof(fieldInfo);
+          if (fieldInfoType === 'string') {
+            fieldNames.push(fieldInfo);
+          } else if (fieldInfoType === 'object') {
+            fieldNames.push(fieldInfo.name);
+          }
+        });
+        return fieldNames;
+      } else if (metadata) {
+        return metadata.filter(function (fieldInfo) {
+          return !fieldInfo.read_only;
+        }).map(function (fieldInfo) {
+          return fieldInfo.key;
+        });
+      } else {
+        return [];
+      }
+    }
+  }, {
+    key: 'getFieldArrangementMap',
+    value: function getFieldArrangementMap(metadata) {
+      var fieldArrangementMap = {};
+      if (this.props.fieldArrangement) {
+        this.props.fieldArrangement.forEach(function (fieldInfo) {
+          if (typeof fieldInfo === 'string') {
+            fieldInfo = { name: fieldInfo };
+          }
+          fieldArrangementMap[fieldInfo.name] = fieldInfo;
+        });
+      } else if (metadata) {
+        metadata.forEach(function (fieldInfo) {
+          if (!fieldInfo.read_only) {
+            var fieldName = fieldInfo.key;
+            fieldArrangementMap[fieldName] = { name: fieldName };
+          }
+        });
+      }
+      return fieldArrangementMap;
+    }
+  }, {
+    key: 'getFieldInfoMap',
+    value: function getFieldInfoMap(metadata) {
+      if (!metadata) {
+        return null;
+      }
+
+      return (0, _array.arrayToObject)(metadata, 'key');
+    }
+
+    /**
+     * Decorate any given children with a 'disabled' prop while saving
+     */
+
+  }, {
     key: 'initialData',
     value: function initialData(metadata, referenceObject) {
+      var fieldInfoMap = this.getFieldInfoMap(metadata);
       var data = {};
-      metadata.forEach(function (fieldInfo) {
-        var fieldName = fieldInfo.key;
-        if (!fieldInfo.read_only) {
-          var value = referenceObject[fieldName];
-          if (value === undefined || value === null) {
-            switch (fieldInfo.type) {
-              case 'itemlist':
-                value = [];
-                break;
-              default:
-                value = '';
-                break;
+
+      var fieldNames = this.getFieldNames(metadata);
+      fieldNames.forEach(function (fieldName) {
+        var fieldInfo = fieldInfoMap[fieldName];
+        var value = referenceObject[fieldName];
+        switch (fieldInfo.type) {
+          case 'itemlist':
+            value = value || [];
+            break;
+          case 'select':
+            if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+              value = value.url;
             }
-          }
-          data[fieldName] = value;
+            break;
+          default:
+            value = value || '';
+            break;
         }
+
+        data[fieldName] = value;
       });
 
       return data;
@@ -142,7 +204,7 @@ var Form = function (_React$PureComponent) {
   }, {
     key: 'coerceRequestData',
     value: function coerceRequestData(data) {
-      var fieldInfoMap = this.fieldInfoMap;
+      var fieldInfoMap = this.getFieldInfoMap(this.state.metadata);
       if (!fieldInfoMap) {
         return data;
       }
@@ -151,11 +213,12 @@ var Form = function (_React$PureComponent) {
       Object.keys(data).forEach(function (fieldName) {
         var fieldInfo = fieldInfoMap[fieldName];
         if (fieldInfo) {
+          var fieldType = fieldInfo.type;
           var value = data[fieldName];
-          // For values representing dates, convert the empty string to null
-          if (fieldInfo.type === 'date' && value === '') {
+          // For values representing numbers or dates, convert the empty string to null
+          if ((fieldType === 'date' || fieldType === 'number') && value === '') {
             coercedData[fieldName] = null;
-          } else if (fieldInfo.type === 'itemlist') {
+          } else if (fieldType === 'itemlist') {
             coercedData[fieldName] = value.map(function (item) {
               return item.url;
             });
@@ -190,9 +253,9 @@ var Form = function (_React$PureComponent) {
         },
         _react2.default.createElement(this.props.FieldSet, _extends({
           errors: this.state.errors,
-          fieldArrangementMap: this.fieldArrangementMap,
-          fieldInfoMap: this.fieldInfoMap,
-          fieldNames: this.fieldNames,
+          fieldArrangementMap: this.getFieldArrangementMap(this.state.metadata),
+          fieldInfoMap: this.getFieldInfoMap(this.state.metadata),
+          fieldNames: this.getFieldNames(this.state.metadata),
           form: this,
           representedObject: this.state.referenceObject,
           saving: this.state.saving
@@ -200,65 +263,6 @@ var Form = function (_React$PureComponent) {
         this.children
       );
     }
-  }, {
-    key: 'fieldNames',
-    get: function get() {
-      if (this.props.fieldArrangement) {
-        var fieldNames = [];
-        this.props.fieldArrangement.forEach(function (fieldInfo) {
-          var fieldInfoType = typeof fieldInfo === 'undefined' ? 'undefined' : _typeof(fieldInfo);
-          if (fieldInfoType === 'string') {
-            fieldNames.push(fieldInfo);
-          } else if (fieldInfoType === 'object') {
-            fieldNames.push(fieldInfo.name);
-          }
-        });
-        return fieldNames;
-      } else if (this.state.metadata) {
-        return this.state.metadata.filter(function (fieldInfo) {
-          return !fieldInfo.read_only;
-        }).map(function (fieldInfo) {
-          return fieldInfo.key;
-        });
-      } else {
-        return [];
-      }
-    }
-  }, {
-    key: 'fieldArrangementMap',
-    get: function get() {
-      var fieldArrangementMap = {};
-      if (this.props.fieldArrangement) {
-        this.props.fieldArrangement.forEach(function (fieldInfo) {
-          if (typeof fieldInfo === 'string') {
-            fieldInfo = { name: fieldInfo };
-          }
-          fieldArrangementMap[fieldInfo.name] = fieldInfo;
-        });
-      } else if (this.state.metadata) {
-        this.state.metadata.forEach(function (fieldInfo) {
-          if (!fieldInfo.read_only) {
-            var fieldName = fieldInfo.key;
-            fieldArrangementMap[fieldName] = { name: fieldName };
-          }
-        });
-      }
-      return fieldArrangementMap;
-    }
-  }, {
-    key: 'fieldInfoMap',
-    get: function get() {
-      if (!this.state.metadata) {
-        return null;
-      }
-
-      return (0, _array.arrayToObject)(this.state.metadata, 'key');
-    }
-
-    /**
-     * Decorate any given children with a 'disabled' prop while saving
-     */
-
   }, {
     key: 'children',
     get: function get() {
@@ -276,8 +280,8 @@ var _initialiseProps = function _initialiseProps() {
   var _this2 = this;
 
   this.setValues = function (values) {
-    var newValues = Object.assign({}, _this2.state.formData, values);
-    _this2.setState({ formData: newValues });
+    var formData = _extends({}, _this2.state.formData, values);
+    _this2.setState({ formData: formData });
   };
 
   this.setValue = function (fieldName, value) {
@@ -346,7 +350,7 @@ var _initialiseProps = function _initialiseProps() {
             });
 
             if (_this2.props.onLoad) {
-              _this2.props.onLoad(referenceObject, _this2.fieldInfoMap);
+              _this2.props.onLoad(referenceObject, _this2.getFieldInfoMap(metadata));
             }
 
           case 16:

@@ -9,7 +9,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { ServiceAgent } from '../util';
 import { arrayToObject } from '../util/array';
 import { recursiveMap } from '../util/component';
-import { formToObject } from '../util/form';
 import { reverse } from '../util/urls';
 
 import FormFieldSet from './FormFieldSet';
@@ -64,7 +63,7 @@ class Form extends React.PureComponent {
     }
   }
 
-  get fieldNames() {
+  getFieldNames(metadata) {
     if (this.props.fieldArrangement) {
       const fieldNames = [];
       this.props.fieldArrangement.forEach((fieldInfo) => {
@@ -76,8 +75,8 @@ class Form extends React.PureComponent {
         }
       });
       return fieldNames;
-    } else if (this.state.metadata) {
-      return this.state.metadata
+    } else if (metadata) {
+      return metadata
         .filter((fieldInfo) => !fieldInfo.read_only)
         .map((fieldInfo) => fieldInfo.key);
     } else {
@@ -85,7 +84,7 @@ class Form extends React.PureComponent {
     }
   }
 
-  get fieldArrangementMap() {
+  getFieldArrangementMap(metadata) {
     const fieldArrangementMap = {};
     if (this.props.fieldArrangement) {
       this.props.fieldArrangement.forEach((fieldInfo) => {
@@ -94,8 +93,8 @@ class Form extends React.PureComponent {
         }
         fieldArrangementMap[fieldInfo.name] = fieldInfo;
       });
-    } else if (this.state.metadata) {
-      this.state.metadata.forEach((fieldInfo) => {
+    } else if (metadata) {
+      metadata.forEach((fieldInfo) => {
         if (!fieldInfo.read_only) {
           const fieldName = fieldInfo.key;
           fieldArrangementMap[fieldName] = { name: fieldName };
@@ -105,12 +104,12 @@ class Form extends React.PureComponent {
     return fieldArrangementMap;
   }
 
-  get fieldInfoMap() {
-    if (!this.state.metadata) {
+  getFieldInfoMap(metadata) {
+    if (!metadata) {
       return null;
     }
 
-    return arrayToObject(this.state.metadata, 'key');
+    return arrayToObject(metadata, 'key');
   }
 
   /**
@@ -124,23 +123,28 @@ class Form extends React.PureComponent {
   }
 
   initialData(metadata, referenceObject) {
+    const fieldInfoMap = this.getFieldInfoMap(metadata);
     const data = {};
-    metadata.forEach((fieldInfo) => {
-      const fieldName = fieldInfo.key;
-      if (!fieldInfo.read_only) {
-        let value = referenceObject[fieldName];
-        if (value === undefined || value === null) {
-          switch (fieldInfo.type) {
-            case 'itemlist':
-              value = [];
-              break;
-            default:
-              value = '';
-              break;
+
+    const fieldNames = this.getFieldNames(metadata);
+    fieldNames.forEach((fieldName) => {
+      const fieldInfo = fieldInfoMap[fieldName];
+      let value = referenceObject[fieldName];
+      switch (fieldInfo.type) {
+        case 'itemlist':
+          value = value || [];
+          break;
+        case 'select':
+          if (typeof(value) === 'object') {
+            value = value.url;
           }
-        }
-        data[fieldName] = value;
+          break;
+        default:
+          value = value || '';
+          break;
       }
+
+      data[fieldName] = value;
     });
 
     return data;
@@ -148,7 +152,7 @@ class Form extends React.PureComponent {
 
 
   coerceRequestData(data) {
-    const fieldInfoMap = this.fieldInfoMap;
+    const fieldInfoMap = this.getFieldInfoMap(this.state.metadata);
     if (!fieldInfoMap) {
       return data;
     }
@@ -157,11 +161,12 @@ class Form extends React.PureComponent {
     Object.keys(data).forEach((fieldName) => {
       const fieldInfo = fieldInfoMap[fieldName];
       if (fieldInfo) {
+        const fieldType =  fieldInfo.type;
         const value = data[fieldName];
-        // For values representing dates, convert the empty string to null
-        if (fieldInfo.type === 'date' && value === '') {
+        // For values representing numbers or dates, convert the empty string to null
+        if ((fieldType === 'date' || fieldType === 'number') && value === '') {
           coercedData[fieldName] = null;
-        } else if (fieldInfo.type === 'itemlist') {
+        } else if (fieldType === 'itemlist') {
           coercedData[fieldName] = value.map((item) => item.url);
         } else {
           coercedData[fieldName] = value;
@@ -172,8 +177,8 @@ class Form extends React.PureComponent {
   }
 
   setValues = (values) => {
-    const newValues = Object.assign({}, this.state.formData, values);
-    this.setState({ formData: newValues });
+    const formData = {...this.state.formData, ...values };
+    this.setState({ formData });
   };
 
   setValue = (fieldName, value) => {
@@ -224,7 +229,7 @@ class Form extends React.PureComponent {
     });
 
     if (this.props.onLoad) {
-      this.props.onLoad(referenceObject, this.fieldInfoMap);
+      this.props.onLoad(referenceObject, this.getFieldInfoMap(metadata));
     }
   };
 
@@ -338,9 +343,9 @@ class Form extends React.PureComponent {
       >
         <this.props.FieldSet
           errors={this.state.errors}
-          fieldArrangementMap={this.fieldArrangementMap}
-          fieldInfoMap={this.fieldInfoMap}
-          fieldNames={this.fieldNames}
+          fieldArrangementMap={this.getFieldArrangementMap(this.state.metadata)}
+          fieldInfoMap={this.getFieldInfoMap(this.state.metadata)}
+          fieldNames={this.getFieldNames(this.state.metadata)}
           form={this}
           representedObject={this.state.referenceObject}
           saving={this.state.saving}
