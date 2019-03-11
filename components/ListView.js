@@ -14,6 +14,8 @@ var _queryString = require('query-string');
 
 var _queryString2 = _interopRequireDefault(_queryString);
 
+var _reactRouterDom = require('react-router-dom');
+
 var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -21,8 +23,6 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
-
-var _reactRouterDom = require('react-router-dom');
 
 var _Tabs = require('@material-ui/core/Tabs');
 
@@ -112,8 +112,8 @@ var ListView = function (_React$PureComponent) {
     }
   }, {
     key: 'componentDidUpdate',
-    value: function componentDidUpdate() {
-      if (this.props.match.path !== this.props.mountPath) {
+    value: function componentDidUpdate(prevProps) {
+      if (!this.isActive) {
         // Since this component may be mounted in the background, only respond
         // to location changes when it is "active"
         return;
@@ -168,6 +168,17 @@ var ListView = function (_React$PureComponent) {
       );
     }
   }, {
+    key: 'isActive',
+    get: function get() {
+      var _props = this.props,
+          location = _props.location,
+          mountPath = _props.mountPath;
+
+
+      var match = (0, _reactRouterDom.matchPath)(location.pathname, { path: mountPath });
+      return match.isExact;
+    }
+  }, {
     key: 'tabs',
     get: function get() {
       var _this3 = this;
@@ -219,9 +230,9 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'filterParams',
     get: function get() {
-      var _props = this.props,
-          filterParams = _props.filterParams,
-          qsFilterParamNames = _props.qsFilterParamNames;
+      var _props2 = this.props,
+          filterParams = _props2.filterParams,
+          qsFilterParamNames = _props2.qsFilterParamNames;
 
 
       var params = filterParams || {};

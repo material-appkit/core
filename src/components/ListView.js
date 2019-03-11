@@ -1,5 +1,6 @@
 import isEqual from 'lodash.isequal';
 import qs from 'query-string';
+import { matchPath } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -56,8 +57,8 @@ class ListView extends React.PureComponent {
   }
 
 
-  componentDidUpdate() {
-    if (this.props.match.path !== this.props.mountPath) {
+  componentDidUpdate(prevProps) {
+    if (!this.isActive) {
       // Since this component may be mounted in the background, only respond
       // to location changes when it is "active"
       return;
@@ -88,6 +89,13 @@ class ListView extends React.PureComponent {
     } else {
       this.syncItemStore();
     }
+  }
+
+  get isActive() {
+    const { location, mountPath } = this.props;
+
+    const match = matchPath(location.pathname, { path: mountPath });
+    return match.isExact;
   }
 
   get tabs() {
