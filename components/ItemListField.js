@@ -6,6 +6,10 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _lodash = require('lodash.isequal');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -63,14 +67,14 @@ var ItemListField = function (_React$PureComponent) {
 
   _createClass(ItemListField, [{
     key: 'componentDidUpdate',
-    value: function componentDidUpdate() {
-      this.updateOptions();
+    value: function componentDidUpdate(prevProps) {
+      if (!(0, _lodash2.default)(this.props.items, prevProps.items)) {
+        this.updateOptions(this.props.items);
+      }
     }
   }, {
     key: 'updateOptions',
-    value: function updateOptions() {
-      var items = this.props.items;
-
+    value: function updateOptions(items) {
       var select = this.selectRef.current;
       var options = select.options;
       for (var i = options.length - 1; i >= 0; --i) {
@@ -84,6 +88,10 @@ var ItemListField = function (_React$PureComponent) {
         option.selected = true;
         select.add(option);
       });
+
+      // Trigger a change event on the select element
+      var changeEvent = new Event('change', { bubbles: true, cancelable: true });
+      select.dispatchEvent(changeEvent);
     }
   }, {
     key: 'handleItemListAdd',

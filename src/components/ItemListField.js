@@ -4,6 +4,8 @@
 *
 */
 
+import isEqual from 'lodash.isequal';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -27,13 +29,13 @@ class ItemListField extends React.PureComponent {
     this.dispatchChangeEvent = this.dispatchChangeEvent.bind(this);
   }
 
-  componentDidUpdate() {
-    this.updateOptions();
+  componentDidUpdate(prevProps) {
+    if (!isEqual(this.props.items, prevProps.items)) {
+      this.updateOptions(this.props.items);
+    }
   }
 
-  updateOptions() {
-    const items = this.props.items;
-
+  updateOptions(items) {
     const select = this.selectRef.current;
     const options = select.options;
     for (let i = options.length - 1; i >= 0; --i) {
@@ -47,6 +49,10 @@ class ItemListField extends React.PureComponent {
       option.selected = true;
       select.add(option);
     });
+
+    // Trigger a change event on the select element
+    const changeEvent = new Event('change', { bubbles: true, cancelable: true });
+    select.dispatchEvent(changeEvent);
   }
 
   handleItemListAdd(item) {
