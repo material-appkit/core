@@ -7,7 +7,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { decorateErrors } from '../util/component';
 
 import ItemListField from './ItemListField';
-import { valueForKeyPath } from '../util/object';
 
 function FormFieldSet(props) {
   const {
