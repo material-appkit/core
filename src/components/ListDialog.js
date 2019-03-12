@@ -99,6 +99,13 @@ class ListDialog extends React.PureComponent {
     };
   }
 
+  get hasSelection() {
+    if (Array.isArray(this.state.selection)) {
+      return this.state.selection.length ? true : false;
+    }
+    return this.state.selection;
+  }
+
   dismiss = (value) => {
     this.props.onDismiss(value);
   };
@@ -181,7 +188,7 @@ class ListDialog extends React.PureComponent {
               </React.Fragment>
             }
             <Button
-              disabled={!this.state.selection}
+              disabled={!this.hasSelection}
               onClick={() => { this.dismiss(this.state.selection); }}
               color="primary"
             >

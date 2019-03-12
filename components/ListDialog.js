@@ -293,7 +293,7 @@ var ListDialog = function (_React$PureComponent) {
             _react2.default.createElement(
               _Button2.default,
               {
-                disabled: !this.state.selection,
+                disabled: !this.hasSelection,
                 onClick: function onClick() {
                   _this2.dismiss(_this2.state.selection);
                 },
@@ -310,6 +310,14 @@ var ListDialog = function (_React$PureComponent) {
           onSave: this.handleEditDialogSave
         }, this.props.editDialogProps))
       );
+    }
+  }, {
+    key: 'hasSelection',
+    get: function get() {
+      if (Array.isArray(this.state.selection)) {
+        return this.state.selection.length ? true : false;
+      }
+      return this.state.selection;
     }
   }]);
 
