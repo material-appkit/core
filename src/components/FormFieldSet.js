@@ -30,28 +30,33 @@ function FormFieldSet(props) {
     const fieldName = fieldInfo.key;
     const fieldValue = formData[fieldName];
     const { label, widget } = fieldInfo.ui || {};
+    const commonFieldProps = {
+      key: fieldName,
+      label,
+      value: fieldValue,
+      name: fieldName,
+    };
 
     const WidgetComponent = widgets[fieldName];
     if (WidgetComponent) {
       // If a widget component has been been specified, use it
-      console.log(WidgetComponent);
+      return (
+        <WidgetComponent
+          fieldInfo={fieldInfo}
+          onChange={(value) => { form.setValue(fieldName, value); }}
+          {...commonFieldProps}
+        />
+      );
     }
 
     if (fieldInfo.hidden) {
       return <input type="hidden" {...commonFieldProps} />;
     }
 
-    const commonFieldProps = {
-      key: fieldName,
-      label,
-      name: fieldName,
-    };
-
     if (widget === 'itemlist') {
       const fieldArrangementInfo = fieldArrangementMap[fieldName];
       return (
         <ItemListField
-          items={fieldValue}
           listUrl={`${fieldInfo.related_endpoint.singular}/`}
           onChange={(value) => { form.setValue(fieldName, value); }}
           {...commonFieldProps}
@@ -68,7 +73,6 @@ function FormFieldSet(props) {
       margin: "normal",
       onChange: (e) => { form.setValue(fieldName, e.target.value); },
       type: fieldInfo.type,
-      value: fieldValue,
       variant: "outlined",
     };
 

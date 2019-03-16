@@ -53,26 +53,31 @@ function FormFieldSet(props) {
         label = _ref.label,
         widget = _ref.widget;
 
+    var commonFieldProps = {
+      key: fieldName,
+      label: label,
+      value: fieldValue,
+      name: fieldName
+    };
+
     var WidgetComponent = widgets[fieldName];
     if (WidgetComponent) {
       // If a widget component has been been specified, use it
-      console.log(WidgetComponent);
+      return _react2.default.createElement(WidgetComponent, _extends({
+        fieldInfo: fieldInfo,
+        onChange: function onChange(value) {
+          form.setValue(fieldName, value);
+        }
+      }, commonFieldProps));
     }
 
     if (fieldInfo.hidden) {
       return _react2.default.createElement('input', _extends({ type: 'hidden' }, commonFieldProps));
     }
 
-    var commonFieldProps = {
-      key: fieldName,
-      label: label,
-      name: fieldName
-    };
-
     if (widget === 'itemlist') {
       var fieldArrangementInfo = fieldArrangementMap[fieldName];
       return _react2.default.createElement(_ItemListField2.default, _extends({
-        items: fieldValue,
         listUrl: fieldInfo.related_endpoint.singular + '/',
         onChange: function onChange(value) {
           form.setValue(fieldName, value);
@@ -89,7 +94,6 @@ function FormFieldSet(props) {
         form.setValue(fieldName, e.target.value);
       },
       type: fieldInfo.type,
-      value: fieldValue,
       variant: "outlined"
     });
 
