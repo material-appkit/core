@@ -145,15 +145,6 @@ ItemListField.defaultProps = {
 };
 
 export default withStyles((theme) => ({
-  fieldset: {
-    borderColor: 'rgba(0, 0, 0, 0.23)',
-    borderRadius: theme.shape.borderRadius,
-    borderWidth: 1,
-  },
-
-  legend: {
-    color: 'rgba(0, 0, 0, 0.54)',
-    fontSize: '0.75rem',
-    textTransform: 'capitalize',
-  },
+  fieldset: theme.form.customControl.fieldset,
+  legend: theme.form.customControl.legend,
 }))(ItemListField);
