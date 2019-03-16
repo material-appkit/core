@@ -30,8 +30,8 @@ class ItemListField extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    if (!isEqual(this.props.items, prevProps.items)) {
-      this.updateOptions(this.props.items);
+    if (!isEqual(this.props.value, prevProps.value)) {
+      this.updateOptions(this.props.value);
     }
   }
 
@@ -56,18 +56,18 @@ class ItemListField extends React.PureComponent {
   }
 
   handleItemListAdd(item) {
-    const newItems = this.props.items.slice();
+    const newItems = this.props.value.slice();
     newItems.push(item);
     this.dispatchChangeEvent(newItems);
   }
 
   handleItemListRemove(item) {
-    const newItems = removeObject(this.props.items, 'id', item.id);
+    const newItems = removeObject(this.props.value, 'id', item.id);
     this.dispatchChangeEvent(newItems);
   };
 
   handleItemListUpdate(item, itemIndex) {
-    const newItems = this.props.items.slice();
+    const newItems = this.props.value.slice();
     newItems[itemIndex] = item;
     this.dispatchChangeEvent(newItems);
   }
@@ -102,7 +102,7 @@ class ItemListField extends React.PureComponent {
             editDialogProps={this.props.editDialogProps}
             entityType={this.props.entityType}
             filterParams={this.props.filterParams}
-            items={this.props.items}
+            items={this.props.value}
             itemKeyPath={this.props.itemKeyPath}
             listItemComponent={this.props.listItemComponent}
             listItemProps={this.props.listItemProps}
@@ -126,7 +126,6 @@ ItemListField.propTypes = {
   entityType: PropTypes.string.isRequired,
   filterParams: PropTypes.object,
   itemKeyPath: PropTypes.string,
-  items: PropTypes.array.isRequired,
   listUrl: PropTypes.string.isRequired,
   listItemComponent: PropTypes.func,
   listItemProps: PropTypes.object,
@@ -135,6 +134,7 @@ ItemListField.propTypes = {
   onChange: PropTypes.func,
   searchFilterParam: PropTypes.string,
   titleKey: PropTypes.any.isRequired,
+  value: PropTypes.array.isRequired,
 };
 
 ItemListField.defaultProps = {

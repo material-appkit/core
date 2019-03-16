@@ -68,8 +68,8 @@ var ItemListField = function (_React$PureComponent) {
   _createClass(ItemListField, [{
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps) {
-      if (!(0, _lodash2.default)(this.props.items, prevProps.items)) {
-        this.updateOptions(this.props.items);
+      if (!(0, _lodash2.default)(this.props.value, prevProps.value)) {
+        this.updateOptions(this.props.value);
       }
     }
   }, {
@@ -96,20 +96,20 @@ var ItemListField = function (_React$PureComponent) {
   }, {
     key: 'handleItemListAdd',
     value: function handleItemListAdd(item) {
-      var newItems = this.props.items.slice();
+      var newItems = this.props.value.slice();
       newItems.push(item);
       this.dispatchChangeEvent(newItems);
     }
   }, {
     key: 'handleItemListRemove',
     value: function handleItemListRemove(item) {
-      var newItems = (0, _array.removeObject)(this.props.items, 'id', item.id);
+      var newItems = (0, _array.removeObject)(this.props.value, 'id', item.id);
       this.dispatchChangeEvent(newItems);
     }
   }, {
     key: 'handleItemListUpdate',
     value: function handleItemListUpdate(item, itemIndex) {
-      var newItems = this.props.items.slice();
+      var newItems = this.props.value.slice();
       newItems[itemIndex] = item;
       this.dispatchChangeEvent(newItems);
     }
@@ -152,7 +152,7 @@ var ItemListField = function (_React$PureComponent) {
             editDialogProps: this.props.editDialogProps,
             entityType: this.props.entityType,
             filterParams: this.props.filterParams,
-            items: this.props.items,
+            items: this.props.value,
             itemKeyPath: this.props.itemKeyPath,
             listItemComponent: this.props.listItemComponent,
             listItemProps: this.props.listItemProps,
@@ -178,7 +178,6 @@ ItemListField.propTypes = {
   entityType: _propTypes2.default.string.isRequired,
   filterParams: _propTypes2.default.object,
   itemKeyPath: _propTypes2.default.string,
-  items: _propTypes2.default.array.isRequired,
   listUrl: _propTypes2.default.string.isRequired,
   listItemComponent: _propTypes2.default.func,
   listItemProps: _propTypes2.default.object,
@@ -186,7 +185,8 @@ ItemListField.propTypes = {
   name: _propTypes2.default.string.isRequired,
   onChange: _propTypes2.default.func,
   searchFilterParam: _propTypes2.default.string,
-  titleKey: _propTypes2.default.any.isRequired
+  titleKey: _propTypes2.default.any.isRequired,
+  value: _propTypes2.default.array.isRequired
 };
 
 ItemListField.defaultProps = {
