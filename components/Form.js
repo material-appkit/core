@@ -218,13 +218,17 @@ var Form = function (_React$PureComponent) {
       var coercedData = {};
       Object.keys(data).forEach(function (fieldName) {
         var fieldInfo = fieldInfoMap[fieldName];
+
+        var _ref2 = fieldInfo.ui || {},
+            widget = _ref2.widget;
+
         if (fieldInfo) {
           var fieldType = fieldInfo.type;
           var value = data[fieldName];
           // For values representing numbers or dates, convert the empty string to null
           if ((fieldType === 'date' || fieldType === 'number') && value === '') {
             coercedData[fieldName] = null;
-          } else if (fieldType === 'itemlist') {
+          } else if (widget === 'itemlist') {
             coercedData[fieldName] = value.map(function (item) {
               return item.url;
             });
@@ -264,15 +268,16 @@ var Form = function (_React$PureComponent) {
           onChange: this.handleFormChange,
           ref: this.formRef
         },
-        _react2.default.createElement(this.props.FieldSet, _extends({
+        _react2.default.createElement(this.props.FieldSet, {
           errors: this.state.errors,
           fieldArrangementMap: this.getFieldArrangementMap(this.state.metadata),
           fieldInfoMap: this.getFieldInfoMap(this.state.metadata),
           fieldNames: this.getFieldNames(this.state.metadata),
           form: this,
           representedObject: this.state.referenceObject,
-          saving: this.state.saving
-        }, this.props.FieldSetProps)),
+          saving: this.state.saving,
+          widgets: this.props.widgets
+        }),
         this.children
       );
     }
@@ -507,7 +512,6 @@ Form.propTypes = {
   defaultValues: _propTypes2.default.object,
   entityType: _propTypes2.default.string,
   FieldSet: _propTypes2.default.func,
-  FieldSetProps: _propTypes2.default.object,
   fieldArrangement: _propTypes2.default.array,
   representedObjectId: _propTypes2.default.number,
   onMount: _propTypes2.default.func,
@@ -517,7 +521,8 @@ Form.propTypes = {
   onError: _propTypes2.default.func,
   persistedObject: _propTypes2.default.object,
   loadingIndicator: _propTypes2.default.node,
-  updateMethod: _propTypes2.default.oneOf(['PUT', 'PATCH'])
+  updateMethod: _propTypes2.default.oneOf(['PUT', 'PATCH']),
+  widgets: _propTypes2.default.object
 };
 
 Form.defaultProps = {
@@ -525,8 +530,8 @@ Form.defaultProps = {
   defaultValues: {},
   entityType: '',
   FieldSet: _FormFieldSet2.default,
-  FieldSetProps: {},
-  updateMethod: 'PATCH'
+  updateMethod: 'PATCH',
+  widgets: {}
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

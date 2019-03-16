@@ -163,13 +163,15 @@ class Form extends React.PureComponent {
     const coercedData = {};
     Object.keys(data).forEach((fieldName) => {
       const fieldInfo = fieldInfoMap[fieldName];
+      const { widget } = fieldInfo.ui || {};
+
       if (fieldInfo) {
         const fieldType =  fieldInfo.type;
         const value = data[fieldName];
         // For values representing numbers or dates, convert the empty string to null
         if ((fieldType === 'date' || fieldType === 'number') && value === '') {
           coercedData[fieldName] = null;
-        } else if (fieldType === 'itemlist') {
+        } else if (widget === 'itemlist') {
           coercedData[fieldName] = value.map((item) => item.url);
         } else {
           coercedData[fieldName] = value;
@@ -365,7 +367,7 @@ class Form extends React.PureComponent {
           form={this}
           representedObject={this.state.referenceObject}
           saving={this.state.saving}
-          {...this.props.FieldSetProps}
+          widgets={this.props.widgets}
         />
         {this.children}
       </form>
@@ -382,7 +384,6 @@ Form.propTypes = {
   defaultValues: PropTypes.object,
   entityType: PropTypes.string,
   FieldSet: PropTypes.func,
-  FieldSetProps: PropTypes.object,
   fieldArrangement: PropTypes.array,
   representedObjectId: PropTypes.number,
   onMount: PropTypes.func,
@@ -392,7 +393,8 @@ Form.propTypes = {
   onError: PropTypes.func,
   persistedObject: PropTypes.object,
   loadingIndicator: PropTypes.node,
-  updateMethod: PropTypes.oneOf(['PUT', 'PATCH'])
+  updateMethod: PropTypes.oneOf(['PUT', 'PATCH']),
+  widgets: PropTypes.object,
 };
 
 Form.defaultProps = {
@@ -400,8 +402,8 @@ Form.defaultProps = {
   defaultValues: {},
   entityType: '',
   FieldSet: FormFieldSet,
-  FieldSetProps: {},
   updateMethod: 'PATCH',
+  widgets: {},
 };
 
 export default withStyles((theme) => {
