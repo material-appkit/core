@@ -129,8 +129,9 @@ class Form extends React.PureComponent {
     const fieldNames = this.getFieldNames(metadata);
     fieldNames.forEach((fieldName) => {
       const fieldInfo = fieldInfoMap[fieldName];
+      const { widget } = fieldInfo.ui || {};
       let value = referenceObject[fieldName];
-      switch (fieldInfo.type) {
+      switch (widget) {
         case 'itemlist':
           value = value || [];
           break;

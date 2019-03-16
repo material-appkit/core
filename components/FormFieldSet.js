@@ -42,83 +42,114 @@ function FormFieldSet(props) {
   var formData = form.state.formData;
 
   var fields = [];
-  fieldNames.forEach(function (fieldName) {
+
+  var _loop = function _loop(fieldName) {
     var fieldInfo = fieldInfoMap[fieldName];
-    if (!fieldInfo.read_only) {
-      var field = null;
-      var value = formData[fieldName];
-      var label = fieldInfo.ui ? fieldInfo.ui.label : null;
+    if (fieldInfo.read_only) {
+      return 'continue';
+    }
 
-      var commonFieldProps = {
-        key: fieldName,
-        label: label,
-        name: fieldName
-      };
+    var field = null;
+    var value = formData[fieldName];
 
-      if (fieldInfo.hidden) {
-        field = _react2.default.createElement('input', _extends({ type: 'hidden' }, commonFieldProps));
-      } else if (fieldInfo.type === 'itemlist') {
-        var fieldArrangementInfo = fieldArrangementMap[fieldName];
+    var _ref = fieldInfo.ui || {},
+        label = _ref.label,
+        widget = _ref.widget;
 
-        field = _react2.default.createElement(_ItemListField2.default, _extends({
-          items: value,
-          listUrl: fieldInfo.related_endpoint.singular + '/',
-          onChange: function onChange(value) {
-            form.setValue(fieldName, value);
-          }
-        }, commonFieldProps, fieldArrangementInfo));
+    var commonFieldProps = {
+      key: fieldName,
+      label: label,
+      name: fieldName
+    };
+
+    if (fieldInfo.hidden) {
+      field = _react2.default.createElement('input', _extends({ type: 'hidden' }, commonFieldProps));
+    } else if (widget === 'itemlist') {
+      var fieldArrangementInfo = fieldArrangementMap[fieldName];
+
+      field = _react2.default.createElement(_ItemListField2.default, _extends({
+        items: value,
+        listUrl: fieldInfo.related_endpoint.singular + '/',
+        onChange: function onChange(value) {
+          form.setValue(fieldName, value);
+        }
+      }, commonFieldProps, fieldArrangementInfo));
+    } else {
+      var textFieldProps = _extends({}, commonFieldProps, {
+        disabled: props.saving,
+        fullWidth: true,
+        InputLabelProps: { classes: { root: classes.inputLabel } },
+        margin: "normal",
+        onChange: function onChange(e) {
+          form.setValue(fieldName, e.target.value);
+        },
+        type: fieldInfo.type,
+        value: value,
+        variant: "outlined"
+      });
+
+      if (fieldInfo.choices) {
+        textFieldProps.select = true;
+        textFieldProps.SelectProps = { native: true };
       } else {
-        var textFieldProps = _extends({}, commonFieldProps, {
-          disabled: props.saving,
-          fullWidth: true,
-          InputLabelProps: { classes: { root: classes.inputLabel } },
-          margin: "normal",
-          onChange: function onChange(e) {
-            form.setValue(fieldName, e.target.value);
-          },
-          value: value,
-          variant: "outlined"
-        });
-
-        if (fieldInfo.choices) {
-          textFieldProps.select = true;
-          textFieldProps.SelectProps = { native: true };
-        } else {
-          var inputType = fieldInfo.type;
-          if (inputType === 'textarea') {
-            textFieldProps.multiline = true;
-            textFieldProps.rows = 2;
-            textFieldProps.rowsMax = 20;
-          } else {
-            textFieldProps.type = inputType;
-          }
+        if (widget === 'textarea') {
+          textFieldProps.multiline = true;
+          textFieldProps.rows = 2;
+          textFieldProps.rowsMax = 20;
         }
-
-        if (fieldInfo.type === 'number') {
-          textFieldProps.inputProps = { min: 0, step: 'any' };
-        }
-
-        field = _react2.default.createElement(
-          _TextField2.default,
-          textFieldProps,
-          fieldInfo.choices && _react2.default.createElement(
-            _react2.default.Fragment,
-            null,
-            _react2.default.createElement('option', null),
-            fieldInfo.choices.map(function (choice) {
-              return _react2.default.createElement(
-                'option',
-                { key: choice.value, value: choice.value },
-                choice.label
-              );
-            })
-          )
-        );
       }
 
-      fields.push((0, _component.decorateErrors)(field, errors));
+      if (fieldInfo.type === 'number') {
+        textFieldProps.inputProps = { min: 0, step: 'any' };
+      }
+
+      field = _react2.default.createElement(
+        _TextField2.default,
+        textFieldProps,
+        fieldInfo.choices && _react2.default.createElement(
+          _react2.default.Fragment,
+          null,
+          _react2.default.createElement('option', null),
+          fieldInfo.choices.map(function (choice) {
+            return _react2.default.createElement(
+              'option',
+              { key: choice.value, value: choice.value },
+              choice.label
+            );
+          })
+        )
+      );
     }
-  });
+
+    fields.push((0, _component.decorateErrors)(field, errors));
+  };
+
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = fieldNames[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var fieldName = _step.value;
+
+      var _ret = _loop(fieldName);
+
+      if (_ret === 'continue') continue;
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
 
   return fields;
 }

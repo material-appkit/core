@@ -181,8 +181,12 @@ var Form = function (_React$PureComponent) {
       var fieldNames = this.getFieldNames(metadata);
       fieldNames.forEach(function (fieldName) {
         var fieldInfo = fieldInfoMap[fieldName];
+
+        var _ref = fieldInfo.ui || {},
+            widget = _ref.widget;
+
         var value = referenceObject[fieldName];
-        switch (fieldInfo.type) {
+        switch (widget) {
           case 'itemlist':
             value = value || [];
             break;

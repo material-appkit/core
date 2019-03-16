@@ -21,82 +21,80 @@ function FormFieldSet(props) {
   const formData = form.state.formData;
 
   const fields = [];
-  fieldNames.forEach((fieldName) => {
+  for (const fieldName of fieldNames) {
     const fieldInfo = fieldInfoMap[fieldName];
-    if (!fieldInfo.read_only) {
-      let field = null;
-      const value = formData[fieldName];
-      const label = fieldInfo.ui ? fieldInfo.ui.label : null;
+    if (fieldInfo.read_only) {
+      continue;
+    }
 
-      const commonFieldProps = {
-        key: fieldName,
-        label,
-        name: fieldName,
+    let field = null;
+    const value = formData[fieldName];
+    const { label, widget } = fieldInfo.ui || {};
+
+    const commonFieldProps = {
+      key: fieldName,
+      label,
+      name: fieldName,
+    };
+
+    if (fieldInfo.hidden) {
+      field = <input type="hidden" {...commonFieldProps} />;
+    } else if (widget === 'itemlist') {
+      const fieldArrangementInfo = fieldArrangementMap[fieldName];
+
+      field = (
+        <ItemListField
+          items={value}
+          listUrl={`${fieldInfo.related_endpoint.singular}/`}
+          onChange={(value) => { form.setValue(fieldName, value); }}
+          {...commonFieldProps}
+          {...fieldArrangementInfo}
+        />
+      );
+    } else {
+      const textFieldProps = {
+        ...commonFieldProps,
+        disabled: props.saving,
+        fullWidth: true,
+        InputLabelProps: { classes: { root: classes.inputLabel } },
+        margin: "normal",
+        onChange: (e) => { form.setValue(fieldName, e.target.value); },
+        type: fieldInfo.type,
+        value,
+        variant: "outlined",
       };
 
-      if (fieldInfo.hidden) {
-        field = (
-          <input type="hidden" {...commonFieldProps} />
-        );
-      } else if (fieldInfo.type === 'itemlist') {
-        const fieldArrangementInfo = fieldArrangementMap[fieldName];
-
-        field = (
-          <ItemListField
-            items={value}
-            listUrl={`${fieldInfo.related_endpoint.singular}/`}
-            onChange={(value) => { form.setValue(fieldName, value); }}
-            {...commonFieldProps}
-            {...fieldArrangementInfo}
-          />
-        );
+      if (fieldInfo.choices) {
+        textFieldProps.select = true;
+        textFieldProps.SelectProps = { native: true };
       } else {
-        const textFieldProps = {
-          ...commonFieldProps,
-          disabled: props.saving,
-          fullWidth: true,
-          InputLabelProps: { classes: { root: classes.inputLabel } },
-          margin: "normal",
-          onChange: (e) => { form.setValue(fieldName, e.target.value); },
-          value,
-          variant: "outlined",
-        };
-
-        if (fieldInfo.choices) {
-          textFieldProps.select = true;
-          textFieldProps.SelectProps = { native: true };
-        } else {
-          const inputType = fieldInfo.type;
-          if (inputType === 'textarea') {
-            textFieldProps.multiline = true;
-            textFieldProps.rows = 2;
-            textFieldProps.rowsMax = 20;
-          } else {
-            textFieldProps.type = inputType;
-          }
+        if (widget === 'textarea') {
+          textFieldProps.multiline = true;
+          textFieldProps.rows = 2;
+          textFieldProps.rowsMax = 20;
         }
-
-        if (fieldInfo.type === 'number') {
-          textFieldProps.inputProps = { min: 0, step: 'any' };
-        }
-
-        field = (
-          <TextField {...textFieldProps }>
-            {fieldInfo.choices &&
-              <React.Fragment>
-                <option />
-                {fieldInfo.choices.map((choice) => (
-                  <option key={choice.value} value={choice.value}>{choice.label}</option>
-                ))}
-              </React.Fragment>
-            }
-          </TextField>
-        );
       }
 
-      fields.push(decorateErrors(field, errors));
+      if (fieldInfo.type === 'number') {
+        textFieldProps.inputProps = { min: 0, step: 'any' };
+      }
+
+      field = (
+        <TextField {...textFieldProps }>
+          {fieldInfo.choices &&
+            <React.Fragment>
+              <option />
+              {fieldInfo.choices.map((choice) => (
+                <option key={choice.value} value={choice.value}>{choice.label}</option>
+              ))}
+            </React.Fragment>
+          }
+        </TextField>
+      );
     }
-  });
+
+    fields.push(decorateErrors(field, errors));
+  }
 
   return fields;
 }
