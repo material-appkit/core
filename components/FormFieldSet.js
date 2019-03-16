@@ -48,6 +48,7 @@ function FormFieldSet(props) {
   var constructFormField = function constructFormField(fieldInfo) {
     var fieldName = fieldInfo.key;
     var fieldValue = formData[fieldName];
+    var fieldArrangementInfo = fieldArrangementMap[fieldName];
 
     var _ref = fieldInfo.ui || {},
         label = _ref.label,
@@ -60,7 +61,7 @@ function FormFieldSet(props) {
       name: fieldName
     };
 
-    var WidgetComponent = widgets[fieldName];
+    var WidgetComponent = fieldArrangementInfo.widget || widgets[fieldName];
     if (WidgetComponent) {
       // If a widget component has been been specified, use it
       return _react2.default.createElement(WidgetComponent, _extends({
@@ -68,7 +69,7 @@ function FormFieldSet(props) {
         onChange: function onChange(value) {
           form.setValue(fieldName, value);
         }
-      }, commonFieldProps));
+      }, commonFieldProps, fieldArrangementInfo));
     }
 
     if (fieldInfo.hidden) {
@@ -76,7 +77,6 @@ function FormFieldSet(props) {
     }
 
     if (widget === 'itemlist') {
-      var fieldArrangementInfo = fieldArrangementMap[fieldName];
       return _react2.default.createElement(_ItemListField2.default, _extends({
         listUrl: fieldInfo.related_endpoint.singular + '/',
         onChange: function onChange(value) {

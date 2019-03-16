@@ -29,6 +29,8 @@ function FormFieldSet(props) {
   const constructFormField = (fieldInfo)  => {
     const fieldName = fieldInfo.key;
     const fieldValue = formData[fieldName];
+    const fieldArrangementInfo = fieldArrangementMap[fieldName];
+
     const { label, widget } = fieldInfo.ui || {};
     const commonFieldProps = {
       key: fieldName,
@@ -37,7 +39,8 @@ function FormFieldSet(props) {
       name: fieldName,
     };
 
-    const WidgetComponent = widgets[fieldName];
+
+    let WidgetComponent = fieldArrangementInfo.widget || widgets[fieldName];
     if (WidgetComponent) {
       // If a widget component has been been specified, use it
       return (
@@ -45,6 +48,7 @@ function FormFieldSet(props) {
           fieldInfo={fieldInfo}
           onChange={(value) => { form.setValue(fieldName, value); }}
           {...commonFieldProps}
+          {...fieldArrangementInfo}
         />
       );
     }
@@ -54,7 +58,6 @@ function FormFieldSet(props) {
     }
 
     if (widget === 'itemlist') {
-      const fieldArrangementInfo = fieldArrangementMap[fieldName];
       return (
         <ItemListField
           listUrl={`${fieldInfo.related_endpoint.singular}/`}

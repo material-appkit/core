@@ -5,7 +5,7 @@
 */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
@@ -23,37 +23,50 @@ import ServiceAgent from '../util/ServiceAgent';
 import { valueForKeyPath } from '../util/object';
 
 function ItemListItem(props) {
-  const { classes, clickAction, item, mode } = props;
+  const { classes, item, onClick } = props;
 
-  let Component = null;
-  let componentProps = {
-    onClick: () => { props.onClick(item) },
-  };
+  let component = null;
 
-  if (mode === 'edit' && clickAction === 'edit') {
-    Component = Button;
-    componentProps.className = classes.itemButton;
-    componentProps.color = 'primary';
+  if (props.component) {
+    // If a component class was explicitly provided, use it
+    component = <props.component item={props.item} />
   } else {
-    if (item.path) {
-      Component = Link;
-      componentProps.component = RouterLink;
-      componentProps.to = item.path;
-    } else if (item.media_url) {
-      Component = Link;
-      componentProps.href = item.media_url;
-      componentProps.rel = 'noopener';
-      componentProps.target = '_blank';
+    let ComponentClass = null;
+    let componentProps = {
+      onClick: () => { onClick(item) },
+    };
+
+    if (props.mode === 'edit' && props.clickAction === 'edit') {
+      ComponentClass = Button;
+      componentProps.className = classes.itemButton;
+      componentProps.color = 'primary';
     } else {
-      Component = Typography;
+      if (item.path) {
+        ComponentClass = Link;
+        componentProps.component = RouterLink;
+        componentProps.to = item.path;
+      } else if (item.media_url) {
+        ComponentClass = Link;
+        componentProps.href = item.media_url;
+        componentProps.rel = 'noopener';
+        componentProps.target = '_blank';
+      } else {
+        ComponentClass = Typography;
+      }
     }
-  }
 
-  let linkTitle = null;
-  if (typeof(props.titleKey) === 'function') {
-    linkTitle = props.titleKey(item);
-  } else {
-    linkTitle = item[props.titleKey];
+    let linkTitle = null;
+    if (typeof(props.titleKey) === 'function') {
+      linkTitle = props.titleKey(item);
+    } else {
+      linkTitle = item[props.titleKey];
+    }
+
+    component = (
+      <ComponentClass {...componentProps}>
+        {linkTitle}
+      </ComponentClass>
+    );
   }
 
   return (
@@ -67,9 +80,7 @@ function ItemListItem(props) {
           <DeleteIcon className={classes.removeButtonIcon} />
         </IconButton>
       }
-      <Component {...componentProps}>
-        {linkTitle}
-      </Component>
+      {component}
     </li>
   );
 }
@@ -77,6 +88,7 @@ function ItemListItem(props) {
 ItemListItem.propTypes = {
   classes: PropTypes.object.isRequired,
   clickAction: PropTypes.string,
+  component: PropTypes.func,
   item: PropTypes.object.isRequired,
   onClick: PropTypes.func.isRequired,
   onRemove: PropTypes.func,
@@ -203,20 +215,21 @@ class ItemList extends React.PureComponent {
           {this.items.map((item) => (
             <StyledItemListItem
               clickAction={clickAction}
+              component={this.props.itemComponent}
               key={item.id}
-              onClick={this.handleItemClick}
-              onRemove={this.detachItem}
-              mode={mode}
               item={item}
               itemKeyPath={this.props.itemKeyPath}
+              mode={mode}
+              onClick={this.handleItemClick}
+              onRemove={this.detachItem}
               titleKey={this.props.titleKey}
             />
           ))}
         </ul>
 
         {mode === 'edit' &&
-          <React.Fragment>
-            <React.Fragment>
+          <Fragment>
+            <Fragment>
               {this.props.onAdd &&
                 <Button
                   color="primary"
@@ -241,7 +254,7 @@ class ItemList extends React.PureComponent {
                   searchFilterParam={this.props.searchFilterParam}
                 />
               }
-            </React.Fragment>
+            </Fragment>
 
             {this.state.editDialogOpen &&
               <this.props.EditDialogComponent
@@ -253,7 +266,7 @@ class ItemList extends React.PureComponent {
                 {...this.props.editDialogProps}
               />
             }
-          </React.Fragment>
+          </Fragment>
         }
       </div>
     );
@@ -271,6 +284,7 @@ ItemList.propTypes = {
   editDialogProps: PropTypes.object,
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
+  itemComponent: PropTypes.func,
   items: PropTypes.array.isRequired,
   itemKeyPath: PropTypes.string,
   onItemClick: PropTypes.func,

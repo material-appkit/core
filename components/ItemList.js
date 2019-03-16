@@ -76,42 +76,54 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function ItemListItem(props) {
   var classes = props.classes,
-      clickAction = props.clickAction,
       item = props.item,
-      mode = props.mode;
+      _onClick = props.onClick;
 
 
-  var Component = null;
-  var componentProps = {
-    onClick: function onClick() {
-      props.onClick(item);
-    }
-  };
+  var component = null;
 
-  if (mode === 'edit' && clickAction === 'edit') {
-    Component = _Button2.default;
-    componentProps.className = classes.itemButton;
-    componentProps.color = 'primary';
+  if (props.component) {
+    // If a component class was explicitly provided, use it
+    component = _react2.default.createElement(props.component, { item: props.item });
   } else {
-    if (item.path) {
-      Component = _Link2.default;
-      componentProps.component = _reactRouterDom.Link;
-      componentProps.to = item.path;
-    } else if (item.media_url) {
-      Component = _Link2.default;
-      componentProps.href = item.media_url;
-      componentProps.rel = 'noopener';
-      componentProps.target = '_blank';
+    var ComponentClass = null;
+    var componentProps = {
+      onClick: function onClick() {
+        _onClick(item);
+      }
+    };
+
+    if (props.mode === 'edit' && props.clickAction === 'edit') {
+      ComponentClass = _Button2.default;
+      componentProps.className = classes.itemButton;
+      componentProps.color = 'primary';
     } else {
-      Component = _Typography2.default;
+      if (item.path) {
+        ComponentClass = _Link2.default;
+        componentProps.component = _reactRouterDom.Link;
+        componentProps.to = item.path;
+      } else if (item.media_url) {
+        ComponentClass = _Link2.default;
+        componentProps.href = item.media_url;
+        componentProps.rel = 'noopener';
+        componentProps.target = '_blank';
+      } else {
+        ComponentClass = _Typography2.default;
+      }
     }
-  }
 
-  var linkTitle = null;
-  if (typeof props.titleKey === 'function') {
-    linkTitle = props.titleKey(item);
-  } else {
-    linkTitle = item[props.titleKey];
+    var linkTitle = null;
+    if (typeof props.titleKey === 'function') {
+      linkTitle = props.titleKey(item);
+    } else {
+      linkTitle = item[props.titleKey];
+    }
+
+    component = _react2.default.createElement(
+      ComponentClass,
+      componentProps,
+      linkTitle
+    );
   }
 
   return _react2.default.createElement(
@@ -128,17 +140,14 @@ function ItemListItem(props) {
       },
       _react2.default.createElement(_Delete2.default, { className: classes.removeButtonIcon })
     ),
-    _react2.default.createElement(
-      Component,
-      componentProps,
-      linkTitle
-    )
+    component
   );
 }
 
 ItemListItem.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   clickAction: _propTypes2.default.string,
+  component: _propTypes2.default.func,
   item: _propTypes2.default.object.isRequired,
   onClick: _propTypes2.default.func.isRequired,
   onRemove: _propTypes2.default.func,
@@ -320,21 +329,22 @@ var ItemList = function (_React$PureComponent) {
           this.items.map(function (item) {
             return _react2.default.createElement(StyledItemListItem, {
               clickAction: clickAction,
+              component: _this3.props.itemComponent,
               key: item.id,
-              onClick: _this3.handleItemClick,
-              onRemove: _this3.detachItem,
-              mode: mode,
               item: item,
               itemKeyPath: _this3.props.itemKeyPath,
+              mode: mode,
+              onClick: _this3.handleItemClick,
+              onRemove: _this3.detachItem,
               titleKey: _this3.props.titleKey
             });
           })
         ),
         mode === 'edit' && _react2.default.createElement(
-          _react2.default.Fragment,
+          _react.Fragment,
           null,
           _react2.default.createElement(
-            _react2.default.Fragment,
+            _react.Fragment,
             null,
             this.props.onAdd && _react2.default.createElement(
               _Button2.default,
@@ -422,6 +432,7 @@ ItemList.propTypes = {
   editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string,
   filterParams: _propTypes2.default.object,
+  itemComponent: _propTypes2.default.func,
   items: _propTypes2.default.array.isRequired,
   itemKeyPath: _propTypes2.default.string,
   onItemClick: _propTypes2.default.func,

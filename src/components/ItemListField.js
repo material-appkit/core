@@ -64,7 +64,7 @@ class ItemListField extends React.PureComponent {
   handleItemListRemove(item) {
     const newItems = removeObject(this.props.value, 'id', item.id);
     this.dispatchChangeEvent(newItems);
-  };
+  }
 
   handleItemListUpdate(item, itemIndex) {
     const newItems = this.props.value.slice();
