@@ -14,6 +14,10 @@ var _lodash = require('lodash.isequal');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _lodash3 = require('lodash.clonedeep');
+
+var _lodash4 = _interopRequireDefault(_lodash3);
+
 var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -103,6 +107,7 @@ var Form = function (_React$PureComponent) {
       errors: {},
       referenceObject: null,
       formData: null,
+      initialData: null,
       metadata: null,
       loading: false,
       saving: false
@@ -240,7 +245,7 @@ var Form = function (_React$PureComponent) {
         data[fieldName] = value;
       });
 
-      return data;
+      return (0, _lodash4.default)(data);
     }
   }, {
     key: 'coerceRequestData',
@@ -407,13 +412,14 @@ var _initialiseProps = function _initialiseProps() {
     }, _callee, _this3);
   }));
   this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-    var updateMethod, formData, requestUrl, requestMethod, requestData, detailUrl, changedData, response, persistedObject;
+    var updateMethod, _state, formData, metadata, referenceObject, requestUrl, requestMethod, requestData, detailUrl, persistedData, changedData, response, persistedObject;
+
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             updateMethod = _this3.props.updateMethod;
-            formData = _this3.state.formData;
+            _state = _this3.state, formData = _state.formData, metadata = _state.metadata, referenceObject = _state.referenceObject;
 
 
             _this3.setState({ errors: {}, saving: true });
@@ -426,11 +432,12 @@ var _initialiseProps = function _initialiseProps() {
             if (detailUrl) {
               requestUrl = detailUrl;
               if (updateMethod === 'PATCH') {
+                persistedData = _this3.initialData(metadata, referenceObject);
                 changedData = {};
 
                 Object.keys(formData).forEach(function (key) {
                   var value = formData[key];
-                  if (!(0, _lodash2.default)(value, _this3.state.referenceObject[key])) {
+                  if (!(0, _lodash2.default)(value, persistedData[key])) {
                     changedData[key] = value;
                   }
                 });

@@ -1,4 +1,5 @@
 import isEqual from 'lodash.isequal';
+import cloneDeep from 'lodash.clonedeep';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -51,6 +52,7 @@ class Form extends React.PureComponent {
       errors: {},
       referenceObject: null,
       formData: null,
+      initialData: null,
       metadata: null,
       loading: false,
       saving: false,
@@ -180,7 +182,7 @@ class Form extends React.PureComponent {
       data[fieldName] = value;
     });
 
-    return data;
+    return cloneDeep(data);
   }
 
 
@@ -262,7 +264,7 @@ class Form extends React.PureComponent {
 
   save = async() => {
     const { updateMethod } = this.props;
-    const { formData } = this.state;
+    const { formData, metadata, referenceObject } = this.state;
 
     this.setState({ errors: {}, saving: true });
 
@@ -274,10 +276,11 @@ class Form extends React.PureComponent {
     if (detailUrl) {
       requestUrl = detailUrl;
       if (updateMethod === 'PATCH') {
+        const persistedData = this.initialData(metadata, referenceObject);
         const changedData = {};
         Object.keys(formData).forEach((key) => {
           const value = formData[key];
-          if (!isEqual(value, this.state.referenceObject[key])) {
+          if (!isEqual(value, persistedData[key])) {
             changedData[key] = value;
           }
         });
