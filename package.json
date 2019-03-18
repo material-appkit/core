@@ -21,6 +21,7 @@
   "dependencies": {
     "docs.flowjs": "^2.13.0",
     "js-cookie": "^2.2.0",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "mobx-react-router": "^4.0.5",
     "query-string": "^6.2.0",
