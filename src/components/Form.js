@@ -12,8 +12,38 @@ import { recursiveMap } from '../util/component';
 import { reverse } from '../util/urls';
 
 import FormFieldSet from './FormFieldSet';
+import ItemListField from './ItemListField';
+
 
 class Form extends React.PureComponent {
+  static widgetClassMap = {
+    'itemlist': ItemListField,
+  };
+
+  static registerWidgetClass(widgetType, WidgetClass) {
+    this.widgetClassMap[widgetType] = WidgetClass;
+  }
+
+  static widgetClassForType(widgetType) {
+    return widgetType ? this.widgetClassMap[widgetType] : null;
+  }
+
+  static coerceValue(value, fieldInfo) {
+    const { widget } = fieldInfo.ui || {};
+    const WidgetClass = this.widgetClassForType(widget);
+    if (WidgetClass) {
+      return WidgetClass.coerceValue(value);
+    }
+
+    const fieldType =  fieldInfo.type;
+    if ((fieldType === 'date' || fieldType === 'number') && value === '') {
+      // For values representing numbers or dates, convert the empty string to null
+      return null;
+    }
+
+    return value;
+  }
+
   constructor(props) {
     super(props);
 
@@ -163,19 +193,11 @@ class Form extends React.PureComponent {
     const coercedData = {};
     Object.keys(data).forEach((fieldName) => {
       const fieldInfo = fieldInfoMap[fieldName];
-      const { widget } = fieldInfo.ui || {};
-
+      const value = data[fieldName];
       if (fieldInfo) {
-        const fieldType =  fieldInfo.type;
-        const value = data[fieldName];
-        // For values representing numbers or dates, convert the empty string to null
-        if ((fieldType === 'date' || fieldType === 'number') && value === '') {
-          coercedData[fieldName] = null;
-        } else if (widget === 'itemlist') {
-          coercedData[fieldName] = value.map((item) => item.url);
-        } else {
-          coercedData[fieldName] = value;
-        }
+        coercedData[fieldName] = this.constructor.coerceValue(value, fieldInfo);
+      } else {
+        coercedData[fieldName] = value;
       }
     });
     return coercedData;
@@ -367,7 +389,6 @@ class Form extends React.PureComponent {
           form={this}
           representedObject={this.state.referenceObject}
           saving={this.state.saving}
-          widgets={this.props.widgets}
         />
         {this.children}
       </form>
@@ -394,7 +415,6 @@ Form.propTypes = {
   persistedObject: PropTypes.object,
   loadingIndicator: PropTypes.node,
   updateMethod: PropTypes.oneOf(['PUT', 'PATCH']),
-  widgets: PropTypes.object,
 };
 
 Form.defaultProps = {
@@ -403,7 +423,6 @@ Form.defaultProps = {
   entityType: '',
   FieldSet: FormFieldSet,
   updateMethod: 'PATCH',
-  widgets: {},
 };
 
 export default withStyles((theme) => {

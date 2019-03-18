@@ -18,6 +18,10 @@ import VirtualizedListItem from './VirtualizedListItem';
 import ItemList from './ItemList';
 
 class ItemListField extends React.PureComponent {
+  static coerceValue(value) {
+    return value.map((item) => item.url);
+  }
+
   constructor(props) {
     super(props);
 
@@ -33,6 +37,11 @@ class ItemListField extends React.PureComponent {
     if (!isEqual(this.props.value, prevProps.value)) {
       this.updateOptions(this.props.value);
     }
+  }
+
+  get listUrl() {
+    const { fieldInfo } = this.props;
+    return `${fieldInfo.related_endpoint.singular}/`;
   }
 
   updateOptions(items) {
@@ -97,7 +106,7 @@ class ItemListField extends React.PureComponent {
 
           <ItemList
             apiCreateUrl={this.props.createUrl}
-            apiListUrl={this.props.listUrl}
+            apiListUrl={this.listUrl}
             clickAction="edit"
             editDialogProps={this.props.editDialogProps}
             entityType={this.props.entityType}
@@ -126,7 +135,6 @@ ItemListField.propTypes = {
   entityType: PropTypes.string.isRequired,
   filterParams: PropTypes.object,
   itemKeyPath: PropTypes.string,
-  listUrl: PropTypes.string.isRequired,
   listItemComponent: PropTypes.func,
   listItemProps: PropTypes.object,
   label: PropTypes.string,

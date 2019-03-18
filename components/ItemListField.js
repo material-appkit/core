@@ -51,6 +51,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ItemListField = function (_React$PureComponent) {
   _inherits(ItemListField, _React$PureComponent);
 
+  _createClass(ItemListField, null, [{
+    key: 'coerceValue',
+    value: function coerceValue(value) {
+      return value.map(function (item) {
+        return item.url;
+      });
+    }
+  }]);
+
   function ItemListField(props) {
     _classCallCheck(this, ItemListField);
 
@@ -147,7 +156,7 @@ var ItemListField = function (_React$PureComponent) {
           }),
           _react2.default.createElement(_ItemList2.default, {
             apiCreateUrl: this.props.createUrl,
-            apiListUrl: this.props.listUrl,
+            apiListUrl: this.listUrl,
             clickAction: 'edit',
             editDialogProps: this.props.editDialogProps,
             entityType: this.props.entityType,
@@ -166,6 +175,13 @@ var ItemListField = function (_React$PureComponent) {
         )
       );
     }
+  }, {
+    key: 'listUrl',
+    get: function get() {
+      var fieldInfo = this.props.fieldInfo;
+
+      return fieldInfo.related_endpoint.singular + '/';
+    }
   }]);
 
   return ItemListField;
@@ -178,7 +194,6 @@ ItemListField.propTypes = {
   entityType: _propTypes2.default.string.isRequired,
   filterParams: _propTypes2.default.object,
   itemKeyPath: _propTypes2.default.string,
-  listUrl: _propTypes2.default.string.isRequired,
   listItemComponent: _propTypes2.default.func,
   listItemProps: _propTypes2.default.object,
   label: _propTypes2.default.string,

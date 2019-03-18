@@ -36,8 +36,7 @@ function FormFieldSet(props) {
       fieldArrangementMap = props.fieldArrangementMap,
       fieldInfoMap = props.fieldInfoMap,
       fieldNames = props.fieldNames,
-      form = props.form,
-      widgets = props.widgets;
+      form = props.form;
   var formData = form.state.formData;
 
   /**
@@ -61,7 +60,10 @@ function FormFieldSet(props) {
       name: fieldName
     };
 
-    var WidgetComponent = fieldArrangementInfo.widget || widgets[fieldName];
+    var WidgetComponent = fieldArrangementInfo.widget;
+    if (!WidgetComponent) {
+      WidgetComponent = form.constructor.widgetClassForType(widget);
+    }
     if (WidgetComponent) {
       // If a widget component has been been specified, use it
       return _react2.default.createElement(WidgetComponent, _extends({
@@ -74,15 +76,6 @@ function FormFieldSet(props) {
 
     if (fieldInfo.hidden) {
       return _react2.default.createElement('input', _extends({ type: 'hidden' }, commonFieldProps));
-    }
-
-    if (widget === 'itemlist') {
-      return _react2.default.createElement(_ItemListField2.default, _extends({
-        listUrl: fieldInfo.related_endpoint.singular + '/',
-        onChange: function onChange(value) {
-          form.setValue(fieldName, value);
-        }
-      }, commonFieldProps, fieldArrangementInfo));
     }
 
     var textFieldProps = _extends({}, commonFieldProps, {
@@ -172,8 +165,7 @@ FormFieldSet.propTypes = {
   fieldArrangementMap: _propTypes2.default.object,
   fieldInfoMap: _propTypes2.default.object,
   fieldNames: _propTypes2.default.array,
-  saving: _propTypes2.default.bool,
-  widgets: _propTypes2.default.object.isRequired
+  saving: _propTypes2.default.bool
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

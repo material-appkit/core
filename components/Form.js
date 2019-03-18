@@ -42,6 +42,10 @@ var _FormFieldSet = require('./FormFieldSet');
 
 var _FormFieldSet2 = _interopRequireDefault(_FormFieldSet);
 
+var _ItemListField = require('./ItemListField');
+
+var _ItemListField2 = _interopRequireDefault(_ItemListField);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -56,6 +60,37 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var Form = function (_React$PureComponent) {
   _inherits(Form, _React$PureComponent);
+
+  _createClass(Form, null, [{
+    key: 'registerWidgetClass',
+    value: function registerWidgetClass(widgetType, WidgetClass) {
+      this.widgetClassMap[widgetType] = WidgetClass;
+    }
+  }, {
+    key: 'widgetClassForType',
+    value: function widgetClassForType(widgetType) {
+      return widgetType ? this.widgetClassMap[widgetType] : null;
+    }
+  }, {
+    key: 'coerceValue',
+    value: function coerceValue(value, fieldInfo) {
+      var _ref = fieldInfo.ui || {},
+          widget = _ref.widget;
+
+      var WidgetClass = this.widgetClassForType(widget);
+      if (WidgetClass) {
+        return WidgetClass.coerceValue(value);
+      }
+
+      var fieldType = fieldInfo.type;
+      if ((fieldType === 'date' || fieldType === 'number') && value === '') {
+        // For values representing numbers or dates, convert the empty string to null
+        return null;
+      }
+
+      return value;
+    }
+  }]);
 
   function Form(props) {
     _classCallCheck(this, Form);
@@ -182,8 +217,8 @@ var Form = function (_React$PureComponent) {
       fieldNames.forEach(function (fieldName) {
         var fieldInfo = fieldInfoMap[fieldName];
 
-        var _ref = fieldInfo.ui || {},
-            widget = _ref.widget;
+        var _ref2 = fieldInfo.ui || {},
+            widget = _ref2.widget;
 
         var value = referenceObject[fieldName];
         switch (widget) {
@@ -210,6 +245,8 @@ var Form = function (_React$PureComponent) {
   }, {
     key: 'coerceRequestData',
     value: function coerceRequestData(data) {
+      var _this2 = this;
+
       var fieldInfoMap = this.getFieldInfoMap(this.state.metadata);
       if (!fieldInfoMap) {
         return data;
@@ -218,23 +255,11 @@ var Form = function (_React$PureComponent) {
       var coercedData = {};
       Object.keys(data).forEach(function (fieldName) {
         var fieldInfo = fieldInfoMap[fieldName];
-
-        var _ref2 = fieldInfo.ui || {},
-            widget = _ref2.widget;
-
+        var value = data[fieldName];
         if (fieldInfo) {
-          var fieldType = fieldInfo.type;
-          var value = data[fieldName];
-          // For values representing numbers or dates, convert the empty string to null
-          if ((fieldType === 'date' || fieldType === 'number') && value === '') {
-            coercedData[fieldName] = null;
-          } else if (widget === 'itemlist') {
-            coercedData[fieldName] = value.map(function (item) {
-              return item.url;
-            });
-          } else {
-            coercedData[fieldName] = value;
-          }
+          coercedData[fieldName] = _this2.constructor.coerceValue(value, fieldInfo);
+        } else {
+          coercedData[fieldName] = value;
         }
       });
       return coercedData;
@@ -275,8 +300,7 @@ var Form = function (_React$PureComponent) {
           fieldNames: this.getFieldNames(this.state.metadata),
           form: this,
           representedObject: this.state.referenceObject,
-          saving: this.state.saving,
-          widgets: this.props.widgets
+          saving: this.state.saving
         }),
         this.children
       );
@@ -294,16 +318,20 @@ var Form = function (_React$PureComponent) {
   return Form;
 }(_react2.default.PureComponent);
 
+Form.widgetClassMap = {
+  'itemlist': _ItemListField2.default
+};
+
 var _initialiseProps = function _initialiseProps() {
-  var _this2 = this;
+  var _this3 = this;
 
   this.setValues = function (values) {
-    var formData = _extends({}, _this2.state.formData, values);
-    _this2.setState({ formData: formData });
+    var formData = _extends({}, _this3.state.formData, values);
+    _this3.setState({ formData: formData });
   };
 
   this.setValue = function (fieldName, value) {
-    _this2.setValues(_defineProperty({}, fieldName, value));
+    _this3.setValues(_defineProperty({}, fieldName, value));
   };
 
   this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -312,25 +340,25 @@ var _initialiseProps = function _initialiseProps() {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _this2.setState({ loading: true });
+            _this3.setState({ loading: true });
 
-            referenceObject = _this2.props.persistedObject;
+            referenceObject = _this3.props.persistedObject;
             metadata = null;
             requests = [];
 
             // If the fields have not been explicitly provided, issue an OPTIONS request for
             // metadata about the represented object so the fields can be generated dynamically.
 
-            optionsUrl = _this2.props.apiCreateUrl || _this2.detailUrl;
+            optionsUrl = _this3.props.apiCreateUrl || _this3.detailUrl;
 
             requests.push(_util.ServiceAgent.options(optionsUrl));
 
             if (!referenceObject) {
-              if (_this2.detailUrl) {
+              if (_this3.detailUrl) {
                 // If an original object was not explicitly provided, attempt to load one from the given detailUrl
-                requests.push(_util.ServiceAgent.get(_this2.detailUrl));
+                requests.push(_util.ServiceAgent.get(_this3.detailUrl));
               } else {
-                referenceObject = _this2.props.defaultValues;
+                referenceObject = _this3.props.defaultValues;
               }
             }
 
@@ -349,7 +377,7 @@ var _initialiseProps = function _initialiseProps() {
               }
             });
 
-            initialData = _this2.initialData(metadata, referenceObject);
+            initialData = _this3.initialData(metadata, referenceObject);
 
             if (initialData) {
               _context.next = 14;
@@ -360,15 +388,15 @@ var _initialiseProps = function _initialiseProps() {
 
           case 14:
 
-            _this2.setState({
+            _this3.setState({
               formData: initialData,
               loading: false,
               metadata: metadata,
               referenceObject: referenceObject
             });
 
-            if (_this2.props.onLoad) {
-              _this2.props.onLoad(referenceObject, _this2.getFieldInfoMap(metadata));
+            if (_this3.props.onLoad) {
+              _this3.props.onLoad(referenceObject, _this3.getFieldInfoMap(metadata));
             }
 
           case 16:
@@ -376,7 +404,7 @@ var _initialiseProps = function _initialiseProps() {
             return _context.stop();
         }
       }
-    }, _callee, _this2);
+    }, _callee, _this3);
   }));
   this.save = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
     var updateMethod, formData, requestUrl, requestMethod, requestData, detailUrl, changedData, response, persistedObject;
@@ -384,16 +412,16 @@ var _initialiseProps = function _initialiseProps() {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            updateMethod = _this2.props.updateMethod;
-            formData = _this2.state.formData;
+            updateMethod = _this3.props.updateMethod;
+            formData = _this3.state.formData;
 
 
-            _this2.setState({ errors: {}, saving: true });
+            _this3.setState({ errors: {}, saving: true });
 
             requestUrl = null;
             requestMethod = null;
             requestData = null;
-            detailUrl = _this2.detailUrl;
+            detailUrl = _this3.detailUrl;
 
             if (detailUrl) {
               requestUrl = detailUrl;
@@ -402,7 +430,7 @@ var _initialiseProps = function _initialiseProps() {
 
                 Object.keys(formData).forEach(function (key) {
                   var value = formData[key];
-                  if (!(0, _lodash2.default)(value, _this2.state.referenceObject[key])) {
+                  if (!(0, _lodash2.default)(value, _this3.state.referenceObject[key])) {
                     changedData[key] = value;
                   }
                 });
@@ -413,7 +441,7 @@ var _initialiseProps = function _initialiseProps() {
                 requestMethod = 'PUT';
               }
             } else {
-              requestUrl = _this2.props.apiCreateUrl;
+              requestUrl = _this3.props.apiCreateUrl;
               requestData = formData;
               requestMethod = 'POST';
             }
@@ -428,7 +456,7 @@ var _initialiseProps = function _initialiseProps() {
           case 10:
             _context2.prev = 10;
 
-            requestData = _this2.coerceRequestData(requestData);
+            requestData = _this3.coerceRequestData(requestData);
             _context2.next = 14;
             return _util.ServiceAgent.request(requestMethod, requestUrl, requestData);
 
@@ -437,13 +465,13 @@ var _initialiseProps = function _initialiseProps() {
             persistedObject = response.body;
 
 
-            _this2.setState({
+            _this3.setState({
               saving: false,
               referenceObject: persistedObject
             });
 
-            if (_this2.props.onSave) {
-              _this2.props.onSave(persistedObject);
+            if (_this3.props.onSave) {
+              _this3.props.onSave(persistedObject);
             }
 
             return _context2.abrupt('return', persistedObject);
@@ -452,13 +480,13 @@ var _initialiseProps = function _initialiseProps() {
             _context2.prev = 21;
             _context2.t0 = _context2['catch'](10);
 
-            _this2.setState({
+            _this3.setState({
               saving: false,
               errors: _context2.t0.response ? _context2.t0.response.body : {}
             });
 
-            if (_this2.props.onError) {
-              _this2.props.onError(_context2.t0);
+            if (_this3.props.onError) {
+              _this3.props.onError(_context2.t0);
             }
 
           case 25:
@@ -466,13 +494,13 @@ var _initialiseProps = function _initialiseProps() {
             return _context2.stop();
         }
       }
-    }, _callee2, _this2, [[10, 21]]);
+    }, _callee2, _this3, [[10, 21]]);
   }));
 
   this.handleFormSubmit = function (e) {
     e.preventDefault();
 
-    if (e.target !== _this2.formRef.current) {
+    if (e.target !== _this3.formRef.current) {
       // Due to event bubbling, a <form> is submitted within a dialog that
       // is rendered atop a view that also has a <form>, the underlying
       // form also gets submitted.
@@ -480,11 +508,11 @@ var _initialiseProps = function _initialiseProps() {
       return;
     }
 
-    _this2.save();
+    _this3.save();
   };
 
   this.handleFormChange = function (e) {
-    if (e.currentTarget !== _this2.formRef.current) {
+    if (e.currentTarget !== _this3.formRef.current) {
       // Due to event bubbling, a <form> is submitted within a dialog that
       // is rendered atop a view that also has a <form>, the underlying
       // form also gets submitted.
@@ -492,13 +520,13 @@ var _initialiseProps = function _initialiseProps() {
       return;
     }
 
-    if (_this2.detailUrl && _this2.props.autosaveDelay) {
-      if (_this2.autoSaveTimer) {
-        clearTimeout(_this2.autoSaveTimer);
+    if (_this3.detailUrl && _this3.props.autosaveDelay) {
+      if (_this3.autoSaveTimer) {
+        clearTimeout(_this3.autoSaveTimer);
       }
-      _this2.autoSaveTimer = setTimeout(function () {
-        _this2.save();
-      }, _this2.props.autosaveDelay);
+      _this3.autoSaveTimer = setTimeout(function () {
+        _this3.save();
+      }, _this3.props.autosaveDelay);
     }
   };
 };
@@ -521,8 +549,7 @@ Form.propTypes = {
   onError: _propTypes2.default.func,
   persistedObject: _propTypes2.default.object,
   loadingIndicator: _propTypes2.default.node,
-  updateMethod: _propTypes2.default.oneOf(['PUT', 'PATCH']),
-  widgets: _propTypes2.default.object
+  updateMethod: _propTypes2.default.oneOf(['PUT', 'PATCH'])
 };
 
 Form.defaultProps = {
@@ -530,8 +557,7 @@ Form.defaultProps = {
   defaultValues: {},
   entityType: '',
   FieldSet: _FormFieldSet2.default,
-  updateMethod: 'PATCH',
-  widgets: {}
+  updateMethod: 'PATCH'
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

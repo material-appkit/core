@@ -16,7 +16,6 @@ function FormFieldSet(props) {
     fieldInfoMap,
     fieldNames,
     form,
-    widgets,
   } = props;
 
   const { formData } = form.state;
@@ -39,8 +38,10 @@ function FormFieldSet(props) {
       name: fieldName,
     };
 
-
-    let WidgetComponent = fieldArrangementInfo.widget || widgets[fieldName];
+    let WidgetComponent = fieldArrangementInfo.widget;
+    if (!WidgetComponent) {
+      WidgetComponent = form.constructor.widgetClassForType(widget);
+    }
     if (WidgetComponent) {
       // If a widget component has been been specified, use it
       return (
@@ -55,17 +56,6 @@ function FormFieldSet(props) {
 
     if (fieldInfo.hidden) {
       return <input type="hidden" {...commonFieldProps} />;
-    }
-
-    if (widget === 'itemlist') {
-      return (
-        <ItemListField
-          listUrl={`${fieldInfo.related_endpoint.singular}/`}
-          onChange={(value) => { form.setValue(fieldName, value); }}
-          {...commonFieldProps}
-          {...fieldArrangementInfo}
-        />
-      );
     }
 
     const textFieldProps = {
@@ -130,7 +120,6 @@ FormFieldSet.propTypes = {
   fieldInfoMap: PropTypes.object,
   fieldNames: PropTypes.array,
   saving: PropTypes.bool,
-  widgets: PropTypes.object.isRequired,
 };
 
 export default withStyles((theme) => {
