@@ -31,7 +31,7 @@ class Form extends React.PureComponent {
   static coerceValue(value, fieldInfo) {
     const { widget } = fieldInfo.ui || {};
     const WidgetClass = this.widgetClassForType(widget);
-    if (WidgetClass) {
+    if (WidgetClass && WidgetClass.hasOwnProperty('coerceValue')) {
       return WidgetClass.coerceValue(value);
     }
 

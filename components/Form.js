@@ -78,7 +78,7 @@ var Form = function (_React$PureComponent) {
           widget = _ref.widget;
 
       var WidgetClass = this.widgetClassForType(widget);
-      if (WidgetClass) {
+      if (WidgetClass && WidgetClass.hasOwnProperty('coerceValue')) {
         return WidgetClass.coerceValue(value);
       }
 
