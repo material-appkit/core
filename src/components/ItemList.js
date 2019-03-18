@@ -23,17 +23,18 @@ import ServiceAgent from '../util/ServiceAgent';
 import { valueForKeyPath } from '../util/object';
 
 function ItemListItem(props) {
-  const { classes, item, onClick } = props;
+  const { classes, item, onClick, onChange } = props;
 
   let component = null;
 
   if (props.component) {
     // If a component class was explicitly provided, use it
-    component = <props.component item={props.item} />
+    component = <props.component item={props.item} onChange={onChange} />
   } else {
     let ComponentClass = null;
     let componentProps = {
       onClick: () => { onClick(item) },
+      onChange,
     };
 
     if (props.mode === 'edit' && props.clickAction === 'edit') {
@@ -202,6 +203,20 @@ class ItemList extends React.PureComponent {
     }
   };
 
+  handleItemChange = (record) => {
+    const items = this.items;
+    const recordIndex = items.findIndex((item) => {
+      return item.id === record.id;
+    });
+
+    if (recordIndex !== -1) {
+      items[recordIndex] = record;
+      if (this.props.onUpdate) {
+        this.props.onUpdate(record, recordIndex);
+      }
+    }
+  };
+
   handleEditDialogClose = () => {
     this.setState({ editDialogOpen: false });
   };
@@ -220,6 +235,7 @@ class ItemList extends React.PureComponent {
               item={item}
               itemKeyPath={this.props.itemKeyPath}
               mode={mode}
+              onChange={this.handleItemChange}
               onClick={this.handleItemClick}
               onRemove={this.detachItem}
               titleKey={this.props.titleKey}

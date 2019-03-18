@@ -77,20 +77,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function ItemListItem(props) {
   var classes = props.classes,
       item = props.item,
-      _onClick = props.onClick;
+      _onClick = props.onClick,
+      onChange = props.onChange;
 
 
   var component = null;
 
   if (props.component) {
     // If a component class was explicitly provided, use it
-    component = _react2.default.createElement(props.component, { item: props.item });
+    component = _react2.default.createElement(props.component, { item: props.item, onChange: onChange });
   } else {
     var ComponentClass = null;
     var componentProps = {
       onClick: function onClick() {
         _onClick(item);
-      }
+      },
+      onChange: onChange
     };
 
     if (props.mode === 'edit' && props.clickAction === 'edit') {
@@ -304,6 +306,18 @@ var ItemList = function (_React$PureComponent) {
       if (_this.props.onItemClick) {
         _this.props.onItemClick(item);
       }
+    }, _this.handleItemChange = function (record) {
+      var items = _this.items;
+      var recordIndex = items.findIndex(function (item) {
+        return item.id === record.id;
+      });
+
+      if (recordIndex !== -1) {
+        items[recordIndex] = record;
+        if (_this.props.onUpdate) {
+          _this.props.onUpdate(record, recordIndex);
+        }
+      }
     }, _this.handleEditDialogClose = function () {
       _this.setState({ editDialogOpen: false });
     }, _temp), _possibleConstructorReturn(_this, _ret);
@@ -334,6 +348,7 @@ var ItemList = function (_React$PureComponent) {
               item: item,
               itemKeyPath: _this3.props.itemKeyPath,
               mode: mode,
+              onChange: _this3.handleItemChange,
               onClick: _this3.handleItemClick,
               onRemove: _this3.detachItem,
               titleKey: _this3.props.titleKey
