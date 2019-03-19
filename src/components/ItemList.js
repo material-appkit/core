@@ -94,7 +94,7 @@ ItemListItem.propTypes = {
   onClick: PropTypes.func.isRequired,
   onRemove: PropTypes.func,
   mode: PropTypes.oneOf(['view', 'edit']),
-  titleKey: PropTypes.any.isRequired,
+  titleKey: PropTypes.any,
 };
 
 const StyledItemListItem = withStyles((theme) => ({
@@ -312,7 +312,7 @@ ItemList.propTypes = {
   mode: PropTypes.oneOf(['view', 'edit']),
   representedObject: PropTypes.object,
   searchFilterParam: PropTypes.string,
-  titleKey: PropTypes.any.isRequired,
+  titleKey: PropTypes.any,
 };
 
 ItemList.defaultProps = {

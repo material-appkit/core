@@ -154,7 +154,7 @@ ItemListItem.propTypes = {
   onClick: _propTypes2.default.func.isRequired,
   onRemove: _propTypes2.default.func,
   mode: _propTypes2.default.oneOf(['view', 'edit']),
-  titleKey: _propTypes2.default.any.isRequired
+  titleKey: _propTypes2.default.any
 };
 
 var StyledItemListItem = (0, _withStyles2.default)(function (theme) {
@@ -459,7 +459,7 @@ ItemList.propTypes = {
   mode: _propTypes2.default.oneOf(['view', 'edit']),
   representedObject: _propTypes2.default.object,
   searchFilterParam: _propTypes2.default.string,
-  titleKey: _propTypes2.default.any.isRequired
+  titleKey: _propTypes2.default.any
 };
 
 ItemList.defaultProps = {
