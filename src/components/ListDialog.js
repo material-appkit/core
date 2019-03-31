@@ -151,6 +151,7 @@ class ListDialog extends React.PureComponent {
               <TextField
                 className={classes.filterField}
                 fullWidth
+                margin="dense"
                 onTimeout={this.handleSearchFilterChange}
                 timeoutDelay={500}
                 placeholder="Filter by search term..."

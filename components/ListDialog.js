@@ -241,6 +241,7 @@ var ListDialog = function (_React$PureComponent) {
             this.props.searchFilterParam && _react2.default.createElement(_TextField2.default, {
               className: classes.filterField,
               fullWidth: true,
+              margin: 'dense',
               onTimeout: this.handleSearchFilterChange,
               timeoutDelay: 500,
               placeholder: 'Filter by search term...',
