@@ -11,6 +11,10 @@ import { Link as RouterLink } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import AddIcon from '@material-ui/icons/Add';
@@ -29,60 +33,60 @@ function ItemListItem(props) {
 
   if (props.component) {
     // If a component class was explicitly provided, use it
-    component = <props.component item={props.item} onChange={onChange} />
-  } else {
-    let ComponentClass = null;
-    let componentProps = {
-      onClick: () => { onClick(item) },
-      onChange,
-    };
-
-    if (props.mode === 'edit' && props.clickAction === 'edit') {
-      ComponentClass = Button;
-      componentProps.className = classes.itemButton;
-      componentProps.color = 'primary';
-    } else {
-      if (item.path) {
-        ComponentClass = Link;
-        componentProps.component = RouterLink;
-        componentProps.to = item.path;
-      } else if (item.media_url) {
-        ComponentClass = Link;
-        componentProps.href = item.media_url;
-        componentProps.rel = 'noopener';
-        componentProps.target = '_blank';
-      } else {
-        ComponentClass = Typography;
-      }
-    }
-
-    let linkTitle = null;
-    if (typeof(props.titleKey) === 'function') {
-      linkTitle = props.titleKey(item);
-    } else {
-      linkTitle = item[props.titleKey];
-    }
-
-    component = (
-      <ComponentClass {...componentProps}>
-        {linkTitle}
-      </ComponentClass>
-    );
+    return <props.component item={props.item} onChange={onChange} />
   }
 
+  let ComponentClass = null;
+  let componentProps = {
+    onClick: () => { onClick(item) },
+    onChange,
+  };
+
+  if (props.mode === 'edit' && props.clickAction === 'edit') {
+    ComponentClass = Button;
+    componentProps.className = classes.itemButton;
+    componentProps.color = 'primary';
+  } else {
+    if (item.path) {
+      ComponentClass = Link;
+      componentProps.component = RouterLink;
+      componentProps.to = item.path;
+    } else if (item.media_url) {
+      ComponentClass = Link;
+      componentProps.href = item.media_url;
+      componentProps.rel = 'noopener';
+      componentProps.target = '_blank';
+    } else {
+      ComponentClass = Typography;
+    }
+  }
+
+  let linkTitle = null;
+  if (typeof(props.titleKey) === 'function') {
+    linkTitle = props.titleKey(item);
+  } else {
+    linkTitle = item[props.titleKey];
+  }
+
+  component = (
+    <ComponentClass {...componentProps}>
+      {linkTitle}
+    </ComponentClass>
+  );
+
   return (
-    <li className={classes.li}>
+    <ListItem classes={{ root: classes.root }}>
       {(props.onRemove && props.mode === 'edit') &&
-        <IconButton
+        <ListItemIcon
           aria-label="Delete"
           className={classes.removeButton}
           onClick={() => { props.onRemove(item); }}
         >
           <DeleteIcon className={classes.removeButtonIcon} />
-        </IconButton>
+        </ListItemIcon>
       }
-      {component}
-    </li>
+      <ListItemText classes={{ root: classes.itemText }} primary={component} />
+    </ListItem>
   );
 }
 
@@ -91,17 +95,18 @@ ItemListItem.propTypes = {
   clickAction: PropTypes.string,
   component: PropTypes.func,
   item: PropTypes.object.isRequired,
+  mode: PropTypes.oneOf(['view', 'edit']),
   onClick: PropTypes.func.isRequired,
   onRemove: PropTypes.func,
-  mode: PropTypes.oneOf(['view', 'edit']),
   titleKey: PropTypes.any,
 };
 
 const StyledItemListItem = withStyles((theme) => ({
-  li: theme.itemList.li,
+  root: theme.itemList.item,
   removeButton: theme.itemList.removeButton,
   removeButtonIcon: theme.itemList.removeButtonIcon,
   itemButton: theme.itemList.itemButton,
+  itemText: theme.itemList.itemText,
 }))(ItemListItem);
 
 // -----------------------------------------------------------------------------
@@ -225,8 +230,8 @@ class ItemList extends React.PureComponent {
     const { classes, clickAction, mode } = this.props;
 
     return (
-      <div>
-        <ul>
+      <Fragment>
+        <List classes={{ root: classes.root }}>
           {this.items.map((item) => (
             <StyledItemListItem
               clickAction={clickAction}
@@ -241,50 +246,48 @@ class ItemList extends React.PureComponent {
               titleKey={this.props.titleKey}
             />
           ))}
-        </ul>
+        </List>
 
         {mode === 'edit' &&
           <Fragment>
-            <Fragment>
-              {this.props.onAdd &&
-                <Button
-                  color="primary"
-                  className={classes.addButton}
-                  onClick={this.handleAddButtonClick}
-                >
-                  <AddIcon className={classes.addButtonIcon} />
-                  Add {this.props.entityType}
-                </Button>
-              }
+            {this.props.onAdd &&
+              <Button
+                color="primary"
+                className={classes.addButton}
+                onClick={this.handleAddButtonClick}
+              >
+                <AddIcon className={classes.addButtonIcon} />
+                Add {this.props.entityType}
+              </Button>
+            }
 
-              {this.props.apiListUrl && this.state.listDialogOpen &&
-                <ListDialog
-                  apiCreateUrl={this.props.apiCreateUrl}
-                  apiListUrl={this.props.apiListUrl}
-                  editDialogProps={this.props.editDialogProps}
-                  entityType={this.props.entityType}
-                  filterParams={this.props.filterParams}
-                  listItemComponent={this.props.listItemComponent}
-                  listItemProps={this.props.listItemProps}
-                  onDismiss={this.handleListDialogDismiss}
-                  searchFilterParam={this.props.searchFilterParam}
-                />
-              }
-            </Fragment>
-
-            {this.state.editDialogOpen &&
-              <this.props.EditDialogComponent
+            {this.props.apiListUrl && this.state.listDialogOpen &&
+              <ListDialog
                 apiCreateUrl={this.props.apiCreateUrl}
-                apiDetailUrl={this.state.editingObject ? this.state.editingObject.url : null}
+                apiListUrl={this.props.apiListUrl}
+                editDialogProps={this.props.editDialogProps}
                 entityType={this.props.entityType}
-                onClose={this.handleEditDialogClose}
-                onSave={(record) => { this.attachRecord(record) }}
-                {...this.props.editDialogProps}
+                filterParams={this.props.filterParams}
+                listItemComponent={this.props.listItemComponent}
+                listItemProps={this.props.listItemProps}
+                onDismiss={this.handleListDialogDismiss}
+                searchFilterParam={this.props.searchFilterParam}
               />
             }
           </Fragment>
         }
-      </div>
+
+        {this.state.editDialogOpen &&
+          <this.props.EditDialogComponent
+            apiCreateUrl={this.props.apiCreateUrl}
+            apiDetailUrl={this.state.editingObject ? this.state.editingObject.url : null}
+            entityType={this.props.entityType}
+            onClose={this.handleEditDialogClose}
+            onSave={(record) => { this.attachRecord(record) }}
+            {...this.props.editDialogProps}
+          />
+        }
+      </Fragment>
     );
   }
 }
@@ -325,6 +328,7 @@ ItemList.defaultProps = {
 };
 
 export default withStyles((theme) => ({
+  root: theme.itemList.root,
   addButton: theme.itemList.addButton,
   addButtonIcon: theme.itemList.addButtonIcon,
 }))(ItemList);

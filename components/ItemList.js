@@ -30,6 +30,22 @@ var _Link = require('@material-ui/core/Link');
 
 var _Link2 = _interopRequireDefault(_Link);
 
+var _List = require('@material-ui/core/List');
+
+var _List2 = _interopRequireDefault(_List);
+
+var _ListItem = require('@material-ui/core/ListItem');
+
+var _ListItem2 = _interopRequireDefault(_ListItem);
+
+var _ListItemIcon = require('@material-ui/core/ListItemIcon');
+
+var _ListItemIcon2 = _interopRequireDefault(_ListItemIcon);
+
+var _ListItemText = require('@material-ui/core/ListItemText');
+
+var _ListItemText2 = _interopRequireDefault(_ListItemText);
+
 var _Typography = require('@material-ui/core/Typography');
 
 var _Typography2 = _interopRequireDefault(_Typography);
@@ -85,54 +101,54 @@ function ItemListItem(props) {
 
   if (props.component) {
     // If a component class was explicitly provided, use it
-    component = _react2.default.createElement(props.component, { item: props.item, onChange: onChange });
-  } else {
-    var ComponentClass = null;
-    var componentProps = {
-      onClick: function onClick() {
-        _onClick(item);
-      },
-      onChange: onChange
-    };
-
-    if (props.mode === 'edit' && props.clickAction === 'edit') {
-      ComponentClass = _Button2.default;
-      componentProps.className = classes.itemButton;
-      componentProps.color = 'primary';
-    } else {
-      if (item.path) {
-        ComponentClass = _Link2.default;
-        componentProps.component = _reactRouterDom.Link;
-        componentProps.to = item.path;
-      } else if (item.media_url) {
-        ComponentClass = _Link2.default;
-        componentProps.href = item.media_url;
-        componentProps.rel = 'noopener';
-        componentProps.target = '_blank';
-      } else {
-        ComponentClass = _Typography2.default;
-      }
-    }
-
-    var linkTitle = null;
-    if (typeof props.titleKey === 'function') {
-      linkTitle = props.titleKey(item);
-    } else {
-      linkTitle = item[props.titleKey];
-    }
-
-    component = _react2.default.createElement(
-      ComponentClass,
-      componentProps,
-      linkTitle
-    );
+    return _react2.default.createElement(props.component, { item: props.item, onChange: onChange });
   }
 
+  var ComponentClass = null;
+  var componentProps = {
+    onClick: function onClick() {
+      _onClick(item);
+    },
+    onChange: onChange
+  };
+
+  if (props.mode === 'edit' && props.clickAction === 'edit') {
+    ComponentClass = _Button2.default;
+    componentProps.className = classes.itemButton;
+    componentProps.color = 'primary';
+  } else {
+    if (item.path) {
+      ComponentClass = _Link2.default;
+      componentProps.component = _reactRouterDom.Link;
+      componentProps.to = item.path;
+    } else if (item.media_url) {
+      ComponentClass = _Link2.default;
+      componentProps.href = item.media_url;
+      componentProps.rel = 'noopener';
+      componentProps.target = '_blank';
+    } else {
+      ComponentClass = _Typography2.default;
+    }
+  }
+
+  var linkTitle = null;
+  if (typeof props.titleKey === 'function') {
+    linkTitle = props.titleKey(item);
+  } else {
+    linkTitle = item[props.titleKey];
+  }
+
+  component = _react2.default.createElement(
+    ComponentClass,
+    componentProps,
+    linkTitle
+  );
+
   return _react2.default.createElement(
-    'li',
-    { className: classes.li },
+    _ListItem2.default,
+    { classes: { root: classes.root } },
     props.onRemove && props.mode === 'edit' && _react2.default.createElement(
-      _IconButton2.default,
+      _ListItemIcon2.default,
       {
         'aria-label': 'Delete',
         className: classes.removeButton,
@@ -142,7 +158,7 @@ function ItemListItem(props) {
       },
       _react2.default.createElement(_Delete2.default, { className: classes.removeButtonIcon })
     ),
-    component
+    _react2.default.createElement(_ListItemText2.default, { classes: { root: classes.itemText }, primary: component })
   );
 }
 
@@ -151,18 +167,19 @@ ItemListItem.propTypes = {
   clickAction: _propTypes2.default.string,
   component: _propTypes2.default.func,
   item: _propTypes2.default.object.isRequired,
+  mode: _propTypes2.default.oneOf(['view', 'edit']),
   onClick: _propTypes2.default.func.isRequired,
   onRemove: _propTypes2.default.func,
-  mode: _propTypes2.default.oneOf(['view', 'edit']),
   titleKey: _propTypes2.default.any
 };
 
 var StyledItemListItem = (0, _withStyles2.default)(function (theme) {
   return {
-    li: theme.itemList.li,
+    root: theme.itemList.item,
     removeButton: theme.itemList.removeButton,
     removeButtonIcon: theme.itemList.removeButtonIcon,
-    itemButton: theme.itemList.itemButton
+    itemButton: theme.itemList.itemButton,
+    itemText: theme.itemList.itemText
   };
 })(ItemListItem);
 
@@ -335,11 +352,11 @@ var ItemList = function (_React$PureComponent) {
 
 
       return _react2.default.createElement(
-        'div',
+        _react.Fragment,
         null,
         _react2.default.createElement(
-          'ul',
-          null,
+          _List2.default,
+          { classes: { root: classes.root } },
           this.items.map(function (item) {
             return _react2.default.createElement(StyledItemListItem, {
               clickAction: clickAction,
@@ -358,42 +375,38 @@ var ItemList = function (_React$PureComponent) {
         mode === 'edit' && _react2.default.createElement(
           _react.Fragment,
           null,
-          _react2.default.createElement(
-            _react.Fragment,
-            null,
-            this.props.onAdd && _react2.default.createElement(
-              _Button2.default,
-              {
-                color: 'primary',
-                className: classes.addButton,
-                onClick: this.handleAddButtonClick
-              },
-              _react2.default.createElement(_Add2.default, { className: classes.addButtonIcon }),
-              'Add ',
-              this.props.entityType
-            ),
-            this.props.apiListUrl && this.state.listDialogOpen && _react2.default.createElement(_ListDialog2.default, {
-              apiCreateUrl: this.props.apiCreateUrl,
-              apiListUrl: this.props.apiListUrl,
-              editDialogProps: this.props.editDialogProps,
-              entityType: this.props.entityType,
-              filterParams: this.props.filterParams,
-              listItemComponent: this.props.listItemComponent,
-              listItemProps: this.props.listItemProps,
-              onDismiss: this.handleListDialogDismiss,
-              searchFilterParam: this.props.searchFilterParam
-            })
+          this.props.onAdd && _react2.default.createElement(
+            _Button2.default,
+            {
+              color: 'primary',
+              className: classes.addButton,
+              onClick: this.handleAddButtonClick
+            },
+            _react2.default.createElement(_Add2.default, { className: classes.addButtonIcon }),
+            'Add ',
+            this.props.entityType
           ),
-          this.state.editDialogOpen && _react2.default.createElement(this.props.EditDialogComponent, _extends({
+          this.props.apiListUrl && this.state.listDialogOpen && _react2.default.createElement(_ListDialog2.default, {
             apiCreateUrl: this.props.apiCreateUrl,
-            apiDetailUrl: this.state.editingObject ? this.state.editingObject.url : null,
+            apiListUrl: this.props.apiListUrl,
+            editDialogProps: this.props.editDialogProps,
             entityType: this.props.entityType,
-            onClose: this.handleEditDialogClose,
-            onSave: function onSave(record) {
-              _this3.attachRecord(record);
-            }
-          }, this.props.editDialogProps))
-        )
+            filterParams: this.props.filterParams,
+            listItemComponent: this.props.listItemComponent,
+            listItemProps: this.props.listItemProps,
+            onDismiss: this.handleListDialogDismiss,
+            searchFilterParam: this.props.searchFilterParam
+          })
+        ),
+        this.state.editDialogOpen && _react2.default.createElement(this.props.EditDialogComponent, _extends({
+          apiCreateUrl: this.props.apiCreateUrl,
+          apiDetailUrl: this.state.editingObject ? this.state.editingObject.url : null,
+          entityType: this.props.entityType,
+          onClose: this.handleEditDialogClose,
+          onSave: function onSave(record) {
+            _this3.attachRecord(record);
+          }
+        }, this.props.editDialogProps))
       );
     }
   }, {
@@ -473,6 +486,7 @@ ItemList.defaultProps = {
 
 exports.default = (0, _withStyles2.default)(function (theme) {
   return {
+    root: theme.itemList.root,
     addButton: theme.itemList.addButton,
     addButtonIcon: theme.itemList.addButtonIcon
   };
