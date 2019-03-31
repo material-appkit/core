@@ -34,6 +34,10 @@ var _ListItem = require('@material-ui/core/ListItem');
 
 var _ListItem2 = _interopRequireDefault(_ListItem);
 
+var _ListItemIcon = require('@material-ui/core/ListItemIcon');
+
+var _ListItemIcon2 = _interopRequireDefault(_ListItemIcon);
+
 var _ListItemText = require('@material-ui/core/ListItemText');
 
 var _ListItemText2 = _interopRequireDefault(_ListItemText);
@@ -96,9 +100,26 @@ function _MetadataListItem(props) {
     }
   }
 
-  var label = fieldInfo.label;
-  if (label === undefined) {
-    label = (0, _titleCase2.default)(fieldInfo.name);
+  var LabelContent = fieldInfo.label;
+  if (LabelContent === undefined) {
+    LabelContent = (0, _titleCase2.default)(fieldInfo.name);
+  }
+
+  var labelComponent = null;
+  if (LabelContent) {
+    if (typeof LabelContent === 'string') {
+      labelComponent = _react2.default.createElement(
+        _Typography2.default,
+        { className: classes.label },
+        LabelContent
+      );
+    } else {
+      labelComponent = _react2.default.createElement(
+        _ListItemIcon2.default,
+        { classes: { root: classes.listItemIconRoot } },
+        _react2.default.createElement(LabelContent, { className: classes.listItemIcon })
+      );
+    }
   }
 
   var PrimaryComponent = _Typography2.default;
@@ -121,11 +142,7 @@ function _MetadataListItem(props) {
   return _react2.default.createElement(
     _ListItem2.default,
     { classes: { root: classes.listItemRoot } },
-    _react2.default.createElement(
-      _Typography2.default,
-      { className: classes.label },
-      label
-    ),
+    labelComponent,
     _react2.default.createElement(_ListItemText2.default, {
       classes: { root: classes.listItemTextRoot },
       primary: primaryContent
@@ -146,6 +163,15 @@ var MetadataListItem = (0, _withStyles2.default)(function (theme) {
       alignItems: 'start',
       display: 'flex',
       padding: '1px 0'
+    },
+
+    listItemIconRoot: {
+      marginRight: 5
+    },
+
+    listItemIcon: {
+      height: 18,
+      width: 18
     },
 
     listItemTextRoot: {

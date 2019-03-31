@@ -2,12 +2,13 @@ import moment from 'moment';
 import titleCase from 'title-case';
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -50,9 +51,22 @@ function _MetadataListItem(props) {
     }
   }
 
-  let label = fieldInfo.label;
-  if (label === undefined) {
-    label = titleCase(fieldInfo.name);
+  let LabelContent = fieldInfo.label;
+  if (LabelContent === undefined) {
+    LabelContent = titleCase(fieldInfo.name);
+  }
+
+  let labelComponent = null;
+  if (LabelContent) {
+    if (typeof(LabelContent) === 'string') {
+      labelComponent = <Typography className={classes.label}>{LabelContent}</Typography>;
+    } else {
+      labelComponent = (
+        <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
+         <LabelContent className={classes.listItemIcon} />
+       </ListItemIcon>
+      );
+    }
   }
 
   let PrimaryComponent = Typography;
@@ -74,7 +88,8 @@ function _MetadataListItem(props) {
 
   return (
     <ListItem classes={{ root: classes.listItemRoot }}>
-      <Typography className={classes.label}>{label}</Typography>
+      {labelComponent}
+
       <ListItemText
         classes={{ root: classes.listItemTextRoot }}
         primary={primaryContent}
@@ -95,6 +110,15 @@ const MetadataListItem = withStyles((theme) => ({
     alignItems: 'start',
     display: 'flex',
     padding: '1px 0',
+  },
+
+  listItemIconRoot: {
+    marginRight: 5,
+  },
+
+  listItemIcon: {
+    height: 18,
+    width: 18,
   },
 
   listItemTextRoot: {
