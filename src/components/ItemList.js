@@ -28,59 +28,44 @@ import { valueForKeyPath } from '../util/object';
 function ItemListItem(props) {
   const { classes, item, onClick, onChange } = props;
 
+  let component = null;
   if (props.component) {
     // If a component class was explicitly provided, use it
-    return <props.component item={props.item} onChange={onChange} />
-  }
-
-  let ComponentClass = null;
-  let componentProps = {
-    onClick: () => { onClick(item) },
-    onChange,
-  };
-
-  if (props.mode === 'edit' && props.clickAction === 'edit') {
-    ComponentClass = Button;
-    componentProps.className = classes.itemButton;
-    componentProps.color = 'primary';
+    component = <props.component item={props.item} onChange={onChange} />;
   } else {
-    if (item.path) {
-      ComponentClass = Link;
-      componentProps.component = RouterLink;
-      componentProps.to = item.path;
-    } else if (item.media_url) {
-      ComponentClass = Link;
-      componentProps.href = item.media_url;
-      componentProps.rel = 'noopener';
-      componentProps.target = '_blank';
+    let ComponentClass = null;
+    let componentProps = {
+      onClick: () => { onClick(item) },
+      onChange,
+    };
+
+    if (props.mode === 'edit' && props.clickAction === 'edit') {
+      ComponentClass = Button;
+      componentProps.className = classes.itemButton;
+      componentProps.color = 'primary';
     } else {
-      ComponentClass = Typography;
+      if (item.path) {
+        ComponentClass = Link;
+        componentProps.component = RouterLink;
+        componentProps.to = item.path;
+      } else if (item.media_url) {
+        ComponentClass = Link;
+        componentProps.href = item.media_url;
+        componentProps.rel = 'noopener';
+        componentProps.target = '_blank';
+      } else {
+        ComponentClass = Typography;
+      }
     }
-  }
 
-  let linkTitle = null;
-  if (typeof(props.titleKey) === 'function') {
-    linkTitle = props.titleKey(item);
-  } else {
-    linkTitle = item[props.titleKey];
-  }
+    let linkTitle = null;
+    if (typeof(props.titleKey) === 'function') {
+      linkTitle = props.titleKey(item);
+    } else {
+      linkTitle = item[props.titleKey];
+    }
 
-  return (
-    <ListItem classes={{ root: classes.root }}>
-      {(props.onRemove && props.mode === 'edit') &&
-        <ListItemIcon
-          aria-label="Delete"
-          classes={{ root: classes.listItemIconRoot }}
-          onClick={() => { props.onRemove(item); }}
-        >
-          <DeleteIcon />
-        </ListItemIcon>
-      }
-      {(props.mode === 'view' && props.icon) &&
-        <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
-          <props.icon className={classes.listItemIcon} />
-        </ListItemIcon>
-      }
+    component = (
       <ListItemText
         classes={{ root: classes.itemText }}
         primary={(
@@ -89,6 +74,28 @@ function ItemListItem(props) {
           </ComponentClass>
         )}
       />
+    );
+  }
+
+
+  return (
+    <ListItem classes={{ root: classes.root }}>
+      {(props.mode === 'view' && props.icon) &&
+        <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
+          <props.icon className={classes.listItemIcon} />
+        </ListItemIcon>
+      }
+      {(props.onRemove && props.mode === 'edit') &&
+        <ListItemIcon
+          aria-label="Delete"
+          classes={{ root: classes.removeIconRoot }}
+          onClick={() => { props.onRemove(item); }}
+        >
+          <DeleteIcon />
+        </ListItemIcon>
+      }
+
+      {component}
     </ListItem>
   );
 }
@@ -109,6 +116,11 @@ const StyledItemListItem = withStyles((theme) => ({
   root: theme.itemList.item,
   itemButton: theme.itemList.itemButton,
   itemText: theme.itemList.itemText,
+
+  removeIconRoot: {
+    cursor: 'pointer',
+    marginRight: 5,
+  },
 
   listItemIconRoot: {
     marginRight: 5,

@@ -93,72 +93,75 @@ function ItemListItem(props) {
       onChange = props.onChange;
 
 
+  var component = null;
   if (props.component) {
     // If a component class was explicitly provided, use it
-    return _react2.default.createElement(props.component, { item: props.item, onChange: onChange });
-  }
-
-  var ComponentClass = null;
-  var componentProps = {
-    onClick: function onClick() {
-      _onClick(item);
-    },
-    onChange: onChange
-  };
-
-  if (props.mode === 'edit' && props.clickAction === 'edit') {
-    ComponentClass = _Button2.default;
-    componentProps.className = classes.itemButton;
-    componentProps.color = 'primary';
+    component = _react2.default.createElement(props.component, { item: props.item, onChange: onChange });
   } else {
-    if (item.path) {
-      ComponentClass = _Link2.default;
-      componentProps.component = _reactRouterDom.Link;
-      componentProps.to = item.path;
-    } else if (item.media_url) {
-      ComponentClass = _Link2.default;
-      componentProps.href = item.media_url;
-      componentProps.rel = 'noopener';
-      componentProps.target = '_blank';
-    } else {
-      ComponentClass = _Typography2.default;
-    }
-  }
-
-  var linkTitle = null;
-  if (typeof props.titleKey === 'function') {
-    linkTitle = props.titleKey(item);
-  } else {
-    linkTitle = item[props.titleKey];
-  }
-
-  return _react2.default.createElement(
-    _ListItem2.default,
-    { classes: { root: classes.root } },
-    props.onRemove && props.mode === 'edit' && _react2.default.createElement(
-      _ListItemIcon2.default,
-      {
-        'aria-label': 'Delete',
-        classes: { root: classes.listItemIconRoot },
-        onClick: function onClick() {
-          props.onRemove(item);
-        }
+    var ComponentClass = null;
+    var componentProps = {
+      onClick: function onClick() {
+        _onClick(item);
       },
-      _react2.default.createElement(_Delete2.default, null)
-    ),
-    props.mode === 'view' && props.icon && _react2.default.createElement(
-      _ListItemIcon2.default,
-      { classes: { root: classes.listItemIconRoot } },
-      _react2.default.createElement(props.icon, { className: classes.listItemIcon })
-    ),
-    _react2.default.createElement(_ListItemText2.default, {
+      onChange: onChange
+    };
+
+    if (props.mode === 'edit' && props.clickAction === 'edit') {
+      ComponentClass = _Button2.default;
+      componentProps.className = classes.itemButton;
+      componentProps.color = 'primary';
+    } else {
+      if (item.path) {
+        ComponentClass = _Link2.default;
+        componentProps.component = _reactRouterDom.Link;
+        componentProps.to = item.path;
+      } else if (item.media_url) {
+        ComponentClass = _Link2.default;
+        componentProps.href = item.media_url;
+        componentProps.rel = 'noopener';
+        componentProps.target = '_blank';
+      } else {
+        ComponentClass = _Typography2.default;
+      }
+    }
+
+    var linkTitle = null;
+    if (typeof props.titleKey === 'function') {
+      linkTitle = props.titleKey(item);
+    } else {
+      linkTitle = item[props.titleKey];
+    }
+
+    component = _react2.default.createElement(_ListItemText2.default, {
       classes: { root: classes.itemText },
       primary: _react2.default.createElement(
         ComponentClass,
         componentProps,
         linkTitle
       )
-    })
+    });
+  }
+
+  return _react2.default.createElement(
+    _ListItem2.default,
+    { classes: { root: classes.root } },
+    props.mode === 'view' && props.icon && _react2.default.createElement(
+      _ListItemIcon2.default,
+      { classes: { root: classes.listItemIconRoot } },
+      _react2.default.createElement(props.icon, { className: classes.listItemIcon })
+    ),
+    props.onRemove && props.mode === 'edit' && _react2.default.createElement(
+      _ListItemIcon2.default,
+      {
+        'aria-label': 'Delete',
+        classes: { root: classes.removeIconRoot },
+        onClick: function onClick() {
+          props.onRemove(item);
+        }
+      },
+      _react2.default.createElement(_Delete2.default, null)
+    ),
+    component
   );
 }
 
@@ -179,6 +182,11 @@ var StyledItemListItem = (0, _withStyles2.default)(function (theme) {
     root: theme.itemList.item,
     itemButton: theme.itemList.itemButton,
     itemText: theme.itemList.itemText,
+
+    removeIconRoot: {
+      cursor: 'pointer',
+      marginRight: 5
+    },
 
     listItemIconRoot: {
       marginRight: 5
