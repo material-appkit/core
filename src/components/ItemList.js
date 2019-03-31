@@ -9,7 +9,6 @@ import React, { Fragment } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -28,8 +27,6 @@ import { valueForKeyPath } from '../util/object';
 
 function ItemListItem(props) {
   const { classes, item, onClick, onChange } = props;
-
-  let component = null;
 
   if (props.component) {
     // If a component class was explicitly provided, use it
@@ -68,24 +65,30 @@ function ItemListItem(props) {
     linkTitle = item[props.titleKey];
   }
 
-  component = (
-    <ComponentClass {...componentProps}>
-      {linkTitle}
-    </ComponentClass>
-  );
-
   return (
     <ListItem classes={{ root: classes.root }}>
       {(props.onRemove && props.mode === 'edit') &&
         <ListItemIcon
           aria-label="Delete"
-          className={classes.removeButton}
+          classes={{ root: classes.listItemIconRoot }}
           onClick={() => { props.onRemove(item); }}
         >
-          <DeleteIcon className={classes.removeButtonIcon} />
+          <DeleteIcon />
         </ListItemIcon>
       }
-      <ListItemText classes={{ root: classes.itemText }} primary={component} />
+      {(props.mode === 'view' && props.icon) &&
+        <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
+          <props.icon className={classes.listItemIcon} />
+        </ListItemIcon>
+      }
+      <ListItemText
+        classes={{ root: classes.itemText }}
+        primary={(
+          <ComponentClass {...componentProps}>
+            {linkTitle}
+          </ComponentClass>
+        )}
+      />
     </ListItem>
   );
 }
@@ -94,6 +97,7 @@ ItemListItem.propTypes = {
   classes: PropTypes.object.isRequired,
   clickAction: PropTypes.string,
   component: PropTypes.func,
+  icon: PropTypes.func,
   item: PropTypes.object.isRequired,
   mode: PropTypes.oneOf(['view', 'edit']),
   onClick: PropTypes.func.isRequired,
@@ -103,10 +107,17 @@ ItemListItem.propTypes = {
 
 const StyledItemListItem = withStyles((theme) => ({
   root: theme.itemList.item,
-  removeButton: theme.itemList.removeButton,
-  removeButtonIcon: theme.itemList.removeButtonIcon,
   itemButton: theme.itemList.itemButton,
   itemText: theme.itemList.itemText,
+
+  listItemIconRoot: {
+    marginRight: 5,
+  },
+
+  listItemIcon: {
+    height: '18px !important',
+    width: '18px !important',
+  },
 }))(ItemListItem);
 
 // -----------------------------------------------------------------------------
@@ -237,6 +248,7 @@ class ItemList extends React.PureComponent {
               clickAction={clickAction}
               component={this.props.itemComponent}
               key={item.id}
+              icon={this.props.itemIcon}
               item={item}
               itemKeyPath={this.props.itemKeyPath}
               mode={mode}
@@ -304,6 +316,7 @@ ItemList.propTypes = {
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
   itemComponent: PropTypes.func,
+  itemIcon: PropTypes.func,
   items: PropTypes.array.isRequired,
   itemKeyPath: PropTypes.string,
   onItemClick: PropTypes.func,

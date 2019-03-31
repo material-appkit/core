@@ -22,10 +22,6 @@ var _Button = require('@material-ui/core/Button');
 
 var _Button2 = _interopRequireDefault(_Button);
 
-var _IconButton = require('@material-ui/core/IconButton');
-
-var _IconButton2 = _interopRequireDefault(_IconButton);
-
 var _Link = require('@material-ui/core/Link');
 
 var _Link2 = _interopRequireDefault(_Link);
@@ -97,8 +93,6 @@ function ItemListItem(props) {
       onChange = props.onChange;
 
 
-  var component = null;
-
   if (props.component) {
     // If a component class was explicitly provided, use it
     return _react2.default.createElement(props.component, { item: props.item, onChange: onChange });
@@ -138,12 +132,6 @@ function ItemListItem(props) {
     linkTitle = item[props.titleKey];
   }
 
-  component = _react2.default.createElement(
-    ComponentClass,
-    componentProps,
-    linkTitle
-  );
-
   return _react2.default.createElement(
     _ListItem2.default,
     { classes: { root: classes.root } },
@@ -151,14 +139,26 @@ function ItemListItem(props) {
       _ListItemIcon2.default,
       {
         'aria-label': 'Delete',
-        className: classes.removeButton,
+        classes: { root: classes.listItemIconRoot },
         onClick: function onClick() {
           props.onRemove(item);
         }
       },
-      _react2.default.createElement(_Delete2.default, { className: classes.removeButtonIcon })
+      _react2.default.createElement(_Delete2.default, null)
     ),
-    _react2.default.createElement(_ListItemText2.default, { classes: { root: classes.itemText }, primary: component })
+    props.mode === 'view' && props.icon && _react2.default.createElement(
+      _ListItemIcon2.default,
+      { classes: { root: classes.listItemIconRoot } },
+      _react2.default.createElement(props.icon, { className: classes.listItemIcon })
+    ),
+    _react2.default.createElement(_ListItemText2.default, {
+      classes: { root: classes.itemText },
+      primary: _react2.default.createElement(
+        ComponentClass,
+        componentProps,
+        linkTitle
+      )
+    })
   );
 }
 
@@ -166,6 +166,7 @@ ItemListItem.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   clickAction: _propTypes2.default.string,
   component: _propTypes2.default.func,
+  icon: _propTypes2.default.func,
   item: _propTypes2.default.object.isRequired,
   mode: _propTypes2.default.oneOf(['view', 'edit']),
   onClick: _propTypes2.default.func.isRequired,
@@ -176,10 +177,17 @@ ItemListItem.propTypes = {
 var StyledItemListItem = (0, _withStyles2.default)(function (theme) {
   return {
     root: theme.itemList.item,
-    removeButton: theme.itemList.removeButton,
-    removeButtonIcon: theme.itemList.removeButtonIcon,
     itemButton: theme.itemList.itemButton,
-    itemText: theme.itemList.itemText
+    itemText: theme.itemList.itemText,
+
+    listItemIconRoot: {
+      marginRight: 5
+    },
+
+    listItemIcon: {
+      height: '18px !important',
+      width: '18px !important'
+    }
   };
 })(ItemListItem);
 
@@ -362,6 +370,7 @@ var ItemList = function (_React$PureComponent) {
               clickAction: clickAction,
               component: _this3.props.itemComponent,
               key: item.id,
+              icon: _this3.props.itemIcon,
               item: item,
               itemKeyPath: _this3.props.itemKeyPath,
               mode: mode,
@@ -461,6 +470,7 @@ ItemList.propTypes = {
   entityType: _propTypes2.default.string,
   filterParams: _propTypes2.default.object,
   itemComponent: _propTypes2.default.func,
+  itemIcon: _propTypes2.default.func,
   items: _propTypes2.default.array.isRequired,
   itemKeyPath: _propTypes2.default.string,
   onItemClick: _propTypes2.default.func,
