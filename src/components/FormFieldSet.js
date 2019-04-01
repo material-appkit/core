@@ -6,8 +6,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import { decorateErrors } from '../util/component';
 
-import ItemListField from './ItemListField';
-
 function FormFieldSet(props) {
   const {
     classes,

@@ -24,10 +24,6 @@ var _withStyles2 = _interopRequireDefault(_withStyles);
 
 var _component = require('../util/component');
 
-var _ItemListField = require('./ItemListField');
-
-var _ItemListField2 = _interopRequireDefault(_ItemListField);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function FormFieldSet(props) {
