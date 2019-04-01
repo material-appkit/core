@@ -36,13 +36,17 @@ var _withStyles = require('@material-ui/core/styles/withStyles');
 
 var _withStyles2 = _interopRequireDefault(_withStyles);
 
-var _VirtualizedList = require('./VirtualizedList');
+var _RemoteStore = require('../stores/RemoteStore');
 
-var _VirtualizedList2 = _interopRequireDefault(_VirtualizedList);
+var _RemoteStore2 = _interopRequireDefault(_RemoteStore);
 
 var _map = require('../util/map');
 
 var _object = require('../util/object');
+
+var _VirtualizedList = require('./VirtualizedList');
+
+var _VirtualizedList2 = _interopRequireDefault(_VirtualizedList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -66,6 +70,13 @@ var ListView = function (_React$PureComponent) {
     };
 
     _this.syncItemStore = function () {
+      var store = _this.props.store;
+
+
+      if (!(store instanceof _RemoteStore2.default)) {
+        return;
+      }
+
       var filterParams = _this.filterParams;
       var storeParams = _this.props.store.params;
       if (!filterParams || (0, _lodash2.default)(filterParams, storeParams)) {

@@ -10,11 +10,12 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-import VirtualizedList from './VirtualizedList';
+import RemoteStore from '../stores/RemoteStore';
 
 import { indexOfKey } from '../util/map';
 import { filterByKeys } from '../util/object';
 
+import VirtualizedList from './VirtualizedList';
 
 class ListView extends React.PureComponent {
   state = {
@@ -158,6 +159,12 @@ class ListView extends React.PureComponent {
   }
 
   syncItemStore = () => {
+    const { store } = this.props;
+
+    if (!(store instanceof RemoteStore)) {
+      return;
+    }
+
     const filterParams = this.filterParams;
     const storeParams = this.props.store.params;
     if (!filterParams || isEqual(filterParams, storeParams)) {
