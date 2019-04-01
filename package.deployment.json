@@ -1,6 +1,6 @@
 {
   "name": "@material-appkit/core",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "main": "dist/index.js",
   "scripts": {
@@ -43,6 +43,6 @@
     "moment": "^2.23.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-router-dom": "^5.0.0"
+    "react-router-dom": "^4.3.1"
   }
 }
