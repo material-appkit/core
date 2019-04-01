@@ -42,6 +42,10 @@ var _DialogTitle = require('@material-ui/core/DialogTitle');
 
 var _DialogTitle2 = _interopRequireDefault(_DialogTitle);
 
+var _TextField = require('@material-ui/core/TextField');
+
+var _TextField2 = _interopRequireDefault(_TextField);
+
 var _withStyles = require('@material-ui/core/styles/withStyles');
 
 var _withStyles2 = _interopRequireDefault(_withStyles);
@@ -73,7 +77,7 @@ var AlertManager = function (_React$Component) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        _react2.default.Fragment,
+        _react.Fragment,
         null,
         this.dialogs
       );
@@ -85,10 +89,30 @@ var AlertManager = function (_React$Component) {
 
       var dialogs = [];
       AlertManager.queue.forEach(function (alertInfo, key) {
+        var alertType = alertInfo.ALERT_TYPE;
+        var commitValue = true;
+
+        var promptField = null;
+        if (alertType === 'prompt') {
+          var promptFieldRef = _react2.default.createRef();
+          promptField = _react2.default.createElement(_TextField2.default, {
+            autoFocus: true,
+            inputRef: promptFieldRef,
+            margin: 'dense',
+            label: alertInfo.label,
+            fullWidth: true
+          });
+          commitValue = function commitValue() {
+            return promptFieldRef.current.value;
+          };
+        }
+
         dialogs.push(_react2.default.createElement(
           _Dialog2.default,
           {
             key: key,
+            fullWidth: true,
+            maxWidth: 'sm',
             open: true,
             onClose: _this2.handleClose,
             'aria-labelledby': 'alert-dialog-title',
@@ -102,16 +126,17 @@ var AlertManager = function (_React$Component) {
           _react2.default.createElement(
             _DialogContent2.default,
             null,
-            _react2.default.createElement(
+            alertInfo.description && _react2.default.createElement(
               _DialogContentText2.default,
               { id: 'alert-dialog-description' },
               alertInfo.description
-            )
+            ),
+            promptField
           ),
           _react2.default.createElement(
             _DialogActions2.default,
             null,
-            alertInfo.ALERT_TYPE === 'confirm' && _react2.default.createElement(
+            alertInfo.ALERT_TYPE !== 'info' && _react2.default.createElement(
               _Button2.default,
               { onClick: function onClick() {
                   AlertManager.dismiss(key, false);
@@ -121,7 +146,7 @@ var AlertManager = function (_React$Component) {
             _react2.default.createElement(
               _Button2.default,
               { onClick: function onClick() {
-                  AlertManager.dismiss(key, true);
+                  AlertManager.dismiss(key, commitValue);
                 }, color: 'primary' },
               alertInfo.confirmButtonTitle || 'OK'
             )
@@ -148,10 +173,15 @@ var AlertManager = function (_React$Component) {
       this.alert(alertInfo, 'confirm');
     }
   }, {
+    key: 'prompt',
+    value: function prompt(alertInfo) {
+      this.alert(alertInfo, 'prompt');
+    }
+  }, {
     key: 'dismiss',
     value: function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(key, flag) {
-        var alertInfo;
+      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(key, value) {
+        var alertInfo, returnValue;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -159,17 +189,22 @@ var AlertManager = function (_React$Component) {
                 alertInfo = this.queue.get(key);
 
                 if (!alertInfo.onDismiss) {
-                  _context.next = 4;
+                  _context.next = 6;
                   break;
                 }
 
-                _context.next = 4;
-                return alertInfo.onDismiss(flag);
+                returnValue = value;
 
-              case 4:
+                if (typeof returnValue === 'function') {
+                  returnValue = returnValue();
+                }
+                _context.next = 6;
+                return alertInfo.onDismiss(returnValue);
+
+              case 6:
                 this.queue.delete(key);
 
-              case 5:
+              case 7:
               case 'end':
                 return _context.stop();
             }

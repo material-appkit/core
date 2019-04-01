@@ -4,7 +4,7 @@
 *
 */
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import { observable } from 'mobx';
@@ -16,7 +16,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import TextField from '@material-ui/core/TextField';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 class AlertManager extends React.Component {
@@ -36,10 +36,18 @@ class AlertManager extends React.Component {
     this.alert(alertInfo, 'confirm');
   }
 
-  static async dismiss(key, flag) {
+  static prompt(alertInfo) {
+    this.alert(alertInfo, 'prompt');
+  }
+
+  static async dismiss(key, value) {
     const alertInfo = this.queue.get(key);
     if (alertInfo.onDismiss) {
-      await alertInfo.onDismiss(flag);
+      let returnValue = value;
+      if (typeof(returnValue) === 'function') {
+        returnValue = returnValue();
+      }
+      await alertInfo.onDismiss(returnValue);
     }
     this.queue.delete(key);
   }
@@ -47,9 +55,31 @@ class AlertManager extends React.Component {
   get dialogs() {
     const dialogs = [];
     AlertManager.queue.forEach((alertInfo, key) => {
+      const alertType = alertInfo.ALERT_TYPE;
+      let commitValue = true;
+
+      let promptField = null;
+      if (alertType === 'prompt') {
+        const promptFieldRef = React.createRef();
+        promptField = (
+          <TextField
+            autoFocus
+            inputRef={promptFieldRef}
+            margin="dense"
+            label={alertInfo.label}
+            fullWidth
+          />
+        );
+        commitValue = () => {
+          return promptFieldRef.current.value;
+        };
+      }
+
       dialogs.push((
         <Dialog
           key={key}
+          fullWidth={true}
+          maxWidth='sm'
           open
           onClose={this.handleClose}
           aria-labelledby="alert-dialog-title"
@@ -57,17 +87,22 @@ class AlertManager extends React.Component {
         >
           <DialogTitle id="alert-dialog-title">{alertInfo.title}</DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description">
-              {alertInfo.description}
-            </DialogContentText>
+            {alertInfo.description &&
+              <DialogContentText id="alert-dialog-description">
+                {alertInfo.description}
+              </DialogContentText>
+            }
+            {promptField}
           </DialogContent>
+
           <DialogActions>
-            {alertInfo.ALERT_TYPE === 'confirm' &&
+            {alertInfo.ALERT_TYPE !== 'info' &&
               <Button onClick={() => { AlertManager.dismiss(key, false); }}>
                 {alertInfo.cancelButtonTitle || 'Cancel'}
               </Button>
             }
-            <Button onClick={() => { AlertManager.dismiss(key, true); }} color="primary">
+
+            <Button onClick={() => { AlertManager.dismiss(key, commitValue); }} color="primary">
               {alertInfo.confirmButtonTitle || 'OK'}
             </Button>
           </DialogActions>
@@ -79,9 +114,9 @@ class AlertManager extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <Fragment>
         {this.dialogs}
-      </React.Fragment>
+      </Fragment>
     );
   }
 }
