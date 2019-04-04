@@ -163,27 +163,39 @@ var ListView = function (_React$PureComponent) {
         return _react2.default.createElement(_reactRouterDom.Redirect, { to: this.state.redirectTo });
       }
 
+      var _props = this.props,
+          listItemComponent = _props.listItemComponent,
+          store = _props.store,
+          itemContextProvider = _props.itemContextProvider,
+          itemProps = _props.itemProps,
+          items = _props.items,
+          onItemClick = _props.onItemClick,
+          onSelectionChange = _props.onSelectionChange,
+          selectionMode = _props.selectionMode;
+
+
       return _react2.default.createElement(
-        _react2.default.Fragment,
+        _react.Fragment,
         null,
         this.tabs,
         _react2.default.createElement(_VirtualizedList2.default, {
-          componentForItem: this.props.listItemComponent,
-          store: this.props.store,
-          itemContextProvider: this.props.itemContextProvider,
-          itemProps: this.props.itemProps,
-          onItemClick: this.props.onItemClick,
-          onSelectionChange: this.props.onSelectionChange,
-          selectionMode: this.props.selectionMode
+          componentForItem: listItemComponent,
+          store: store,
+          itemContextProvider: itemContextProvider,
+          itemProps: itemProps,
+          items: items,
+          onItemClick: onItemClick,
+          onSelectionChange: onSelectionChange,
+          selectionMode: selectionMode
         })
       );
     }
   }, {
     key: 'isActive',
     get: function get() {
-      var _props = this.props,
-          location = _props.location,
-          mountPath = _props.mountPath;
+      var _props2 = this.props,
+          location = _props2.location,
+          mountPath = _props2.mountPath;
 
 
       var match = (0, _reactRouterDom.matchPath)(location.pathname, { path: mountPath });
@@ -241,9 +253,9 @@ var ListView = function (_React$PureComponent) {
   }, {
     key: 'filterParams',
     get: function get() {
-      var _props2 = this.props,
-          filterParams = _props2.filterParams,
-          qsFilterParamNames = _props2.qsFilterParamNames;
+      var _props3 = this.props,
+          filterParams = _props3.filterParams,
+          qsFilterParamNames = _props3.qsFilterParamNames;
 
 
       var params = filterParams || {};
@@ -267,11 +279,12 @@ ListView.propTypes = {
   classes: _propTypes2.default.object,
   createURL: _propTypes2.default.string,
   listItemComponent: _propTypes2.default.func.isRequired,
-  store: _propTypes2.default.object.isRequired,
+  store: _propTypes2.default.object,
   entityType: _propTypes2.default.string,
   filterParams: _propTypes2.default.object,
   itemContextProvider: _propTypes2.default.func,
   itemProps: _propTypes2.default.object,
+  items: _propTypes2.default.array,
   onItemClick: _propTypes2.default.func,
   onSelectionChange: _propTypes2.default.func,
   onTabChange: _propTypes2.default.func,

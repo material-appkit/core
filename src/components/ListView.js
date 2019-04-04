@@ -3,7 +3,7 @@ import qs from 'query-string';
 import { matchPath } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
@@ -179,19 +179,32 @@ class ListView extends React.PureComponent {
       return <Redirect to={this.state.redirectTo} />
     }
 
+    const {
+      listItemComponent,
+      store,
+      itemContextProvider,
+      itemProps,
+      items,
+      onItemClick,
+      onSelectionChange,
+      selectionMode,
+    } = this.props;
+
     return (
-      <React.Fragment>
+      <Fragment>
         {this.tabs}
+
         <VirtualizedList
-          componentForItem={this.props.listItemComponent}
-          store={this.props.store}
-          itemContextProvider={this.props.itemContextProvider}
-          itemProps={this.props.itemProps}
-          onItemClick={this.props.onItemClick}
-          onSelectionChange={this.props.onSelectionChange}
-          selectionMode={this.props.selectionMode}
+          componentForItem={listItemComponent}
+          store={store}
+          itemContextProvider={itemContextProvider}
+          itemProps={itemProps}
+          items={items}
+          onItemClick={onItemClick}
+          onSelectionChange={onSelectionChange}
+          selectionMode={selectionMode}
         />
-      </React.Fragment>
+      </Fragment>
     );
   }
 }
@@ -200,11 +213,12 @@ ListView.propTypes = {
   classes: PropTypes.object,
   createURL: PropTypes.string,
   listItemComponent: PropTypes.func.isRequired,
-  store: PropTypes.object.isRequired,
+  store: PropTypes.object,
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
   itemContextProvider: PropTypes.func,
   itemProps: PropTypes.object,
+  items: PropTypes.array,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
   onTabChange: PropTypes.func,
