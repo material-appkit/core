@@ -1,12 +1,13 @@
 import { observer } from 'mobx-react';
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import withStyles from '@material-ui/core/styles/withStyles';
 
 class VirtualizedList extends React.Component {
@@ -31,6 +32,13 @@ class VirtualizedList extends React.Component {
     }
 
     return !!selection[item.id];
+  };
+
+  isGrouped = (items) => {
+    if (!items || !items.length) {
+      return false;
+    }
+    return Array.isArray(items[0]);
   };
 
   handleSelectControlClick = (item) => {
@@ -64,39 +72,66 @@ class VirtualizedList extends React.Component {
     }
   };
 
-  render() {
-    const { classes } = this.props;
+  renderItem = (item) => (
+    <this.props.componentForItem
+      contextProvider={this.props.itemContextProvider}
+      key={item.id}
+      item={item}
+      onItemClick={this.props.onItemClick}
+      onSelectControlClick={this.handleSelectControlClick}
+      selected={this.isSelected(item)}
+      selectionMode={this.props.selectionMode}
+      {...this.props.itemProps}
+    />
+  );
 
-    return (
-      <List className={classes.list} dense={this.props.dense}>
-        {(this.props.store && this.props.store.items) ? (
+  render() {
+    const {
+      classes,
+      dense,
+      items,
+      store
+    } = this.props;
+
+    let listChildren = null;
+    if (items) {
+      if (this.isGrouped(items)) {
+        listChildren = items.map((itemGroup) => (
+          <Fragment key={itemGroup[0]}>
+            <ListSubheader className={classes.subheader} disableSticky>
+              {itemGroup[0]}
+            </ListSubheader>
+            {itemGroup[1].map(this.renderItem)}
+          </Fragment>
+        ));
+      } else {
+        listChildren = items.map(this.renderItem);
+      }
+    } else if (store) {
+      if (store.items) {
+        listChildren = (
           <InfiniteScroll
             getScrollParent={this.props.getScrollParent}
             initialLoad={false}
             pageStart={1}
-            loadMore={(page) => { this.props.store.loadMore(page); }}
-            hasMore={!this.props.store.isLoaded}
+            loadMore={(page) => { store.loadMore(page); }}
+            hasMore={!store.isLoaded}
             loader={this.loadMoreProgressIndicator}
             useWindow={this.props.useWindow}
           >
-            {this.props.store.items.map((item) => (
-              <this.props.componentForItem
-                contextProvider={this.props.itemContextProvider}
-                key={item.id}
-                item={item}
-                onItemClick={this.props.onItemClick}
-                onSelectControlClick={this.handleSelectControlClick}
-                selected={this.isSelected(item)}
-                selectionMode={this.props.selectionMode}
-                {...this.props.itemProps}
-              />
-            ))}
+            {store.items.map(this.renderItem)}
           </InfiniteScroll>
-        ) : (
-          <React.Fragment>
-            {this.loadMoreProgressIndicator}
-          </React.Fragment>
-        )}
+        );
+      } else {
+        listChildren = this.loadMoreProgressIndicator;
+      }
+    } else {
+      return null;
+    }
+
+    return (
+      <List className={classes.list} dense={dense}>
+        {listChildren}
       </List>
     );
   }
@@ -109,10 +144,11 @@ VirtualizedList.propTypes = {
   getScrollParent: PropTypes.func,
   itemContextProvider: PropTypes.func,
   itemProps: PropTypes.object,
+  items: PropTypes.array,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  store: PropTypes.object.isRequired,
+  store: PropTypes.object,
   useWindow: PropTypes.bool,
 };
 
@@ -124,6 +160,7 @@ VirtualizedList.defaultProps = {
 
 export default withStyles((theme) => ({
   list: theme.listView.list,
+  subheader: theme.listView.subheader,
 
   loadProgressListItem: {
     justifyContent: 'center',

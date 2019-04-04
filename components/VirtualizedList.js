@@ -34,6 +34,10 @@ var _ListItem = require('@material-ui/core/ListItem');
 
 var _ListItem2 = _interopRequireDefault(_ListItem);
 
+var _ListSubheader = require('@material-ui/core/ListSubheader');
+
+var _ListSubheader2 = _interopRequireDefault(_ListSubheader);
+
 var _withStyles = require('@material-ui/core/styles/withStyles');
 
 var _withStyles2 = _interopRequireDefault(_withStyles);
@@ -50,6 +54,8 @@ var VirtualizedList = function (_React$Component) {
   _inherits(VirtualizedList, _React$Component);
 
   function VirtualizedList(props) {
+    var _this2 = this;
+
     _classCallCheck(this, VirtualizedList);
 
     var _this = _possibleConstructorReturn(this, (VirtualizedList.__proto__ || Object.getPrototypeOf(VirtualizedList)).call(this, props));
@@ -62,6 +68,13 @@ var VirtualizedList = function (_React$Component) {
       }
 
       return !!selection[item.id];
+    };
+
+    _this.isGrouped = function (items) {
+      if (!items || !items.length) {
+        return false;
+      }
+      return Array.isArray(items[0]);
     };
 
     _this.handleSelectControlClick = function (item) {
@@ -98,6 +111,18 @@ var VirtualizedList = function (_React$Component) {
       }
     };
 
+    _this.renderItem = function (item) {
+      return _react2.default.createElement(_this2.props.componentForItem, _extends({
+        contextProvider: _this.props.itemContextProvider,
+        key: item.id,
+        item: item,
+        onItemClick: _this.props.onItemClick,
+        onSelectControlClick: _this.handleSelectControlClick,
+        selected: _this.isSelected(item),
+        selectionMode: _this.props.selectionMode
+      }, _this.props.itemProps));
+    };
+
     _this.loadMoreProgressIndicator = _react2.default.createElement(
       _ListItem2.default,
       { className: props.classes.loadProgressListItem, key: 'loadMoreProgressIndicator' },
@@ -113,43 +138,61 @@ var VirtualizedList = function (_React$Component) {
   _createClass(VirtualizedList, [{
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
-      var classes = this.props.classes;
+      var _props = this.props,
+          classes = _props.classes,
+          dense = _props.dense,
+          items = _props.items,
+          store = _props.store;
 
+
+      var listChildren = null;
+      if (items) {
+        if (this.isGrouped(items)) {
+          listChildren = items.map(function (itemGroup) {
+            return _react2.default.createElement(
+              _react.Fragment,
+              { key: itemGroup[0] },
+              _react2.default.createElement(
+                _ListSubheader2.default,
+                { className: classes.subheader, disableSticky: true },
+                itemGroup[0]
+              ),
+              itemGroup[1].map(_this3.renderItem)
+            );
+          });
+        } else {
+          listChildren = items.map(this.renderItem);
+        }
+      } else if (store) {
+        if (store.items) {
+          listChildren = _react2.default.createElement(
+            _reactInfiniteScroller2.default,
+            {
+              getScrollParent: this.props.getScrollParent,
+              initialLoad: false,
+              pageStart: 1,
+              loadMore: function loadMore(page) {
+                store.loadMore(page);
+              },
+              hasMore: !store.isLoaded,
+              loader: this.loadMoreProgressIndicator,
+              useWindow: this.props.useWindow
+            },
+            store.items.map(this.renderItem)
+          );
+        } else {
+          listChildren = this.loadMoreProgressIndicator;
+        }
+      } else {
+        return null;
+      }
 
       return _react2.default.createElement(
         _List2.default,
-        { className: classes.list, dense: this.props.dense },
-        this.props.store && this.props.store.items ? _react2.default.createElement(
-          _reactInfiniteScroller2.default,
-          {
-            getScrollParent: this.props.getScrollParent,
-            initialLoad: false,
-            pageStart: 1,
-            loadMore: function loadMore(page) {
-              _this2.props.store.loadMore(page);
-            },
-            hasMore: !this.props.store.isLoaded,
-            loader: this.loadMoreProgressIndicator,
-            useWindow: this.props.useWindow
-          },
-          this.props.store.items.map(function (item) {
-            return _react2.default.createElement(_this2.props.componentForItem, _extends({
-              contextProvider: _this2.props.itemContextProvider,
-              key: item.id,
-              item: item,
-              onItemClick: _this2.props.onItemClick,
-              onSelectControlClick: _this2.handleSelectControlClick,
-              selected: _this2.isSelected(item),
-              selectionMode: _this2.props.selectionMode
-            }, _this2.props.itemProps));
-          })
-        ) : _react2.default.createElement(
-          _react2.default.Fragment,
-          null,
-          this.loadMoreProgressIndicator
-        )
+        { className: classes.list, dense: dense },
+        listChildren
       );
     }
   }]);
@@ -164,10 +207,11 @@ VirtualizedList.propTypes = {
   getScrollParent: _propTypes2.default.func,
   itemContextProvider: _propTypes2.default.func,
   itemProps: _propTypes2.default.object,
+  items: _propTypes2.default.array,
   onItemClick: _propTypes2.default.func,
   onSelectionChange: _propTypes2.default.func,
   selectionMode: _propTypes2.default.oneOf(['single', 'multiple']),
-  store: _propTypes2.default.object.isRequired,
+  store: _propTypes2.default.object,
   useWindow: _propTypes2.default.bool
 };
 
@@ -180,6 +224,7 @@ VirtualizedList.defaultProps = {
 exports.default = (0, _withStyles2.default)(function (theme) {
   return {
     list: theme.listView.list,
+    subheader: theme.listView.subheader,
 
     loadProgressListItem: {
       justifyContent: 'center'
