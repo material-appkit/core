@@ -90,7 +90,7 @@ function _MetadataListItem(props) {
   }
 
   var value = representedObject[fieldInfo.name];
-  if (!value) {
+  if (value === undefined || value === null) {
     if (!nullValue) {
       // If no value exists for the given field and nothing has been specified
       // to display for null values, returning null skips rendering of the list item.
