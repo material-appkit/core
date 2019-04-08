@@ -58,6 +58,10 @@ var _Delete = require('@material-ui/icons/Delete');
 
 var _Delete2 = _interopRequireDefault(_Delete);
 
+var _Edit = require('@material-ui/icons/Edit');
+
+var _Edit2 = _interopRequireDefault(_Edit);
+
 var _EditDialog = require('./EditDialog');
 
 var _EditDialog2 = _interopRequireDefault(_EditDialog);
@@ -94,7 +98,7 @@ function ItemListItem(props) {
 
 
   var component = null;
-  if (props.mode === 'view' && props.component) {
+  if (props.component) {
     // If a component class was explicitly provided, use it
     component = _react2.default.createElement(props.component, { item: props.item, onChange: onChange });
   } else {
@@ -106,23 +110,17 @@ function ItemListItem(props) {
       onChange: onChange
     };
 
-    if (props.mode === 'edit' && props.clickAction === 'edit') {
-      ComponentClass = _Button2.default;
-      componentProps.className = classes.itemButton;
-      componentProps.color = 'primary';
+    if (item.path) {
+      ComponentClass = _Link2.default;
+      componentProps.component = _reactRouterDom.Link;
+      componentProps.to = item.path;
+    } else if (item.media_url) {
+      ComponentClass = _Link2.default;
+      componentProps.href = item.media_url;
+      componentProps.rel = 'noopener';
+      componentProps.target = '_blank';
     } else {
-      if (item.path) {
-        ComponentClass = _Link2.default;
-        componentProps.component = _reactRouterDom.Link;
-        componentProps.to = item.path;
-      } else if (item.media_url) {
-        ComponentClass = _Link2.default;
-        componentProps.href = item.media_url;
-        componentProps.rel = 'noopener';
-        componentProps.target = '_blank';
-      } else {
-        ComponentClass = _Typography2.default;
-      }
+      ComponentClass = _Typography2.default;
     }
 
     var linkTitle = null;
@@ -160,6 +158,17 @@ function ItemListItem(props) {
         }
       },
       _react2.default.createElement(_Delete2.default, null)
+    ),
+    props.mode === 'edit' && props.clickAction === 'edit' && _react2.default.createElement(
+      _ListItemIcon2.default,
+      {
+        'aria-label': 'Edit',
+        classes: { root: classes.removeIconRoot },
+        onClick: function onClick() {
+          _onClick(item);
+        }
+      },
+      _react2.default.createElement(_Edit2.default, null)
     ),
     component
   );

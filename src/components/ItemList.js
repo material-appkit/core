@@ -18,6 +18,7 @@ import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 
 import EditDialog from './EditDialog';
 import ListDialog from './ListDialog';
@@ -29,7 +30,7 @@ function ItemListItem(props) {
   const { classes, item, onClick, onChange } = props;
 
   let component = null;
-  if (props.mode === 'view' && props.component) {
+  if (props.component) {
     // If a component class was explicitly provided, use it
     component = <props.component item={props.item} onChange={onChange} />;
   } else {
@@ -39,23 +40,17 @@ function ItemListItem(props) {
       onChange,
     };
 
-    if (props.mode === 'edit' && props.clickAction === 'edit') {
-      ComponentClass = Button;
-      componentProps.className = classes.itemButton;
-      componentProps.color = 'primary';
+    if (item.path) {
+      ComponentClass = Link;
+      componentProps.component = RouterLink;
+      componentProps.to = item.path;
+    } else if (item.media_url) {
+      ComponentClass = Link;
+      componentProps.href = item.media_url;
+      componentProps.rel = 'noopener';
+      componentProps.target = '_blank';
     } else {
-      if (item.path) {
-        ComponentClass = Link;
-        componentProps.component = RouterLink;
-        componentProps.to = item.path;
-      } else if (item.media_url) {
-        ComponentClass = Link;
-        componentProps.href = item.media_url;
-        componentProps.rel = 'noopener';
-        componentProps.target = '_blank';
-      } else {
-        ComponentClass = Typography;
-      }
+      ComponentClass = Typography;
     }
 
     let linkTitle = null;
@@ -91,6 +86,15 @@ function ItemListItem(props) {
           onClick={() => { props.onRemove(item); }}
         >
           <DeleteIcon />
+        </ListItemIcon>
+      }
+      {(props.mode === 'edit' && props.clickAction === 'edit') &&
+        <ListItemIcon
+          aria-label="Edit"
+          classes={{ root: classes.removeIconRoot }}
+          onClick={() => { onClick(item); }}
+        >
+          <EditIcon />
         </ListItemIcon>
       }
 
