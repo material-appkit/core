@@ -94,7 +94,7 @@ function ItemListItem(props) {
 
 
   var component = null;
-  if (props.component) {
+  if (props.mode === 'view' && props.component) {
     // If a component class was explicitly provided, use it
     component = _react2.default.createElement(props.component, { item: props.item, onChange: onChange });
   } else {
