@@ -281,35 +281,48 @@ var ItemList = function (_React$PureComponent) {
       return function (_x) {
         return _ref2.apply(this, arguments);
       };
-    }(), _this.detachItem = function () {
+    }(), _this.handleRemoveButtonClick = function () {
       var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(item) {
-        var detachUrl, res;
+        var _this$props, canDelete, onRemove, detachUrl, res;
+
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
+                _this$props = _this.props, canDelete = _this$props.canDelete, onRemove = _this$props.onRemove;
                 detachUrl = _this.detachUrl;
 
                 if (!detachUrl) {
-                  _context2.next = 6;
+                  _context2.next = 9;
                   break;
                 }
 
-                _context2.next = 4;
+                _context2.next = 5;
                 return _ServiceAgent2.default.delete(_this.detachUrl, { item_id: item.id });
 
-              case 4:
+              case 5:
                 res = _context2.sent;
 
                 item = res.body;
+                _context2.next = 12;
+                break;
 
-              case 6:
-
-                if (_this.props.onRemove) {
-                  _this.props.onRemove(item);
+              case 9:
+                if (!(canDelete && item.url)) {
+                  _context2.next = 12;
+                  break;
                 }
 
-              case 7:
+                _context2.next = 12;
+                return _ServiceAgent2.default.delete(item.url);
+
+              case 12:
+
+                if (onRemove) {
+                  onRemove(item);
+                }
+
+              case 13:
               case 'end':
                 return _context2.stop();
             }
@@ -384,7 +397,7 @@ var ItemList = function (_React$PureComponent) {
               mode: mode,
               onChange: _this3.handleItemChange,
               onClick: _this3.handleItemClick,
-              onRemove: _this3.detachItem,
+              onRemove: _this3.handleRemoveButtonClick,
               titleKey: _this3.props.titleKey
             });
           })
@@ -429,29 +442,35 @@ var ItemList = function (_React$PureComponent) {
   }, {
     key: 'attachUrl',
     get: function get() {
-      if (!this.props.apiAttachSuffix) {
+      var _props2 = this.props,
+          apiAttachSuffix = _props2.apiAttachSuffix,
+          representedObject = _props2.representedObject;
+
+      if (apiAttachSuffix === undefined || apiAttachSuffix === null) {
         return null;
       }
 
-      var baseUrl = this.props.representedObject.url;
-      return '' + baseUrl + this.props.apiAttachSuffix;
+      return representedObject.url + apiAttachSuffix;
     }
   }, {
     key: 'detachUrl',
     get: function get() {
-      if (!this.props.apiDetachSuffix) {
+      var _props3 = this.props,
+          apiDetachSuffix = _props3.apiDetachSuffix,
+          representedObject = _props3.representedObject;
+
+      if (apiDetachSuffix === undefined || apiDetachSuffix === null) {
         return null;
       }
 
-      var baseUrl = this.props.representedObject.url;
-      return '' + baseUrl + this.props.apiDetachSuffix;
+      return representedObject.url + apiDetachSuffix;
     }
   }, {
     key: 'items',
     get: function get() {
-      var _props2 = this.props,
-          items = _props2.items,
-          itemKeyPath = _props2.itemKeyPath;
+      var _props4 = this.props,
+          items = _props4.items,
+          itemKeyPath = _props4.itemKeyPath;
 
       if (!itemKeyPath) {
         return items;
@@ -471,6 +490,7 @@ ItemList.propTypes = {
   apiListUrl: _propTypes2.default.string,
   apiAttachSuffix: _propTypes2.default.string,
   apiDetachSuffix: _propTypes2.default.string,
+  canDelete: _propTypes2.default.bool,
   classes: _propTypes2.default.object,
   clickAction: _propTypes2.default.oneOf(['link', 'edit']),
   EditDialogComponent: _propTypes2.default.func,
@@ -494,6 +514,7 @@ ItemList.propTypes = {
 };
 
 ItemList.defaultProps = {
+  canDelete: false,
   clickAction: 'link',
   EditDialogComponent: _EditDialog2.default,
   editDialogProps: {},

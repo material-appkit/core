@@ -77,7 +77,6 @@ function ItemListItem(props) {
     );
   }
 
-
   return (
     <ListItem classes={{ root: classes.root }}>
       {(props.mode === 'view' && props.icon) &&
@@ -141,21 +140,21 @@ class ItemList extends React.PureComponent {
   };
 
   get attachUrl() {
-    if (!this.props.apiAttachSuffix) {
+    const { apiAttachSuffix, representedObject } = this.props;
+    if (apiAttachSuffix === undefined || apiAttachSuffix === null) {
       return null;
     }
 
-    const baseUrl = this.props.representedObject.url;
-    return `${baseUrl}${this.props.apiAttachSuffix}`;
+    return representedObject.url + apiAttachSuffix;
   }
 
   get detachUrl() {
-    if (!this.props.apiDetachSuffix) {
+    const { apiDetachSuffix, representedObject } = this.props;
+    if (apiDetachSuffix === undefined || apiDetachSuffix === null) {
       return null;
     }
 
-    const baseUrl = this.props.representedObject.url;
-    return `${baseUrl}${this.props.apiDetachSuffix}`;
+    return representedObject.url + apiDetachSuffix;
   }
 
   get items() {
@@ -194,15 +193,19 @@ class ItemList extends React.PureComponent {
 
   };
 
-  detachItem = async(item) => {
+  handleRemoveButtonClick = async(item) => {
+    const { canDelete, onRemove } = this.props;
+
     const detachUrl = this.detachUrl;
     if (detachUrl) {
       const res = await ServiceAgent.delete(this.detachUrl, { item_id: item.id });
       item = res.body;
+    } else if (canDelete && item.url) {
+      await ServiceAgent.delete(item.url);
     }
 
-    if (this.props.onRemove) {
-      this.props.onRemove(item);
+    if (onRemove) {
+      onRemove(item);
     }
   };
 
@@ -266,7 +269,7 @@ class ItemList extends React.PureComponent {
               mode={mode}
               onChange={this.handleItemChange}
               onClick={this.handleItemClick}
-              onRemove={this.detachItem}
+              onRemove={this.handleRemoveButtonClick}
               titleKey={this.props.titleKey}
             />
           ))}
@@ -321,6 +324,7 @@ ItemList.propTypes = {
   apiListUrl: PropTypes.string,
   apiAttachSuffix: PropTypes.string,
   apiDetachSuffix: PropTypes.string,
+  canDelete: PropTypes.bool,
   classes: PropTypes.object,
   clickAction: PropTypes.oneOf(['link', 'edit']),
   EditDialogComponent: PropTypes.func,
@@ -344,6 +348,7 @@ ItemList.propTypes = {
 };
 
 ItemList.defaultProps = {
+  canDelete: false,
   clickAction: 'link',
   EditDialogComponent: EditDialog,
   editDialogProps: {},
