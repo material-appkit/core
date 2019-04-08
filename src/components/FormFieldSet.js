@@ -36,6 +36,10 @@ function FormFieldSet(props) {
       name: fieldName,
     };
 
+    if (fieldInfo.hidden || widget === 'hidden') {
+      return <input type="hidden" {...commonFieldProps} />;
+    }
+
     let WidgetComponent = fieldArrangementInfo.widget;
     if (!WidgetComponent) {
       WidgetComponent = form.constructor.widgetClassForType(widget);
@@ -50,10 +54,6 @@ function FormFieldSet(props) {
           {...fieldArrangementInfo}
         />
       );
-    }
-
-    if (fieldInfo.hidden) {
-      return <input type="hidden" {...commonFieldProps} />;
     }
 
     const textFieldProps = {

@@ -56,6 +56,10 @@ function FormFieldSet(props) {
       name: fieldName
     };
 
+    if (fieldInfo.hidden || widget === 'hidden') {
+      return _react2.default.createElement('input', _extends({ type: 'hidden' }, commonFieldProps));
+    }
+
     var WidgetComponent = fieldArrangementInfo.widget;
     if (!WidgetComponent) {
       WidgetComponent = form.constructor.widgetClassForType(widget);
@@ -68,10 +72,6 @@ function FormFieldSet(props) {
           form.setValue(fieldName, value);
         }
       }, commonFieldProps, fieldArrangementInfo));
-    }
-
-    if (fieldInfo.hidden) {
-      return _react2.default.createElement('input', _extends({ type: 'hidden' }, commonFieldProps));
     }
 
     var textFieldProps = _extends({}, commonFieldProps, {
