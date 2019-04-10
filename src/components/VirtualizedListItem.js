@@ -7,19 +7,15 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-
 import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
-import withStyles from '@material-ui/core/styles/withStyles';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import CheckBoxUncheckedIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxCheckedIcon from '@material-ui/icons/CheckBox';
 
-
 function VirtualizedListItem(props) {
   const {
-    classes,
     item,
     contextProvider,
     onItemClick,
@@ -50,11 +46,11 @@ function VirtualizedListItem(props) {
     <ListItem {...listItemProps} {...rest}>
       {SelectionIcon && (
         <IconButton
-          className={classes.selectionControl}
           onClick={(e) => {
             e.preventDefault();
             onSelectControlClick(item);
           }}
+          style={{ padding: 4 }}
         >
           <SelectionIcon />
         </IconButton>
@@ -65,7 +61,6 @@ function VirtualizedListItem(props) {
 }
 
 VirtualizedListItem.propTypes = {
-  classes: PropTypes.object,
   contextProvider: PropTypes.func,
   onItemClick: PropTypes.func,
   onSelectControlClick: PropTypes.func,
@@ -73,8 +68,4 @@ VirtualizedListItem.propTypes = {
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
 };
 
-export default withStyles({
-  selectionControl: {
-    padding: 4,
-  },
-})(VirtualizedListItem);
+export default VirtualizedListItem;

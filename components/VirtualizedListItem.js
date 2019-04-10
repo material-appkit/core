@@ -22,10 +22,6 @@ var _ListItem = require('@material-ui/core/ListItem');
 
 var _ListItem2 = _interopRequireDefault(_ListItem);
 
-var _withStyles = require('@material-ui/core/styles/withStyles');
-
-var _withStyles2 = _interopRequireDefault(_withStyles);
-
 var _RadioButtonUnchecked = require('@material-ui/icons/RadioButtonUnchecked');
 
 var _RadioButtonUnchecked2 = _interopRequireDefault(_RadioButtonUnchecked);
@@ -51,13 +47,12 @@ function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in ob
                                                                                                                                                                                                                              */
 
 function VirtualizedListItem(props) {
-  var classes = props.classes,
-      item = props.item,
+  var item = props.item,
       contextProvider = props.contextProvider,
       onItemClick = props.onItemClick,
       onSelectControlClick = props.onSelectControlClick,
       selectionMode = props.selectionMode,
-      rest = _objectWithoutProperties(props, ['classes', 'item', 'contextProvider', 'onItemClick', 'onSelectControlClick', 'selectionMode']);
+      rest = _objectWithoutProperties(props, ['item', 'contextProvider', 'onItemClick', 'onSelectControlClick', 'selectionMode']);
 
   var listItemProps = {};
   if (contextProvider) {
@@ -83,11 +78,11 @@ function VirtualizedListItem(props) {
     SelectionIcon && _react2.default.createElement(
       _IconButton2.default,
       {
-        className: classes.selectionControl,
         onClick: function onClick(e) {
           e.preventDefault();
           onSelectControlClick(item);
-        }
+        },
+        style: { padding: 4 }
       },
       _react2.default.createElement(SelectionIcon, null)
     ),
@@ -96,7 +91,6 @@ function VirtualizedListItem(props) {
 }
 
 VirtualizedListItem.propTypes = {
-  classes: _propTypes2.default.object,
   contextProvider: _propTypes2.default.func,
   onItemClick: _propTypes2.default.func,
   onSelectControlClick: _propTypes2.default.func,
@@ -104,8 +98,4 @@ VirtualizedListItem.propTypes = {
   selectionMode: _propTypes2.default.oneOf(['single', 'multiple'])
 };
 
-exports.default = (0, _withStyles2.default)({
-  selectionControl: {
-    padding: 4
-  }
-})(VirtualizedListItem);
+exports.default = VirtualizedListItem;
