@@ -62,6 +62,16 @@ var _Edit = require('@material-ui/icons/Edit');
 
 var _Edit2 = _interopRequireDefault(_Edit);
 
+var _AlertManager = require('../managers/AlertManager');
+
+var _AlertManager2 = _interopRequireDefault(_AlertManager);
+
+var _ServiceAgent = require('../util/ServiceAgent');
+
+var _ServiceAgent2 = _interopRequireDefault(_ServiceAgent);
+
+var _object = require('../util/object');
+
 var _EditDialog = require('./EditDialog');
 
 var _EditDialog2 = _interopRequireDefault(_EditDialog);
@@ -69,12 +79,6 @@ var _EditDialog2 = _interopRequireDefault(_EditDialog);
 var _ListDialog = require('./ListDialog');
 
 var _ListDialog2 = _interopRequireDefault(_ListDialog);
-
-var _ServiceAgent = require('../util/ServiceAgent');
-
-var _ServiceAgent2 = _interopRequireDefault(_ServiceAgent);
-
-var _object = require('../util/object');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -290,8 +294,8 @@ var ItemList = function (_React$PureComponent) {
       return function (_x) {
         return _ref2.apply(this, arguments);
       };
-    }(), _this.handleRemoveButtonClick = function () {
-      var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(item) {
+    }(), _this.removeRecord = function () {
+      var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(record) {
         var _this$props, canDelete, onRemove, detachUrl, res;
 
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -307,28 +311,28 @@ var ItemList = function (_React$PureComponent) {
                 }
 
                 _context2.next = 5;
-                return _ServiceAgent2.default.delete(_this.detachUrl, { item_id: item.id });
+                return _ServiceAgent2.default.delete(_this.detachUrl, { item_id: record.id });
 
               case 5:
                 res = _context2.sent;
 
-                item = res.body;
+                record = res.body;
                 _context2.next = 12;
                 break;
 
               case 9:
-                if (!(canDelete && item.url)) {
+                if (!(canDelete && record.url)) {
                   _context2.next = 12;
                   break;
                 }
 
                 _context2.next = 12;
-                return _ServiceAgent2.default.delete(item.url);
+                return _ServiceAgent2.default.delete(record.url);
 
               case 12:
 
                 if (onRemove) {
-                  onRemove(item);
+                  onRemove(record);
                 }
 
               case 13:
@@ -341,6 +345,38 @@ var ItemList = function (_React$PureComponent) {
 
       return function (_x2) {
         return _ref3.apply(this, arguments);
+      };
+    }(), _this.handleRemoveButtonClick = function () {
+      var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(item) {
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                if (_this.props.warnOnDelete) {
+                  _AlertManager2.default.confirm({
+                    title: 'Please Confirm',
+                    description: 'Are you sure you want to remove this item?',
+                    confirmButtonTitle: 'Remove',
+                    onDismiss: function onDismiss(flag) {
+                      if (flag) {
+                        _this.removeRecord(item);
+                      }
+                    }
+                  });
+                } else {
+                  _this.removeRecord(item);
+                }
+
+              case 1:
+              case 'end':
+                return _context3.stop();
+            }
+          }
+        }, _callee3, _this2);
+      }));
+
+      return function (_x3) {
+        return _ref4.apply(this, arguments);
       };
     }(), _this.handleAddButtonClick = function () {
       if (_this.props.apiListUrl) {
@@ -519,7 +555,8 @@ ItemList.propTypes = {
   mode: _propTypes2.default.oneOf(['view', 'edit']),
   representedObject: _propTypes2.default.object,
   searchFilterParam: _propTypes2.default.string,
-  titleKey: _propTypes2.default.any
+  titleKey: _propTypes2.default.any,
+  warnOnDelete: _propTypes2.default.bool
 };
 
 ItemList.defaultProps = {
@@ -529,7 +566,8 @@ ItemList.defaultProps = {
   editDialogProps: {},
   filterParams: {},
   listItemProps: {},
-  mode: 'view'
+  mode: 'view',
+  warnOnDelete: true
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

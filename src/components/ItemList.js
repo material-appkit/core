@@ -20,11 +20,12 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 
+import AlertManager from '../managers/AlertManager';
+import ServiceAgent from '../util/ServiceAgent';
+import { valueForKeyPath } from '../util/object';
+
 import EditDialog from './EditDialog';
 import ListDialog from './ListDialog';
-import ServiceAgent from '../util/ServiceAgent';
-
-import { valueForKeyPath } from '../util/object';
 
 function ItemListItem(props) {
   const { classes, item, onClick, onChange } = props;
@@ -194,22 +195,39 @@ class ItemList extends React.PureComponent {
     }
 
     this.handleEditDialogClose();
-
   };
 
-  handleRemoveButtonClick = async(item) => {
+
+  removeRecord = async(record) => {
     const { canDelete, onRemove } = this.props;
 
     const detachUrl = this.detachUrl;
     if (detachUrl) {
-      const res = await ServiceAgent.delete(this.detachUrl, { item_id: item.id });
-      item = res.body;
-    } else if (canDelete && item.url) {
-      await ServiceAgent.delete(item.url);
+      const res = await ServiceAgent.delete(this.detachUrl, { item_id: record.id });
+      record = res.body;
+    } else if (canDelete && record.url) {
+      await ServiceAgent.delete(record.url);
     }
 
     if (onRemove) {
-      onRemove(item);
+      onRemove(record);
+    }
+  };
+
+  handleRemoveButtonClick = async(item) => {
+    if (this.props.warnOnDelete) {
+      AlertManager.confirm({
+        title: `Please Confirm`,
+        description: 'Are you sure you want to remove this item?',
+        confirmButtonTitle: 'Remove',
+        onDismiss: (flag) => {
+          if (flag) {
+            this.removeRecord(item);
+          }
+        },
+      });
+    } else {
+      this.removeRecord(item);
     }
   };
 
@@ -349,6 +367,7 @@ ItemList.propTypes = {
   representedObject: PropTypes.object,
   searchFilterParam: PropTypes.string,
   titleKey: PropTypes.any,
+  warnOnDelete: PropTypes.bool,
 };
 
 ItemList.defaultProps = {
@@ -359,6 +378,7 @@ ItemList.defaultProps = {
   filterParams: {},
   listItemProps: {},
   mode: 'view',
+  warnOnDelete: true,
 };
 
 export default withStyles((theme) => ({
