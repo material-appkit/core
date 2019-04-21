@@ -32,8 +32,14 @@ export default class ServiceProxy {
     return requestURL;
   }
 
-  getRequestHeaders() {
-    const headers = {};
+  getRequestHeaders(extra) {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    if (extra) {
+      Object.assign(headers, extra);
+    }
 
     const accessToken = this.constructor.getAccessToken();
     if (accessToken) {
@@ -48,7 +54,9 @@ export default class ServiceProxy {
     return headers;
   }
 
-  async request(method, endpoint, params, context) {
+  async request(method, endpoint, params, context, headers) {
+    console.log(headers);
+
     const requestURL = this.constructor.buildRequestUrl(endpoint);
 
     if (typeof params === 'function') {
@@ -82,8 +90,7 @@ export default class ServiceProxy {
       default:
         throw new Error(`Unsupported request method: ${method}`);
     }
-    req.accept('application/json');
-    req.set(this.getRequestHeaders());
+    req.set(this.getRequestHeaders(headers));
 
     if (context) {
       context.request = req;
@@ -92,31 +99,31 @@ export default class ServiceProxy {
   }
 
 
-  get(endpoint, params, context) {
-    return this.request('GET', endpoint, params, context);
+  get(endpoint, params, context, headers) {
+    return this.request('GET', endpoint, params, context, headers);
   }
 
-  post(endpoint, params, context) {
-    return this.request('POST', endpoint, params, context);
+  post(endpoint, params, context, headers) {
+    return this.request('POST', endpoint, params, context, headers);
   }
 
-  put(endpoint, params, context) {
-    return this.request('PUT', endpoint, params, context);
+  put(endpoint, params, context, headers) {
+    return this.request('PUT', endpoint, params, context, headers);
   }
 
-  patch(endpoint, params, context) {
-    return this.request('PATCH', endpoint, params, context);
+  patch(endpoint, params, context, headers) {
+    return this.request('PATCH', endpoint, params, context, headers);
   }
 
-  delete(endpoint, params, context) {
-    return this.request('DELETE', endpoint, params, context);
+  delete(endpoint, params, context, headers) {
+    return this.request('DELETE', endpoint, params, context, headers);
   }
 
-  options(endpoint, params, context) {
-    return this.request('OPTIONS', endpoint, params, context);
+  options(endpoint, params, context, headers) {
+    return this.request('OPTIONS', endpoint, params, context, headers);
   }
 
-  head(endpoint, params, context) {
-    return this.request('HEAD', endpoint, params, context);
+  head(endpoint, params, context, headers) {
+    return this.request('HEAD', endpoint, params, context, headers);
   }
 }

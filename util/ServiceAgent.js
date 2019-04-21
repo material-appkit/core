@@ -28,44 +28,44 @@ var ServiceAgent = function () {
     }
   }, {
     key: 'request',
-    value: function request(method, endpoint, params, context) {
+    value: function request(method, endpoint, params, context, headers) {
       var proxy = new this.ServiceProxyClass();
-      return proxy.request(method, endpoint, params, context);
+      return proxy.request(method, endpoint, params, context, headers);
     }
   }, {
     key: 'get',
-    value: function get(endpoint, params, context) {
-      return this.request('GET', endpoint, params, context);
+    value: function get(endpoint, params, context, headers) {
+      return this.request('GET', endpoint, params, context, headers);
     }
   }, {
     key: 'post',
-    value: function post(endpoint, params, context) {
-      return this.request('POST', endpoint, params, context);
+    value: function post(endpoint, params, context, headers) {
+      return this.request('POST', endpoint, params, context, headers);
     }
   }, {
     key: 'put',
-    value: function put(endpoint, params, context) {
-      return this.request('PUT', endpoint, params, context);
+    value: function put(endpoint, params, context, headers) {
+      return this.request('PUT', endpoint, params, context, headers);
     }
   }, {
     key: 'patch',
-    value: function patch(endpoint, params, context) {
-      return this.request('PATCH', endpoint, params, context);
+    value: function patch(endpoint, params, context, headers) {
+      return this.request('PATCH', endpoint, params, context, headers);
     }
   }, {
     key: 'delete',
-    value: function _delete(endpoint, params, context) {
-      return this.request('DELETE', endpoint, params, context);
+    value: function _delete(endpoint, params, context, headers) {
+      return this.request('DELETE', endpoint, params, context, headers);
     }
   }, {
     key: 'options',
-    value: function options(endpoint, params, context) {
-      return this.request('OPTIONS', endpoint, params, context);
+    value: function options(endpoint, params, context, headers) {
+      return this.request('OPTIONS', endpoint, params, context, headers);
     }
   }, {
     key: 'head',
-    value: function head(endpoint, params, context) {
-      return this.request('HEAD', endpoint, params, context);
+    value: function head(endpoint, params, context, headers) {
+      return this.request('HEAD', endpoint, params, context, headers);
     }
   }]);
 

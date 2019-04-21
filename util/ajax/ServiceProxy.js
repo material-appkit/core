@@ -27,8 +27,14 @@ var ServiceProxy = function () {
 
   _createClass(ServiceProxy, [{
     key: 'getRequestHeaders',
-    value: function getRequestHeaders() {
-      var headers = {};
+    value: function getRequestHeaders(extra) {
+      var headers = {
+        'Content-Type': 'application/json'
+      };
+
+      if (extra) {
+        Object.assign(headers, extra);
+      }
 
       var accessToken = this.constructor.getAccessToken();
       if (accessToken) {
@@ -45,12 +51,14 @@ var ServiceProxy = function () {
   }, {
     key: 'request',
     value: function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(method, endpoint, params, context) {
+      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(method, endpoint, params, context, headers) {
         var requestURL, requestParams, req;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                console.log(headers);
+
                 requestURL = this.constructor.buildRequestUrl(endpoint);
 
 
@@ -60,43 +68,42 @@ var ServiceProxy = function () {
                 requestParams = params || {};
                 req = null;
                 _context.t0 = method;
-                _context.next = _context.t0 === 'GET' ? 7 : _context.t0 === 'POST' ? 9 : _context.t0 === 'PUT' ? 11 : _context.t0 === 'PATCH' ? 13 : _context.t0 === 'DELETE' ? 15 : _context.t0 === 'OPTIONS' ? 17 : _context.t0 === 'HEAD' ? 19 : 21;
+                _context.next = _context.t0 === 'GET' ? 8 : _context.t0 === 'POST' ? 10 : _context.t0 === 'PUT' ? 12 : _context.t0 === 'PATCH' ? 14 : _context.t0 === 'DELETE' ? 16 : _context.t0 === 'OPTIONS' ? 18 : _context.t0 === 'HEAD' ? 20 : 22;
                 break;
 
-              case 7:
+              case 8:
                 req = _superagent2.default.get(requestURL).query(requestParams);
-                return _context.abrupt('break', 22);
+                return _context.abrupt('break', 23);
 
-              case 9:
+              case 10:
                 req = _superagent2.default.post(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
+                return _context.abrupt('break', 23);
 
-              case 11:
+              case 12:
                 req = _superagent2.default.put(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
+                return _context.abrupt('break', 23);
 
-              case 13:
+              case 14:
                 req = _superagent2.default.patch(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
+                return _context.abrupt('break', 23);
 
-              case 15:
+              case 16:
                 req = _superagent2.default.del(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
+                return _context.abrupt('break', 23);
 
-              case 17:
+              case 18:
                 req = _superagent2.default.options(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
+                return _context.abrupt('break', 23);
 
-              case 19:
+              case 20:
                 req = _superagent2.default.head(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
-
-              case 21:
-                throw new Error('Unsupported request method: ' + method);
+                return _context.abrupt('break', 23);
 
               case 22:
-                req.accept('application/json');
-                req.set(this.getRequestHeaders());
+                throw new Error('Unsupported request method: ' + method);
+
+              case 23:
+                req.set(this.getRequestHeaders(headers));
 
                 if (context) {
                   context.request = req;
@@ -111,7 +118,7 @@ var ServiceProxy = function () {
         }, _callee, this);
       }));
 
-      function request(_x, _x2, _x3, _x4) {
+      function request(_x, _x2, _x3, _x4, _x5) {
         return _ref.apply(this, arguments);
       }
 
@@ -119,38 +126,38 @@ var ServiceProxy = function () {
     }()
   }, {
     key: 'get',
-    value: function get(endpoint, params, context) {
-      return this.request('GET', endpoint, params, context);
+    value: function get(endpoint, params, context, headers) {
+      return this.request('GET', endpoint, params, context, headers);
     }
   }, {
     key: 'post',
-    value: function post(endpoint, params, context) {
-      return this.request('POST', endpoint, params, context);
+    value: function post(endpoint, params, context, headers) {
+      return this.request('POST', endpoint, params, context, headers);
     }
   }, {
     key: 'put',
-    value: function put(endpoint, params, context) {
-      return this.request('PUT', endpoint, params, context);
+    value: function put(endpoint, params, context, headers) {
+      return this.request('PUT', endpoint, params, context, headers);
     }
   }, {
     key: 'patch',
-    value: function patch(endpoint, params, context) {
-      return this.request('PATCH', endpoint, params, context);
+    value: function patch(endpoint, params, context, headers) {
+      return this.request('PATCH', endpoint, params, context, headers);
     }
   }, {
     key: 'delete',
-    value: function _delete(endpoint, params, context) {
-      return this.request('DELETE', endpoint, params, context);
+    value: function _delete(endpoint, params, context, headers) {
+      return this.request('DELETE', endpoint, params, context, headers);
     }
   }, {
     key: 'options',
-    value: function options(endpoint, params, context) {
-      return this.request('OPTIONS', endpoint, params, context);
+    value: function options(endpoint, params, context, headers) {
+      return this.request('OPTIONS', endpoint, params, context, headers);
     }
   }, {
     key: 'head',
-    value: function head(endpoint, params, context) {
-      return this.request('HEAD', endpoint, params, context);
+    value: function head(endpoint, params, context, headers) {
+      return this.request('HEAD', endpoint, params, context, headers);
     }
   }], [{
     key: 'getAccessToken',
