@@ -190,12 +190,20 @@ var MetadataListItem = (0, _withStyles2.default)(function (theme) {
 
 // -----------------------------------------------------------------------------
 function MetadataList(props) {
+  var listItemKey = function listItemKey(fieldInfo) {
+    var key = fieldInfo.name;
+    if (fieldInfo.keyPath) {
+      key = key + '-' + fieldInfo.keyPath;
+    }
+    return key;
+  };
+
   return _react2.default.createElement(
     _List2.default,
     { disablePadding: true },
     props.arrangement.map(function (fieldInfo) {
       return _react2.default.createElement(MetadataListItem, {
-        key: fieldInfo.name,
+        key: listItemKey(fieldInfo),
         fieldInfo: fieldInfo,
         nullValue: props.nullValue,
         representedObject: props.representedObject

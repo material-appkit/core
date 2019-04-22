@@ -136,11 +136,19 @@ const MetadataListItem = withStyles((theme) => ({
 
 // -----------------------------------------------------------------------------
 function MetadataList(props) {
+  const listItemKey = (fieldInfo) => {
+    let key = fieldInfo.name;
+    if (fieldInfo.keyPath) {
+      key = `${key}-${fieldInfo.keyPath}`;
+    }
+    return key;
+  };
+
   return (
     <List disablePadding>
       {props.arrangement.map((fieldInfo) => (
         <MetadataListItem
-          key={fieldInfo.name}
+          key={listItemKey(fieldInfo)}
           fieldInfo={fieldInfo}
           nullValue={props.nullValue}
           representedObject={props.representedObject}
