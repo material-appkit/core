@@ -57,8 +57,6 @@ var ServiceProxy = function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                console.log(headers);
-
                 requestURL = this.constructor.buildRequestUrl(endpoint);
 
 
@@ -68,41 +66,41 @@ var ServiceProxy = function () {
                 requestParams = params || {};
                 req = null;
                 _context.t0 = method;
-                _context.next = _context.t0 === 'GET' ? 8 : _context.t0 === 'POST' ? 10 : _context.t0 === 'PUT' ? 12 : _context.t0 === 'PATCH' ? 14 : _context.t0 === 'DELETE' ? 16 : _context.t0 === 'OPTIONS' ? 18 : _context.t0 === 'HEAD' ? 20 : 22;
+                _context.next = _context.t0 === 'GET' ? 7 : _context.t0 === 'POST' ? 9 : _context.t0 === 'PUT' ? 11 : _context.t0 === 'PATCH' ? 13 : _context.t0 === 'DELETE' ? 15 : _context.t0 === 'OPTIONS' ? 17 : _context.t0 === 'HEAD' ? 19 : 21;
                 break;
 
-              case 8:
+              case 7:
                 req = _superagent2.default.get(requestURL).query(requestParams);
-                return _context.abrupt('break', 23);
+                return _context.abrupt('break', 22);
 
-              case 10:
+              case 9:
                 req = _superagent2.default.post(requestURL).send(requestParams);
-                return _context.abrupt('break', 23);
+                return _context.abrupt('break', 22);
 
-              case 12:
+              case 11:
                 req = _superagent2.default.put(requestURL).send(requestParams);
-                return _context.abrupt('break', 23);
+                return _context.abrupt('break', 22);
 
-              case 14:
+              case 13:
                 req = _superagent2.default.patch(requestURL).send(requestParams);
-                return _context.abrupt('break', 23);
+                return _context.abrupt('break', 22);
 
-              case 16:
+              case 15:
                 req = _superagent2.default.del(requestURL).send(requestParams);
-                return _context.abrupt('break', 23);
+                return _context.abrupt('break', 22);
 
-              case 18:
+              case 17:
                 req = _superagent2.default.options(requestURL).send(requestParams);
-                return _context.abrupt('break', 23);
+                return _context.abrupt('break', 22);
 
-              case 20:
+              case 19:
                 req = _superagent2.default.head(requestURL).send(requestParams);
-                return _context.abrupt('break', 23);
+                return _context.abrupt('break', 22);
 
-              case 22:
+              case 21:
                 throw new Error('Unsupported request method: ' + method);
 
-              case 23:
+              case 22:
                 req.set(this.getRequestHeaders(headers));
 
                 if (context) {
@@ -110,7 +108,7 @@ var ServiceProxy = function () {
                 }
                 return _context.abrupt('return', req);
 
-              case 26:
+              case 25:
               case 'end':
                 return _context.stop();
             }
@@ -158,6 +156,14 @@ var ServiceProxy = function () {
     key: 'head',
     value: function head(endpoint, params, context, headers) {
       return this.request('HEAD', endpoint, params, context, headers);
+    }
+  }, {
+    key: 'download',
+    value: function download(endpoint, params, context, headers) {
+      var requestContext = context || {};
+      var req = this.get(endpoint, params, requestContext, headers);
+      requestContext.request.responseType('blob');
+      return req;
     }
   }], [{
     key: 'getAccessToken',

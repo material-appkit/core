@@ -55,8 +55,6 @@ export default class ServiceProxy {
   }
 
   async request(method, endpoint, params, context, headers) {
-    console.log(headers);
-
     const requestURL = this.constructor.buildRequestUrl(endpoint);
 
     if (typeof params === 'function') {
@@ -125,5 +123,12 @@ export default class ServiceProxy {
 
   head(endpoint, params, context, headers) {
     return this.request('HEAD', endpoint, params, context, headers);
+  }
+
+  download(endpoint, params, context, headers) {
+    const requestContext = context || {};
+    const req = this.get(endpoint, params, requestContext, headers);
+    requestContext.request.responseType('blob');
+    return req;
   }
 }
