@@ -28,9 +28,7 @@ var ServiceProxy = function () {
   _createClass(ServiceProxy, [{
     key: 'getRequestHeaders',
     value: function getRequestHeaders(extra) {
-      var headers = {
-        'Content-Type': 'application/json'
-      };
+      var headers = { 'Accept': 'application/json' };
 
       if (extra) {
         Object.assign(headers, extra);
