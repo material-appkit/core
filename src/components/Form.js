@@ -144,16 +144,6 @@ class Form extends React.PureComponent {
     return arrayToObject(metadata, 'key');
   }
 
-  /**
-   * Decorate any given children with a 'disabled' prop while saving
-   */
-  get children() {
-    const disabled = this.state.saving;
-    return recursiveMap(this.props.children, (child) => {
-      return React.cloneElement(child, { disabled });
-    });
-  }
-
   initialData(metadata, referenceObject) {
     const fieldInfoMap = this.getFieldInfoMap(metadata);
     const data = {};
@@ -263,7 +253,7 @@ class Form extends React.PureComponent {
   };
 
   save = async() => {
-    const { updateMethod } = this.props;
+    const { updateMethod} = this.props;
     const { formData, metadata, referenceObject } = this.state;
 
     this.setState({ errors: {}, saving: true });
@@ -297,11 +287,16 @@ class Form extends React.PureComponent {
     }
 
     if (!(requestMethod && requestUrl && requestData)) {
-      throw new Error('Missing one or more required paramers for form request');
+      throw new Error('Missing one or more required parameters for form request');
     }
 
     try {
       requestData = this.coerceRequestData(requestData);
+
+      if (this.props.onWillSave) {
+        this.props.onWillSave(requestData);
+      }
+
       const response = await ServiceAgent.request(requestMethod, requestUrl, requestData);
       const persistedObject = response.body;
 
@@ -391,9 +386,8 @@ class Form extends React.PureComponent {
           fieldNames={this.getFieldNames(this.state.metadata)}
           form={this}
           representedObject={this.state.referenceObject}
-          saving={this.state.saving}
         />
-        {this.children}
+        {this.props.children}
       </form>
     );
   }
@@ -413,6 +407,7 @@ Form.propTypes = {
   onMount: PropTypes.func,
   onUnmount: PropTypes.func,
   onLoad: PropTypes.func,
+  onWillSave: PropTypes.func,
   onSave: PropTypes.func,
   onError: PropTypes.func,
   persistedObject: PropTypes.object,

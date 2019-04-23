@@ -207,11 +207,6 @@ var Form = function (_React$PureComponent) {
 
       return (0, _array.arrayToObject)(metadata, 'key');
     }
-
-    /**
-     * Decorate any given children with a 'disabled' prop while saving
-     */
-
   }, {
     key: 'initialData',
     value: function initialData(metadata, referenceObject) {
@@ -304,19 +299,10 @@ var Form = function (_React$PureComponent) {
           fieldInfoMap: this.getFieldInfoMap(this.state.metadata),
           fieldNames: this.getFieldNames(this.state.metadata),
           form: this,
-          representedObject: this.state.referenceObject,
-          saving: this.state.saving
+          representedObject: this.state.referenceObject
         }),
-        this.children
+        this.props.children
       );
-    }
-  }, {
-    key: 'children',
-    get: function get() {
-      var disabled = this.state.saving;
-      return (0, _component.recursiveMap)(this.props.children, function (child) {
-        return _react2.default.cloneElement(child, { disabled: disabled });
-      });
     }
   }]);
 
@@ -458,16 +444,21 @@ var _initialiseProps = function _initialiseProps() {
               break;
             }
 
-            throw new Error('Missing one or more required paramers for form request');
+            throw new Error('Missing one or more required parameters for form request');
 
           case 10:
             _context2.prev = 10;
 
             requestData = _this3.coerceRequestData(requestData);
-            _context2.next = 14;
+
+            if (_this3.props.onWillSave) {
+              _this3.props.onWillSave(requestData);
+            }
+
+            _context2.next = 15;
             return _util.ServiceAgent.request(requestMethod, requestUrl, requestData);
 
-          case 14:
+          case 15:
             response = _context2.sent;
             persistedObject = response.body;
 
@@ -483,8 +474,8 @@ var _initialiseProps = function _initialiseProps() {
 
             return _context2.abrupt('return', persistedObject);
 
-          case 21:
-            _context2.prev = 21;
+          case 22:
+            _context2.prev = 22;
             _context2.t0 = _context2['catch'](10);
 
             _this3.setState({
@@ -496,12 +487,12 @@ var _initialiseProps = function _initialiseProps() {
               _this3.props.onError(_context2.t0);
             }
 
-          case 25:
+          case 26:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, _this3, [[10, 21]]);
+    }, _callee2, _this3, [[10, 22]]);
   }));
 
   this.handleFormSubmit = function (e) {
@@ -552,6 +543,7 @@ Form.propTypes = {
   onMount: _propTypes2.default.func,
   onUnmount: _propTypes2.default.func,
   onLoad: _propTypes2.default.func,
+  onWillSave: _propTypes2.default.func,
   onSave: _propTypes2.default.func,
   onError: _propTypes2.default.func,
   persistedObject: _propTypes2.default.object,

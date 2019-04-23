@@ -75,7 +75,6 @@ function FormFieldSet(props) {
     }
 
     var textFieldProps = _extends({}, commonFieldProps, {
-      disabled: props.saving,
       fullWidth: true,
       InputLabelProps: { classes: { root: classes.inputLabel } },
       margin: "normal",
@@ -160,8 +159,7 @@ FormFieldSet.propTypes = {
   form: _propTypes2.default.object.isRequired,
   fieldArrangementMap: _propTypes2.default.object,
   fieldInfoMap: _propTypes2.default.object,
-  fieldNames: _propTypes2.default.array,
-  saving: _propTypes2.default.bool
+  fieldNames: _propTypes2.default.array
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

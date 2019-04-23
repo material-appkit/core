@@ -58,7 +58,6 @@ function FormFieldSet(props) {
 
     const textFieldProps = {
       ...commonFieldProps,
-      disabled: props.saving,
       fullWidth: true,
       InputLabelProps: { classes: { root: classes.inputLabel } },
       margin: "normal",
@@ -117,7 +116,6 @@ FormFieldSet.propTypes = {
   fieldArrangementMap: PropTypes.object,
   fieldInfoMap: PropTypes.object,
   fieldNames: PropTypes.array,
-  saving: PropTypes.bool,
 };
 
 export default withStyles((theme) => {
