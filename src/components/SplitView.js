@@ -42,9 +42,10 @@ export default withStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       borderLeft: '1px solid #cacaca',
       borderBottomWidth: 0,
+      height: `calc(100vh - ${theme.topBar.height + theme.navigationController.navBar.height}px)`,
       order: 1,
+      overflow: 'scroll',
       position: 'fixed',
-      minHeight: `calc(100vh - ${theme.topBar.height + theme.navigationController.navBar.height}px)`,
       right: 0,
       width: theme.sidebar.width,
     },
