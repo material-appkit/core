@@ -16,8 +16,6 @@ var _styles = require('@material-ui/core/styles');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function SplitView(props) {
   var classes = props.classes;
 
@@ -46,32 +44,9 @@ SplitView.propTypes = {
 
 exports.default = (0, _styles.withStyles)(function (theme) {
   return {
-    splitView: _defineProperty({
-      display: 'flex',
-      flexDirection: 'column'
-    }, theme.breakpoints.up('md'), {
-      flexDirection: 'row'
-    }),
-
-    sideBar: _defineProperty({
-      backgroundColor: '#fcfcfc',
-      borderBottom: '1px solid #cacaca',
-      padding: theme.spacing.unit * 2
-
-    }, theme.breakpoints.up('md'), {
-      borderLeft: '1px solid #cacaca',
-      borderBottomWidth: 0,
-      height: 'calc(100vh - ' + (theme.topBar.height + theme.navigationController.navBar.height) + 'px)',
-      order: 1,
-      overflow: 'scroll',
-      position: 'fixed',
-      right: 0,
-      width: theme.sidebar.width
-    }),
-
-    mainContent: _defineProperty({}, theme.breakpoints.up('md'), {
-      width: 'calc(100vw - ' + theme.navbar.width + 'px - ' + theme.sidebar.width + 'px)'
-    })
+    splitView: theme.splitView.root,
+    sideBar: theme.splitView.sideBar,
+    mainContent: theme.splitView.mainContent
 
   };
 })(SplitView);

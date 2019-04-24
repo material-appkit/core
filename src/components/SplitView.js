@@ -26,35 +26,8 @@ SplitView.propTypes = {
 };
 
 export default withStyles((theme) => ({
-  splitView: {
-    display: 'flex',
-    flexDirection: 'column',
-    [theme.breakpoints.up('md')]: {
-      flexDirection: 'row',
-    },
-  },
-
-  sideBar: {
-    backgroundColor: '#fcfcfc',
-    borderBottom: '1px solid #cacaca',
-    padding: theme.spacing.unit * 2,
-
-    [theme.breakpoints.up('md')]: {
-      borderLeft: '1px solid #cacaca',
-      borderBottomWidth: 0,
-      height: `calc(100vh - ${theme.topBar.height + theme.navigationController.navBar.height}px)`,
-      order: 1,
-      overflow: 'scroll',
-      position: 'fixed',
-      right: 0,
-      width: theme.sidebar.width,
-    },
-  },
-
-  mainContent: {
-    [theme.breakpoints.up('md')]: {
-      width: `calc(100vw - ${theme.navbar.width}px - ${theme.sidebar.width}px)`,
-    },
-  },
+  splitView: theme.splitView.root,
+  sideBar: theme.splitView.sideBar,
+  mainContent: theme.splitView.mainContent,
 
 }))(SplitView);
