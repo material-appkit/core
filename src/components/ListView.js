@@ -183,6 +183,7 @@ class ListView extends React.PureComponent {
       listItemComponent,
       store,
       itemContextProvider,
+      itemIdKey,
       itemProps,
       items,
       onItemClick,
@@ -198,6 +199,7 @@ class ListView extends React.PureComponent {
           componentForItem={listItemComponent}
           store={store}
           itemContextProvider={itemContextProvider}
+          itemIdKey={itemIdKey}
           itemProps={itemProps}
           items={items}
           onItemClick={onItemClick}
@@ -217,6 +219,7 @@ ListView.propTypes = {
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
   itemContextProvider: PropTypes.func,
+  itemIdKey: PropTypes.string,
   itemProps: PropTypes.object,
   items: PropTypes.array,
   onItemClick: PropTypes.func,

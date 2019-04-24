@@ -114,7 +114,7 @@ var VirtualizedList = function (_React$Component) {
     _this.renderItem = function (item) {
       return _react2.default.createElement(_this2.props.componentForItem, _extends({
         contextProvider: _this.props.itemContextProvider,
-        key: item.id,
+        key: item[_this.props.itemIdKey],
         item: item,
         onItemClick: _this.props.onItemClick,
         onSelectControlClick: _this.handleSelectControlClick,
@@ -206,6 +206,7 @@ VirtualizedList.propTypes = {
   dense: _propTypes2.default.bool,
   getScrollParent: _propTypes2.default.func,
   itemContextProvider: _propTypes2.default.func,
+  itemIdKey: _propTypes2.default.string,
   itemProps: _propTypes2.default.object,
   items: _propTypes2.default.array,
   onItemClick: _propTypes2.default.func,
@@ -217,6 +218,7 @@ VirtualizedList.propTypes = {
 
 VirtualizedList.defaultProps = {
   dense: false,
+  itemIdKey: 'id',
   itemProps: {},
   useWindow: true
 };

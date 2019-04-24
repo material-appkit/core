@@ -75,7 +75,7 @@ class VirtualizedList extends React.Component {
   renderItem = (item) => (
     <this.props.componentForItem
       contextProvider={this.props.itemContextProvider}
-      key={item.id}
+      key={item[this.props.itemIdKey]}
       item={item}
       onItemClick={this.props.onItemClick}
       onSelectControlClick={this.handleSelectControlClick}
@@ -143,6 +143,7 @@ VirtualizedList.propTypes = {
   dense: PropTypes.bool,
   getScrollParent: PropTypes.func,
   itemContextProvider: PropTypes.func,
+  itemIdKey: PropTypes.string,
   itemProps: PropTypes.object,
   items: PropTypes.array,
   onItemClick: PropTypes.func,
@@ -154,6 +155,7 @@ VirtualizedList.propTypes = {
 
 VirtualizedList.defaultProps = {
   dense: false,
+  itemIdKey: 'id',
   itemProps: {},
   useWindow: true,
 };
