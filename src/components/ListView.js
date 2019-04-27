@@ -182,6 +182,7 @@ class ListView extends React.PureComponent {
     const {
       listItemComponent,
       store,
+      isGrouped,
       itemContextProvider,
       itemIdKey,
       itemProps,
@@ -198,6 +199,7 @@ class ListView extends React.PureComponent {
         <VirtualizedList
           componentForItem={listItemComponent}
           store={store}
+          isGrouped={isGrouped}
           itemContextProvider={itemContextProvider}
           itemIdKey={itemIdKey}
           itemProps={itemProps}
@@ -218,8 +220,12 @@ ListView.propTypes = {
   store: PropTypes.object,
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
+  isGrouped: PropTypes.bool,
   itemContextProvider: PropTypes.func,
-  itemIdKey: PropTypes.string,
+  itemIdKey: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+  ]),
   itemProps: PropTypes.object,
   items: PropTypes.array,
   onItemClick: PropTypes.func,

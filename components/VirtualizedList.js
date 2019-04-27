@@ -70,13 +70,6 @@ var VirtualizedList = function (_React$Component) {
       return !!selection[item.id];
     };
 
-    _this.isGrouped = function (items) {
-      if (!items || !items.length) {
-        return false;
-      }
-      return Array.isArray(items[0]);
-    };
-
     _this.handleSelectControlClick = function (item) {
       var _this$props = _this.props,
           onSelectionChange = _this$props.onSelectionChange,
@@ -112,9 +105,13 @@ var VirtualizedList = function (_React$Component) {
     };
 
     _this.renderItem = function (item) {
+      var itemIdKey = _this.props.itemIdKey;
+
+
+      var itemKey = typeof itemIdKey === 'function' ? itemIdKey(item) : item[itemIdKey];
       return _react2.default.createElement(_this2.props.componentForItem, _extends({
         contextProvider: _this.props.itemContextProvider,
-        key: item[_this.props.itemIdKey],
+        key: itemKey,
         item: item,
         onItemClick: _this.props.onItemClick,
         onSelectControlClick: _this.handleSelectControlClick,
@@ -143,13 +140,14 @@ var VirtualizedList = function (_React$Component) {
       var _props = this.props,
           classes = _props.classes,
           dense = _props.dense,
+          isGrouped = _props.isGrouped,
           items = _props.items,
           store = _props.store;
 
 
       var listChildren = null;
       if (items) {
-        if (this.isGrouped(items)) {
+        if (isGrouped) {
           listChildren = items.map(function (itemGroup) {
             return _react2.default.createElement(
               _react.Fragment,
@@ -205,8 +203,9 @@ VirtualizedList.propTypes = {
   componentForItem: _propTypes2.default.func.isRequired,
   dense: _propTypes2.default.bool,
   getScrollParent: _propTypes2.default.func,
+  isGrouped: _propTypes2.default.bool,
   itemContextProvider: _propTypes2.default.func,
-  itemIdKey: _propTypes2.default.string,
+  itemIdKey: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.func]),
   itemProps: _propTypes2.default.object,
   items: _propTypes2.default.array,
   onItemClick: _propTypes2.default.func,
@@ -218,6 +217,7 @@ VirtualizedList.propTypes = {
 
 VirtualizedList.defaultProps = {
   dense: false,
+  isGrouped: false,
   itemIdKey: 'id',
   itemProps: {},
   useWindow: true

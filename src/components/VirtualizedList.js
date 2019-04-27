@@ -34,13 +34,6 @@ class VirtualizedList extends React.Component {
     return !!selection[item.id];
   };
 
-  isGrouped = (items) => {
-    if (!items || !items.length) {
-      return false;
-    }
-    return Array.isArray(items[0]);
-  };
-
   handleSelectControlClick = (item) => {
     const { onSelectionChange, selectionMode } = this.props;
     const { selection } = this.state;
@@ -72,30 +65,36 @@ class VirtualizedList extends React.Component {
     }
   };
 
-  renderItem = (item) => (
-    <this.props.componentForItem
-      contextProvider={this.props.itemContextProvider}
-      key={item[this.props.itemIdKey]}
-      item={item}
-      onItemClick={this.props.onItemClick}
-      onSelectControlClick={this.handleSelectControlClick}
-      selected={this.isSelected(item)}
-      selectionMode={this.props.selectionMode}
-      {...this.props.itemProps}
-    />
-  );
+  renderItem = (item) => {
+    const { itemIdKey } = this.props;
+
+    const itemKey = (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
+    return (
+      <this.props.componentForItem
+        contextProvider={this.props.itemContextProvider}
+        key={itemKey}
+        item={item}
+        onItemClick={this.props.onItemClick}
+        onSelectControlClick={this.handleSelectControlClick}
+        selected={this.isSelected(item)}
+        selectionMode={this.props.selectionMode}
+        {...this.props.itemProps}
+      />
+    );
+  };
 
   render() {
     const {
       classes,
       dense,
+      isGrouped,
       items,
       store
     } = this.props;
 
     let listChildren = null;
     if (items) {
-      if (this.isGrouped(items)) {
+      if (isGrouped) {
         listChildren = items.map((itemGroup) => (
           <Fragment key={itemGroup[0]}>
             <ListSubheader className={classes.subheader} disableSticky>
@@ -142,8 +141,12 @@ VirtualizedList.propTypes = {
   componentForItem: PropTypes.func.isRequired,
   dense: PropTypes.bool,
   getScrollParent: PropTypes.func,
+  isGrouped: PropTypes.bool,
   itemContextProvider: PropTypes.func,
-  itemIdKey: PropTypes.string,
+  itemIdKey: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+  ]),
   itemProps: PropTypes.object,
   items: PropTypes.array,
   onItemClick: PropTypes.func,
@@ -155,6 +158,7 @@ VirtualizedList.propTypes = {
 
 VirtualizedList.defaultProps = {
   dense: false,
+  isGrouped: false,
   itemIdKey: 'id',
   itemProps: {},
   useWindow: true,
