@@ -14,11 +14,12 @@ import { reverse } from '../util/urls';
 
 import FormFieldSet from './FormFieldSet';
 import ItemListField from './ItemListField';
-
+import DateTimeField from './DateTimeField';
 
 class Form extends React.PureComponent {
   static widgetClassMap = {
     'itemlist': ItemListField,
+    'datetime': DateTimeField,
   };
 
   static registerWidgetClass(widgetType, WidgetClass) {
