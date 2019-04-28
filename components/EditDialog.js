@@ -113,26 +113,24 @@ var EditDialog = function (_React$Component) {
     };
 
     _this.deleteRepresentedObject = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      var apiDetailUrl, res;
+      var persistedObject;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              apiDetailUrl = _this.props.apiDetailUrl;
+              persistedObject = _this.props.persistedObject;
               _context.next = 3;
-              return _ServiceAgent2.default.delete(_this.props.apiDetailUrl);
+              return _ServiceAgent2.default.delete(persistedObject.url);
 
             case 3:
-              res = _context.sent;
-
 
               if (_this.props.onDelete) {
-                _this.props.onDelete(apiDetailUrl);
+                _this.props.onDelete(persistedObject);
               }
 
               _this.dismiss();
 
-            case 6:
+            case 5:
             case 'end':
               return _context.stop();
           }
@@ -177,10 +175,10 @@ var EditDialog = function (_React$Component) {
       }
 
       var _props = this.props,
-          apiDetailUrl = _props.apiDetailUrl,
+          persistedObject = _props.persistedObject,
           classes = _props.classes,
           FormProps = _props.FormProps,
-          rest = _objectWithoutProperties(_props, ['apiDetailUrl', 'classes', 'FormProps']);
+          rest = _objectWithoutProperties(_props, ['persistedObject', 'classes', 'FormProps']);
 
       return _react2.default.createElement(
         _Dialog2.default,
@@ -208,7 +206,7 @@ var EditDialog = function (_React$Component) {
         _react2.default.createElement(
           'div',
           { className: classes.dialogActions },
-          apiDetailUrl && _react2.default.createElement(
+          persistedObject && _react2.default.createElement(
             _react.Fragment,
             null,
             _react2.default.createElement(
@@ -249,6 +247,7 @@ EditDialog.propTypes = {
   entityType: _propTypes2.default.string.isRequired,
   FormProps: _propTypes2.default.object,
   labels: _propTypes2.default.object,
+  persistedObject: _propTypes2.default.object,
   onDelete: _propTypes2.default.func,
   onLoad: _propTypes2.default.func,
   onSave: _propTypes2.default.func,

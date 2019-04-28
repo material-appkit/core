@@ -67,11 +67,11 @@ class EditDialog extends React.Component {
   };
 
   deleteRepresentedObject = async() => {
-    const { apiDetailUrl } = this.props;
-    const res = await ServiceAgent.delete(this.props.apiDetailUrl);
+    const { persistedObject } = this.props;
+    await ServiceAgent.delete(persistedObject.url);
 
     if (this.props.onDelete) {
-      this.props.onDelete(apiDetailUrl);
+      this.props.onDelete(persistedObject);
     }
 
     this.dismiss();
@@ -91,7 +91,7 @@ class EditDialog extends React.Component {
     }
 
     const {
-      apiDetailUrl,
+      persistedObject,
       classes,
       FormProps,
       ...rest
@@ -114,7 +114,7 @@ class EditDialog extends React.Component {
           />
         </DialogContent>
         <div className={classes.dialogActions}>
-          {apiDetailUrl &&
+          {persistedObject &&
             <Fragment>
               <Button
                 className={classes.deleteButton}
@@ -143,6 +143,7 @@ EditDialog.propTypes = {
   entityType: PropTypes.string.isRequired,
   FormProps: PropTypes.object,
   labels: PropTypes.object,
+  persistedObject: PropTypes.object,
   onDelete: PropTypes.func,
   onLoad: PropTypes.func,
   onSave: PropTypes.func,
