@@ -26,10 +26,6 @@ var _Dialog = require('@material-ui/core/Dialog');
 
 var _Dialog2 = _interopRequireDefault(_Dialog);
 
-var _DialogActions = require('@material-ui/core/DialogActions');
-
-var _DialogActions2 = _interopRequireDefault(_DialogActions);
-
 var _DialogContent = require('@material-ui/core/DialogContent');
 
 var _DialogContent2 = _interopRequireDefault(_DialogContent);
@@ -42,17 +38,31 @@ var _withStyles = require('@material-ui/core/styles/withStyles');
 
 var _withStyles2 = _interopRequireDefault(_withStyles);
 
-var _Form = require('./Form');
+var _AlertManager = require('../managers/AlertManager');
 
-var _Form2 = _interopRequireDefault(_Form);
+var _AlertManager2 = _interopRequireDefault(_AlertManager);
 
 var _SnackbarManager = require('../managers/SnackbarManager');
 
 var _SnackbarManager2 = _interopRequireDefault(_SnackbarManager);
 
+var _ServiceAgent = require('../util/ServiceAgent');
+
+var _ServiceAgent2 = _interopRequireDefault(_ServiceAgent);
+
+var _Form = require('./Form');
+
+var _Form2 = _interopRequireDefault(_Form);
+
+var _Spacer = require('./Spacer');
+
+var _Spacer2 = _interopRequireDefault(_Spacer);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -64,6 +74,8 @@ var EditDialog = function (_React$Component) {
   _inherits(EditDialog, _React$Component);
 
   function EditDialog(props) {
+    var _this2 = this;
+
     _classCallCheck(this, EditDialog);
 
     var _this = _possibleConstructorReturn(this, (EditDialog.__proto__ || Object.getPrototypeOf(EditDialog)).call(this, props));
@@ -86,6 +98,48 @@ var EditDialog = function (_React$Component) {
       var errorMessage = _this.props.labels.SAVE_FAIL_NOTIFICATION;
       _SnackbarManager2.default.error(errorMessage);
     };
+
+    _this.handleDeleteButtonClick = function () {
+      _AlertManager2.default.confirm({
+        title: 'Please Confirm',
+        description: 'Are you sure you want to delete this item?',
+        confirmButtonTitle: 'Delete',
+        onDismiss: function onDismiss(flag) {
+          if (flag) {
+            _this.deleteRepresentedObject();
+          }
+        }
+      });
+    };
+
+    _this.deleteRepresentedObject = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+      var apiDetailUrl, res;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              apiDetailUrl = _this.props.apiDetailUrl;
+              _context.next = 3;
+              return _ServiceAgent2.default.delete(_this.props.apiDetailUrl);
+
+            case 3:
+              res = _context.sent;
+
+
+              if (_this.props.onDelete) {
+                _this.props.onDelete(apiDetailUrl);
+              }
+
+              _this.dismiss();
+
+            case 6:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, _callee, _this2);
+    }));
+
 
     _this.formRef = _react2.default.createRef();
 
@@ -116,23 +170,24 @@ var EditDialog = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.state.redirectTo) {
         return _react2.default.createElement(_reactRouterDom.Redirect, { to: this.state.redirectTo });
       }
 
       var _props = this.props,
+          apiDetailUrl = _props.apiDetailUrl,
           classes = _props.classes,
           FormProps = _props.FormProps,
-          rest = _objectWithoutProperties(_props, ['classes', 'FormProps']);
+          rest = _objectWithoutProperties(_props, ['apiDetailUrl', 'classes', 'FormProps']);
 
       return _react2.default.createElement(
         _Dialog2.default,
         { open: true,
           classes: { paper: classes.paper },
           onClose: function onClose() {
-            _this2.dismiss();
+            _this3.dismiss();
           }
         },
         _react2.default.createElement(
@@ -151,19 +206,32 @@ var EditDialog = function (_React$Component) {
           }, FormProps, rest))
         ),
         _react2.default.createElement(
-          _DialogActions2.default,
-          null,
+          'div',
+          { className: classes.dialogActions },
+          apiDetailUrl && _react2.default.createElement(
+            _react.Fragment,
+            null,
+            _react2.default.createElement(
+              _Button2.default,
+              {
+                className: classes.deleteButton,
+                onClick: this.handleDeleteButtonClick
+              },
+              this.props.labels.DELETE
+            ),
+            _react2.default.createElement(_Spacer2.default, null)
+          ),
           _react2.default.createElement(
             _Button2.default,
             { onClick: function onClick() {
-                _this2.dismiss();
+                _this3.dismiss();
               } },
             this.props.labels.CANCEL
           ),
           _react2.default.createElement(
             _Button2.default,
             { onClick: function onClick() {
-                _this2.commit();
+                _this3.commit();
               }, color: 'primary' },
             this.props.labels.SAVE
           )
@@ -176,10 +244,12 @@ var EditDialog = function (_React$Component) {
 }(_react2.default.Component);
 
 EditDialog.propTypes = {
+  apiDetailUrl: _propTypes2.default.string,
   classes: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
   FormProps: _propTypes2.default.object,
   labels: _propTypes2.default.object,
+  onDelete: _propTypes2.default.func,
   onLoad: _propTypes2.default.func,
   onSave: _propTypes2.default.func,
   onClose: _propTypes2.default.func.isRequired
@@ -190,6 +260,7 @@ EditDialog.defaultProps = {
   labels: {
     ADD: 'Add',
     CANCEL: 'Cancel',
+    DELETE: 'Delete',
     SAVE: 'Save',
     SAVE_FAIL_NOTIFICATION: 'Unable to Save',
     UPDATE: 'Update'
@@ -198,6 +269,18 @@ EditDialog.defaultProps = {
 
 exports.default = (0, _withStyles2.default)(function (theme) {
   return {
-    paper: theme.editDialog.paper
+    paper: theme.editDialog.paper,
+
+    dialogActions: {
+      flex: '0 0 auto',
+      margin: '8px 4px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-end'
+    },
+
+    deleteButton: {
+      color: '#f93d3d'
+    }
   };
 })(EditDialog);

@@ -1,16 +1,19 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-import Form from './Form';
+import AlertManager from '../managers/AlertManager';
 import SnackbarManager from '../managers/SnackbarManager';
+import ServiceAgent from '../util/ServiceAgent';
+
+import Form from './Form';
+import Spacer from './Spacer';
 
 class EditDialog extends React.Component {
   constructor(props) {
@@ -50,6 +53,30 @@ class EditDialog extends React.Component {
     SnackbarManager.error(errorMessage);
   };
 
+  handleDeleteButtonClick = () => {
+    AlertManager.confirm({
+      title: `Please Confirm`,
+      description: 'Are you sure you want to delete this item?',
+      confirmButtonTitle: 'Delete',
+      onDismiss: (flag) => {
+        if (flag) {
+          this.deleteRepresentedObject();
+        }
+      },
+    });
+  };
+
+  deleteRepresentedObject = async() => {
+    const { apiDetailUrl } = this.props;
+    const res = await ServiceAgent.delete(this.props.apiDetailUrl);
+
+    if (this.props.onDelete) {
+      this.props.onDelete(apiDetailUrl);
+    }
+
+    this.dismiss();
+  };
+
   dismiss() {
     this.props.onClose(this);
   }
@@ -63,7 +90,13 @@ class EditDialog extends React.Component {
       return <Redirect to={this.state.redirectTo} />;
     }
 
-    const { classes, FormProps, ...rest } = this.props;
+    const {
+      apiDetailUrl,
+      classes,
+      FormProps,
+      ...rest
+    } = this.props;
+
     return (
       <Dialog open
         classes={{ paper: classes.paper }}
@@ -80,24 +113,37 @@ class EditDialog extends React.Component {
             {...rest}
           />
         </DialogContent>
-        <DialogActions>
+        <div className={classes.dialogActions}>
+          {apiDetailUrl &&
+            <Fragment>
+              <Button
+                className={classes.deleteButton}
+                onClick={this.handleDeleteButtonClick}
+              >
+                {this.props.labels.DELETE}
+              </Button>
+              <Spacer />
+            </Fragment>
+          }
           <Button onClick={() => { this.dismiss(); }}>
             {this.props.labels.CANCEL}
           </Button>
           <Button onClick={() => { this.commit(); }} color="primary">
             {this.props.labels.SAVE}
           </Button>
-        </DialogActions>
+        </div>
       </Dialog>
     );
   }
 }
 
 EditDialog.propTypes = {
+  apiDetailUrl: PropTypes.string,
   classes: PropTypes.object,
   entityType: PropTypes.string.isRequired,
   FormProps: PropTypes.object,
   labels: PropTypes.object,
+  onDelete: PropTypes.func,
   onLoad: PropTypes.func,
   onSave: PropTypes.func,
   onClose: PropTypes.func.isRequired,
@@ -108,6 +154,7 @@ EditDialog.defaultProps = {
   labels: {
     ADD: 'Add',
     CANCEL: 'Cancel',
+    DELETE: 'Delete',
     SAVE: 'Save',
     SAVE_FAIL_NOTIFICATION: 'Unable to Save',
     UPDATE: 'Update',
@@ -116,4 +163,16 @@ EditDialog.defaultProps = {
 
 export default withStyles((theme) => ({
   paper: theme.editDialog.paper,
+
+  dialogActions: {
+    flex: '0 0 auto',
+    margin: '8px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+
+  deleteButton: {
+    color: '#f93d3d',
+  },
 }))(EditDialog);
