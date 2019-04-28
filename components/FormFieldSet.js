@@ -26,6 +26,25 @@ var _component = require('../util/component');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var fromRepresentation = function fromRepresentation(fieldInfo, value) {
+  if (fieldInfo.type === 'checkbox') {
+    switch (value) {
+      case true:
+      case 'true':
+      case 'True':
+        return 'true';
+      case false:
+      case 'false':
+      case 'False':
+      case '':
+        return 'false';
+      default:
+        break;
+    }
+  }
+  return value;
+};
+
 function FormFieldSet(props) {
   var classes = props.classes,
       errors = props.errors,
@@ -42,7 +61,7 @@ function FormFieldSet(props) {
 
   var constructFormField = function constructFormField(fieldInfo) {
     var fieldName = fieldInfo.key;
-    var fieldValue = formData[fieldName];
+    var fieldValue = fromRepresentation(fieldInfo, formData[fieldName]);
     var fieldArrangementInfo = fieldArrangementMap[fieldName];
 
     var _ref = fieldInfo.ui || {},
@@ -88,16 +107,25 @@ function FormFieldSet(props) {
     if (fieldInfo.choices) {
       textFieldProps.select = true;
       textFieldProps.SelectProps = { native: true };
-    } else {
-      if (widget === 'textarea') {
-        textFieldProps.multiline = true;
-        textFieldProps.rows = 2;
-        textFieldProps.rowsMax = 20;
-      }
+    }
+
+    if (widget === 'textarea') {
+      textFieldProps.multiline = true;
+      textFieldProps.rows = 2;
+      textFieldProps.rowsMax = 20;
     }
 
     if (fieldInfo.type === 'number') {
+      // Let numbers be input in any form
       textFieldProps.inputProps = { min: 0, step: 'any' };
+    }
+
+    if (fieldInfo.type === 'checkbox') {
+      // Let boolean fields be rendered as a select element
+      // with Yes/No as choices.
+      textFieldProps.select = true;
+      textFieldProps.SelectProps = { native: true };
+      fieldInfo.choices = [{ 'label': 'Yes', value: 'true' }, { 'label': 'No', value: 'false' }];
     }
 
     return _react2.default.createElement(

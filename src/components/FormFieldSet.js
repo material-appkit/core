@@ -6,6 +6,25 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import { decorateErrors } from '../util/component';
 
+const fromRepresentation = (fieldInfo, value) => {
+  if (fieldInfo.type === 'checkbox') {
+    switch (value) {
+      case true:
+      case 'true':
+      case 'True':
+        return 'true';
+      case false:
+      case 'false':
+      case 'False':
+      case '':
+        return 'false';
+      default:
+        break;
+    }
+  }
+  return value;
+};
+
 function FormFieldSet(props) {
   const {
     classes,
@@ -25,7 +44,7 @@ function FormFieldSet(props) {
 
   const constructFormField = (fieldInfo)  => {
     const fieldName = fieldInfo.key;
-    const fieldValue = formData[fieldName];
+    const fieldValue = fromRepresentation(fieldInfo, formData[fieldName]);
     const fieldArrangementInfo = fieldArrangementMap[fieldName];
 
     const { label, widget } = fieldInfo.ui || {};
@@ -69,16 +88,28 @@ function FormFieldSet(props) {
     if (fieldInfo.choices) {
       textFieldProps.select = true;
       textFieldProps.SelectProps = { native: true };
-    } else {
-      if (widget === 'textarea') {
-        textFieldProps.multiline = true;
-        textFieldProps.rows = 2;
-        textFieldProps.rowsMax = 20;
-      }
+    }
+
+    if (widget === 'textarea') {
+      textFieldProps.multiline = true;
+      textFieldProps.rows = 2;
+      textFieldProps.rowsMax = 20;
     }
 
     if (fieldInfo.type === 'number') {
+      // Let numbers be input in any form
       textFieldProps.inputProps = { min: 0, step: 'any' };
+    }
+
+    if (fieldInfo.type === 'checkbox') {
+      // Let boolean fields be rendered as a select element
+      // with Yes/No as choices.
+      textFieldProps.select = true;
+      textFieldProps.SelectProps = { native: true };
+      fieldInfo.choices = [
+        { 'label': 'Yes', value: 'true' },
+        { 'label': 'No', value: 'false' },
+      ]
     }
 
     return (
