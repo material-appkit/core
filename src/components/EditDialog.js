@@ -22,7 +22,7 @@ class EditDialog extends React.Component {
     this.formRef = React.createRef();
 
     let title = props.entityType;
-    if (props.apiDetailUrl || props.representedObjectId) {
+    if (props.persistedObject || props.apiDetailUrl || props.representedObjectId) {
       title = `${this.props.labels.UPDATE} ${title}`;
     } else {
       title = `${this.props.labels.ADD} ${title}`;

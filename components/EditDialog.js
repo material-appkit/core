@@ -142,7 +142,7 @@ var EditDialog = function (_React$Component) {
     _this.formRef = _react2.default.createRef();
 
     var title = props.entityType;
-    if (props.apiDetailUrl || props.representedObjectId) {
+    if (props.persistedObject || props.apiDetailUrl || props.representedObjectId) {
       title = _this.props.labels.UPDATE + ' ' + title;
     } else {
       title = _this.props.labels.ADD + ' ' + title;
