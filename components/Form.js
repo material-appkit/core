@@ -46,13 +46,17 @@ var _FormFieldSet = require('./FormFieldSet');
 
 var _FormFieldSet2 = _interopRequireDefault(_FormFieldSet);
 
+var _DateTimeField = require('./DateTimeField');
+
+var _DateTimeField2 = _interopRequireDefault(_DateTimeField);
+
 var _ItemListField = require('./ItemListField');
 
 var _ItemListField2 = _interopRequireDefault(_ItemListField);
 
-var _DateTimeField = require('./DateTimeField');
+var _ModelSelectField = require('./ModelSelectField');
 
-var _DateTimeField2 = _interopRequireDefault(_DateTimeField);
+var _ModelSelectField2 = _interopRequireDefault(_ModelSelectField);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -184,9 +188,14 @@ var Form = function (_React$PureComponent) {
   }, {
     key: 'getFieldArrangementMap',
     value: function getFieldArrangementMap(metadata) {
+      var _props = this.props,
+          fieldArrangement = _props.fieldArrangement,
+          fieldInfoProvider = _props.fieldInfoProvider;
+
+
       var fieldArrangementMap = {};
-      if (this.props.fieldArrangement) {
-        this.props.fieldArrangement.forEach(function (fieldInfo) {
+      if (fieldArrangement) {
+        fieldArrangement.forEach(function (fieldInfo) {
           if (typeof fieldInfo === 'string') {
             fieldInfo = { name: fieldInfo };
           }
@@ -196,7 +205,11 @@ var Form = function (_React$PureComponent) {
         metadata.forEach(function (fieldInfo) {
           if (!fieldInfo.read_only) {
             var fieldName = fieldInfo.key;
-            fieldArrangementMap[fieldName] = { name: fieldName };
+            if (fieldInfoProvider) {
+              fieldArrangementMap[fieldName] = fieldInfoProvider(fieldInfo);
+            } else {
+              fieldArrangementMap[fieldName] = { name: fieldName };
+            }
           }
         });
       }
@@ -315,7 +328,8 @@ var Form = function (_React$PureComponent) {
 
 Form.widgetClassMap = {
   'itemlist': _ItemListField2.default,
-  'datetime': _DateTimeField2.default
+  'datetime': _DateTimeField2.default,
+  'modelselect': _ModelSelectField2.default
 };
 
 var _initialiseProps = function _initialiseProps() {
@@ -545,6 +559,7 @@ Form.propTypes = {
   entityType: _propTypes2.default.string,
   FieldSet: _propTypes2.default.func,
   fieldArrangement: _propTypes2.default.array,
+  fieldInfoProvider: _propTypes2.default.func,
   representedObjectId: _propTypes2.default.number,
   onMount: _propTypes2.default.func,
   onUnmount: _propTypes2.default.func,

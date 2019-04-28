@@ -13,13 +13,15 @@ import { recursiveMap } from '../util/component';
 import { reverse } from '../util/urls';
 
 import FormFieldSet from './FormFieldSet';
-import ItemListField from './ItemListField';
 import DateTimeField from './DateTimeField';
+import ItemListField from './ItemListField';
+import ModelSelectField from './ModelSelectField';
 
 class Form extends React.PureComponent {
   static widgetClassMap = {
     'itemlist': ItemListField,
     'datetime': DateTimeField,
+    'modelselect': ModelSelectField,
   };
 
   static registerWidgetClass(widgetType, WidgetClass) {
@@ -121,9 +123,11 @@ class Form extends React.PureComponent {
   }
 
   getFieldArrangementMap(metadata) {
+    const { fieldArrangement, fieldInfoProvider } = this.props;
+
     const fieldArrangementMap = {};
-    if (this.props.fieldArrangement) {
-      this.props.fieldArrangement.forEach((fieldInfo) => {
+    if (fieldArrangement) {
+      fieldArrangement.forEach((fieldInfo) => {
         if (typeof(fieldInfo) === 'string') {
           fieldInfo = { name: fieldInfo };
         }
@@ -133,7 +137,11 @@ class Form extends React.PureComponent {
       metadata.forEach((fieldInfo) => {
         if (!fieldInfo.read_only) {
           const fieldName = fieldInfo.key;
-          fieldArrangementMap[fieldName] = { name: fieldName };
+          if (fieldInfoProvider) {
+            fieldArrangementMap[fieldName] = fieldInfoProvider(fieldInfo);
+          } else {
+            fieldArrangementMap[fieldName] = { name: fieldName };
+          }
         }
       });
     }
@@ -408,6 +416,7 @@ Form.propTypes = {
   entityType: PropTypes.string,
   FieldSet: PropTypes.func,
   fieldArrangement: PropTypes.array,
+  fieldInfoProvider: PropTypes.func,
   representedObjectId: PropTypes.number,
   onMount: PropTypes.func,
   onUnmount: PropTypes.func,
