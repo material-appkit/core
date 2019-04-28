@@ -23,9 +23,12 @@ class DateTimeField extends React.PureComponent {
     constructor(props) {
     super(props);
 
-    let selectedDate = props.value;
-    if (typeof selectedDate === 'string') {
-      selectedDate = moment(selectedDate);
+    let selectedDate = null;
+    if (props.value) {
+      selectedDate = props.value;
+      if (typeof selectedDate === 'string') {
+        selectedDate = moment(selectedDate);
+      }
     }
     // TODO: Let the timezone be an optional property?
     this.state = {

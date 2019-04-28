@@ -60,9 +60,12 @@ var DateTimeField = function (_React$PureComponent) {
       }
     };
 
-    var selectedDate = props.value;
-    if (typeof selectedDate === 'string') {
-      selectedDate = (0, _moment2.default)(selectedDate);
+    var selectedDate = null;
+    if (props.value) {
+      selectedDate = props.value;
+      if (typeof selectedDate === 'string') {
+        selectedDate = (0, _moment2.default)(selectedDate);
+      }
     }
     // TODO: Let the timezone be an optional property?
     _this.state = {
