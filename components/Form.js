@@ -91,7 +91,7 @@ var Form = function (_React$PureComponent) {
       }
 
       var fieldType = fieldInfo.type;
-      if ((fieldType === 'date' || fieldType === 'number') && value === '') {
+      if ((fieldType === 'date' || fieldType === 'datetime' || fieldType === 'number') && value === '') {
         // For values representing numbers or dates, convert the empty string to null
         return null;
       }
@@ -331,7 +331,7 @@ var _initialiseProps = function _initialiseProps() {
   };
 
   this.load = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    var referenceObject, metadata, requests, optionsUrl, responses, initialData;
+    var referenceObject, metadata, requests, optionsUrl, optionsRequestParams, responses, initialData;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -346,8 +346,9 @@ var _initialiseProps = function _initialiseProps() {
             // metadata about the represented object so the fields can be generated dynamically.
 
             optionsUrl = _this3.props.apiCreateUrl || _this3.detailUrl;
+            optionsRequestParams = _this3.props.optionsRequestParams;
 
-            requests.push(_util.ServiceAgent.options(optionsUrl));
+            requests.push(_util.ServiceAgent.options(optionsUrl, optionsRequestParams));
 
             if (!referenceObject) {
               if (_this3.detailUrl) {
@@ -358,10 +359,10 @@ var _initialiseProps = function _initialiseProps() {
               }
             }
 
-            _context.next = 9;
+            _context.next = 10;
             return Promise.all(requests);
 
-          case 9:
+          case 10:
             responses = _context.sent;
 
 
@@ -376,13 +377,13 @@ var _initialiseProps = function _initialiseProps() {
             initialData = _this3.initialData(metadata, referenceObject);
 
             if (initialData) {
-              _context.next = 14;
+              _context.next = 15;
               break;
             }
 
             throw new Error('Failed to initialize form');
 
-          case 14:
+          case 15:
 
             _this3.setState({
               formData: initialData,
@@ -395,7 +396,7 @@ var _initialiseProps = function _initialiseProps() {
               _this3.props.onLoad(referenceObject, _this3.getFieldInfoMap(metadata));
             }
 
-          case 16:
+          case 17:
           case 'end':
             return _context.stop();
         }
@@ -551,6 +552,7 @@ Form.propTypes = {
   onWillSave: _propTypes2.default.func,
   onSave: _propTypes2.default.func,
   onError: _propTypes2.default.func,
+  optionsRequestParams: _propTypes2.default.object,
   persistedObject: _propTypes2.default.object,
   loadingIndicator: _propTypes2.default.node,
   updateMethod: _propTypes2.default.oneOf(['PUT', 'PATCH'])
@@ -560,6 +562,7 @@ Form.defaultProps = {
   autosaveDelay: null,
   defaultValues: {},
   entityType: '',
+  optionsRequestParams: {},
   FieldSet: _FormFieldSet2.default,
   updateMethod: 'PATCH'
 };

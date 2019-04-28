@@ -38,7 +38,10 @@ class Form extends React.PureComponent {
     }
 
     const fieldType =  fieldInfo.type;
-    if ((fieldType === 'date' || fieldType === 'number') && value === '') {
+    if (
+      (fieldType === 'date' || fieldType === 'datetime' || fieldType === 'number') &&
+      value === ''
+    ) {
       // For values representing numbers or dates, convert the empty string to null
       return null;
     }
@@ -215,7 +218,8 @@ class Form extends React.PureComponent {
     // If the fields have not been explicitly provided, issue an OPTIONS request for
     // metadata about the represented object so the fields can be generated dynamically.
     const optionsUrl = this.props.apiCreateUrl || this.detailUrl;
-    requests.push(ServiceAgent.options(optionsUrl));
+    const optionsRequestParams = this.props.optionsRequestParams;
+    requests.push(ServiceAgent.options(optionsUrl, optionsRequestParams));
 
     if (!referenceObject) {
       if (this.detailUrl) {
@@ -411,6 +415,7 @@ Form.propTypes = {
   onWillSave: PropTypes.func,
   onSave: PropTypes.func,
   onError: PropTypes.func,
+  optionsRequestParams: PropTypes.object,
   persistedObject: PropTypes.object,
   loadingIndicator: PropTypes.node,
   updateMethod: PropTypes.oneOf(['PUT', 'PATCH']),
@@ -420,6 +425,7 @@ Form.defaultProps = {
   autosaveDelay: null,
   defaultValues: {},
   entityType: '',
+  optionsRequestParams: {},
   FieldSet: FormFieldSet,
   updateMethod: 'PATCH',
 };
