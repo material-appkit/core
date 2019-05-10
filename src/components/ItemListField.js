@@ -64,9 +64,8 @@ class ItemListField extends React.PureComponent {
     select.dispatchEvent(changeEvent);
   }
 
-  handleItemListAdd(item) {
-    const newItems = this.props.value.slice();
-    newItems.push(item);
+  handleItemListAdd(items) {
+    const newItems = this.props.value.slice().concat(items);
     this.dispatchChangeEvent(newItems);
   }
 

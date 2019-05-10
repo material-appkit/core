@@ -171,26 +171,38 @@ class ItemList extends React.PureComponent {
     return items.map((item) => valueForKeyPath(item, itemKeyPath));
   }
 
-  attachRecord = async(record) => {
-    const items = this.items;
-    const recordIndex = items.findIndex((item) => {
-      return item.id === record.id;
-    });
+  attachRecords = async(records) => {
+    if (!records.length) {
+      return;
+    }
 
-    if (recordIndex !== -1) {
-      items[recordIndex] = record;
-      if (this.props.onUpdate) {
-        this.props.onUpdate(record, recordIndex);
+    const attachUrl = this.attachUrl;
+
+    if (records.length === 1) {
+      let record = records[0];
+
+      const items = this.items;
+      const recordIndex = items.findIndex((item) => {
+        return item.id === record.id;
+      });
+
+      if (recordIndex !== -1) {
+        items[recordIndex] = record;
+        if (this.props.onUpdate) {
+          this.props.onUpdate(record, recordIndex);
+        }
+      } else {
+        if (attachUrl) {
+          const res = await ServiceAgent.post(this.attachUrl, {item_id: record.id});
+          record = res.body;
+        }
+        if (this.props.onAdd) {
+          this.props.onAdd([record]);
+        }
       }
     } else {
-      const attachUrl = this.attachUrl;
-      if (attachUrl) {
-        const res = await ServiceAgent.post(this.attachUrl, { item_id: record.id });
-        record = res.body;
-      }
-
       if (this.props.onAdd) {
-        this.props.onAdd(record);
+        this.props.onAdd(records);
       }
     }
 
@@ -242,7 +254,12 @@ class ItemList extends React.PureComponent {
   handleListDialogDismiss = (selection) => {
     this.setState({ listDialogOpen: false });
     if (selection) {
-      this.attachRecord(selection);
+      if (Array.isArray(selection)) {
+        this.attachRecords(selection);
+      } else {
+        this.attachRecords([selection]);
+      }
+
     }
   };
 
@@ -332,7 +349,7 @@ class ItemList extends React.PureComponent {
             apiDetailUrl={this.state.editingObject ? this.state.editingObject.url : null}
             entityType={this.props.entityType}
             onClose={this.handleEditDialogClose}
-            onSave={(record) => { this.attachRecord(record) }}
+            onSave={(record) => { this.attachRecords([record]) }}
             {...this.props.editDialogProps}
           />
         }

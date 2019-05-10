@@ -104,9 +104,8 @@ var ItemListField = function (_React$PureComponent) {
     }
   }, {
     key: 'handleItemListAdd',
-    value: function handleItemListAdd(item) {
-      var newItems = this.props.value.slice();
-      newItems.push(item);
+    value: function handleItemListAdd(items) {
+      var newItems = this.props.value.slice().concat(items);
       this.dispatchChangeEvent(newItems);
     }
   }, {
