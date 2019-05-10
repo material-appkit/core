@@ -360,7 +360,7 @@ ListDialog.defaultProps = {
   editDialogProps: {},
   filterParams: {},
   listItemProps: {},
-  selectionMode: 'single'
+  selectionMode: 'multiple'
 };
 
 exports.default = (0, _withStyles2.default)(function (theme) {

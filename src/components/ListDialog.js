@@ -246,7 +246,7 @@ ListDialog.defaultProps = {
   editDialogProps: {},
   filterParams: {},
   listItemProps: {},
-  selectionMode: 'single',
+  selectionMode: 'multiple',
 };
 
 export default withStyles((theme) => ({
