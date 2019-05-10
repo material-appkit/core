@@ -80,38 +80,6 @@ var EditDialog = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (EditDialog.__proto__ || Object.getPrototypeOf(EditDialog)).call(this, props));
 
-    _this.handleFormLoad = function (representedObject, fieldInfoMap) {
-      if (_this.props.onLoad) {
-        _this.props.onLoad(representedObject, fieldInfoMap);
-      }
-    };
-
-    _this.handleFormSave = function (representedObject) {
-      if (_this.props.onSave) {
-        _this.props.onSave(representedObject);
-      }
-
-      _this.dismiss();
-    };
-
-    _this.handleFormError = function (err) {
-      var errorMessage = _this.props.labels.SAVE_FAIL_NOTIFICATION;
-      _SnackbarManager2.default.error(errorMessage);
-    };
-
-    _this.handleDeleteButtonClick = function () {
-      _AlertManager2.default.confirm({
-        title: 'Please Confirm',
-        description: 'Are you sure you want to delete this item?',
-        confirmButtonTitle: 'Delete',
-        onDismiss: function onDismiss(flag) {
-          if (flag) {
-            _this.deleteRepresentedObject();
-          }
-        }
-      });
-    };
-
     _this.deleteRepresentedObject = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
       var persistedObject;
       return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -138,6 +106,43 @@ var EditDialog = function (_React$Component) {
       }, _callee, _this2);
     }));
 
+    _this.handleFormLoad = function (representedObject, fieldInfoMap) {
+      if (_this.props.onLoad) {
+        _this.props.onLoad(representedObject, fieldInfoMap);
+      }
+    };
+
+    _this.handleFormSave = function (representedObject) {
+      if (_this.props.onSave) {
+        _this.props.onSave(representedObject);
+      }
+
+      _this.dismiss();
+    };
+
+    _this.handleFormError = function () {
+      var errorMessage = _this.props.labels.SAVE_FAIL_NOTIFICATION;
+      _SnackbarManager2.default.error(errorMessage);
+    };
+
+    _this.handleDeleteButtonClick = function () {
+      _AlertManager2.default.confirm({
+        title: 'Please Confirm',
+        description: 'Are you sure you want to delete this item?',
+        confirmButtonTitle: 'Delete',
+        onDismiss: function onDismiss(flag) {
+          if (flag) {
+            _this.deleteRepresentedObject();
+          }
+        }
+      });
+    };
+
+    _this.handleKeyPress = function (e) {
+      if (e.key === 'Enter') {
+        _this.commit();
+      }
+    };
 
     _this.formRef = _react2.default.createRef();
 
@@ -182,11 +187,13 @@ var EditDialog = function (_React$Component) {
 
       return _react2.default.createElement(
         _Dialog2.default,
-        { open: true,
+        {
           classes: { paper: classes.paper },
           onClose: function onClose() {
             _this3.dismiss();
-          }
+          },
+          onKeyPress: this.handleKeyPress,
+          open: true
         },
         _react2.default.createElement(
           _DialogTitle2.default,

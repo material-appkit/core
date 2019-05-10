@@ -34,38 +34,6 @@ class EditDialog extends React.Component {
     };
   }
 
-  handleFormLoad = (representedObject, fieldInfoMap) => {
-    if (this.props.onLoad) {
-      this.props.onLoad(representedObject, fieldInfoMap);
-    }
-  };
-
-  handleFormSave = (representedObject) => {
-    if (this.props.onSave) {
-      this.props.onSave(representedObject);
-    }
-
-    this.dismiss();
-  };
-
-  handleFormError = (err) => {
-    const errorMessage = this.props.labels.SAVE_FAIL_NOTIFICATION;
-    SnackbarManager.error(errorMessage);
-  };
-
-  handleDeleteButtonClick = () => {
-    AlertManager.confirm({
-      title: `Please Confirm`,
-      description: 'Are you sure you want to delete this item?',
-      confirmButtonTitle: 'Delete',
-      onDismiss: (flag) => {
-        if (flag) {
-          this.deleteRepresentedObject();
-        }
-      },
-    });
-  };
-
   deleteRepresentedObject = async() => {
     const { persistedObject } = this.props;
     await ServiceAgent.delete(persistedObject.url);
@@ -85,6 +53,44 @@ class EditDialog extends React.Component {
     this.formRef.current.save();
   }
 
+  handleFormLoad = (representedObject, fieldInfoMap) => {
+    if (this.props.onLoad) {
+      this.props.onLoad(representedObject, fieldInfoMap);
+    }
+  };
+
+  handleFormSave = (representedObject) => {
+    if (this.props.onSave) {
+      this.props.onSave(representedObject);
+    }
+
+    this.dismiss();
+  };
+
+  handleFormError = () => {
+    const errorMessage = this.props.labels.SAVE_FAIL_NOTIFICATION;
+    SnackbarManager.error(errorMessage);
+  };
+
+  handleDeleteButtonClick = () => {
+    AlertManager.confirm({
+      title: `Please Confirm`,
+      description: 'Are you sure you want to delete this item?',
+      confirmButtonTitle: 'Delete',
+      onDismiss: (flag) => {
+        if (flag) {
+          this.deleteRepresentedObject();
+        }
+      },
+    });
+  };
+
+  handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      this.commit();
+    }
+  };
+
   render() {
     if (this.state.redirectTo) {
       return <Redirect to={this.state.redirectTo} />;
@@ -98,9 +104,11 @@ class EditDialog extends React.Component {
     } = this.props;
 
     return (
-      <Dialog open
+      <Dialog
         classes={{ paper: classes.paper }}
         onClose={() => { this.dismiss(); }}
+        onKeyPress={this.handleKeyPress}
+        open
       >
         <DialogTitle id="form-dialog-title">{this.state.title}</DialogTitle>
         <DialogContent>
