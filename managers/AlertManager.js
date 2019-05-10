@@ -85,8 +85,6 @@ var AlertManager = function (_React$Component) {
   }, {
     key: 'dialogs',
     get: function get() {
-      var _this2 = this;
-
       var dialogs = [];
       AlertManager.queue.forEach(function (alertInfo, key) {
         var alertType = alertInfo.ALERT_TYPE;
@@ -107,6 +105,12 @@ var AlertManager = function (_React$Component) {
           };
         }
 
+        var handleKeyPress = function handleKeyPress(e) {
+          if (e.key === 'Enter') {
+            AlertManager.dismiss(key, commitValue);
+          }
+        };
+
         dialogs.push(_react2.default.createElement(
           _Dialog2.default,
           {
@@ -114,7 +118,7 @@ var AlertManager = function (_React$Component) {
             fullWidth: true,
             maxWidth: 'sm',
             open: true,
-            onClose: _this2.handleClose,
+            onKeyPress: handleKeyPress,
             'aria-labelledby': 'alert-dialog-title',
             'aria-describedby': 'alert-dialog-description'
           },
@@ -145,9 +149,12 @@ var AlertManager = function (_React$Component) {
             ),
             _react2.default.createElement(
               _Button2.default,
-              { onClick: function onClick() {
+              {
+                color: 'primary',
+                onClick: function onClick() {
                   AlertManager.dismiss(key, commitValue);
-                }, color: 'primary' },
+                }
+              },
               alertInfo.confirmButtonTitle || 'OK'
             )
           )

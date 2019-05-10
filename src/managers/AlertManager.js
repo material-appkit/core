@@ -75,13 +75,19 @@ class AlertManager extends React.Component {
         };
       }
 
+      const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+          AlertManager.dismiss(key, commitValue);
+        }
+      };
+
       dialogs.push((
         <Dialog
           key={key}
           fullWidth={true}
           maxWidth='sm'
           open
-          onClose={this.handleClose}
+          onKeyPress={handleKeyPress}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
@@ -102,7 +108,10 @@ class AlertManager extends React.Component {
               </Button>
             }
 
-            <Button onClick={() => { AlertManager.dismiss(key, commitValue); }} color="primary">
+            <Button
+              color="primary"
+              onClick={() => { AlertManager.dismiss(key, commitValue); }}
+            >
               {alertInfo.confirmButtonTitle || 'OK'}
             </Button>
           </DialogActions>
