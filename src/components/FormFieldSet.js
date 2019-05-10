@@ -47,8 +47,9 @@ function FormFieldSet(props) {
     const fieldValue = fromRepresentation(fieldInfo, formData[fieldName]);
     const fieldArrangementInfo = fieldArrangementMap[fieldName];
 
-    const { label, widget } = fieldInfo.ui || {};
+    const { autoFocus, label, widget } = fieldInfo.ui;
     const commonFieldProps = {
+      autoFocus,
       key: fieldName,
       label,
       value: fieldValue,
@@ -127,15 +128,21 @@ function FormFieldSet(props) {
   };
 
   const fields = [];
-  for (const fieldName of fieldNames) {
+  let fieldCount = 0;
+  fieldNames.forEach((fieldName, fieldIndex) => {
     const fieldInfo = fieldInfoMap[fieldName];
-    if (fieldInfo.read_only) {
-      continue;
+    if (!fieldInfo.read_only) {
+      if (!fieldInfo.ui) {
+        fieldInfo.ui = {};
+      }
+      if (fieldCount === 0) {
+        fieldInfo.ui.autoFocus = true;
+      }
+      const field = constructFormField(fieldInfo);
+      fields.push(decorateErrors(field, errors));
+      fieldCount += 1;
     }
-
-    const field = constructFormField(fieldInfo);
-    fields.push(decorateErrors(field, errors));
-  }
+  });
 
   return fields;
 }

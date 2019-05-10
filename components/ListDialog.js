@@ -253,6 +253,7 @@ var ListDialog = function (_React$PureComponent) {
               text: 'Select a ' + this.props.entityType
             },
             this.props.searchFilterParam && _react2.default.createElement(_TextField2.default, {
+              autoFocus: true,
               className: classes.filterField,
               fullWidth: true,
               margin: 'dense',

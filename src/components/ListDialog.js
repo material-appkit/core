@@ -162,6 +162,7 @@ class ListDialog extends React.PureComponent {
           >
             {this.props.searchFilterParam &&
               <TextField
+                autoFocus
                 className={classes.filterField}
                 fullWidth
                 margin="dense"

@@ -64,11 +64,13 @@ function FormFieldSet(props) {
     var fieldValue = fromRepresentation(fieldInfo, formData[fieldName]);
     var fieldArrangementInfo = fieldArrangementMap[fieldName];
 
-    var _ref = fieldInfo.ui || {},
-        label = _ref.label,
-        widget = _ref.widget;
+    var _fieldInfo$ui = fieldInfo.ui,
+        autoFocus = _fieldInfo$ui.autoFocus,
+        label = _fieldInfo$ui.label,
+        widget = _fieldInfo$ui.widget;
 
     var commonFieldProps = {
+      autoFocus: autoFocus,
       key: fieldName,
       label: label,
       value: fieldValue,
@@ -147,36 +149,21 @@ function FormFieldSet(props) {
   };
 
   var fields = [];
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = fieldNames[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var fieldName = _step.value;
-
-      var fieldInfo = fieldInfoMap[fieldName];
-      if (fieldInfo.read_only) {
-        continue;
+  var fieldCount = 0;
+  fieldNames.forEach(function (fieldName, fieldIndex) {
+    var fieldInfo = fieldInfoMap[fieldName];
+    if (!fieldInfo.read_only) {
+      if (!fieldInfo.ui) {
+        fieldInfo.ui = {};
       }
-
+      if (fieldCount === 0) {
+        fieldInfo.ui.autoFocus = true;
+      }
       var field = constructFormField(fieldInfo);
       fields.push((0, _component.decorateErrors)(field, errors));
+      fieldCount += 1;
     }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
+  });
 
   return fields;
 }
