@@ -80,8 +80,6 @@ var _RemoteStore = require('../stores/RemoteStore');
 
 var _RemoteStore2 = _interopRequireDefault(_RemoteStore);
 
-var _util = require('../util');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -192,8 +190,14 @@ var ListDialog = function (_React$PureComponent) {
 
     _this.dialogContentRef = _react2.default.createRef();
 
-    _this.store = new _RemoteStore2.default({ endpoint: _this.props.apiListUrl });
-    _this.store.load(_this.props.filterParams);
+    if (props.store) {
+      _this.store = props.store;
+    } else if (props.apiListUrl) {
+      _this.store = new _RemoteStore2.default({ endpoint: props.apiListUrl });
+      _this.store.load(props.filterParams);
+    } else {
+      throw new Error('ListDialog requires a store or an apiListUrl prop');
+    }
 
     _this.state = {
       loading: false,
@@ -265,6 +269,7 @@ var ListDialog = function (_React$PureComponent) {
                 getScrollParent: function getScrollParent() {
                   return _this2.dialogContentRef.current;
                 },
+                itemIdKey: this.props.itemIdKey,
                 itemProps: itemProps,
                 itemContextProvider: this.listItemContextProvider,
                 onSelectionChange: function onSelectionChange(selection) {
@@ -327,16 +332,18 @@ var ListDialog = function (_React$PureComponent) {
 
 ListDialog.propTypes = {
   apiCreateUrl: _propTypes2.default.string,
-  apiListUrl: _propTypes2.default.string.isRequired,
+  apiListUrl: _propTypes2.default.string,
   classes: _propTypes2.default.object.isRequired,
   editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string.isRequired,
   filterParams: _propTypes2.default.object,
-  searchFilterParam: _propTypes2.default.string,
-  selectionMode: _propTypes2.default.oneOf(['single', 'multiple']),
+  itemIdKey: _propTypes2.default.string,
   listItemComponent: _propTypes2.default.func.isRequired,
   listItemProps: _propTypes2.default.object,
-  onDismiss: _propTypes2.default.func.isRequired
+  onDismiss: _propTypes2.default.func.isRequired,
+  searchFilterParam: _propTypes2.default.string,
+  selectionMode: _propTypes2.default.oneOf(['single', 'multiple']),
+  store: _propTypes2.default.object
 };
 
 ListDialog.defaultProps = {

@@ -60,6 +60,12 @@ var VirtualizedList = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (VirtualizedList.__proto__ || Object.getPrototypeOf(VirtualizedList)).call(this, props));
 
+    _this.keyForItem = function (item) {
+      var itemIdKey = _this.props.itemIdKey;
+
+      return typeof itemIdKey === 'function' ? itemIdKey(item) : item[itemIdKey];
+    };
+
     _this.isSelected = function (item) {
       var selection = _this.state.selection;
 
@@ -67,7 +73,8 @@ var VirtualizedList = function (_React$Component) {
         return false;
       }
 
-      return !!selection[item.id];
+      var itemId = _this.keyForItem(item);
+      return !!selection[itemId];
     };
 
     _this.handleSelectControlClick = function (item) {
@@ -76,7 +83,7 @@ var VirtualizedList = function (_React$Component) {
           selectionMode = _this$props.selectionMode;
       var selection = _this.state.selection;
 
-      var itemId = item.id;
+      var itemId = _this.keyForItem(item);
 
       var newSelection = {};
       if (selectionMode === 'single') {
@@ -105,13 +112,9 @@ var VirtualizedList = function (_React$Component) {
     };
 
     _this.renderItem = function (item) {
-      var itemIdKey = _this.props.itemIdKey;
-
-
-      var itemKey = typeof itemIdKey === 'function' ? itemIdKey(item) : item[itemIdKey];
       return _react2.default.createElement(_this2.props.componentForItem, _extends({
         contextProvider: _this.props.itemContextProvider,
-        key: itemKey,
+        key: _this.keyForItem(item),
         item: item,
         onItemClick: _this.props.onItemClick,
         onSelectControlClick: _this.handleSelectControlClick,

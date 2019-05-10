@@ -25,8 +25,6 @@ import TextField from './TextField';
 import VirtualizedList from './VirtualizedList';
 
 import RemoteStore from '../stores/RemoteStore';
-import { ServiceAgent } from '../util';
-
 
 const DialogTitle = withStyles((theme) => ({
   root: {
@@ -89,8 +87,14 @@ class ListDialog extends React.PureComponent {
 
     this.dialogContentRef = React.createRef();
 
-    this.store = new RemoteStore({ endpoint: this.props.apiListUrl });
-    this.store.load(this.props.filterParams);
+    if (props.store) {
+      this.store = props.store;
+    } else if (props.apiListUrl) {
+      this.store = new RemoteStore({ endpoint: props.apiListUrl });
+      this.store.load(props.filterParams);
+    } else {
+      throw new Error('ListDialog requires a store or an apiListUrl prop');
+    }
 
     this.state = {
       loading: false,
@@ -170,6 +174,7 @@ class ListDialog extends React.PureComponent {
                 componentForItem={this.props.listItemComponent}
                 fullWidth
                 getScrollParent={() => this.dialogContentRef.current}
+                itemIdKey={this.props.itemIdKey}
                 itemProps={itemProps}
                 itemContextProvider={this.listItemContextProvider}
                 onSelectionChange={(selection) => { this.setState({ selection }); }}
@@ -214,16 +219,18 @@ class ListDialog extends React.PureComponent {
 
 ListDialog.propTypes = {
   apiCreateUrl: PropTypes.string,
-  apiListUrl: PropTypes.string.isRequired,
+  apiListUrl: PropTypes.string,
   classes: PropTypes.object.isRequired,
   editDialogProps: PropTypes.object,
   entityType: PropTypes.string.isRequired,
   filterParams: PropTypes.object,
-  searchFilterParam: PropTypes.string,
-  selectionMode: PropTypes.oneOf(['single', 'multiple']),
+  itemIdKey: PropTypes.string,
   listItemComponent: PropTypes.func.isRequired,
   listItemProps: PropTypes.object,
   onDismiss: PropTypes.func.isRequired,
+  searchFilterParam: PropTypes.string,
+  selectionMode: PropTypes.oneOf(['single', 'multiple']),
+  store: PropTypes.object,
 };
 
 ListDialog.defaultProps = {

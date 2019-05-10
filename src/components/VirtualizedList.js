@@ -25,19 +25,26 @@ class VirtualizedList extends React.Component {
     }
   }
 
+  keyForItem = (item) => {
+    const { itemIdKey } = this.props;
+    return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
+
+  };
+
   isSelected = (item) => {
     const { selection } = this.state;
     if (selection === null) {
       return false;
     }
 
-    return !!selection[item.id];
+    const itemId = this.keyForItem(item);
+    return !!selection[itemId];
   };
 
   handleSelectControlClick = (item) => {
     const { onSelectionChange, selectionMode } = this.props;
     const { selection } = this.state;
-    const itemId = item.id;
+    const itemId = this.keyForItem(item);
 
     const newSelection = {};
     if (selectionMode === 'single') {
@@ -66,13 +73,10 @@ class VirtualizedList extends React.Component {
   };
 
   renderItem = (item) => {
-    const { itemIdKey } = this.props;
-
-    const itemKey = (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
     return (
       <this.props.componentForItem
         contextProvider={this.props.itemContextProvider}
-        key={itemKey}
+        key={this.keyForItem(item)}
         item={item}
         onItemClick={this.props.onItemClick}
         onSelectControlClick={this.handleSelectControlClick}
