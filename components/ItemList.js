@@ -487,7 +487,7 @@ var ItemList = function (_React$PureComponent) {
             'Add ',
             this.props.entityType
           ),
-          this.props.apiListUrl && this.state.listDialogOpen && _react2.default.createElement(_ListDialog2.default, {
+          this.props.apiListUrl && this.state.listDialogOpen && _react2.default.createElement(_ListDialog2.default, _extends({
             apiCreateUrl: this.props.apiCreateUrl,
             apiListUrl: this.props.apiListUrl,
             editDialogProps: this.props.editDialogProps,
@@ -497,7 +497,7 @@ var ItemList = function (_React$PureComponent) {
             listItemProps: this.props.listItemProps,
             onDismiss: this.handleListDialogDismiss,
             searchFilterParam: this.props.searchFilterParam
-          })
+          }, this.props.listDialogProps))
         ),
         this.state.editDialogOpen && _react2.default.createElement(this.props.EditDialogComponent, _extends({
           apiCreateUrl: this.props.apiCreateUrl,
@@ -572,12 +572,13 @@ ItemList.propTypes = {
   itemIcon: _propTypes2.default.func,
   items: _propTypes2.default.array.isRequired,
   itemKeyPath: _propTypes2.default.string,
+  listDialogProps: _propTypes2.default.object,
+  listItemComponent: _propTypes2.default.func,
+  listItemProps: _propTypes2.default.object,
   onItemClick: _propTypes2.default.func,
   onAdd: _propTypes2.default.func,
   onRemove: _propTypes2.default.func,
   onUpdate: _propTypes2.default.func,
-  listItemComponent: _propTypes2.default.func,
-  listItemProps: _propTypes2.default.object,
   mode: _propTypes2.default.oneOf(['view', 'edit']),
   representedObject: _propTypes2.default.object,
   searchFilterParam: _propTypes2.default.string,
@@ -591,6 +592,7 @@ ItemList.defaultProps = {
   EditDialogComponent: _EditDialog2.default,
   editDialogProps: {},
   filterParams: {},
+  listDialogProps: {},
   listItemProps: {},
   mode: 'view',
   warnOnDelete: true

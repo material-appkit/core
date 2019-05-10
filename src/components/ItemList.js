@@ -338,6 +338,7 @@ class ItemList extends React.PureComponent {
                 listItemProps={this.props.listItemProps}
                 onDismiss={this.handleListDialogDismiss}
                 searchFilterParam={this.props.searchFilterParam}
+                {...this.props.listDialogProps}
               />
             }
           </Fragment>
@@ -374,12 +375,13 @@ ItemList.propTypes = {
   itemIcon: PropTypes.func,
   items: PropTypes.array.isRequired,
   itemKeyPath: PropTypes.string,
+  listDialogProps: PropTypes.object,
+  listItemComponent: PropTypes.func,
+  listItemProps: PropTypes.object,
   onItemClick: PropTypes.func,
   onAdd: PropTypes.func,
   onRemove: PropTypes.func,
   onUpdate: PropTypes.func,
-  listItemComponent: PropTypes.func,
-  listItemProps: PropTypes.object,
   mode: PropTypes.oneOf(['view', 'edit']),
   representedObject: PropTypes.object,
   searchFilterParam: PropTypes.string,
@@ -393,6 +395,7 @@ ItemList.defaultProps = {
   EditDialogComponent: EditDialog,
   editDialogProps: {},
   filterParams: {},
+  listDialogProps: {},
   listItemProps: {},
   mode: 'view',
   warnOnDelete: true,
