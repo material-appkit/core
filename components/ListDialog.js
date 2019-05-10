@@ -171,6 +171,14 @@ var ListDialog = function (_React$PureComponent) {
       _this.props.onDismiss(value);
     };
 
+    _this.handleKeyPress = function (e) {
+      var selection = _this.state.selection;
+
+      if (e.key === 'Enter' && selection) {
+        _this.dismiss(selection);
+      }
+    };
+
     _this.handleSearchFilterChange = function (filterTerm) {
       var filterParams = _extends({}, _this.props.filterParams);
       if (filterTerm) {
@@ -219,11 +227,12 @@ var ListDialog = function (_React$PureComponent) {
 
       var itemProps = _extends({
         isLink: false,
-        style: { padding: '3px 6px' }
+        style: { padding: '3px 6px' },
+        className: classes.listItem
       }, listItemProps);
 
       return _react2.default.createElement(
-        _react2.default.Fragment,
+        _react.Fragment,
         null,
         _react2.default.createElement(
           _Dialog2.default,
@@ -232,6 +241,7 @@ var ListDialog = function (_React$PureComponent) {
             onClose: function onClose() {
               _this2.dismiss(null);
             },
+            onKeyPress: this.handleKeyPress,
             open: true
           },
           _react2.default.createElement(
@@ -285,7 +295,7 @@ var ListDialog = function (_React$PureComponent) {
             DialogActions,
             null,
             this.props.apiCreateUrl && _react2.default.createElement(
-              _react2.default.Fragment,
+              _react.Fragment,
               null,
               _react2.default.createElement(
                 _Button2.default,
@@ -299,11 +309,11 @@ var ListDialog = function (_React$PureComponent) {
             _react2.default.createElement(
               _Button2.default,
               {
+                color: 'primary',
                 disabled: !this.hasSelection,
                 onClick: function onClick() {
                   _this2.dismiss(_this2.state.selection);
-                },
-                color: 'primary'
+                }
               },
               'Choose'
             )
@@ -355,6 +365,13 @@ ListDialog.defaultProps = {
 
 exports.default = (0, _withStyles2.default)(function (theme) {
   return {
+    listItem: {
+      '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.08)',
+        cursor: 'pointer'
+      }
+    },
+
     filterField: theme.listDialog.filterField,
     paper: theme.listDialog.paper,
     progressBar: theme.listDialog.progressBar

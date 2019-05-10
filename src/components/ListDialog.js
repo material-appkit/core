@@ -4,7 +4,7 @@
 *
 */
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
@@ -114,6 +114,13 @@ class ListDialog extends React.PureComponent {
     this.props.onDismiss(value);
   };
 
+  handleKeyPress = (e) => {
+    const { selection } = this.state;
+    if (e.key === 'Enter' && selection) {
+      this.dismiss(selection);
+    }
+  };
+
   handleSearchFilterChange = (filterTerm) => {
     const filterParams = { ...this.props.filterParams };
     if (filterTerm) {
@@ -137,14 +144,16 @@ class ListDialog extends React.PureComponent {
     const itemProps = {
       isLink: false,
       style: { padding: '3px 6px' },
+      className: classes.listItem,
       ...listItemProps
     };
 
     return (
-      <React.Fragment>
+      <Fragment>
         <Dialog
           classes={{ paper: classes.paper }}
           onClose={() => { this.dismiss(null); }}
+          onKeyPress={this.handleKeyPress}
           open
         >
           <DialogTitle
@@ -186,17 +195,17 @@ class ListDialog extends React.PureComponent {
           </RootRef>
           <DialogActions>
             {this.props.apiCreateUrl &&
-              <React.Fragment>
+              <Fragment>
                 <Button onClick={() => { this.setState({ addDialogIsOpen: true }); }}>
                   Create
                 </Button>
                 <Spacer />
-              </React.Fragment>
+              </Fragment>
             }
             <Button
+              color="primary"
               disabled={!this.hasSelection}
               onClick={() => { this.dismiss(this.state.selection); }}
-              color="primary"
             >
               Choose
             </Button>
@@ -212,7 +221,7 @@ class ListDialog extends React.PureComponent {
             {...this.props.editDialogProps}
           />
         }
-      </React.Fragment>
+      </Fragment>
     );
   }
 }
@@ -241,6 +250,13 @@ ListDialog.defaultProps = {
 };
 
 export default withStyles((theme) => ({
+  listItem: {
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.08)',
+      cursor: 'pointer',
+    }
+  },
+
   filterField: theme.listDialog.filterField,
   paper: theme.listDialog.paper,
   progressBar: theme.listDialog.progressBar,

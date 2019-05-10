@@ -14,29 +14,17 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _IconButton = require('@material-ui/core/IconButton');
+var _Checkbox = require('@material-ui/core/Checkbox');
 
-var _IconButton2 = _interopRequireDefault(_IconButton);
+var _Checkbox2 = _interopRequireDefault(_Checkbox);
 
 var _ListItem = require('@material-ui/core/ListItem');
 
 var _ListItem2 = _interopRequireDefault(_ListItem);
 
-var _RadioButtonUnchecked = require('@material-ui/icons/RadioButtonUnchecked');
+var _Radio = require('@material-ui/core/Radio');
 
-var _RadioButtonUnchecked2 = _interopRequireDefault(_RadioButtonUnchecked);
-
-var _RadioButtonChecked = require('@material-ui/icons/RadioButtonChecked');
-
-var _RadioButtonChecked2 = _interopRequireDefault(_RadioButtonChecked);
-
-var _CheckBoxOutlineBlank = require('@material-ui/icons/CheckBoxOutlineBlank');
-
-var _CheckBoxOutlineBlank2 = _interopRequireDefault(_CheckBoxOutlineBlank);
-
-var _CheckBox = require('@material-ui/icons/CheckBox');
-
-var _CheckBox2 = _interopRequireDefault(_CheckBox);
+var _Radio2 = _interopRequireDefault(_Radio);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -50,9 +38,8 @@ function VirtualizedListItem(props) {
   var item = props.item,
       contextProvider = props.contextProvider,
       onItemClick = props.onItemClick,
-      onSelectControlClick = props.onSelectControlClick,
       selectionMode = props.selectionMode,
-      rest = _objectWithoutProperties(props, ['item', 'contextProvider', 'onItemClick', 'onSelectControlClick', 'selectionMode']);
+      rest = _objectWithoutProperties(props, ['item', 'contextProvider', 'onItemClick', 'selectionMode']);
 
   var listItemProps = {};
   if (contextProvider) {
@@ -65,27 +52,24 @@ function VirtualizedListItem(props) {
     };
   }
 
-  var SelectionIcon = null;
+  var selectionControl = null;
   if (selectionMode === 'single') {
-    SelectionIcon = props.selected ? _RadioButtonChecked2.default : _RadioButtonUnchecked2.default;
-  } else if (selectionMode === 'multiple') {
-    SelectionIcon = props.selected ? _CheckBox2.default : _CheckBoxOutlineBlank2.default;
+    selectionControl = _react2.default.createElement(_Radio2.default, {
+      checked: props.selected,
+      style: { padding: 8 }
+    });
+  }
+  if (selectionMode === 'multiple') {
+    selectionControl = _react2.default.createElement(_Checkbox2.default, {
+      checked: props.selected,
+      style: { padding: 8 }
+    });
   }
 
   return _react2.default.createElement(
     _ListItem2.default,
     _extends({}, listItemProps, rest),
-    SelectionIcon && _react2.default.createElement(
-      _IconButton2.default,
-      {
-        onClick: function onClick(e) {
-          e.preventDefault();
-          onSelectControlClick(item);
-        },
-        style: { padding: 4 }
-      },
-      _react2.default.createElement(SelectionIcon, null)
-    ),
+    selectionControl,
     props.children
   );
 }
@@ -93,7 +77,6 @@ function VirtualizedListItem(props) {
 VirtualizedListItem.propTypes = {
   contextProvider: _propTypes2.default.func,
   onItemClick: _propTypes2.default.func,
-  onSelectControlClick: _propTypes2.default.func,
   selected: _propTypes2.default.bool,
   selectionMode: _propTypes2.default.oneOf(['single', 'multiple'])
 };
