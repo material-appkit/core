@@ -112,6 +112,7 @@ class ItemListField extends React.PureComponent {
             filterParams={this.props.filterParams}
             items={this.props.value}
             itemKeyPath={this.props.itemKeyPath}
+            listDialogProps={this.props.listDialogProps}
             listItemComponent={this.props.listItemComponent}
             listItemProps={this.props.listItemProps}
             mode="edit"
@@ -134,6 +135,7 @@ ItemListField.propTypes = {
   entityType: PropTypes.string.isRequired,
   filterParams: PropTypes.object,
   itemKeyPath: PropTypes.string,
+  listDialogProps: PropTypes.object,
   listItemComponent: PropTypes.func,
   listItemProps: PropTypes.object,
   label: PropTypes.string,
@@ -147,6 +149,7 @@ ItemListField.propTypes = {
 ItemListField.defaultProps = {
   editDialogProps: {},
   filterParams: {},
+  listDialogProps: { selectionMode: 'multiple' },
   listItemComponent: VirtualizedListItem,
   listItemProps: {},
 };
