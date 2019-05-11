@@ -41,7 +41,7 @@ class VirtualizedList extends React.Component {
     return !!selection[itemId];
   };
 
-  handleItemClick = (item) => {
+  handleSelectionChange = (item) => {
     const { onSelectionChange, selectionMode } = this.props;
     const { selection } = this.state;
     const itemId = this.keyForItem(item);
@@ -70,10 +70,6 @@ class VirtualizedList extends React.Component {
         onSelectionChange(selectedItems);
       }
     }
-
-    if (this.props.onItemClick) {
-      this.props.onItemClick(item);
-    }
   };
 
   renderItem = (item) => {
@@ -82,9 +78,10 @@ class VirtualizedList extends React.Component {
         contextProvider={this.props.itemContextProvider}
         key={this.keyForItem(item)}
         item={item}
-        onItemClick={this.handleItemClick}
+        onSelectionChange={this.handleSelectionChange}
         selected={this.isSelected(item)}
         selectionMode={this.props.selectionMode}
+        selectOnClick={this.props.selectOnClick}
         {...this.props.itemProps}
       />
     );
@@ -158,6 +155,7 @@ VirtualizedList.propTypes = {
   items: PropTypes.array,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
+  selectOnClick: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   store: PropTypes.object,
   useWindow: PropTypes.bool,

@@ -77,7 +77,7 @@ var VirtualizedList = function (_React$Component) {
       return !!selection[itemId];
     };
 
-    _this.handleItemClick = function (item) {
+    _this.handleSelectionChange = function (item) {
       var _this$props = _this.props,
           onSelectionChange = _this$props.onSelectionChange,
           selectionMode = _this$props.selectionMode;
@@ -109,10 +109,6 @@ var VirtualizedList = function (_React$Component) {
           onSelectionChange(selectedItems);
         }
       }
-
-      if (_this.props.onItemClick) {
-        _this.props.onItemClick(item);
-      }
     };
 
     _this.renderItem = function (item) {
@@ -120,9 +116,10 @@ var VirtualizedList = function (_React$Component) {
         contextProvider: _this.props.itemContextProvider,
         key: _this.keyForItem(item),
         item: item,
-        onItemClick: _this.handleItemClick,
+        onSelectionChange: _this.handleSelectionChange,
         selected: _this.isSelected(item),
-        selectionMode: _this.props.selectionMode
+        selectionMode: _this.props.selectionMode,
+        selectOnClick: _this.props.selectOnClick
       }, _this.props.itemProps));
     };
 
@@ -216,6 +213,7 @@ VirtualizedList.propTypes = {
   items: _propTypes2.default.array,
   onItemClick: _propTypes2.default.func,
   onSelectionChange: _propTypes2.default.func,
+  selectOnClick: _propTypes2.default.bool,
   selectionMode: _propTypes2.default.oneOf(['single', 'multiple']),
   store: _propTypes2.default.object,
   useWindow: _propTypes2.default.bool

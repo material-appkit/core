@@ -38,31 +38,47 @@ function VirtualizedListItem(props) {
   var item = props.item,
       contextProvider = props.contextProvider,
       onItemClick = props.onItemClick,
+      onSelectionChange = props.onSelectionChange,
       selectionMode = props.selectionMode,
-      rest = _objectWithoutProperties(props, ['item', 'contextProvider', 'onItemClick', 'selectionMode']);
+      selectOnClick = props.selectOnClick,
+      rest = _objectWithoutProperties(props, ['item', 'contextProvider', 'onItemClick', 'onSelectionChange', 'selectionMode', 'selectOnClick']);
 
   var listItemProps = {};
   if (contextProvider) {
     listItemProps = contextProvider(item);
   }
 
-  if (onItemClick) {
-    listItemProps.onClick = function () {
+  listItemProps.onClick = function () {
+    if (selectOnClick && onSelectionChange) {
+      onSelectionChange(item);
+    }
+
+    if (onItemClick) {
       onItemClick(item);
-    };
-  }
+    }
+  };
+
+  var handleSelectionControlClick = function handleSelectionControlClick(e) {
+    e.preventDefault();
+
+    if (onSelectionChange) {
+      onSelectionChange(item);
+    }
+  };
 
   var selectionControl = null;
   if (selectionMode === 'single') {
     selectionControl = _react2.default.createElement(_Radio2.default, {
       checked: props.selected,
-      style: { padding: 8 }
+      style: { padding: 8 },
+      onClick: handleSelectionControlClick
     });
   }
   if (selectionMode === 'multiple') {
     selectionControl = _react2.default.createElement(_Checkbox2.default, {
       checked: props.selected,
-      style: { padding: 8 }
+      style: { padding: 8 },
+      onClick: handleSelectionControlClick
     });
   }
 
@@ -77,7 +93,9 @@ function VirtualizedListItem(props) {
 VirtualizedListItem.propTypes = {
   contextProvider: _propTypes2.default.func,
   onItemClick: _propTypes2.default.func,
+  onSelectionChange: _propTypes2.default.func,
   selected: _propTypes2.default.bool,
+  selectOnClick: _propTypes2.default.bool,
   selectionMode: _propTypes2.default.oneOf(['single', 'multiple'])
 };
 

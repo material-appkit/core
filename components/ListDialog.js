@@ -287,6 +287,7 @@ var ListDialog = function (_React$PureComponent) {
                   _this2.setState({ selection: selection });
                 },
                 selectionMode: this.props.selectionMode,
+                selectOnClick: true,
                 store: this.store,
                 useWindow: false
               })

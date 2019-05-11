@@ -189,6 +189,7 @@ class ListDialog extends React.PureComponent {
                 itemContextProvider={this.listItemContextProvider}
                 onSelectionChange={(selection) => { this.setState({ selection }); }}
                 selectionMode={this.props.selectionMode}
+                selectOnClick
                 store={this.store}
                 useWindow={false}
               />

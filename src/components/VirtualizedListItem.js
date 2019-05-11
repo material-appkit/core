@@ -16,7 +16,9 @@ function VirtualizedListItem(props) {
     item,
     contextProvider,
     onItemClick,
+    onSelectionChange,
     selectionMode,
+    selectOnClick,
     ...rest
   } = props;
 
@@ -25,11 +27,23 @@ function VirtualizedListItem(props) {
     listItemProps = contextProvider(item);
   }
 
-  if (onItemClick) {
-    listItemProps.onClick = () => {
+  listItemProps.onClick = () => {
+    if (selectOnClick && onSelectionChange) {
+      onSelectionChange(item);
+    }
+
+    if (onItemClick) {
       onItemClick(item);
     }
-  }
+  };
+
+  const handleSelectionControlClick = (e) => {
+    e.preventDefault();
+
+    if (onSelectionChange) {
+      onSelectionChange(item);
+    }
+  };
 
   let selectionControl = null;
   if (selectionMode === 'single') {
@@ -37,6 +51,7 @@ function VirtualizedListItem(props) {
       <Radio
         checked={props.selected}
         style={{ padding: 8 }}
+        onClick={handleSelectionControlClick}
       />
     );
   }
@@ -45,6 +60,7 @@ function VirtualizedListItem(props) {
       <Checkbox
         checked={props.selected}
         style={{ padding: 8 }}
+        onClick={handleSelectionControlClick}
       />
     );
   }
@@ -60,7 +76,9 @@ function VirtualizedListItem(props) {
 VirtualizedListItem.propTypes = {
   contextProvider: PropTypes.func,
   onItemClick: PropTypes.func,
+  onSelectionChange: PropTypes.func,
   selected: PropTypes.bool,
+  selectOnClick: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
 };
 
