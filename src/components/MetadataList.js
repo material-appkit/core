@@ -17,16 +17,13 @@ import { valueForKeyPath } from '../util/object';
 
 // -----------------------------------------------------------------------------
 function _MetadataListItem(props) {
-  const { classes, fieldInfo, nullValue, representedObject } = props;
+  const { classes, fieldInfo, representedObject } = props;
 
   function renderValue(value) {
     if (Array.isArray(value)) {
       return value.map((item) => (
-        <ListItem key={item.id} classes={{ root: classes.listItemRoot }}>
-          <ListItemText
-            classes={{ root: classes.listItemTextRoot }}
-            primary={<Typography>{renderValue(item)}</Typography>}
-          />
+        <ListItem key={item.id} classes={{ root: classes.nestedListItemRoot }}>
+          {renderValue(item)}
         </ListItem>
       ));
     } else if (fieldInfo.transform) {
@@ -41,13 +38,13 @@ function _MetadataListItem(props) {
   }
 
   let value = representedObject[fieldInfo.name];
-  if (value === undefined || value === null) {
-    if (!nullValue) {
+  if (value === undefined || value === null || (Array.isArray(value) && !value.length)) {
+    if (!fieldInfo.nullValue) {
       // If no value exists for the given field and nothing has been specified
       // to display for null values, returning null skips rendering of the list item.
       return null;
     } else {
-      value = nullValue;
+      value = fieldInfo.nullValue;
     }
   }
 
@@ -80,19 +77,18 @@ function _MetadataListItem(props) {
     primaryComponentProps.disablePadding = true;
   }
 
-  const primaryContent = (
-    <PrimaryComponent {...primaryComponentProps}>
-      {renderValue(value)}
-    </PrimaryComponent>
-  );
-
   return (
     <ListItem classes={{ root: classes.listItemRoot }}>
       {labelComponent}
 
       <ListItemText
         classes={{ root: classes.listItemTextRoot }}
-        primary={primaryContent}
+        disableTypography
+        primary={(
+          <PrimaryComponent {...primaryComponentProps}>
+            {renderValue(value)}
+          </PrimaryComponent>
+        )}
       />
     </ListItem>
   );
@@ -107,7 +103,6 @@ _MetadataListItem.propTypes = {
 
 const MetadataListItem = withStyles((theme) => ({
   listItemRoot: {
-    alignItems: 'start',
     display: 'flex',
     padding: '1px 0',
   },
@@ -132,25 +127,46 @@ const MetadataListItem = withStyles((theme) => ({
       content: '":"',
     },
   },
+
+  nestedListItemRoot: {
+    display: 'inline',
+    fontSize: '0.875rem',
+    padding: 0,
+    '&:not(:last-child)': {
+      marginRight: 5,
+      '&:after': {
+        content: '","',
+      }
+    }
+  },
+
+  nestedListItemTextRoot: {
+    padding: 0,
+  },
+
+  nestedListItemContent: {
+    display: 'inline',
+  }
+
+
 }))(_MetadataListItem);
 
 // -----------------------------------------------------------------------------
-function MetadataList(props) {
-  const listItemKey = (fieldInfo) => {
-    let key = fieldInfo.name;
-    if (fieldInfo.keyPath) {
-      key = `${key}-${fieldInfo.keyPath}`;
-    }
-    return key;
-  };
+const listItemKey = (fieldInfo) => {
+  let key = fieldInfo.name;
+  if (fieldInfo.keyPath) {
+    key = `${key}-${fieldInfo.keyPath}`;
+  }
+  return key;
+};
 
+function MetadataList(props) {
   return (
     <List disablePadding>
       {props.arrangement.map((fieldInfo) => (
         <MetadataListItem
           key={listItemKey(fieldInfo)}
           fieldInfo={fieldInfo}
-          nullValue={props.nullValue}
           representedObject={props.representedObject}
         />
       ))}
@@ -160,7 +176,6 @@ function MetadataList(props) {
 
 MetadataList.propTypes = {
   arrangement: PropTypes.array.isRequired,
-  nullValue: PropTypes.string,
   representedObject: PropTypes.object.isRequired,
 };
 

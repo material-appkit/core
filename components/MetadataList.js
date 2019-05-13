@@ -58,7 +58,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _MetadataListItem(props) {
   var classes = props.classes,
       fieldInfo = props.fieldInfo,
-      nullValue = props.nullValue,
       representedObject = props.representedObject;
 
 
@@ -67,15 +66,8 @@ function _MetadataListItem(props) {
       return value.map(function (item) {
         return _react2.default.createElement(
           _ListItem2.default,
-          { key: item.id, classes: { root: classes.listItemRoot } },
-          _react2.default.createElement(_ListItemText2.default, {
-            classes: { root: classes.listItemTextRoot },
-            primary: _react2.default.createElement(
-              _Typography2.default,
-              null,
-              renderValue(item)
-            )
-          })
+          { key: item.id, classes: { root: classes.nestedListItemRoot } },
+          renderValue(item)
         );
       });
     } else if (fieldInfo.transform) {
@@ -90,13 +82,13 @@ function _MetadataListItem(props) {
   }
 
   var value = representedObject[fieldInfo.name];
-  if (value === undefined || value === null) {
-    if (!nullValue) {
+  if (value === undefined || value === null || Array.isArray(value) && !value.length) {
+    if (!fieldInfo.nullValue) {
       // If no value exists for the given field and nothing has been specified
       // to display for null values, returning null skips rendering of the list item.
       return null;
     } else {
-      value = nullValue;
+      value = fieldInfo.nullValue;
     }
   }
 
@@ -133,19 +125,18 @@ function _MetadataListItem(props) {
     primaryComponentProps.disablePadding = true;
   }
 
-  var primaryContent = _react2.default.createElement(
-    PrimaryComponent,
-    primaryComponentProps,
-    renderValue(value)
-  );
-
   return _react2.default.createElement(
     _ListItem2.default,
     { classes: { root: classes.listItemRoot } },
     labelComponent,
     _react2.default.createElement(_ListItemText2.default, {
       classes: { root: classes.listItemTextRoot },
-      primary: primaryContent
+      disableTypography: true,
+      primary: _react2.default.createElement(
+        PrimaryComponent,
+        primaryComponentProps,
+        renderValue(value)
+      )
     })
   );
 }
@@ -160,7 +151,6 @@ _MetadataListItem.propTypes = {
 var MetadataListItem = (0, _withStyles2.default)(function (theme) {
   return {
     listItemRoot: {
-      alignItems: 'start',
       display: 'flex',
       padding: '1px 0'
     },
@@ -184,20 +174,41 @@ var MetadataListItem = (0, _withStyles2.default)(function (theme) {
       "&:after": {
         content: '":"'
       }
+    },
+
+    nestedListItemRoot: {
+      display: 'inline',
+      fontSize: '0.875rem',
+      padding: 0,
+      '&:not(:last-child)': {
+        marginRight: 5,
+        '&:after': {
+          content: '","'
+        }
+      }
+    },
+
+    nestedListItemTextRoot: {
+      padding: 0
+    },
+
+    nestedListItemContent: {
+      display: 'inline'
     }
+
   };
 })(_MetadataListItem);
 
 // -----------------------------------------------------------------------------
-function MetadataList(props) {
-  var listItemKey = function listItemKey(fieldInfo) {
-    var key = fieldInfo.name;
-    if (fieldInfo.keyPath) {
-      key = key + '-' + fieldInfo.keyPath;
-    }
-    return key;
-  };
+var listItemKey = function listItemKey(fieldInfo) {
+  var key = fieldInfo.name;
+  if (fieldInfo.keyPath) {
+    key = key + '-' + fieldInfo.keyPath;
+  }
+  return key;
+};
 
+function MetadataList(props) {
   return _react2.default.createElement(
     _List2.default,
     { disablePadding: true },
@@ -205,7 +216,6 @@ function MetadataList(props) {
       return _react2.default.createElement(MetadataListItem, {
         key: listItemKey(fieldInfo),
         fieldInfo: fieldInfo,
-        nullValue: props.nullValue,
         representedObject: props.representedObject
       });
     })
@@ -214,7 +224,6 @@ function MetadataList(props) {
 
 MetadataList.propTypes = {
   arrangement: _propTypes2.default.array.isRequired,
-  nullValue: _propTypes2.default.string,
   representedObject: _propTypes2.default.object.isRequired
 };
 
