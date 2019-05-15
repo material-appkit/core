@@ -19,7 +19,10 @@ class RemoteStore extends DataStore {
     this._endpoint = this.options.endpoint;
 
     // List of objects to receive callback when data is loaded
-    this.subscribers = [];
+    this.listeners = new Map();
+
+    this.addListener = this.addListener.bind(this);
+    this.removeListener = this.removeListener.bind(this);
   }
 
   get endpoint() {
@@ -83,20 +86,28 @@ class RemoteStore extends DataStore {
     this.requestContext = null;
   }
 
-  subscribe(callback) {
-    const self = this;
-
-    this.subscribers.push(callback);
-
-    return function() {
-      const index = self.subscribers.indexOf(callback);
-      if (index === -1) {
-        throw new Error('Could not locate callback index!');
-      }
-      self.subscribers.splice(1, index);
-    }
+  addListener(eventName, callback) {
+    this.listeners.has(eventName) || this.listeners.set(eventName, []);
+    this.listeners.get(eventName).push(callback);
   }
 
+  removeListener(eventName, callback) {
+    let listeners = this.listeners.get(eventName);
+    let index = null;
+
+    if (listeners && listeners.length) {
+      index = listeners.reduce((i, listener, index) => (
+        ((typeof(listener) === 'function') && listener === callback) ? i = index : i
+    ), -1);
+
+      if (index !== -1) {
+        listeners.splice(index, 1);
+        this.listeners.set(eventName, listeners);
+        return true;
+      }
+    }
+    return false;
+  }
 
   _getPageCount(responseData) {
     if (responseData.count === 0) {
@@ -143,10 +154,13 @@ class RemoteStore extends DataStore {
 
       const responseData = res.body;
 
-      // Notify subscribers
-      this.subscribers.forEach((callback) => {
-        callback(responseData, 'load`');
-      });
+      // Notify listeners
+      const listeners = this.listeners.get('load');
+      if (listeners) {
+        listeners.forEach((listener) => {
+          listener(responseData);
+        });
+      }
 
       const loadedItems = this._transformResponseData(responseData);
 

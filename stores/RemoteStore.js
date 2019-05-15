@@ -49,7 +49,10 @@ var RemoteStore = function (_DataStore) {
     _this._endpoint = _this.options.endpoint;
 
     // List of objects to receive callback when data is loaded
-    _this.subscribers = [];
+    _this.listeners = new Map();
+
+    _this.addListener = _this.addListener.bind(_this);
+    _this.removeListener = _this.removeListener.bind(_this);
     return _this;
   }
 
@@ -214,19 +217,29 @@ var RemoteStore = function (_DataStore) {
       this.requestContext = null;
     }
   }, {
-    key: 'subscribe',
-    value: function subscribe(callback) {
-      var self = this;
+    key: 'addListener',
+    value: function addListener(eventName, callback) {
+      this.listeners.has(eventName) || this.listeners.set(eventName, []);
+      this.listeners.get(eventName).push(callback);
+    }
+  }, {
+    key: 'removeListener',
+    value: function removeListener(eventName, callback) {
+      var listeners = this.listeners.get(eventName);
+      var index = null;
 
-      this.subscribers.push(callback);
+      if (listeners && listeners.length) {
+        index = listeners.reduce(function (i, listener, index) {
+          return typeof listener === 'function' && listener === callback ? i = index : i;
+        }, -1);
 
-      return function () {
-        var index = self.subscribers.indexOf(callback);
-        if (index === -1) {
-          throw new Error('Could not locate callback index!');
+        if (index !== -1) {
+          listeners.splice(index, 1);
+          this.listeners.set(eventName, listeners);
+          return true;
         }
-        self.subscribers.splice(1, index);
-      };
+      }
+      return false;
     }
   }, {
     key: '_getPageCount',
@@ -292,10 +305,13 @@ var RemoteStore = function (_DataStore) {
 
                   var responseData = res.body;
 
-                  // Notify subscribers
-                  _this2.subscribers.forEach(function (callback) {
-                    callback(responseData, 'load`');
-                  });
+                  // Notify listeners
+                  var listeners = _this2.listeners.get('load');
+                  if (listeners) {
+                    listeners.forEach(function (listener) {
+                      listener(responseData);
+                    });
+                  }
 
                   var loadedItems = _this2._transformResponseData(responseData);
 
