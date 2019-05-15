@@ -23,6 +23,7 @@ class RemoteStore extends DataStore {
 
     this.addListener = this.addListener.bind(this);
     this.removeListener = this.removeListener.bind(this);
+    this.emit = this.emit.bind(this);
   }
 
   get endpoint() {
@@ -84,6 +85,7 @@ class RemoteStore extends DataStore {
       this.requestContext.request.abort();
     }
     this.requestContext = null;
+    this.emit('unload');
   }
 
   addListener(eventName, callback) {
@@ -107,6 +109,15 @@ class RemoteStore extends DataStore {
       }
     }
     return false;
+  }
+
+  emit(eventName, param) {
+    const listeners = this.listeners.get(eventName);
+    if (listeners) {
+      listeners.forEach((listener) => {
+        listener(param);
+      });
+    }
   }
 
   _getPageCount(responseData) {
@@ -139,6 +150,7 @@ class RemoteStore extends DataStore {
       this.options.onLoadStart(searchParams);
     }
 
+    this.emit('loadWillBegin');
     this.isLoading = true;
 
     const req = ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
@@ -155,12 +167,7 @@ class RemoteStore extends DataStore {
       const responseData = res.body;
 
       // Notify listeners
-      const listeners = this.listeners.get('load');
-      if (listeners) {
-        listeners.forEach((listener) => {
-          listener(responseData);
-        });
-      }
+      this.emit('loadDidComplete', responseData);
 
       const loadedItems = this._transformResponseData(responseData);
 

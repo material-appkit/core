@@ -53,6 +53,7 @@ var RemoteStore = function (_DataStore) {
 
     _this.addListener = _this.addListener.bind(_this);
     _this.removeListener = _this.removeListener.bind(_this);
+    _this.emit = _this.emit.bind(_this);
     return _this;
   }
 
@@ -215,6 +216,7 @@ var RemoteStore = function (_DataStore) {
         this.requestContext.request.abort();
       }
       this.requestContext = null;
+      this.emit('unload');
     }
   }, {
     key: 'addListener',
@@ -240,6 +242,16 @@ var RemoteStore = function (_DataStore) {
         }
       }
       return false;
+    }
+  }, {
+    key: 'emit',
+    value: function emit(eventName, param) {
+      var listeners = this.listeners.get(eventName);
+      if (listeners) {
+        listeners.forEach(function (listener) {
+          listener(param);
+        });
+      }
     }
   }, {
     key: '_getPageCount',
@@ -289,6 +301,7 @@ var RemoteStore = function (_DataStore) {
                   this.options.onLoadStart(searchParams);
                 }
 
+                this.emit('loadWillBegin');
                 this.isLoading = true;
 
                 req = _util.ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
@@ -306,12 +319,7 @@ var RemoteStore = function (_DataStore) {
                   var responseData = res.body;
 
                   // Notify listeners
-                  var listeners = _this2.listeners.get('load');
-                  if (listeners) {
-                    listeners.forEach(function (listener) {
-                      listener(responseData);
-                    });
-                  }
+                  _this2.emit('loadDidComplete', responseData);
 
                   var loadedItems = _this2._transformResponseData(responseData);
 
@@ -337,7 +345,7 @@ var RemoteStore = function (_DataStore) {
                   }
                 });
 
-              case 5:
+              case 6:
               case 'end':
                 return _context5.stop();
             }
