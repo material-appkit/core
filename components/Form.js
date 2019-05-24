@@ -321,6 +321,19 @@ var Form = function (_React$PureComponent) {
         this.props.children
       );
     }
+  }, {
+    key: 'defaultValues',
+    get: function get() {
+      var defaultValues = this.props.defaultValues;
+
+      Object.keys(defaultValues).forEach(function (key) {
+        var defaultValue = defaultValues[key];
+        if (typeof defaultValue === 'function') {
+          defaultValues[key] = defaultValue();
+        }
+      });
+      return defaultValues;
+    }
   }]);
 
   return Form;
@@ -369,7 +382,7 @@ var _initialiseProps = function _initialiseProps() {
                 // If an original object was not explicitly provided, attempt to load one from the given detailUrl
                 requests.push(_util.ServiceAgent.get(_this3.detailUrl));
               } else {
-                referenceObject = _this3.props.defaultValues;
+                referenceObject = _this3.defaultValues;
               }
             }
 
