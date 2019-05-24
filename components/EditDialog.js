@@ -138,12 +138,6 @@ var EditDialog = function (_React$Component) {
       });
     };
 
-    _this.handleKeyPress = function (e) {
-      if (e.key === 'Enter') {
-        _this.commit();
-      }
-    };
-
     _this.formRef = _react2.default.createRef();
 
     var title = props.entityType;
@@ -192,7 +186,6 @@ var EditDialog = function (_React$Component) {
           onClose: function onClose() {
             _this3.dismiss();
           },
-          onKeyPress: this.handleKeyPress,
           open: true
         },
         _react2.default.createElement(

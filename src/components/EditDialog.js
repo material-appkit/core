@@ -85,12 +85,6 @@ class EditDialog extends React.Component {
     });
   };
 
-  handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      this.commit();
-    }
-  };
-
   render() {
     if (this.state.redirectTo) {
       return <Redirect to={this.state.redirectTo} />;
@@ -107,7 +101,6 @@ class EditDialog extends React.Component {
       <Dialog
         classes={{ paper: classes.paper }}
         onClose={() => { this.dismiss(); }}
-        onKeyPress={this.handleKeyPress}
         open
       >
         <DialogTitle id="form-dialog-title">{this.state.title}</DialogTitle>
