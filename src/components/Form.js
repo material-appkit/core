@@ -384,6 +384,16 @@ class Form extends React.PureComponent {
     }
   };
 
+  /**
+   * Callback fired when a form field's value changes.
+   * For the moment its only effect is to clear the respective field error.
+   */
+  handleFormFieldChange = (value, fieldInfo) => {
+    const updatedErrors = { ...this.state.errors };
+    delete updatedErrors[fieldInfo.key];
+    this.setState({ errors: updatedErrors });
+  };
+
   render() {
     if (this.state.loading || !this.state.referenceObject) {
       const loadingIndicatorContainerStyle = {
@@ -409,6 +419,7 @@ class Form extends React.PureComponent {
           fieldInfoMap={this.getFieldInfoMap(this.state.metadata)}
           fieldNames={this.getFieldNames(this.state.metadata)}
           form={this}
+          onFieldChange={this.handleFormFieldChange}
           representedObject={this.state.referenceObject}
         />
         {this.props.children}

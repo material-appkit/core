@@ -288,6 +288,12 @@ var Form = function (_React$PureComponent) {
      * NOTE: This is only applicable when editing a persisted record.
      */
 
+
+    /**
+     * Callback fired when a form field's value changes.
+     * For the moment its only effect is to clear the respective field error.
+     */
+
   }, {
     key: 'render',
     value: function render() {
@@ -316,6 +322,7 @@ var Form = function (_React$PureComponent) {
           fieldInfoMap: this.getFieldInfoMap(this.state.metadata),
           fieldNames: this.getFieldNames(this.state.metadata),
           form: this,
+          onFieldChange: this.handleFormFieldChange,
           representedObject: this.state.referenceObject
         }),
         this.props.children
@@ -559,6 +566,12 @@ var _initialiseProps = function _initialiseProps() {
         _this3.save();
       }, _this3.props.autosaveDelay);
     }
+  };
+
+  this.handleFormFieldChange = function (value, fieldInfo) {
+    var updatedErrors = _extends({}, _this3.state.errors);
+    delete updatedErrors[fieldInfo.key];
+    _this3.setState({ errors: updatedErrors });
   };
 };
 
