@@ -3,9 +3,6 @@
   "version": "0.8.0",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "main": "dist/index.js",
-  "scripts": {
-    "transpile": "babel src -d . --copy-files"
-  },
   "keywords": [
     "React",
     "Material",
