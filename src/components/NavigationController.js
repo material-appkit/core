@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Route, Link } from 'react-router-dom';
 
 import isEqual from 'lodash.isequal';
@@ -23,7 +23,7 @@ import { withStyles } from '@material-ui/core/styles';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-class NavigationController extends React.Component {
+class NavigationController extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -51,17 +51,26 @@ class NavigationController extends React.Component {
 
       if (i < matches.length - 1) {
         tabComponent = (
-          <React.Fragment>
-            <Button component={Link} to={match.url}>{title}</Button>
+          <Fragment>
+            <Button
+              component={Link}
+              to={match.url}
+              classes={{
+                root: classes.breadcrumbButton,
+                label: classes.breadcrumbButtonLabel,
+              }}
+            >
+              {title}
+            </Button>
             <KeyboardArrowRightIcon/>
-          </React.Fragment>
+          </Fragment>
         );
       } else {
         tabComponent = (
-          <React.Fragment>
-            <Typography className={classes.activeBreadCrumb}>{title}</Typography>
+          <Fragment>
+            <Typography className={classes.activeTabTitle}>{title}</Typography>
             {this.createContextMenu(topbarConfig)}
-          </React.Fragment>
+          </Fragment>
         );
       }
 
@@ -124,7 +133,7 @@ class NavigationController extends React.Component {
     }
 
     return (
-      <React.Fragment>
+      <Fragment>
         <IconButton onClick={(e) => { this.toggleContextMenu(e.target); }}>
           <MoreHorizIcon />
         </IconButton>
@@ -149,7 +158,7 @@ class NavigationController extends React.Component {
             </Grow>
           )}
         </Popper>
-      </React.Fragment>
+      </Fragment>
     );
   };
 

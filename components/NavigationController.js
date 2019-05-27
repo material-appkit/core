@@ -94,8 +94,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var NavigationController = function (_React$Component) {
-  _inherits(NavigationController, _React$Component);
+var NavigationController = function (_React$PureComponent) {
+  _inherits(NavigationController, _React$PureComponent);
 
   function NavigationController(props) {
     _classCallCheck(this, NavigationController);
@@ -108,7 +108,7 @@ var NavigationController = function (_React$Component) {
       }
 
       return _react2.default.createElement(
-        _react2.default.Fragment,
+        _react.Fragment,
         null,
         _react2.default.createElement(
           _IconButton2.default,
@@ -311,22 +311,29 @@ var NavigationController = function (_React$Component) {
 
         if (i < matches.length - 1) {
           tabComponent = _react2.default.createElement(
-            _react2.default.Fragment,
+            _react.Fragment,
             null,
             _react2.default.createElement(
               _Button2.default,
-              { component: _reactRouterDom.Link, to: match.url },
+              {
+                component: _reactRouterDom.Link,
+                to: match.url,
+                classes: {
+                  root: classes.breadcrumbButton,
+                  label: classes.breadcrumbButtonLabel
+                }
+              },
               title
             ),
             _react2.default.createElement(_KeyboardArrowRight2.default, null)
           );
         } else {
           tabComponent = _react2.default.createElement(
-            _react2.default.Fragment,
+            _react.Fragment,
             null,
             _react2.default.createElement(
               _Typography2.default,
-              { className: classes.activeBreadCrumb },
+              { className: classes.activeTabTitle },
               title
             ),
             _this3.createContextMenu(topbarConfig)
@@ -393,7 +400,7 @@ var NavigationController = function (_React$Component) {
   }]);
 
   return NavigationController;
-}(_react2.default.Component);
+}(_react2.default.PureComponent);
 
 NavigationController.propTypes = {
   classes: _propTypes2.default.object.isRequired,
