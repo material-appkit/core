@@ -69,24 +69,26 @@ function FormField(props) {
 
 
   var commonFieldProps = {
-    autoFocus: autoFocus,
-    error: errorText ? true : false,
-    helperText: errorText || help,
-    label: label,
     value: fieldValue,
     name: fieldName
   };
+
+  if (fieldInfo.hidden || widget === 'hidden') {
+    return _react2.default.createElement('input', _extends({ type: 'hidden' }, commonFieldProps));
+  }
+
+  Object.assign(commonFieldProps, {
+    autoFocus: autoFocus,
+    error: errorText ? true : false,
+    helperText: errorText || help,
+    label: label
+  });
 
   //----------------------------------------------------------------------------
   var handleFieldChange = function handleFieldChange(value) {
     form.setValue(fieldName, value);
     onChange(value, fieldInfo);
   };
-
-  //----------------------------------------------------------------------------
-  if (fieldInfo.hidden || widget === 'hidden') {
-    return _react2.default.createElement('input', _extends({ type: 'hidden' }, commonFieldProps));
-  }
 
   var WidgetComponent = fieldArrangementInfo.widget;
   if (!WidgetComponent) {

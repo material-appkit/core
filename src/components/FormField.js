@@ -46,24 +46,26 @@ function FormField(props) {
   const { autoFocus, help, label, widget } = fieldInfo.ui;
 
   const commonFieldProps = {
+    value: fieldValue,
+    name: fieldName,
+  };
+
+  if (fieldInfo.hidden || widget === 'hidden') {
+    return <input type="hidden" {...commonFieldProps} />;
+  }
+
+  Object.assign(commonFieldProps, {
     autoFocus,
     error: errorText ? true : false,
     helperText: errorText || help,
     label,
-    value: fieldValue,
-    name: fieldName,
-  };
+  });
 
   //----------------------------------------------------------------------------
   const handleFieldChange = (value) => {
     form.setValue(fieldName, value);
     onChange(value, fieldInfo);
   };
-
-  //----------------------------------------------------------------------------
-  if (fieldInfo.hidden || widget === 'hidden') {
-    return <input type="hidden" {...commonFieldProps} />;
-  }
 
   let WidgetComponent = fieldArrangementInfo.widget;
   if (!WidgetComponent) {
