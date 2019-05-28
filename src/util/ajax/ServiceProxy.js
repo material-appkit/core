@@ -17,20 +17,30 @@ export default class ServiceProxy {
   }
 
   static buildRequestUrl(endpoint) {
+    let endpointInfo = endpoint;
+
+    if (typeof(endpointInfo) === 'string') {
+      endpointInfo = {
+        url: process.env.REACT_APP_API_URL,
+        path: endpointInfo,
+      }
+    }
+
     // If this is already an absolute URL, leave it as is.
-    if (endpoint.startsWith('http')) {
-      return endpoint;
+    if (endpointInfo.path.startsWith('http')) {
+      return endpointInfo.path;
     }
 
     // Construct the AJAX request with the given params
-    let requestURL = process.env.REACT_APP_API_URL;
-    if (!endpoint.startsWith('/')) {
+    let requestURL = endpointInfo.url;
+    if (!endpointInfo.path.startsWith('/')) {
       requestURL += process.env.REACT_APP_API_ENDPOINT_PREFIX;
     }
-    requestURL += endpoint;
+    requestURL += endpointInfo.path;
 
     return requestURL;
   }
+
 
   getRequestHeaders(extra) {
     const headers = { 'Accept': 'application/json' };

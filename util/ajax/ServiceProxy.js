@@ -182,17 +182,26 @@ var ServiceProxy = function () {
   }, {
     key: 'buildRequestUrl',
     value: function buildRequestUrl(endpoint) {
+      var endpointInfo = endpoint;
+
+      if (typeof endpointInfo === 'string') {
+        endpointInfo = {
+          url: process.env.REACT_APP_API_URL,
+          path: endpointInfo
+        };
+      }
+
       // If this is already an absolute URL, leave it as is.
-      if (endpoint.startsWith('http')) {
-        return endpoint;
+      if (endpointInfo.path.startsWith('http')) {
+        return endpointInfo.path;
       }
 
       // Construct the AJAX request with the given params
-      var requestURL = process.env.REACT_APP_API_URL;
-      if (!endpoint.startsWith('/')) {
+      var requestURL = endpointInfo.url;
+      if (!endpointInfo.path.startsWith('/')) {
         requestURL += process.env.REACT_APP_API_ENDPOINT_PREFIX;
       }
-      requestURL += endpoint;
+      requestURL += endpointInfo.path;
 
       return requestURL;
     }
