@@ -19,38 +19,31 @@ class ServiceAgent {
   }
 
   static get(endpoint, params, context, headers) {
-    const proxy = this.createProxy();
-    return proxy.get(endpoint, params, context, headers);
+    return this.request('GET', endpoint, params, context, headers);
   }
 
   static post(endpoint, params, context, headers) {
-    const proxy = this.createProxy();
-    return proxy.post(endpoint, params, context, headers);
+    return this.request('POST', endpoint, params, context, headers);
   }
 
   static put(endpoint, params, context, headers) {
-    const proxy = this.createProxy();
-    return proxy.put(endpoint, params, context, headers);
+    return this.request('PUT', endpoint, params, context, headers);
   }
 
   static patch(endpoint, params, context, headers) {
-    const proxy = this.createProxy();
-    return proxy.patch(endpoint, params, context, headers);
+    return this.request('PATCH', endpoint, params, context, headers);
   }
 
   static delete(endpoint, params, context, headers) {
-    const proxy = this.createProxy();
-    return proxy.delete(endpoint, params, context, headers);
+    return this.request('DELETE', endpoint, params, context, headers);
   }
 
   static options(endpoint, params, context, headers) {
-    const proxy = this.createProxy();
-    return proxy.options(endpoint, params, context, headers);
+    return this.request('OPTIONS', endpoint, params, context, headers);
   }
 
   static head(endpoint, params, context, headers) {
-    const proxy = this.createProxy();
-    return proxy.head(endpoint, params, context, headers);
+    return this.request('HEAD', endpoint, params, context, headers);
   }
 
   static download(endpoint, params, context, headers) {

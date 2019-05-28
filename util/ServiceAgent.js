@@ -40,44 +40,37 @@ var ServiceAgent = function () {
   }, {
     key: 'get',
     value: function get(endpoint, params, context, headers) {
-      var proxy = this.createProxy();
-      return proxy.get(endpoint, params, context, headers);
+      return this.request('GET', endpoint, params, context, headers);
     }
   }, {
     key: 'post',
     value: function post(endpoint, params, context, headers) {
-      var proxy = this.createProxy();
-      return proxy.post(endpoint, params, context, headers);
+      return this.request('POST', endpoint, params, context, headers);
     }
   }, {
     key: 'put',
     value: function put(endpoint, params, context, headers) {
-      var proxy = this.createProxy();
-      return proxy.put(endpoint, params, context, headers);
+      return this.request('PUT', endpoint, params, context, headers);
     }
   }, {
     key: 'patch',
     value: function patch(endpoint, params, context, headers) {
-      var proxy = this.createProxy();
-      return proxy.patch(endpoint, params, context, headers);
+      return this.request('PATCH', endpoint, params, context, headers);
     }
   }, {
     key: 'delete',
     value: function _delete(endpoint, params, context, headers) {
-      var proxy = this.createProxy();
-      return proxy.delete(endpoint, params, context, headers);
+      return this.request('DELETE', endpoint, params, context, headers);
     }
   }, {
     key: 'options',
     value: function options(endpoint, params, context, headers) {
-      var proxy = this.createProxy();
-      return proxy.options(endpoint, params, context, headers);
+      return this.request('OPTIONS', endpoint, params, context, headers);
     }
   }, {
     key: 'head',
     value: function head(endpoint, params, context, headers) {
-      var proxy = this.createProxy();
-      return proxy.head(endpoint, params, context, headers);
+      return this.request('HEAD', endpoint, params, context, headers);
     }
   }, {
     key: 'download',
