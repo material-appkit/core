@@ -355,10 +355,7 @@ var RemoteStore = function (_DataStore) {
                 }).catch(function (err) {
                   _this2._notificationCenter.postNotification(LOAD_DID_FAIL_NOTIFICATION_NAME, _this2, { err: err });
                   _this2.emit('RemoteStore.loadDidFail', err);
-
-                  if (err.code !== 'ABORTED') {
-                    throw err;
-                  }
+                  return null;
                 });
 
               case 7:

@@ -198,10 +198,7 @@ class RemoteStore extends DataStore {
     }).catch((err) => {
       this._notificationCenter.postNotification(LOAD_DID_FAIL_NOTIFICATION_NAME, this, { err });
       this.emit('RemoteStore.loadDidFail', err);
-
-      if (err.code !== 'ABORTED') {
-        throw err;
-      }
+      return null;
     });
   }
 }
