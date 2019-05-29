@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.LOAD_DID_FAIL_NOTIFICATION_NAME = exports.LOAD_DID_COMPLETE_NOTIFICATION_NAME = exports.LOAD_WILL_BEGIN_NOTIFICATION_NAME = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -18,6 +19,10 @@ var _util = require('../util');
 
 var _object = require('../util/object');
 
+var _NotificationManager = require('../managers/NotificationManager');
+
+var _NotificationManager2 = _interopRequireDefault(_NotificationManager);
+
 var _DataStore2 = require('./DataStore');
 
 var _DataStore3 = _interopRequireDefault(_DataStore2);
@@ -31,6 +36,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var LOAD_WILL_BEGIN_NOTIFICATION_NAME = exports.LOAD_WILL_BEGIN_NOTIFICATION_NAME = 'RemoteStore.loadWillBegin';
+var LOAD_DID_COMPLETE_NOTIFICATION_NAME = exports.LOAD_DID_COMPLETE_NOTIFICATION_NAME = 'RemoteStore.loadDidComplete';
+var LOAD_DID_FAIL_NOTIFICATION_NAME = exports.LOAD_DID_FAIL_NOTIFICATION_NAME = 'RemoteStore.loadDidFail';
 
 var RemoteStore = function (_DataStore) {
   _inherits(RemoteStore, _DataStore);
@@ -47,6 +56,7 @@ var RemoteStore = function (_DataStore) {
 
     _this.options = options || {};
     _this._endpoint = _this.options.endpoint;
+    _this._notificationCenter = _this.options.notificationCenter || _NotificationManager2.default.defaultCenter;
 
     // List of objects to receive callback when data is loaded
     _this.listeners = new Map();
@@ -297,12 +307,14 @@ var RemoteStore = function (_DataStore) {
                 searchParams = _extends({ page: page }, this.params);
 
 
+                this.isLoading = true;
+
                 if (this.options.onLoadStart) {
                   this.options.onLoadStart(searchParams);
                 }
 
+                this._notificationCenter.postNotification(LOAD_WILL_BEGIN_NOTIFICATION_NAME, this);
                 this.emit('loadWillBegin');
-                this.isLoading = true;
 
                 req = _util.ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
 
@@ -319,6 +331,7 @@ var RemoteStore = function (_DataStore) {
                   var responseData = res.body;
 
                   // Notify listeners
+                  _this2._notificationCenter.postNotification(LOAD_DID_COMPLETE_NOTIFICATION_NAME, _this2, { res: res });
                   _this2.emit('loadDidComplete', responseData);
 
                   var loadedItems = _this2._transformResponseData(responseData);
@@ -340,12 +353,15 @@ var RemoteStore = function (_DataStore) {
 
                   return responseData;
                 }).catch(function (err) {
+                  _this2._notificationCenter.postNotification(LOAD_DID_FAIL_NOTIFICATION_NAME, _this2, { err: err });
+                  _this2.emit('RemoteStore.loadDidFail', err);
+
                   if (err.code !== 'ABORTED') {
                     throw err;
                   }
                 });
 
-              case 6:
+              case 7:
               case 'end':
                 return _context5.stop();
             }

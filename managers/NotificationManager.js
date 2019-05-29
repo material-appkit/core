@@ -22,22 +22,22 @@ var NotificationManager = function () {
   _createClass(NotificationManager, null, [{
     key: 'postNotification',
     value: function postNotification(notificationName, notificationSender, context) {
-      this._defaultCenter.postNotification(notificationName, notificationSender, context);
+      this.defaultCenter.postNotification(notificationName, notificationSender, context);
     }
   }, {
     key: 'addObserver',
     value: function addObserver(notificationObserver, callback, notificationName, notificationSender) {
-      this._defaultCenter.addObserver(notificationObserver, callback, notificationName, notificationSender);
+      this.defaultCenter.addObserver(notificationObserver, callback, notificationName, notificationSender);
     }
   }, {
     key: 'removeObserver',
     value: function removeObserver(notificationObserver, notificationName, notificationSender) {
-      this._defaultCenter.removeObserver(notificationObserver, notificationName, notificationSender);
+      this.defaultCenter.removeObserver(notificationObserver, notificationName, notificationSender);
     }
   }]);
 
   return NotificationManager;
 }();
 
-NotificationManager._defaultCenter = new _NotificationCenter2.default();
+NotificationManager.defaultCenter = new _NotificationCenter2.default();
 exports.default = NotificationManager;

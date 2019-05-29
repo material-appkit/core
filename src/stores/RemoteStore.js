@@ -3,8 +3,12 @@ import isEqual from 'lodash.isequal';
 import { decorate, observable } from 'mobx';
 import { ServiceAgent } from '../util';
 import { filterEmptyValues } from '../util/object';
-
+import NotificationManager from '../managers/NotificationManager';
 import DataStore from './DataStore';
+
+export const LOAD_WILL_BEGIN_NOTIFICATION_NAME = 'RemoteStore.loadWillBegin';
+export const LOAD_DID_COMPLETE_NOTIFICATION_NAME = 'RemoteStore.loadDidComplete';
+export const LOAD_DID_FAIL_NOTIFICATION_NAME = 'RemoteStore.loadDidFail';
 
 class RemoteStore extends DataStore {
   constructor(options) {
@@ -17,6 +21,7 @@ class RemoteStore extends DataStore {
 
     this.options = options || {};
     this._endpoint = this.options.endpoint;
+    this._notificationCenter = this.options.notificationCenter || NotificationManager.defaultCenter;
 
     // List of objects to receive callback when data is loaded
     this.listeners = new Map();
@@ -100,7 +105,7 @@ class RemoteStore extends DataStore {
     if (listeners && listeners.length) {
       index = listeners.reduce((i, listener, index) => (
         ((typeof(listener) === 'function') && listener === callback) ? i = index : i
-    ), -1);
+      ), -1);
 
       if (index !== -1) {
         listeners.splice(index, 1);
@@ -146,12 +151,14 @@ class RemoteStore extends DataStore {
   async _load(page, replace) {
     const searchParams = { page, ...this.params };
 
+    this.isLoading = true;
+
     if (this.options.onLoadStart) {
       this.options.onLoadStart(searchParams);
     }
 
+    this._notificationCenter.postNotification(LOAD_WILL_BEGIN_NOTIFICATION_NAME, this);
     this.emit('loadWillBegin');
-    this.isLoading = true;
 
     const req = ServiceAgent.get(this.endpoint, searchParams, this.requestContext);
     req.then((res) => {
@@ -167,6 +174,7 @@ class RemoteStore extends DataStore {
       const responseData = res.body;
 
       // Notify listeners
+      this._notificationCenter.postNotification(LOAD_DID_COMPLETE_NOTIFICATION_NAME, this, { res });
       this.emit('loadDidComplete', responseData);
 
       const loadedItems = this._transformResponseData(responseData);
@@ -188,6 +196,9 @@ class RemoteStore extends DataStore {
 
       return responseData;
     }).catch((err) => {
+      this._notificationCenter.postNotification(LOAD_DID_FAIL_NOTIFICATION_NAME, this, { err });
+      this.emit('RemoteStore.loadDidFail', err);
+
       if (err.code !== 'ABORTED') {
         throw err;
       }
