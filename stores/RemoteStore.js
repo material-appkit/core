@@ -55,7 +55,6 @@ var RemoteStore = function (_DataStore) {
     _this.requestContext = null;
 
     _this.options = options || {};
-    _this._endpoint = _this.options.endpoint;
     _this._notificationCenter = _this.options.notificationCenter || _NotificationManager2.default.defaultCenter;
 
     // List of objects to receive callback when data is loaded
@@ -265,11 +264,8 @@ var RemoteStore = function (_DataStore) {
     }
   }, {
     key: '_getPageCount',
-    value: function _getPageCount(responseData) {
-      if (responseData.count === 0) {
-        return 0;
-      }
-      return Math.ceil(responseData.count / 50);
+    value: function _getPageCount(totalLength) {
+      return Math.ceil(totalLength / this.pageSize);
     }
   }, {
     key: '_getTotalLength',
@@ -299,13 +295,19 @@ var RemoteStore = function (_DataStore) {
       var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(page, replace) {
         var _this2 = this;
 
-        var searchParams, req;
+        var searchParams, pageSize, req;
         return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                searchParams = _extends({ page: page }, this.params);
+                searchParams = _extends({}, this.params);
+                pageSize = this.pageSize;
 
+
+                if (pageSize) {
+                  searchParams.page = page;
+                  searchParams.pageSize = pageSize;
+                }
 
                 this.isLoading = true;
 
@@ -339,7 +341,7 @@ var RemoteStore = function (_DataStore) {
                   // Initialize the list of pages now that we know how many there are.
                   if (replace) {
                     _this2.totalLength = _this2._getTotalLength(responseData);
-                    _this2.pageCount = _this2._getPageCount(responseData);
+                    _this2.pageCount = _this2._getPageCount(_this2.totalLength);
                     _this2.items = loadedItems;
                   } else {
                     _this2.items = _this2.items.concat(loadedItems);
@@ -358,7 +360,7 @@ var RemoteStore = function (_DataStore) {
                   return null;
                 });
 
-              case 7:
+              case 9:
               case 'end':
                 return _context5.stop();
             }
@@ -375,11 +377,17 @@ var RemoteStore = function (_DataStore) {
   }, {
     key: 'endpoint',
     get: function get() {
-      if (this._endpoint) {
-        return this._endpoint;
-      }
+      var endpoint = this.options.endpoint;
 
-      throw new Error('Store must specify its endpoint!');
+      if (!endpoint) {
+        throw new Error('Store must specify its endpoint!');
+      }
+      return endpoint;
+    }
+  }, {
+    key: 'pageSize',
+    get: function get() {
+      return this.options.pageSize;
     }
   }]);
 

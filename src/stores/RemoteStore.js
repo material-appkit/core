@@ -20,7 +20,6 @@ class RemoteStore extends DataStore {
     this.requestContext = null;
 
     this.options = options || {};
-    this._endpoint = this.options.endpoint;
     this._notificationCenter = this.options.notificationCenter || NotificationManager.defaultCenter;
 
     // List of objects to receive callback when data is loaded
@@ -32,11 +31,15 @@ class RemoteStore extends DataStore {
   }
 
   get endpoint() {
-    if (this._endpoint) {
-      return this._endpoint;
+    const { endpoint } = this.options;
+    if (!endpoint) {
+      throw new Error('Store must specify its endpoint!');
     }
+    return endpoint;
+  }
 
-    throw new Error('Store must specify its endpoint!');
+  get pageSize() {
+    return this.options.pageSize;
   }
 
   async load(params, page) {
@@ -125,11 +128,8 @@ class RemoteStore extends DataStore {
     }
   }
 
-  _getPageCount(responseData) {
-    if (responseData.count === 0) {
-      return 0;
-    }
-    return Math.ceil(responseData.count / 50);
+  _getPageCount(totalLength) {
+    return Math.ceil(totalLength / this.pageSize);
   }
 
   _getTotalLength(responseData) {
@@ -149,7 +149,13 @@ class RemoteStore extends DataStore {
    * in their respective index in the _pages array.
    */
   async _load(page, replace) {
-    const searchParams = { page, ...this.params };
+    const searchParams = { ...this.params };
+    const pageSize = this.pageSize;
+
+    if (pageSize) {
+      searchParams.page = page;
+      searchParams.pageSize = pageSize;
+    }
 
     this.isLoading = true;
 
@@ -182,7 +188,7 @@ class RemoteStore extends DataStore {
       // Initialize the list of pages now that we know how many there are.
       if (replace) {
         this.totalLength = this._getTotalLength(responseData);
-        this.pageCount = this._getPageCount(responseData);
+        this.pageCount = this._getPageCount(this.totalLength);
         this.items = loadedItems;
       } else {
         this.items = this.items.concat(loadedItems);
