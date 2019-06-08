@@ -146,7 +146,7 @@ var MessageSnackbarContentWrapper = (0, _styles.withStyles)(function (theme) {
     },
     iconVariant: {
       opacity: 0.9,
-      marginRight: theme.spacing.unit
+      marginRight: theme.spacing(1)
     },
     message: {
       display: 'flex',
