@@ -16,8 +16,6 @@ var _superagent2 = _interopRequireDefault(_superagent);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var ServiceProxy = function () {
@@ -48,78 +46,47 @@ var ServiceProxy = function () {
     }
   }, {
     key: 'request',
-    value: function () {
-      var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(method, endpoint, params, context, headers) {
-        var requestURL, requestParams, req;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                requestURL = this.constructor.buildRequestUrl(endpoint);
+    value: function request(method, endpoint, params, context, headers) {
+      var requestURL = this.constructor.buildRequestUrl(endpoint);
 
-
-                if (typeof params === 'function') {
-                  params = params();
-                }
-                requestParams = params || {};
-                req = null;
-                _context.t0 = method;
-                _context.next = _context.t0 === 'GET' ? 7 : _context.t0 === 'POST' ? 9 : _context.t0 === 'PUT' ? 11 : _context.t0 === 'PATCH' ? 13 : _context.t0 === 'DELETE' ? 15 : _context.t0 === 'OPTIONS' ? 17 : _context.t0 === 'HEAD' ? 19 : 21;
-                break;
-
-              case 7:
-                req = _superagent2.default.get(requestURL).query(requestParams);
-                return _context.abrupt('break', 22);
-
-              case 9:
-                req = _superagent2.default.post(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
-
-              case 11:
-                req = _superagent2.default.put(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
-
-              case 13:
-                req = _superagent2.default.patch(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
-
-              case 15:
-                req = _superagent2.default.del(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
-
-              case 17:
-                req = _superagent2.default.options(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
-
-              case 19:
-                req = _superagent2.default.head(requestURL).send(requestParams);
-                return _context.abrupt('break', 22);
-
-              case 21:
-                throw new Error('Unsupported request method: ' + method);
-
-              case 22:
-                req.set(this.getRequestHeaders(headers));
-
-                if (context) {
-                  context.request = req;
-                }
-                return _context.abrupt('return', req);
-
-              case 25:
-              case 'end':
-                return _context.stop();
-            }
-          }
-        }, _callee, this);
-      }));
-
-      function request(_x, _x2, _x3, _x4, _x5) {
-        return _ref.apply(this, arguments);
+      if (typeof params === 'function') {
+        params = params();
       }
+      var requestParams = params || {};
 
-      return request;
-    }()
+      var req = null;
+      switch (method) {
+        case 'GET':
+          req = _superagent2.default.get(requestURL).query(requestParams);
+          break;
+        case 'POST':
+          req = _superagent2.default.post(requestURL).send(requestParams);
+          break;
+        case 'PUT':
+          req = _superagent2.default.put(requestURL).send(requestParams);
+          break;
+        case 'PATCH':
+          req = _superagent2.default.patch(requestURL).send(requestParams);
+          break;
+        case 'DELETE':
+          req = _superagent2.default.del(requestURL).send(requestParams);
+          break;
+        case 'OPTIONS':
+          req = _superagent2.default.options(requestURL).send(requestParams);
+          break;
+        case 'HEAD':
+          req = _superagent2.default.head(requestURL).send(requestParams);
+          break;
+        default:
+          throw new Error('Unsupported request method: ' + method);
+      }
+      req.set(this.getRequestHeaders(headers));
+
+      if (context) {
+        context.request = req;
+      }
+      return req;
+    }
   }, {
     key: 'get',
     value: function get(endpoint, params, context, headers) {

@@ -62,7 +62,7 @@ export default class ServiceProxy {
     return headers;
   }
 
-  async request(method, endpoint, params, context, headers) {
+  request(method, endpoint, params, context, headers) {
     const requestURL = this.constructor.buildRequestUrl(endpoint);
 
     if (typeof params === 'function') {
