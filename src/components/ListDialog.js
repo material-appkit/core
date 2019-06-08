@@ -34,13 +34,13 @@ const DialogTitle = withStyles((theme) => ({
   },
 
   headingContainer: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing(2),
   },
 
   closeButton: {
     position: 'absolute',
-    right: theme.spacing.unit,
-    top: theme.spacing.unit,
+    right: theme.spacing(1),
+    top: theme.spacing(1),
     color: theme.palette.grey[500],
   },
 }))((props) => {

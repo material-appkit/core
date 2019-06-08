@@ -81,7 +81,7 @@ const MessageSnackbarContentWrapper = withStyles((theme) => ({
   },
   iconVariant: {
     opacity: 0.9,
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
   message: {
     display: 'flex',
@@ -90,7 +90,7 @@ const MessageSnackbarContentWrapper = withStyles((theme) => ({
 }))(MessageSnackbarContent);
 
 //------------------------------------------------------------------------------
-class SnackbarManager extends React.Component {
+class SnackbarManager extends React.PureComponent {
   static queue = observable.array();
 
   static addMessage(messageInfo) {
@@ -174,26 +174,24 @@ class SnackbarManager extends React.Component {
 
   render() {
     return (
-      <div>
-        <Snackbar
-          key={this.state.messageInfo.key}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-          open={this.state.isOpen}
-          autoHideDuration={3000}
+      <Snackbar
+        key={this.state.messageInfo.key}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        open={this.state.isOpen}
+        autoHideDuration={3000}
+        onClose={this.handleClose}
+        onExited={this.handleExited}
+      >
+        <MessageSnackbarContentWrapper
+          variant={this.state.messageInfo.variant}
+          className={this.props.classes.margin}
+          message={this.state.messageInfo.message}
           onClose={this.handleClose}
-          onExited={this.handleExited}
-        >
-          <MessageSnackbarContentWrapper
-            variant={this.state.messageInfo.variant}
-            className={this.props.classes.margin}
-            message={this.state.messageInfo.message}
-            onClose={this.handleClose}
-          />
-        </Snackbar>
-      </div>
+        />
+      </Snackbar>
     );
   }
 }
@@ -204,6 +202,6 @@ SnackbarManager.propTypes = {
 
 export default withStyles((theme) => ({
   close: {
-    padding: theme.spacing.unit / 2,
+    padding: theme.spacing(2),
   },
 }))(SnackbarManager);

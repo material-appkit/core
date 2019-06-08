@@ -1,6 +1,6 @@
 {
   "name": "@material-appkit/core",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "main": "dist/index.js",
   "keywords": [
@@ -14,10 +14,6 @@
   "author": "Allan Hart",
   "license": "MIT",
   "dependencies": {
-    "@date-io/moment": "^1.3.6",
-    "@material-ui/core": "^3.9.3",
-    "@material-ui/icons": "^3.0.2",
-    "@material-ui/pickers": "^3.1.0",
     "docs.flowjs": "^2.13.0",
     "js-cookie": "^2.2.0",
     "lodash.clonedeep": "^4.5.0",
@@ -30,6 +26,10 @@
     "title-case": "^2.1.1"
   },
   "peerDependencies": {
+    "@date-io/moment": "^1.3.6",
+    "@material-ui/core": "^4.0.2",
+    "@material-ui/icons": "^4.0.1",
+    "@material-ui/pickers": "^3.1.0",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
     "moment": "^2.23.0",

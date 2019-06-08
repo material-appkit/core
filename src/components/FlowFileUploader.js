@@ -332,7 +332,7 @@ export default withStyles((theme) => ({
   previewImageContainer: {
     height: 250,
     borderRadius: 4,
-    marginBottom: theme.spacing.unit * 2,
+    marginBottom: theme.spacing(2),
     overflow: 'hidden',
     position: 'relative',
   },

@@ -146,7 +146,7 @@ var MessageSnackbarContentWrapper = (0, _styles.withStyles)(function (theme) {
     },
     iconVariant: {
       opacity: 0.9,
-      marginRight: theme.spacing.unit
+      marginRight: theme.spacing(1)
     },
     message: {
       display: 'flex',
@@ -157,8 +157,8 @@ var MessageSnackbarContentWrapper = (0, _styles.withStyles)(function (theme) {
 
 //------------------------------------------------------------------------------
 
-var SnackbarManager = function (_React$Component) {
-  _inherits(SnackbarManager, _React$Component);
+var SnackbarManager = function (_React$PureComponent) {
+  _inherits(SnackbarManager, _React$PureComponent);
 
   function SnackbarManager() {
     var _ref;
@@ -215,28 +215,24 @@ var SnackbarManager = function (_React$Component) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          _Snackbar2.default,
-          {
-            key: this.state.messageInfo.key,
-            anchorOrigin: {
-              vertical: 'top',
-              horizontal: 'center'
-            },
-            open: this.state.isOpen,
-            autoHideDuration: 3000,
-            onClose: this.handleClose,
-            onExited: this.handleExited
+        _Snackbar2.default,
+        {
+          key: this.state.messageInfo.key,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center'
           },
-          _react2.default.createElement(MessageSnackbarContentWrapper, {
-            variant: this.state.messageInfo.variant,
-            className: this.props.classes.margin,
-            message: this.state.messageInfo.message,
-            onClose: this.handleClose
-          })
-        )
+          open: this.state.isOpen,
+          autoHideDuration: 3000,
+          onClose: this.handleClose,
+          onExited: this.handleExited
+        },
+        _react2.default.createElement(MessageSnackbarContentWrapper, {
+          variant: this.state.messageInfo.variant,
+          className: this.props.classes.margin,
+          message: this.state.messageInfo.message,
+          onClose: this.handleClose
+        })
       );
     }
   }], [{
@@ -278,7 +274,7 @@ var SnackbarManager = function (_React$Component) {
   }]);
 
   return SnackbarManager;
-}(_react2.default.Component);
+}(_react2.default.PureComponent);
 
 SnackbarManager.queue = _mobx.observable.array();
 
@@ -290,7 +286,7 @@ SnackbarManager.propTypes = {
 exports.default = (0, _styles.withStyles)(function (theme) {
   return {
     close: {
-      padding: theme.spacing.unit / 2
+      padding: theme.spacing(2)
     }
   };
 })(SnackbarManager);
