@@ -57,8 +57,15 @@ class ListView extends React.PureComponent {
     }
   }
 
+  componentDidMount() {
+    this.refresh();
+  }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
+    this.refresh();
+  }
+
+  refresh = () => {
     if (!this.isActive) {
       // Since this component may be mounted in the background, only respond
       // to location changes when it is "active"
@@ -90,7 +97,7 @@ class ListView extends React.PureComponent {
     } else {
       this.syncItemStore();
     }
-  }
+  };
 
   get isActive() {
     const { location, mountPath } = this.props;

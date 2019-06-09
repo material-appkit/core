@@ -69,6 +69,40 @@ var ListView = function (_React$PureComponent) {
       selectedTabIndex: null
     };
 
+    _this.refresh = function () {
+      if (!_this.isActive) {
+        // Since this component may be mounted in the background, only respond
+        // to location changes when it is "active"
+        return;
+      }
+
+      if (_this.subsetArrangement) {
+        var tabIndex = (0, _map.indexOfKey)(_this.subsetKey, _this.subsetArrangement);
+        if (tabIndex === -1) {
+          // Decide whether we need to redirect.
+          // This will be the case when a subset arrangement is in effect and the
+          // querystring param does not match any of the existing subset names.
+          if (!_this.state.redirectTo) {
+            var firstSubsetKey = _this.subsetArrangement.keys().next().value;
+            var subsetConfig = _this.subsetArrangement.get(firstSubsetKey);
+            _this.setState({ redirectTo: subsetConfig.path });
+          } else {
+            _this.setState({ redirectTo: null });
+          }
+        } else {
+          _this.syncItemStore();
+          if (tabIndex !== _this.state.selectedTabIndex) {
+            _this.setState({ selectedTabIndex: tabIndex });
+            if (_this.props.onTabChange) {
+              _this.props.onTabChange(tabIndex, _this.state.selectedTabIndex);
+            }
+          }
+        }
+      } else {
+        _this.syncItemStore();
+      }
+    };
+
     _this.syncItemStore = function () {
       var store = _this.props.store;
 
@@ -122,39 +156,14 @@ var ListView = function (_React$PureComponent) {
       }
     }
   }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      this.refresh();
+    }
+  }, {
     key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps) {
-      if (!this.isActive) {
-        // Since this component may be mounted in the background, only respond
-        // to location changes when it is "active"
-        return;
-      }
-
-      if (this.subsetArrangement) {
-        var tabIndex = (0, _map.indexOfKey)(this.subsetKey, this.subsetArrangement);
-        if (tabIndex === -1) {
-          // Decide whether we need to redirect.
-          // This will be the case when a subset arrangement is in effect and the
-          // querystring param does not match any of the existing subset names.
-          if (!this.state.redirectTo) {
-            var firstSubsetKey = this.subsetArrangement.keys().next().value;
-            var subsetConfig = this.subsetArrangement.get(firstSubsetKey);
-            this.setState({ redirectTo: subsetConfig.path });
-          } else {
-            this.setState({ redirectTo: null });
-          }
-        } else {
-          this.syncItemStore();
-          if (tabIndex !== this.state.selectedTabIndex) {
-            this.setState({ selectedTabIndex: tabIndex });
-            if (this.props.onTabChange) {
-              this.props.onTabChange(tabIndex, this.state.selectedTabIndex);
-            }
-          }
-        }
-      } else {
-        this.syncItemStore();
-      }
+    value: function componentDidUpdate() {
+      this.refresh();
     }
   }, {
     key: 'render',

@@ -46,7 +46,7 @@ var _Typography = require('@material-ui/core/Typography');
 
 var _Typography2 = _interopRequireDefault(_Typography);
 
-var _styles = require('@material-ui/styles');
+var _styles = require('@material-ui/core/styles');
 
 var _withStyles = require('@material-ui/core/styles/withStyles');
 
