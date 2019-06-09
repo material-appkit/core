@@ -47,7 +47,6 @@ class NavigationController extends React.PureComponent {
       }
 
       let tabComponent = null;
-      let contextMenu = null;
 
       if (i < matches.length - 1) {
         tabComponent = (
@@ -242,7 +241,9 @@ class NavigationController extends React.PureComponent {
       >
         <AppBar color="default" position="fixed" className={classes.appBar}>
           <Toolbar className={classes.navBar} disableGutters>
-            <TabList className={classes.tabList}>{this.tabs}</TabList>
+            <TabList className={classes.tabList}>
+              {this.tabs}
+            </TabList>
             {this.rightBarItem}
           </Toolbar>
           {this.contextToolbar}

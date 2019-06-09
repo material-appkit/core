@@ -307,7 +307,6 @@ var NavigationController = function (_React$PureComponent) {
         }
 
         var tabComponent = null;
-        var contextMenu = null;
 
         if (i < matches.length - 1) {
           tabComponent = _react2.default.createElement(
