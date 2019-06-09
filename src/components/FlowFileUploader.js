@@ -285,7 +285,7 @@ FlowFileUploader.propTypes = {
   query: PropTypes.object,
   uploadUrl: PropTypes.string.isRequired,
   uploadButtonTooltip: PropTypes.string,
-  UploadButtonIcon: PropTypes.func,
+  UploadButtonIcon: PropTypes.object,
   variant: PropTypes.oneOf(['inline', 'image']),
 };
 

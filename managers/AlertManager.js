@@ -10,10 +10,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _propTypes = require('prop-types');
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
 var _mobx = require('mobx');
 
 var _mobxReact = require('mobx-react');
@@ -46,10 +42,6 @@ var _TextField = require('@material-ui/core/TextField');
 
 var _TextField2 = _interopRequireDefault(_TextField);
 
-var _withStyles = require('@material-ui/core/styles/withStyles');
-
-var _withStyles2 = _interopRequireDefault(_withStyles);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -63,6 +55,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * AlertManager
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+// import PropTypes from 'prop-types';
 
 var AlertManager = function (_React$Component) {
   _inherits(AlertManager, _React$Component);
@@ -231,10 +225,4 @@ var AlertManager = function (_React$Component) {
 }(_react2.default.Component);
 
 AlertManager.queue = _mobx.observable.map();
-
-
-AlertManager.propTypes = {
-  classes: _propTypes2.default.object.isRequired
-};
-
-exports.default = (0, _withStyles2.default)({})((0, _mobxReact.observer)(AlertManager));
+exports.default = (0, _mobxReact.observer)(AlertManager);

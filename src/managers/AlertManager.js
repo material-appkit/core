@@ -5,7 +5,7 @@
 */
 
 import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
@@ -17,7 +17,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-import withStyles from '@material-ui/core/styles/withStyles';
 
 class AlertManager extends React.Component {
   static queue = observable.map();
@@ -130,10 +129,4 @@ class AlertManager extends React.Component {
   }
 }
 
-AlertManager.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles({
-
-})(observer(AlertManager));
+export default observer(AlertManager);

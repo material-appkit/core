@@ -350,7 +350,7 @@ ListDialog.propTypes = {
   entityType: _propTypes2.default.string.isRequired,
   filterParams: _propTypes2.default.object,
   itemIdKey: _propTypes2.default.string,
-  listItemComponent: _propTypes2.default.func.isRequired,
+  listItemComponent: _propTypes2.default.object.isRequired,
   listItemProps: _propTypes2.default.object,
   onDismiss: _propTypes2.default.func.isRequired,
   searchFilterParam: _propTypes2.default.string,

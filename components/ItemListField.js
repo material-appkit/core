@@ -195,7 +195,7 @@ ItemListField.propTypes = {
   filterParams: _propTypes2.default.object,
   itemKeyPath: _propTypes2.default.string,
   listDialogProps: _propTypes2.default.object,
-  listItemComponent: _propTypes2.default.func,
+  listItemComponent: _propTypes2.default.object,
   listItemProps: _propTypes2.default.object,
   label: _propTypes2.default.string,
   name: _propTypes2.default.string.isRequired,
