@@ -403,6 +403,7 @@ var NavigationController = function (_React$PureComponent) {
 
 NavigationController.propTypes = {
   classes: _propTypes2.default.object.isRequired,
+  theme: _propTypes2.default.object.isRequired,
   matches: _propTypes2.default.array.isRequired
 };
 

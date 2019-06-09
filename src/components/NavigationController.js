@@ -277,6 +277,7 @@ class NavigationController extends React.PureComponent {
 
 NavigationController.propTypes = {
   classes: PropTypes.object.isRequired,
+  theme: PropTypes.object.isRequired,
   matches: PropTypes.array.isRequired,
 };
 
