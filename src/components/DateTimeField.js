@@ -16,7 +16,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import {
   DateTimePicker,
   MuiPickersUtilsProvider,
-} from "material-ui-pickers";
+} from '@material-ui/pickers';
 
 
 class DateTimeField extends React.PureComponent {

@@ -30,7 +30,7 @@ var _withStyles = require('@material-ui/core/styles/withStyles');
 
 var _withStyles2 = _interopRequireDefault(_withStyles);
 
-var _materialUiPickers = require('material-ui-pickers');
+var _pickers = require('@material-ui/pickers');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -94,9 +94,9 @@ var DateTimeField = function (_React$PureComponent) {
             label
           ),
           _react2.default.createElement(
-            _materialUiPickers.MuiPickersUtilsProvider,
+            _pickers.MuiPickersUtilsProvider,
             { utils: _moment4.default },
-            _react2.default.createElement(_materialUiPickers.DateTimePicker, {
+            _react2.default.createElement(_pickers.DateTimePicker, {
               autoOk: true,
               value: this.state.selectedDate,
               onChange: this.handleDateChange
