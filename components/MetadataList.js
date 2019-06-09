@@ -46,20 +46,71 @@ var _Typography = require('@material-ui/core/Typography');
 
 var _Typography2 = _interopRequireDefault(_Typography);
 
-var _withStyles = require('@material-ui/core/styles/withStyles');
-
-var _withStyles2 = _interopRequireDefault(_withStyles);
+var _styles = require('@material-ui/styles');
 
 var _object = require('../util/object');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // -----------------------------------------------------------------------------
-function _MetadataListItem(props) {
-  var classes = props.classes,
-      fieldInfo = props.fieldInfo,
+var metadataListItemStyles = (0, _styles.makeStyles)(function (theme) {
+  return {
+    listItemRoot: {
+      display: 'flex',
+      padding: '1px 0'
+    },
+
+    listItemIconRoot: {
+      marginRight: 5
+    },
+
+    listItemIcon: {
+      height: 18,
+      width: 18
+    },
+
+    listItemTextRoot: {
+      margin: '1px 0',
+      padding: 0
+    },
+
+    label: {
+      fontWeight: 500,
+      marginRight: 5,
+      "&:after": {
+        content: '":"'
+      }
+    },
+
+    nestedListItemRoot: {
+      display: 'inline',
+      fontSize: theme.typography.pxToRem(14),
+      padding: 0,
+      '&:not(:last-child)': {
+        marginRight: 5,
+        '&:after': {
+          content: '","'
+        }
+      }
+    },
+
+    nestedListItemTextRoot: {
+      fontSize: theme.typography.pxToRem(14),
+      margin: 0,
+      padding: 0
+    },
+
+    nestedListItemContent: {
+      display: 'inline'
+    }
+  };
+});
+
+function MetadataListItem(props) {
+  var fieldInfo = props.fieldInfo,
       representedObject = props.representedObject;
 
+  var classes = metadataListItemStyles();
 
   function renderValue(value) {
     if (Array.isArray(value)) {
@@ -102,7 +153,7 @@ function _MetadataListItem(props) {
     if (typeof LabelContent === 'string') {
       labelComponent = _react2.default.createElement(
         _Typography2.default,
-        { className: classes.label },
+        { variant: 'body2', className: classes.label },
         LabelContent
       );
     } else {
@@ -114,7 +165,7 @@ function _MetadataListItem(props) {
     }
   }
 
-  var PrimaryComponent = _Typography2.default;
+  var PrimaryComponent = null;
   var primaryComponentProps = {};
   if (fieldInfo.type === 'link' && value.path) {
     PrimaryComponent = _Link2.default;
@@ -123,6 +174,9 @@ function _MetadataListItem(props) {
   } else if (Array.isArray(value)) {
     PrimaryComponent = _List2.default;
     primaryComponentProps.disablePadding = true;
+  } else {
+    PrimaryComponent = _Typography2.default;
+    primaryComponentProps.variant = 'body2';
   }
 
   return _react2.default.createElement(
@@ -141,63 +195,11 @@ function _MetadataListItem(props) {
   );
 }
 
-_MetadataListItem.propTypes = {
-  classes: _propTypes2.default.object.isRequired,
+MetadataListItem.propTypes = {
   fieldInfo: _propTypes2.default.object.isRequired,
   nullValue: _propTypes2.default.string,
   representedObject: _propTypes2.default.object.isRequired
 };
-
-var MetadataListItem = (0, _withStyles2.default)(function (theme) {
-  return {
-    listItemRoot: {
-      display: 'flex',
-      padding: '1px 0'
-    },
-
-    listItemIconRoot: {
-      marginRight: 5
-    },
-
-    listItemIcon: {
-      height: 18,
-      width: 18
-    },
-
-    listItemTextRoot: {
-      padding: 0
-    },
-
-    label: {
-      fontWeight: 500,
-      marginRight: 5,
-      "&:after": {
-        content: '":"'
-      }
-    },
-
-    nestedListItemRoot: {
-      display: 'inline',
-      fontSize: '0.875rem',
-      padding: 0,
-      '&:not(:last-child)': {
-        marginRight: 5,
-        '&:after': {
-          content: '","'
-        }
-      }
-    },
-
-    nestedListItemTextRoot: {
-      padding: 0
-    },
-
-    nestedListItemContent: {
-      display: 'inline'
-    }
-
-  };
-})(_MetadataListItem);
 
 // -----------------------------------------------------------------------------
 var listItemKey = function listItemKey(fieldInfo) {

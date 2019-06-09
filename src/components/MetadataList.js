@@ -2,7 +2,7 @@ import moment from 'moment';
 import titleCase from 'title-case';
 
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import Link from '@material-ui/core/Link';
@@ -11,13 +11,65 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { makeStyles } from '@material-ui/styles';
 
 import { valueForKeyPath } from '../util/object';
 
 // -----------------------------------------------------------------------------
-function _MetadataListItem(props) {
-  const { classes, fieldInfo, representedObject } = props;
+const metadataListItemStyles = makeStyles((theme) => ({
+  listItemRoot: {
+    display: 'flex',
+    padding: '1px 0',
+  },
+
+  listItemIconRoot: {
+    marginRight: 5,
+  },
+
+  listItemIcon: {
+    height: 18,
+    width: 18,
+  },
+
+  listItemTextRoot: {
+    margin: '1px 0',
+    padding: 0,
+  },
+
+  label: {
+    fontWeight: 500,
+    marginRight: 5,
+    "&:after": {
+      content: '":"',
+    },
+  },
+
+  nestedListItemRoot: {
+    display: 'inline',
+    fontSize: theme.typography.pxToRem(14),
+    padding: 0,
+    '&:not(:last-child)': {
+      marginRight: 5,
+      '&:after': {
+        content: '","',
+      },
+    },
+  },
+
+  nestedListItemTextRoot: {
+    fontSize: theme.typography.pxToRem(14),
+    margin: 0,
+    padding: 0,
+  },
+
+  nestedListItemContent: {
+    display: 'inline',
+  },
+}));
+
+function MetadataListItem(props) {
+  const { fieldInfo, representedObject } = props;
+  const classes = metadataListItemStyles();
 
   function renderValue(value) {
     if (Array.isArray(value)) {
@@ -56,17 +108,21 @@ function _MetadataListItem(props) {
   let labelComponent = null;
   if (LabelContent) {
     if (typeof(LabelContent) === 'string') {
-      labelComponent = <Typography className={classes.label}>{LabelContent}</Typography>;
+      labelComponent = (
+        <Typography variant="body2" className={classes.label}>
+          {LabelContent}
+        </Typography>
+      );
     } else {
       labelComponent = (
         <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
-         <LabelContent className={classes.listItemIcon} />
-       </ListItemIcon>
+          <LabelContent className={classes.listItemIcon} />
+        </ListItemIcon>
       );
     }
   }
 
-  let PrimaryComponent = Typography;
+  let PrimaryComponent = null;
   const primaryComponentProps = {};
   if (fieldInfo.type === 'link' && value.path) {
     PrimaryComponent = Link;
@@ -75,6 +131,9 @@ function _MetadataListItem(props) {
   } else if (Array.isArray(value)) {
     PrimaryComponent = List;
     primaryComponentProps.disablePadding = true;
+  } else {
+    PrimaryComponent = Typography;
+    primaryComponentProps.variant = 'body2';
   }
 
   return (
@@ -94,62 +153,11 @@ function _MetadataListItem(props) {
   );
 }
 
-_MetadataListItem.propTypes = {
-  classes: PropTypes.object.isRequired,
+MetadataListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
   nullValue: PropTypes.string,
   representedObject: PropTypes.object.isRequired,
 };
-
-const MetadataListItem = withStyles((theme) => ({
-  listItemRoot: {
-    display: 'flex',
-    padding: '1px 0',
-  },
-
-  listItemIconRoot: {
-    marginRight: 5,
-  },
-
-  listItemIcon: {
-    height: 18,
-    width: 18,
-  },
-
-  listItemTextRoot: {
-    padding: 0,
-  },
-
-  label: {
-    fontWeight: 500,
-    marginRight: 5,
-    "&:after": {
-      content: '":"',
-    },
-  },
-
-  nestedListItemRoot: {
-    display: 'inline',
-    fontSize: '0.875rem',
-    padding: 0,
-    '&:not(:last-child)': {
-      marginRight: 5,
-      '&:after': {
-        content: '","',
-      }
-    }
-  },
-
-  nestedListItemTextRoot: {
-    padding: 0,
-  },
-
-  nestedListItemContent: {
-    display: 'inline',
-  }
-
-
-}))(_MetadataListItem);
 
 // -----------------------------------------------------------------------------
 const listItemKey = (fieldInfo) => {
