@@ -70,14 +70,14 @@ function VirtualizedListItem(props) {
   if (selectionMode === 'single') {
     selectionControl = _react2.default.createElement(_Radio2.default, {
       checked: props.selected,
-      style: { padding: 8, marginRight: 16 },
+      style: { padding: 8, marginRight: 8 },
       onClick: handleSelectionControlClick
     });
   }
   if (selectionMode === 'multiple') {
     selectionControl = _react2.default.createElement(_Checkbox2.default, {
       checked: props.selected,
-      style: { padding: 8, marginRight: 16 },
+      style: { padding: 8, marginRight: 8 },
       onClick: handleSelectionControlClick
     });
   }
