@@ -583,7 +583,7 @@ Form.propTypes = {
   children: _propTypes2.default.any,
   defaultValues: _propTypes2.default.object,
   entityType: _propTypes2.default.string,
-  FieldSet: _propTypes2.default.object,
+  FieldSet: _propTypes2.default.func,
   fieldArrangement: _propTypes2.default.array,
   fieldInfoProvider: _propTypes2.default.func,
   representedObjectId: _propTypes2.default.number,

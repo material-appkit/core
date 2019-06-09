@@ -15,6 +15,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles }from '@material-ui/styles';
 import withStyles from '@material-ui/core/styles/withStyles';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -27,8 +28,30 @@ import { valueForKeyPath } from '../util/object';
 import EditDialog from './EditDialog';
 import ListDialog from './ListDialog';
 
+
+const itemListItemStyles = makeStyles((theme) => ({
+  root: theme.itemList.item,
+  itemButton: theme.itemList.itemButton,
+  itemText: theme.itemList.itemText,
+
+  removeIconRoot: {
+    cursor: 'pointer',
+    minWidth: 36,
+  },
+
+  listItemIconRoot: {
+    marginRight: 5,
+  },
+
+  listItemIcon: {
+    height: '18px !important',
+    width: '18px !important',
+  },
+}));
+
 function ItemListItem(props) {
-  const { classes, item, onClick, onChange } = props;
+  const { item, onClick, onChange } = props;
+  const classes = itemListItemStyles();
 
   let component = null;
   if (props.component) {
@@ -105,36 +128,16 @@ function ItemListItem(props) {
 }
 
 ItemListItem.propTypes = {
-  classes: PropTypes.object.isRequired,
   clickAction: PropTypes.string,
-  component: PropTypes.object,
+  component: PropTypes.func,
   icon: PropTypes.object,
   item: PropTypes.object.isRequired,
   mode: PropTypes.oneOf(['view', 'edit']),
   onClick: PropTypes.func.isRequired,
+  onChange: PropTypes.func,
   onRemove: PropTypes.func,
   titleKey: PropTypes.any,
 };
-
-const StyledItemListItem = withStyles((theme) => ({
-  root: theme.itemList.item,
-  itemButton: theme.itemList.itemButton,
-  itemText: theme.itemList.itemText,
-
-  removeIconRoot: {
-    cursor: 'pointer',
-    marginRight: 5,
-  },
-
-  listItemIconRoot: {
-    marginRight: 5,
-  },
-
-  listItemIcon: {
-    height: '18px !important',
-    width: '18px !important',
-  },
-}))(ItemListItem);
 
 // -----------------------------------------------------------------------------
 class ItemList extends React.PureComponent {
@@ -298,7 +301,7 @@ class ItemList extends React.PureComponent {
       <Fragment>
         <List classes={{ root: classes.root }}>
           {this.items.map((item) => (
-            <StyledItemListItem
+            <ItemListItem
               clickAction={clickAction}
               component={this.props.itemComponent}
               key={item.id}
@@ -371,12 +374,12 @@ ItemList.propTypes = {
   editDialogProps: PropTypes.object,
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
-  itemComponent: PropTypes.object,
-  itemIcon: PropTypes.func,
+  itemComponent: PropTypes.func,
+  itemIcon: PropTypes.object,
   items: PropTypes.array.isRequired,
   itemKeyPath: PropTypes.string,
   listDialogProps: PropTypes.object,
-  listItemComponent: PropTypes.object,
+  listItemComponent: PropTypes.func,
   listItemProps: PropTypes.object,
   onItemClick: PropTypes.func,
   onAdd: PropTypes.func,

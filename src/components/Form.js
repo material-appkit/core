@@ -436,7 +436,7 @@ Form.propTypes = {
   children: PropTypes.any,
   defaultValues: PropTypes.object,
   entityType: PropTypes.string,
-  FieldSet: PropTypes.object,
+  FieldSet: PropTypes.func,
   fieldArrangement: PropTypes.array,
   fieldInfoProvider: PropTypes.func,
   representedObjectId: PropTypes.number,

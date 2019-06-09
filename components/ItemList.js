@@ -46,6 +46,8 @@ var _Typography = require('@material-ui/core/Typography');
 
 var _Typography2 = _interopRequireDefault(_Typography);
 
+var _styles = require('@material-ui/styles');
+
 var _withStyles = require('@material-ui/core/styles/withStyles');
 
 var _withStyles2 = _interopRequireDefault(_withStyles);
@@ -94,12 +96,34 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
+var itemListItemStyles = (0, _styles.makeStyles)(function (theme) {
+  return {
+    root: theme.itemList.item,
+    itemButton: theme.itemList.itemButton,
+    itemText: theme.itemList.itemText,
+
+    removeIconRoot: {
+      cursor: 'pointer',
+      minWidth: 36
+    },
+
+    listItemIconRoot: {
+      marginRight: 5
+    },
+
+    listItemIcon: {
+      height: '18px !important',
+      width: '18px !important'
+    }
+  };
+});
+
 function ItemListItem(props) {
-  var classes = props.classes,
-      item = props.item,
+  var item = props.item,
       _onClick = props.onClick,
       onChange = props.onChange;
 
+  var classes = itemListItemStyles();
 
   var component = null;
   if (props.component) {
@@ -179,38 +203,16 @@ function ItemListItem(props) {
 }
 
 ItemListItem.propTypes = {
-  classes: _propTypes2.default.object.isRequired,
   clickAction: _propTypes2.default.string,
-  component: _propTypes2.default.object,
+  component: _propTypes2.default.func,
   icon: _propTypes2.default.object,
   item: _propTypes2.default.object.isRequired,
   mode: _propTypes2.default.oneOf(['view', 'edit']),
   onClick: _propTypes2.default.func.isRequired,
+  onChange: _propTypes2.default.func,
   onRemove: _propTypes2.default.func,
   titleKey: _propTypes2.default.any
 };
-
-var StyledItemListItem = (0, _withStyles2.default)(function (theme) {
-  return {
-    root: theme.itemList.item,
-    itemButton: theme.itemList.itemButton,
-    itemText: theme.itemList.itemText,
-
-    removeIconRoot: {
-      cursor: 'pointer',
-      marginRight: 5
-    },
-
-    listItemIconRoot: {
-      marginRight: 5
-    },
-
-    listItemIcon: {
-      height: '18px !important',
-      width: '18px !important'
-    }
-  };
-})(ItemListItem);
 
 // -----------------------------------------------------------------------------
 
@@ -458,7 +460,7 @@ var ItemList = function (_React$PureComponent) {
           _List2.default,
           { classes: { root: classes.root } },
           this.items.map(function (item) {
-            return _react2.default.createElement(StyledItemListItem, {
+            return _react2.default.createElement(ItemListItem, {
               clickAction: clickAction,
               component: _this3.props.itemComponent,
               key: item.id,
@@ -568,12 +570,12 @@ ItemList.propTypes = {
   editDialogProps: _propTypes2.default.object,
   entityType: _propTypes2.default.string,
   filterParams: _propTypes2.default.object,
-  itemComponent: _propTypes2.default.object,
-  itemIcon: _propTypes2.default.func,
+  itemComponent: _propTypes2.default.func,
+  itemIcon: _propTypes2.default.object,
   items: _propTypes2.default.array.isRequired,
   itemKeyPath: _propTypes2.default.string,
   listDialogProps: _propTypes2.default.object,
-  listItemComponent: _propTypes2.default.object,
+  listItemComponent: _propTypes2.default.func,
   listItemProps: _propTypes2.default.object,
   onItemClick: _propTypes2.default.func,
   onAdd: _propTypes2.default.func,

@@ -50,7 +50,7 @@ function VirtualizedListItem(props) {
     selectionControl = (
       <Radio
         checked={props.selected}
-        style={{ padding: 8 }}
+        style={{ padding: 8, marginRight: 16 }}
         onClick={handleSelectionControlClick}
       />
     );
@@ -59,7 +59,7 @@ function VirtualizedListItem(props) {
     selectionControl = (
       <Checkbox
         checked={props.selected}
-        style={{ padding: 8 }}
+        style={{ padding: 8, marginRight: 16 }}
         onClick={handleSelectionControlClick}
       />
     );
@@ -75,6 +75,8 @@ function VirtualizedListItem(props) {
 
 VirtualizedListItem.propTypes = {
   contextProvider: PropTypes.func,
+  children: PropTypes.any,
+  item: PropTypes.object.isRequired,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
   selected: PropTypes.bool,

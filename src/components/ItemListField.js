@@ -136,7 +136,7 @@ ItemListField.propTypes = {
   filterParams: PropTypes.object,
   itemKeyPath: PropTypes.string,
   listDialogProps: PropTypes.object,
-  listItemComponent: PropTypes.object,
+  listItemComponent: PropTypes.func,
   listItemProps: PropTypes.object,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
