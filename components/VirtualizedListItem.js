@@ -93,7 +93,7 @@ function VirtualizedListItem(props) {
 VirtualizedListItem.propTypes = {
   contextProvider: _propTypes2.default.func,
   children: _propTypes2.default.any,
-  item: _propTypes2.default.object.isRequired,
+  item: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.array]).isRequired,
   onItemClick: _propTypes2.default.func,
   onSelectionChange: _propTypes2.default.func,
   selected: _propTypes2.default.bool,
