@@ -36,11 +36,13 @@ const itemListItemStyles = makeStyles((theme) => ({
 
   removeIconRoot: {
     cursor: 'pointer',
-    minWidth: 36,
+    marginRight: 5,
+    minWidth: 'unset',
   },
 
   listItemIconRoot: {
     marginRight: 5,
+    minWidth: 'unset',
   },
 
   listItemIcon: {

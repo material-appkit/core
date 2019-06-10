@@ -104,11 +104,13 @@ var itemListItemStyles = (0, _styles.makeStyles)(function (theme) {
 
     removeIconRoot: {
       cursor: 'pointer',
-      minWidth: 36
+      marginRight: 5,
+      minWidth: 'unset'
     },
 
     listItemIconRoot: {
-      marginRight: 5
+      marginRight: 5,
+      minWidth: 'unset'
     },
 
     listItemIcon: {
