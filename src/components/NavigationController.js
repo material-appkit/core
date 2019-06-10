@@ -215,18 +215,30 @@ class NavigationController extends React.PureComponent {
     }
   }
 
-  viewControllerDidMount = (viewController, path) => {
+  viewDidMount = (viewController, path) => {
     this.topbarConfigMap.set(path, {});
     this.updateTopbarConfig(viewController.props, path);
+
+    if (this.props.onViewDidMount) {
+      this.props.onViewDidMount(viewController, path);
+    }
   };
 
-  viewControllerWillUnmount = (viewController, path) => {
+  viewDidUpdate = (viewController, path) => {
+    this.updateTopbarConfig(viewController.props, path);
+
+    if (this.props.onViewDidUpdate) {
+      this.props.onViewDidUpdate(viewController, path);
+    }
+  };
+
+  viewWillUnmount = (viewController, path) => {
     this.topbarConfigMap.delete(path);
     this.forceUpdate();
-  };
 
-  viewControllerDidUpdate = (viewController, path) => {
-    this.updateTopbarConfig(viewController.props, path);
+    if (this.props.onViewWillUnmount) {
+      this.props.onViewWillUnmount(viewController, path);
+    }
   };
 
   render() {
@@ -258,9 +270,9 @@ class NavigationController extends React.PureComponent {
                 render={(props) => {
                   return (
                     <match.component
-                      onMount={this.viewControllerDidMount}
-                      onUnmount={this.viewControllerWillUnmount}
-                      onUpdate={this.viewControllerDidUpdate}
+                      onMount={this.viewDidMount}
+                      onUnmount={this.viewWillUnmount}
+                      onUpdate={this.viewDidUpdate}
                       mountPath={match.path}
                       {...props}
                     />
@@ -279,6 +291,9 @@ NavigationController.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
   matches: PropTypes.array.isRequired,
+  onViewDidMount: PropTypes.func,
+  onViewDidUpdate: PropTypes.func,
+  onViewWillUnmount: PropTypes.func,
 };
 
 NavigationController.defaultProps = {

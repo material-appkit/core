@@ -195,18 +195,30 @@ var NavigationController = function (_React$PureComponent) {
       }
     };
 
-    _this.viewControllerDidMount = function (viewController, path) {
+    _this.viewDidMount = function (viewController, path) {
       _this.topbarConfigMap.set(path, {});
       _this.updateTopbarConfig(viewController.props, path);
+
+      if (_this.props.onViewDidMount) {
+        _this.props.onViewDidMount(viewController, path);
+      }
     };
 
-    _this.viewControllerWillUnmount = function (viewController, path) {
+    _this.viewDidUpdate = function (viewController, path) {
+      _this.updateTopbarConfig(viewController.props, path);
+
+      if (_this.props.onViewDidUpdate) {
+        _this.props.onViewDidUpdate(viewController, path);
+      }
+    };
+
+    _this.viewWillUnmount = function (viewController, path) {
       _this.topbarConfigMap.delete(path);
       _this.forceUpdate();
-    };
 
-    _this.viewControllerDidUpdate = function (viewController, path) {
-      _this.updateTopbarConfig(viewController.props, path);
+      if (_this.props.onViewWillUnmount) {
+        _this.props.onViewWillUnmount(viewController, path);
+      }
     };
 
     _this.topbarConfigMap = new Map();
@@ -278,9 +290,9 @@ var NavigationController = function (_React$PureComponent) {
                 path: match.path,
                 render: function render(props) {
                   return _react2.default.createElement(match.component, _extends({
-                    onMount: _this2.viewControllerDidMount,
-                    onUnmount: _this2.viewControllerWillUnmount,
-                    onUpdate: _this2.viewControllerDidUpdate,
+                    onMount: _this2.viewDidMount,
+                    onUnmount: _this2.viewWillUnmount,
+                    onUpdate: _this2.viewDidUpdate,
                     mountPath: match.path
                   }, props));
                 }
@@ -404,7 +416,10 @@ var NavigationController = function (_React$PureComponent) {
 NavigationController.propTypes = {
   classes: _propTypes2.default.object.isRequired,
   theme: _propTypes2.default.object.isRequired,
-  matches: _propTypes2.default.array.isRequired
+  matches: _propTypes2.default.array.isRequired,
+  onViewDidMount: _propTypes2.default.func,
+  onViewDidUpdate: _propTypes2.default.func,
+  onViewWillUnmount: _propTypes2.default.func
 };
 
 NavigationController.defaultProps = {
