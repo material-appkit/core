@@ -1,3 +1,4 @@
+import { isValue } from '../value';
 /**
  * Given an object, return a new object with only the keys
  * contained in the given `keys` array
@@ -18,11 +19,11 @@ export function filterByKeys(object, keys) {
  * that have a non-falsy value.
  * @param object
  */
-export function filterEmptyValues(object) {
+export function filterEmptyValues(obj) {
   const filteredObject = {};
-  for (const key in object) {
-    if (object[key] !== null && object[key] !== undefined) {
-      filteredObject[key] = object[key];
+  for (const key in obj) {
+    if (isValue(obj[key])) {
+      filteredObject[key] = obj[key];
     }
   }
   return filteredObject;

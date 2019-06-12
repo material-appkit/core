@@ -7,6 +7,9 @@ exports.filterByKeys = filterByKeys;
 exports.filterEmptyValues = filterEmptyValues;
 exports.objectToArray = objectToArray;
 exports.valueForKeyPath = valueForKeyPath;
+
+var _value = require('../value');
+
 /**
  * Given an object, return a new object with only the keys
  * contained in the given `keys` array
@@ -26,11 +29,11 @@ function filterByKeys(object, keys) {
  * that have a non-falsy value.
  * @param object
  */
-function filterEmptyValues(object) {
+function filterEmptyValues(obj) {
   var filteredObject = {};
-  for (var key in object) {
-    if (object[key] !== null && object[key] !== undefined) {
-      filteredObject[key] = object[key];
+  for (var key in obj) {
+    if ((0, _value.isValue)(obj[key])) {
+      filteredObject[key] = obj[key];
     }
   }
   return filteredObject;
