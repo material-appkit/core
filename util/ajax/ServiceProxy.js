@@ -26,7 +26,7 @@ var ServiceProxy = function () {
   _createClass(ServiceProxy, [{
     key: 'getRequestHeaders',
     value: function getRequestHeaders(extra) {
-      var headers = { 'Accept': 'application/json' };
+      var headers = {};
 
       if (extra) {
         Object.assign(headers, extra);
@@ -128,6 +128,45 @@ var ServiceProxy = function () {
       var requestContext = context || {};
       var req = this.get(endpoint, params, requestContext, headers);
       requestContext.request.responseType('blob');
+      return req;
+    }
+  }, {
+    key: 'upload',
+    value: function upload(endpoint, files, headers) {
+      if (!Array.isArray(files)) {
+        throw new Error('Expecting "files" to be an array');
+      }
+
+      var requestURL = this.constructor.buildRequestUrl(endpoint);
+      var req = _superagent2.default.post(requestURL);
+
+      req.set(this.getRequestHeaders(headers));
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = files[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var fileInfo = _step.value;
+
+          req.attach(fileInfo.name, fileInfo.file);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
       return req;
     }
   }], [{

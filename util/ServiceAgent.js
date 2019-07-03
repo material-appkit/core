@@ -78,6 +78,12 @@ var ServiceAgent = function () {
       var proxy = this.createProxy();
       return proxy.download(endpoint, params, context, headers);
     }
+  }, {
+    key: 'upload',
+    value: function upload(endpoint, files, headers) {
+      var proxy = this.createProxy();
+      return proxy.upload(endpoint, files, headers);
+    }
   }]);
 
   return ServiceAgent;

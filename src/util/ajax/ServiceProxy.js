@@ -43,7 +43,7 @@ export default class ServiceProxy {
 
 
   getRequestHeaders(extra) {
-    const headers = { 'Accept': 'application/json' };
+    const headers = { };
 
     if (extra) {
       Object.assign(headers, extra);
@@ -137,6 +137,23 @@ export default class ServiceProxy {
     const requestContext = context || {};
     const req = this.get(endpoint, params, requestContext, headers);
     requestContext.request.responseType('blob');
+    return req;
+  }
+
+  upload(endpoint, files, headers) {
+    if (!Array.isArray(files)) {
+      throw new Error('Expecting "files" to be an array');
+    }
+
+    const requestURL = this.constructor.buildRequestUrl(endpoint);
+    const req = request.post(requestURL);
+
+    req.set(this.getRequestHeaders(headers));
+
+    for (const fileInfo of files) {
+      req.attach(fileInfo.name, fileInfo.file);
+    }
+
     return req;
   }
 }

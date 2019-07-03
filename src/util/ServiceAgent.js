@@ -50,6 +50,11 @@ class ServiceAgent {
     const proxy = this.createProxy();
     return proxy.download(endpoint, params, context, headers);
   }
+
+  static upload(endpoint, files, headers) {
+    const proxy = this.createProxy();
+    return proxy.upload(endpoint, files, headers);
+  }
 }
 
 export default ServiceAgent;
