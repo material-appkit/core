@@ -140,7 +140,7 @@ export default class ServiceProxy {
     return req;
   }
 
-  upload(endpoint, files, headers) {
+  upload(endpoint, files, params, headers) {
     if (!Array.isArray(files)) {
       throw new Error('Expecting "files" to be an array');
     }
@@ -153,6 +153,11 @@ export default class ServiceProxy {
     for (const fileInfo of files) {
       req.attach(fileInfo.name, fileInfo.file);
     }
+
+    const fields = params || {};
+    Object.keys(params).forEach((fieldName) => {
+      req.field(fieldName, fields[fieldName])
+    });
 
     return req;
   }

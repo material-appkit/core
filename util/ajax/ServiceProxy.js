@@ -132,7 +132,7 @@ var ServiceProxy = function () {
     }
   }, {
     key: 'upload',
-    value: function upload(endpoint, files, headers) {
+    value: function upload(endpoint, files, params, headers) {
       if (!Array.isArray(files)) {
         throw new Error('Expecting "files" to be an array');
       }
@@ -166,6 +166,11 @@ var ServiceProxy = function () {
           }
         }
       }
+
+      var fields = params || {};
+      Object.keys(params).forEach(function (fieldName) {
+        req.field(fieldName, fields[fieldName]);
+      });
 
       return req;
     }
