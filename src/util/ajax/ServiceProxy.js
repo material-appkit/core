@@ -43,7 +43,7 @@ export default class ServiceProxy {
 
 
   getRequestHeaders(extra) {
-    const headers = { };
+    const headers = { 'Accept': 'application/json' };
 
     if (extra) {
       Object.assign(headers, extra);
