@@ -7,6 +7,7 @@ import isEqual from 'lodash.isequal';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import AppBar from '@material-ui/core/AppBar';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
@@ -243,15 +244,21 @@ class NavigationController extends React.PureComponent {
 
   render() {
     const { classes } = this.props;
+    const selectedIndex = this.props.matches.length - 1;
 
     return (
       <Tabs
         className={classes.tabs}
         forceRenderTabPanel={true}
-        selectedIndex={this.props.matches.length - 1}
+        selectedIndex={selectedIndex}
         onSelect={() => {}}
       >
-        <AppBar color="default" position="fixed" className={classes.appBar}>
+        <AppBar
+          className={classes.appBar}
+          color="default"
+          elevation={0}
+          position="static"
+        >
           <Toolbar className={classes.navBar} disableGutters>
             <TabList className={classes.tabList}>
               {this.tabs}
@@ -261,9 +268,15 @@ class NavigationController extends React.PureComponent {
           {this.contextToolbar}
         </AppBar>
 
-        <div style={{ paddingTop: this.tabPanelContainerPaddingTop }}>
-          {this.props.matches.map((match) => (
-            <TabPanel key={match.path}>
+        <Box className={classes.tabPanelContainer}>
+          {this.props.matches.map((match, i) => (
+            <TabPanel
+              key={match.path}
+              className={classes.tabPanel}
+              style={{
+                display: (i === selectedIndex) ? 'block' : 'none',
+              }}
+            >
               <Route
                 key={match.path}
                 path={match.path}
@@ -281,7 +294,7 @@ class NavigationController extends React.PureComponent {
               />
             </TabPanel>
           ))}
-        </div>
+        </Box>
       </Tabs>
     );
   }

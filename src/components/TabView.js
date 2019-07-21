@@ -5,12 +5,14 @@
 */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
+
+import SplitView from './SplitView';
 
 class TabView extends React.PureComponent {
   get selectedTabIndex() {
@@ -34,29 +36,34 @@ class TabView extends React.PureComponent {
     activeTabProps.mountPath = activeTabConfig.path;
 
     return (
-      <React.Fragment>
-        <Tabs
-          value={this.selectedTabIndex}
-          className={classes.tabs}
-          indicatorColor="primary"
-          scrollButtons="auto"
-          textColor="primary"
-          variant="scrollable"
-        >
-          {this.props.tabArrangement.map((tabConfig) => (
-            <Tab
-              key={tabConfig.path}
-              component={Link}
-              to={tabConfig.path}
-              label={tabConfig.label}
-            />
-          ))}
-        </Tabs>
+      <SplitView
+        bar={(
+          <Tabs
+            value={this.selectedTabIndex}
+            className={classes.tabs}
+            indicatorColor="primary"
+            scrollButtons="auto"
+            textColor="primary"
+            variant="scrollable"
+          >
+            {this.props.tabArrangement.map((tabConfig) => (
+              <Tab
+                key={tabConfig.path}
+                component={Link}
+                to={tabConfig.path}
+                label={tabConfig.label}
+              />
+            ))}
+          </Tabs>
+        )}
+        barSize={48}
+        placement="top"
+      >
         <activeTabConfig.component
           {...activeTabProps}
           {...rest}
         />
-      </React.Fragment>
+      </SplitView>
     );
   }
 }

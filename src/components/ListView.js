@@ -15,6 +15,7 @@ import RemoteStore from '../stores/RemoteStore';
 import { indexOfKey } from '../util/map';
 import { filterByKeys } from '../util/object';
 
+import SplitView from './SplitView';
 import VirtualizedList from './VirtualizedList';
 
 class ListView extends React.PureComponent {
@@ -199,24 +200,36 @@ class ListView extends React.PureComponent {
       selectionMode,
     } = this.props;
 
-    return (
-      <Fragment>
-        {this.tabs}
-
-        <VirtualizedList
-          componentForItem={listItemComponent}
-          store={store}
-          isGrouped={isGrouped}
-          itemContextProvider={itemContextProvider}
-          itemIdKey={itemIdKey}
-          itemProps={itemProps}
-          items={items}
-          onItemClick={onItemClick}
-          onSelectionChange={onSelectionChange}
-          selectionMode={selectionMode}
-        />
-      </Fragment>
+    const list = (
+      <VirtualizedList
+        componentForItem={listItemComponent}
+        store={store}
+        isGrouped={isGrouped}
+        itemContextProvider={itemContextProvider}
+        itemIdKey={itemIdKey}
+        itemProps={itemProps}
+        items={items}
+        onItemClick={onItemClick}
+        onSelectionChange={onSelectionChange}
+        selectionMode={selectionMode}
+      />
     );
+
+    const tabs = this.tabs;
+
+    if (tabs) {
+      return (
+        <SplitView
+          bar={tabs}
+          barSize={56}
+          placement="top"
+        >
+          {list}
+        </SplitView>
+      )
+    }
+
+    return list;
   }
 }
 
