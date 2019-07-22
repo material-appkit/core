@@ -243,8 +243,31 @@ class NavigationController extends React.PureComponent {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, theme } = this.props;
     const selectedIndex = this.props.matches.length - 1;
+
+    const contextToolbar = this.contextToolbar;
+
+    let appBarHeight = theme.navigationController.navBar.height;
+    if (contextToolbar) {
+      appBarHeight += theme.navigationController.toolBar.height;
+    }
+
+    const appBarStyle = {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: appBarHeight,
+    };
+
+    const tabPanelContainerStyle = {
+      position: 'absolute',
+      top: appBarHeight,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    };
 
     return (
       <Tabs
@@ -255,6 +278,7 @@ class NavigationController extends React.PureComponent {
       >
         <AppBar
           className={classes.appBar}
+          style={appBarStyle}
           color="default"
           elevation={0}
           position="static"
@@ -265,10 +289,11 @@ class NavigationController extends React.PureComponent {
             </TabList>
             {this.rightBarItem}
           </Toolbar>
-          {this.contextToolbar}
+
+          {contextToolbar}
         </AppBar>
 
-        <Box className={classes.tabPanelContainer}>
+        <Box style={tabPanelContainerStyle}>
           {this.props.matches.map((match, i) => (
             <TabPanel
               key={match.path}
