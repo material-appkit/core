@@ -41,7 +41,8 @@ function SplitView(props) {
       barSize = props.barSize,
       breakpoint = props.breakpoint,
       children = props.children,
-      placement = props.placement;
+      placement = props.placement,
+      scrollContent = props.scrollContent;
 
 
   var classes = styles();
@@ -55,6 +56,9 @@ function SplitView(props) {
   var splitViewStyles = {};
   var barStyles = {};
   var contentStyles = {};
+  if (scrollContent) {
+    contentStyles.overflow = 'auto';
+  }
 
   switch (placement) {
     case 'top':
@@ -134,7 +138,12 @@ SplitView.propTypes = {
   barSize: _propTypes2.default.number.isRequired,
   breakpoint: _propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg']),
   classes: _propTypes2.default.object,
-  placement: _propTypes2.default.oneOf(['top', 'right', 'bottom', 'left'])
+  placement: _propTypes2.default.oneOf(['top', 'right', 'bottom', 'left']),
+  scrollContent: _propTypes2.default.bool
+};
+
+SplitView.defaultProps = {
+  scrollContent: false
 };
 
 exports.default = SplitView;
