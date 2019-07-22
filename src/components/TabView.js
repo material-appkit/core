@@ -58,6 +58,7 @@ class TabView extends React.PureComponent {
         )}
         barSize={48}
         placement="top"
+        scrollContent
       >
         <activeTabConfig.component
           {...activeTabProps}

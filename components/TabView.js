@@ -91,7 +91,8 @@ var TabView = function (_React$PureComponent) {
             })
           ),
           barSize: 48,
-          placement: 'top'
+          placement: 'top',
+          scrollContent: true
         },
         _react2.default.createElement(activeTabConfig.component, _extends({}, activeTabProps, rest))
       );
