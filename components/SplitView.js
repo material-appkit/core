@@ -12,6 +12,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _Box = require('@material-ui/core/Box');
+
+var _Box2 = _interopRequireDefault(_Box);
+
 var _styles = require('@material-ui/core/styles');
 
 var _useMediaQuery = require('@material-ui/core/useMediaQuery');
@@ -20,20 +24,8 @@ var _useMediaQuery2 = _interopRequireDefault(_useMediaQuery);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var styles = (0, _styles.makeStyles)({
-  splitView: {
-    width: '100%',
-    height: '100%',
-    position: 'relative'
-  },
-
-  bar: {
-    // position: 'absolute',
-  },
-
-  content: {
-    // position: 'absolute',
-  }
+var styles = (0, _styles.makeStyles)(function (theme) {
+  return theme.splitView;
 });
 
 function SplitView(props) {
@@ -53,7 +45,11 @@ function SplitView(props) {
     matches = (0, _useMediaQuery2.default)(theme.breakpoints.up(breakpoint));
   }
 
-  var splitViewStyles = {};
+  var splitViewStyles = {
+    width: '100%',
+    height: '100%',
+    position: 'relative'
+  };
   var barStyles = {};
   var contentStyles = {};
   if (scrollContent) {
@@ -118,16 +114,16 @@ function SplitView(props) {
   }
 
   return _react2.default.createElement(
-    'div',
-    { className: classes.splitView, style: splitViewStyles },
+    _Box2.default,
+    { className: classes.container, style: splitViewStyles },
     _react2.default.createElement(
-      'div',
-      { style: barStyles },
+      _Box2.default,
+      { className: classes.bar, style: barStyles },
       bar
     ),
     _react2.default.createElement(
-      'div',
-      { style: contentStyles },
+      _Box2.default,
+      { className: classes.content, style: contentStyles },
       children
     )
   );

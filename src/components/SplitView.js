@@ -1,26 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Box from '@material-ui/core/Box';
 import { useTheme } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
-const styles = makeStyles({
-  splitView: {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-  },
-
-  bar: {
-    // position: 'absolute',
-  },
-
-  content: {
-    // position: 'absolute',
-  },
-});
-
+const styles = makeStyles((theme) => (theme.splitView));
 
 function SplitView(props) {
   const {
@@ -40,7 +26,11 @@ function SplitView(props) {
     matches = useMediaQuery(theme.breakpoints.up(breakpoint));
   }
 
-  const splitViewStyles = {};
+  const splitViewStyles = {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+  };
   const barStyles = {};
   const contentStyles = {};
   if (scrollContent) {
@@ -109,14 +99,14 @@ function SplitView(props) {
   }
 
   return (
-    <div className={classes.splitView} style={splitViewStyles}>
-      <div style={barStyles}>
+    <Box className={classes.container} style={splitViewStyles}>
+      <Box className={classes.bar} style={barStyles}>
         {bar}
-      </div>
-      <div style={contentStyles}>
+      </Box>
+      <Box className={classes.content} style={contentStyles}>
         {children}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
