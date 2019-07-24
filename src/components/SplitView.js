@@ -55,6 +55,19 @@ function SplitView(props) {
       });
       break;
     case 'bottom':
+      Object.assign(barStyles, {
+        bottom: 0,
+        right: 0,
+        left: 0,
+        height: barSize,
+        position: 'absolute',
+      });
+      Object.assign(contentStyles, {
+        top: 0,
+        right: 0,
+        left: 0,
+        position: 'absolute',
+      });
       break;
     case 'left':
       if (matches) {
