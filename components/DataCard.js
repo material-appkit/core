@@ -6,7 +6,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         * DataCard
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         *
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         */
 
 var _propTypes = require('prop-types');
 
@@ -32,9 +36,7 @@ var _IconButton = require('@material-ui/core/IconButton');
 
 var _IconButton2 = _interopRequireDefault(_IconButton);
 
-var _withStyles = require('@material-ui/core/styles/withStyles');
-
-var _withStyles2 = _interopRequireDefault(_withStyles);
+var _styles = require('@material-ui/core/styles');
 
 var _Edit = require('@material-ui/icons/Edit');
 
@@ -54,162 +56,134 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var styles = (0, _styles.makeStyles)(function (theme) {
+  return theme.dataCard;
+});
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function DataCard(props) {
+  var _this = this;
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               * DataCard
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               */
+  var _useState = (0, _react.useState)('view'),
+      _useState2 = _slicedToArray(_useState, 2),
+      mode = _useState2[0],
+      setMode = _useState2[1];
 
-var DataCard = function (_React$PureComponent) {
-  _inherits(DataCard, _React$PureComponent);
+  var classes = styles();
 
-  function DataCard() {
-    var _ref,
-        _this2 = this;
+  var formRef = (0, _react.useRef)(null);
 
-    var _temp, _this, _ret;
-
-    _classCallCheck(this, DataCard);
-
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = DataCard.__proto__ || Object.getPrototypeOf(DataCard)).call.apply(_ref, [this].concat(args))), _this), _this.formRef = _react2.default.createRef(), _this.state = {
-      mode: 'view'
-    }, _this.toggleMode = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      var currentMode, newMode, shouldToggleView, record;
+  var toggleMode = function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+      var newMode, shouldToggleView, record;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              currentMode = _this.state.mode;
-              newMode = currentMode === 'view' ? 'edit' : 'view';
+              newMode = mode === 'view' ? 'edit' : 'view';
               shouldToggleView = true;
 
-              if (!(currentMode === 'edit' && newMode === 'view')) {
-                _context.next = 9;
+              if (!(mode === 'edit' && newMode === 'view')) {
+                _context.next = 8;
                 break;
               }
 
-              if (!_this.formRef.current) {
-                _context.next = 9;
+              if (!formRef.current) {
+                _context.next = 8;
                 break;
               }
 
-              _context.next = 7;
-              return _this.formRef.current.save();
+              _context.next = 6;
+              return formRef.current.save();
 
-            case 7:
+            case 6:
               record = _context.sent;
 
               if (!record) {
                 shouldToggleView = false;
               }
 
-            case 9:
+            case 8:
 
               if (shouldToggleView) {
-                _this.setState({ mode: newMode });
+                setMode(newMode);
               }
 
-            case 10:
+            case 9:
             case 'end':
               return _context.stop();
           }
         }
-      }, _callee, _this2);
-    })), _temp), _possibleConstructorReturn(_this, _ret);
+      }, _callee, _this);
+    }));
+
+    return function toggleMode() {
+      return _ref.apply(this, arguments);
+    };
+  }();
+
+  var getActiveView = function getActiveView() {
+    var children = _react2.default.Children.toArray(props.children);
+    var childCount = children.length;
+    if (childCount < 1 || 2 < childCount) {
+      throw new Error("A DataCard may only have ONE or TWO children");
+    }
+
+    if (childCount === 2) {
+      return mode === 'view' ? children[0] : children[1];
+    }
+
+    if (mode === 'edit' && props.formConfig) {
+      return _react2.default.createElement(_Form2.default, _extends({ innerRef: formRef }, props.formConfig));
+    }
+    // If there is a single child, allow it to manage its own presentation
+    // via a given 'mode' prop.
+    return (0, _component.recursiveMap)(children[0], function (child) {
+      return _react2.default.cloneElement(child, { mode: mode });
+    }, 2);
+  };
+
+  var variant = props.variant;
+
+
+  var cardProps = {};
+
+  var cardHeaderClasses = {
+    root: classes.cardHeaderRoot,
+    action: classes.cardHeaderAction,
+    title: classes.cardHeaderTitle
+  };
+
+  if (variant === 'plain') {
+    cardProps.elevation = 0;
+    cardHeaderClasses.root = classes.plainCardHeaderRoot;
   }
 
-  _createClass(DataCard, [{
-    key: 'render',
-    value: function render() {
-      var _this3 = this;
-
-      var _props = this.props,
-          classes = _props.classes,
-          variant = _props.variant;
-
-
-      var cardClasses = {};
-      var cardHeaderClasses = {
-        action: classes.cardHeaderAction,
-        title: classes.cardHeaderTitle
-      };
-      var cardContentClasses = {};
-
-      if (variant === 'card') {
-        cardHeaderClasses.root = classes.cardHeaderRoot;
-      }
-      if (variant === 'plain') {
-        cardClasses.root = classes.plainCardRoot;
-        cardHeaderClasses.root = classes.plainCardHeaderRoot;
-        cardContentClasses.root = classes.plainCardContentRoot;
-      }
-
-      return _react2.default.createElement(
-        _Card2.default,
-        { classes: cardClasses },
-        _react2.default.createElement(_CardHeader2.default, {
-          action: _react2.default.createElement(
-            _IconButton2.default,
-            {
-              classes: { root: classes.modeToggleButton },
-              color: 'primary',
-              onClick: function onClick() {
-                _this3.toggleMode();
-              }
-            },
-            this.state.mode === 'view' ? _react2.default.createElement(_Edit2.default, { fontSize: 'small' }) : _react2.default.createElement(_Check2.default, { fontSize: 'small' })
-          ),
-          classes: cardHeaderClasses,
-          title: this.props.title
-        }),
-        _react2.default.createElement(
-          _CardContent2.default,
-          { classes: cardContentClasses },
-          this.activeView
-        )
-      );
-    }
-  }, {
-    key: 'activeView',
-    get: function get() {
-      var mode = this.state.mode;
-
-
-      var children = _react2.default.Children.toArray(this.props.children);
-      var childCount = children.length;
-      if (childCount < 1 || 2 < childCount) {
-        throw new Error("A DataCard may only have ONE or TWO children");
-      }
-
-      if (childCount === 2) {
-        return mode === 'view' ? children[0] : children[1];
-      }
-
-      if (mode === 'edit' && this.props.formConfig) {
-        return _react2.default.createElement(_Form2.default, _extends({ innerRef: this.formRef }, this.props.formConfig));
-      }
-      // If there is a single child, allow it to manage its own presentation
-      // via a given 'mode' prop.
-      return (0, _component.recursiveMap)(children[0], function (child) {
-        return _react2.default.cloneElement(child, { mode: mode });
-      }, 2);
-    }
-  }]);
-
-  return DataCard;
-}(_react2.default.PureComponent);
+  return _react2.default.createElement(
+    _Card2.default,
+    cardProps,
+    _react2.default.createElement(_CardHeader2.default, {
+      action: _react2.default.createElement(
+        _IconButton2.default,
+        {
+          classes: { root: classes.modeToggleButton },
+          color: 'primary',
+          onClick: toggleMode
+        },
+        mode === 'view' ? _react2.default.createElement(_Edit2.default, { fontSize: 'small' }) : _react2.default.createElement(_Check2.default, { fontSize: 'small' })
+      ),
+      classes: cardHeaderClasses,
+      title: props.title
+    }),
+    _react2.default.createElement(
+      _CardContent2.default,
+      { classes: { root: classes.cardContentRoot } },
+      getActiveView()
+    )
+  );
+}
 
 DataCard.propTypes = {
   children: _propTypes2.default.oneOfType([_propTypes2.default.element, _propTypes2.default.array]),
-  classes: _propTypes2.default.object.isRequired,
   formConfig: _propTypes2.default.object,
   title: _propTypes2.default.string,
   variant: _propTypes2.default.oneOf(['card', 'plain'])
@@ -219,31 +193,4 @@ DataCard.defaultProps = {
   variant: 'card'
 };
 
-exports.default = (0, _withStyles2.default)({
-  modeToggleButton: {
-    padding: 4
-  },
-
-  cardHeaderAction: {
-    marginTop: 0
-  },
-  cardHeaderRoot: {
-    backgroundColor: '#fafafa',
-    padding: '4px 16px'
-  },
-  cardHeaderTitle: {
-    fontSize: '1.1rem',
-    fontWeight: 500
-  },
-
-  plainCardRoot: {
-    backgroundColor: 'inherit',
-    boxShadow: 'none'
-  },
-  plainCardHeaderRoot: {
-    padding: '2px 8px 2px 0px'
-  },
-  plainCardContentRoot: {
-    padding: '0 !important'
-  }
-})(DataCard);
+exports.default = DataCard;
