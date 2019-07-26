@@ -54,56 +54,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // -----------------------------------------------------------------------------
 var metadataListItemStyles = (0, _styles.makeStyles)(function (theme) {
-  return {
-    listItemRoot: {
-      display: 'flex',
-      padding: '1px 0'
-    },
-
-    listItemIconRoot: {
-      marginRight: 5
-    },
-
-    listItemIcon: {
-      height: 18,
-      width: 18
-    },
-
-    listItemTextRoot: {
-      margin: '1px 0',
-      padding: 0
-    },
-
-    label: {
-      fontWeight: 500,
-      marginRight: 5,
-      "&:after": {
-        content: '":"'
-      }
-    },
-
-    nestedListItemRoot: {
-      display: 'inline',
-      fontSize: theme.typography.pxToRem(14),
-      padding: 0,
-      '&:not(:last-child)': {
-        marginRight: 5,
-        '&:after': {
-          content: '","'
-        }
-      }
-    },
-
-    nestedListItemTextRoot: {
-      fontSize: theme.typography.pxToRem(14),
-      margin: 0,
-      padding: 0
-    },
-
-    nestedListItemContent: {
-      display: 'inline'
-    }
-  };
+  return theme.metadataList.listItem;
 });
 
 function MetadataListItem(props) {
@@ -202,21 +153,24 @@ MetadataListItem.propTypes = {
 };
 
 // -----------------------------------------------------------------------------
-var listItemKey = function listItemKey(fieldInfo) {
-  var key = fieldInfo.name;
-  if (fieldInfo.keyPath) {
-    key = key + '-' + fieldInfo.keyPath;
-  }
-  return key;
-};
+var metadataStyles = (0, _styles.makeStyles)(function (theme) {
+  return theme.metadataList;
+});
 
 function MetadataList(props) {
+  var classes = metadataStyles();
+
   return _react2.default.createElement(
     _List2.default,
-    { disablePadding: true },
+    { className: classes.root },
     props.arrangement.map(function (fieldInfo) {
+      var key = fieldInfo.name;
+      if (fieldInfo.keyPath) {
+        key = key + '-' + fieldInfo.keyPath;
+      }
+
       return _react2.default.createElement(MetadataListItem, {
-        key: listItemKey(fieldInfo),
+        key: key,
         fieldInfo: fieldInfo,
         representedObject: props.representedObject
       });

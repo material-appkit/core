@@ -16,56 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { valueForKeyPath } from '../util/object';
 
 // -----------------------------------------------------------------------------
-const metadataListItemStyles = makeStyles((theme) => ({
-  listItemRoot: {
-    display: 'flex',
-    padding: '1px 0',
-  },
-
-  listItemIconRoot: {
-    marginRight: 5,
-  },
-
-  listItemIcon: {
-    height: 18,
-    width: 18,
-  },
-
-  listItemTextRoot: {
-    margin: '1px 0',
-    padding: 0,
-  },
-
-  label: {
-    fontWeight: 500,
-    marginRight: 5,
-    "&:after": {
-      content: '":"',
-    },
-  },
-
-  nestedListItemRoot: {
-    display: 'inline',
-    fontSize: theme.typography.pxToRem(14),
-    padding: 0,
-    '&:not(:last-child)': {
-      marginRight: 5,
-      '&:after': {
-        content: '","',
-      },
-    },
-  },
-
-  nestedListItemTextRoot: {
-    fontSize: theme.typography.pxToRem(14),
-    margin: 0,
-    padding: 0,
-  },
-
-  nestedListItemContent: {
-    display: 'inline',
-  },
-}));
+const metadataListItemStyles = makeStyles((theme) => theme.metadataList.listItem);
 
 function MetadataListItem(props) {
   const { fieldInfo, representedObject } = props;
@@ -160,24 +111,27 @@ MetadataListItem.propTypes = {
 };
 
 // -----------------------------------------------------------------------------
-const listItemKey = (fieldInfo) => {
-  let key = fieldInfo.name;
-  if (fieldInfo.keyPath) {
-    key = `${key}-${fieldInfo.keyPath}`;
-  }
-  return key;
-};
+const metadataStyles = makeStyles((theme) => theme.metadataList);
 
 function MetadataList(props) {
+  const classes = metadataStyles();
+
   return (
-    <List disablePadding>
-      {props.arrangement.map((fieldInfo) => (
-        <MetadataListItem
-          key={listItemKey(fieldInfo)}
-          fieldInfo={fieldInfo}
-          representedObject={props.representedObject}
-        />
-      ))}
+    <List className={classes.root}>
+      {props.arrangement.map((fieldInfo) => {
+        let key = fieldInfo.name;
+        if (fieldInfo.keyPath) {
+          key = `${key}-${fieldInfo.keyPath}`;
+        }
+
+        return (
+          <MetadataListItem
+            key={key}
+            fieldInfo={fieldInfo}
+            representedObject={props.representedObject}
+          />
+        );
+      })}
     </List>
   );
 }
