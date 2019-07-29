@@ -5,13 +5,13 @@
 */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState, useRef } from 'react';
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { makeStyles } from '@material-ui/core/styles';
 import EditIcon from '@material-ui/icons/Edit';
 import CheckIcon from '@material-ui/icons/Check';
 
@@ -19,25 +19,28 @@ import { recursiveMap } from '../util/component';
 
 import Form from './Form';
 
-class DataCard extends React.PureComponent {
-  formRef = React.createRef();
+const styles = makeStyles(
+  (theme) => theme.dataCard
+);
 
-  state = {
-    mode: 'view',
-  };
+function DataCard(props) {
+  const [mode, setMode] = useState('view');
+  const classes = styles();
 
-  toggleMode = async() => {
-    const currentMode = this.state.mode;
-    const newMode = currentMode === 'view' ? 'edit' : 'view';
+  const formRef = useRef(null);
+
+
+  const toggleMode = async() => {
+    const newMode = mode === 'view' ? 'edit' : 'view';
 
     let shouldToggleView = true;
 
-    if (currentMode === 'edit' && newMode === 'view') {
+    if (mode === 'edit' && newMode === 'view') {
       // When toggling from edit to view mode, in the event that this
       // card is managing a form for its edit view, instruct the the form
       // to save before toggling back.
-      if (this.formRef.current) {
-        const record = await this.formRef.current.save();
+      if (formRef.current) {
+        const record = await formRef.current.save();
         if (!record) {
           shouldToggleView = false;
         }
@@ -45,14 +48,12 @@ class DataCard extends React.PureComponent {
     }
 
     if (shouldToggleView) {
-      this.setState({ mode: newMode });
+      setMode(newMode);
     }
   };
 
-  get activeView() {
-    const { mode } = this.state;
-
-    const children = React.Children.toArray(this.props.children);
+  const getActiveView = () => {
+    const children = React.Children.toArray(props.children);
     const childCount = children.length;
     if (childCount < 1 || 2 < childCount) {
       throw new Error("A DataCard may only have ONE or TWO children");
@@ -62,9 +63,9 @@ class DataCard extends React.PureComponent {
       return (mode === 'view') ? children[0] : children[1];
     }
 
-    if (mode === 'edit' && this.props.formConfig) {
+    if (mode === 'edit' && props.formConfig) {
       return (
-        <Form innerRef={this.formRef} {...this.props.formConfig} />
+        <Form innerRef={formRef} {...props.formConfig} />
       );
     }
     // If there is a single child, allow it to manage its own presentation
@@ -72,57 +73,52 @@ class DataCard extends React.PureComponent {
     return recursiveMap(children[0], (child) => {
         return React.cloneElement(child, { mode });
     }, 2);
+  };
+
+
+  const { variant } = props;
+
+  const cardProps = {};
+
+  const cardHeaderClasses = {
+    root: classes.cardHeaderRoot,
+    action: classes.cardHeaderAction,
+    title: classes.cardHeaderTitle,
+  };
+
+  if (variant === 'plain') {
+    cardProps.elevation = 0;
+    cardHeaderClasses.root = classes.plainCardHeaderRoot;
   }
 
-  render() {
-    const { classes, variant } = this.props;
-
-    const cardClasses = {};
-    const cardHeaderClasses = {
-      action: classes.cardHeaderAction,
-      title: classes.cardHeaderTitle,
-    };
-    const cardContentClasses = {};
-
-    if (variant === 'card') {
-      cardHeaderClasses.root = classes.cardHeaderRoot;
-    }
-    if (variant === 'plain') {
-      cardClasses.root = classes.plainCardRoot;
-      cardHeaderClasses.root = classes.plainCardHeaderRoot;
-      cardContentClasses.root = classes.plainCardContentRoot;
-    }
-
-    return (
-      <Card classes={cardClasses}>
-        <CardHeader
-          action={(
-            <IconButton
-              classes={{ root: classes.modeToggleButton }}
-              color="primary"
-              onClick={() => { this.toggleMode(); }}
-            >
-              {this.state.mode === 'view' ? (
-                <EditIcon fontSize="small" />
-              ): (
-                <CheckIcon fontSize="small" />
-              )}
-            </IconButton>
-          )}
-          classes={cardHeaderClasses}
-          title={this.props.title}
-        />
-        <CardContent classes={cardContentClasses}>
-          {this.activeView}
-        </CardContent>
-      </Card>
-    );
-  }
+  return (
+    <Card {...cardProps}>
+      <CardHeader
+        action={(
+          <IconButton
+            classes={{ root: classes.modeToggleButton }}
+            color="primary"
+            onClick={toggleMode}
+          >
+            {mode === 'view' ? (
+              <EditIcon fontSize="small" />
+            ): (
+              <CheckIcon fontSize="small" />
+            )}
+          </IconButton>
+        )}
+        classes={cardHeaderClasses}
+        title={props.title}
+      />
+      <CardContent classes={{ root: classes.cardContentRoot }}>
+        {getActiveView()}
+      </CardContent>
+    </Card>
+  );
 }
 
 DataCard.propTypes = {
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
-  classes: PropTypes.object.isRequired,
   formConfig: PropTypes.object,
   title: PropTypes.string,
   variant: PropTypes.oneOf(['card', 'plain'])
@@ -132,31 +128,4 @@ DataCard.defaultProps = {
   variant: 'card',
 };
 
-export default withStyles({
-  modeToggleButton: {
-    padding: 4,
-  },
-
-  cardHeaderAction: {
-    marginTop: 0,
-  },
-  cardHeaderRoot: {
-    backgroundColor: '#fafafa',
-    padding: '4px 16px',
-  },
-  cardHeaderTitle: {
-    fontSize: '1.1rem',
-    fontWeight: 500,
-  },
-
-  plainCardRoot: {
-    backgroundColor: 'inherit',
-    boxShadow: 'none',
-  },
-  plainCardHeaderRoot: {
-    padding: '2px 8px 2px 0px',
-  },
-  plainCardContentRoot: {
-    padding: '0 !important',
-  }
-})(DataCard);
+export default DataCard;

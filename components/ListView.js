@@ -44,6 +44,10 @@ var _map = require('../util/map');
 
 var _object = require('../util/object');
 
+var _SplitView = require('./SplitView');
+
+var _SplitView2 = _interopRequireDefault(_SplitView);
+
 var _VirtualizedList = require('./VirtualizedList');
 
 var _VirtualizedList2 = _interopRequireDefault(_VirtualizedList);
@@ -185,23 +189,34 @@ var ListView = function (_React$PureComponent) {
           selectionMode = _props.selectionMode;
 
 
-      return _react2.default.createElement(
-        _react.Fragment,
-        null,
-        this.tabs,
-        _react2.default.createElement(_VirtualizedList2.default, {
-          componentForItem: listItemComponent,
-          store: store,
-          isGrouped: isGrouped,
-          itemContextProvider: itemContextProvider,
-          itemIdKey: itemIdKey,
-          itemProps: itemProps,
-          items: items,
-          onItemClick: onItemClick,
-          onSelectionChange: onSelectionChange,
-          selectionMode: selectionMode
-        })
-      );
+      var list = _react2.default.createElement(_VirtualizedList2.default, {
+        componentForItem: listItemComponent,
+        store: store,
+        isGrouped: isGrouped,
+        itemContextProvider: itemContextProvider,
+        itemIdKey: itemIdKey,
+        itemProps: itemProps,
+        items: items,
+        onItemClick: onItemClick,
+        onSelectionChange: onSelectionChange,
+        selectionMode: selectionMode
+      });
+
+      var tabs = this.tabs;
+
+      if (tabs) {
+        return _react2.default.createElement(
+          _SplitView2.default,
+          {
+            bar: tabs,
+            barSize: 56,
+            placement: 'top'
+          },
+          list
+        );
+      }
+
+      return list;
     }
   }, {
     key: 'isActive',

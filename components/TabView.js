@@ -28,6 +28,10 @@ var _Tab2 = _interopRequireDefault(_Tab);
 
 var _styles = require('@material-ui/core/styles');
 
+var _SplitView = require('./SplitView');
+
+var _SplitView2 = _interopRequireDefault(_SplitView);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -65,27 +69,31 @@ var TabView = function (_React$PureComponent) {
       activeTabProps.mountPath = activeTabConfig.path;
 
       return _react2.default.createElement(
-        _react2.default.Fragment,
-        null,
-        _react2.default.createElement(
-          _Tabs2.default,
-          {
-            value: this.selectedTabIndex,
-            className: classes.tabs,
-            indicatorColor: 'primary',
-            scrollButtons: 'auto',
-            textColor: 'primary',
-            variant: 'scrollable'
-          },
-          this.props.tabArrangement.map(function (tabConfig) {
-            return _react2.default.createElement(_Tab2.default, {
-              key: tabConfig.path,
-              component: _reactRouterDom.Link,
-              to: tabConfig.path,
-              label: tabConfig.label
-            });
-          })
-        ),
+        _SplitView2.default,
+        {
+          bar: _react2.default.createElement(
+            _Tabs2.default,
+            {
+              value: this.selectedTabIndex,
+              className: classes.tabs,
+              indicatorColor: 'primary',
+              scrollButtons: 'auto',
+              textColor: 'primary',
+              variant: 'scrollable'
+            },
+            this.props.tabArrangement.map(function (tabConfig) {
+              return _react2.default.createElement(_Tab2.default, {
+                key: tabConfig.path,
+                component: _reactRouterDom.Link,
+                to: tabConfig.path,
+                label: tabConfig.label
+              });
+            })
+          ),
+          barSize: 48,
+          placement: 'top',
+          scrollContent: true
+        },
         _react2.default.createElement(activeTabConfig.component, _extends({}, activeTabProps, rest))
       );
     }

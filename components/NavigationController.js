@@ -28,6 +28,10 @@ var _AppBar = require('@material-ui/core/AppBar');
 
 var _AppBar2 = _interopRequireDefault(_AppBar);
 
+var _Box = require('@material-ui/core/Box');
+
+var _Box2 = _interopRequireDefault(_Box);
+
 var _Button = require('@material-ui/core/Button');
 
 var _Button2 = _interopRequireDefault(_Button);
@@ -252,20 +256,52 @@ var NavigationController = function (_React$PureComponent) {
     value: function render() {
       var _this2 = this;
 
-      var classes = this.props.classes;
+      var _props = this.props,
+          classes = _props.classes,
+          theme = _props.theme;
 
+      var selectedIndex = this.props.matches.length - 1;
+
+      var contextToolbar = this.contextToolbar;
+
+      var appBarHeight = theme.navigationController.navBar.height;
+      if (contextToolbar) {
+        appBarHeight += theme.navigationController.toolBar.height;
+      }
+
+      var appBarStyle = {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: appBarHeight
+      };
+
+      var tabPanelContainerStyle = {
+        position: 'absolute',
+        top: appBarHeight,
+        left: 0,
+        right: 0,
+        bottom: 0
+      };
 
       return _react2.default.createElement(
         _reactTabs.Tabs,
         {
           className: classes.tabs,
           forceRenderTabPanel: true,
-          selectedIndex: this.props.matches.length - 1,
+          selectedIndex: selectedIndex,
           onSelect: function onSelect() {}
         },
         _react2.default.createElement(
           _AppBar2.default,
-          { color: 'default', position: 'fixed', className: classes.appBar },
+          {
+            className: classes.appBar,
+            style: appBarStyle,
+            color: 'default',
+            elevation: 0,
+            position: 'static'
+          },
           _react2.default.createElement(
             _Toolbar2.default,
             { className: classes.navBar, disableGutters: true },
@@ -276,15 +312,21 @@ var NavigationController = function (_React$PureComponent) {
             ),
             this.rightBarItem
           ),
-          this.contextToolbar
+          contextToolbar
         ),
         _react2.default.createElement(
-          'div',
-          { style: { paddingTop: this.tabPanelContainerPaddingTop } },
-          this.props.matches.map(function (match) {
+          _Box2.default,
+          { style: tabPanelContainerStyle },
+          this.props.matches.map(function (match, i) {
             return _react2.default.createElement(
               _reactTabs.TabPanel,
-              { key: match.path },
+              {
+                key: match.path,
+                className: classes.tabPanel,
+                style: {
+                  display: i === selectedIndex ? 'block' : 'none'
+                }
+              },
               _react2.default.createElement(_reactRouterDom.Route, {
                 key: match.path,
                 path: match.path,
