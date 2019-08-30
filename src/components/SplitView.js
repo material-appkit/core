@@ -2,9 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Box from '@material-ui/core/Box';
-import { useTheme } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const styles = makeStyles((theme) => (theme.splitView));
 
@@ -12,27 +10,23 @@ function SplitView(props) {
   const {
     bar,
     barSize,
-    breakpoint,
     children,
     placement,
     scrollContent,
   } = props;
 
   const classes = styles();
-  const theme = useTheme();
 
-  let matches = true;
-  if (breakpoint) {
-    matches = useMediaQuery(theme.breakpoints.up(breakpoint));
-  }
 
   const splitViewStyles = {
     width: '100%',
     height: '100%',
     position: 'relative',
   };
-  const barStyles = {};
-  const contentStyles = {};
+
+  const barStyles = { ...props.barStyles };
+  const contentStyles = { ...props.contentStyles };
+
   if (scrollContent) {
     contentStyles.overflow = 'auto';
   }
@@ -70,44 +64,36 @@ function SplitView(props) {
       });
       break;
     case 'left':
-      if (matches) {
-        Object.assign(barStyles, {
-          top: 0,
-          left: 0,
-          bottom: 0,
-          width: barSize,
-          position: 'absolute',
-        });
-        Object.assign(contentStyles, {
-          top: 0,
-          right: 0,
-          left: barSize,
-          bottom: 0,
-          position: 'absolute',
-        });
-      } else {
-
-      }
+      Object.assign(barStyles, {
+        top: 0,
+        left: 0,
+        bottom: 0,
+        width: barSize,
+        position: 'absolute',
+      });
+      Object.assign(contentStyles, {
+        top: 0,
+        right: 0,
+        left: barSize,
+        bottom: 0,
+        position: 'absolute',
+      });
       break;
     case 'right':
-      if (matches) {
-        Object.assign(barStyles, {
-          position: 'absolute',
-          top: 0,
-          width: barSize,
-          bottom: 0,
-          right: 0,
-        });
-        Object.assign(contentStyles, {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: barSize,
-          bottom: 0,
-        });
-      } else {
-
-      }
+      Object.assign(barStyles, {
+        position: 'absolute',
+        top: 0,
+        width: barSize,
+        bottom: 0,
+        right: 0,
+      });
+      Object.assign(contentStyles, {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: barSize,
+        bottom: 0,
+      });
       break;
   }
 
@@ -126,13 +112,17 @@ function SplitView(props) {
 SplitView.propTypes = {
   bar: PropTypes.object.isRequired,
   barSize: PropTypes.number.isRequired,
-  breakpoint: PropTypes.oneOf(['xs', 'sm', 'md', 'lg']),
+  barStyles: PropTypes.object,
+  children: PropTypes.object,
   classes: PropTypes.object,
+  contentStyles: PropTypes.object,
   placement: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
   scrollContent: PropTypes.bool,
 };
 
 SplitView.defaultProps = {
+  barStyles: {},
+  contentStyles: {},
   scrollContent: false,
 };
 
