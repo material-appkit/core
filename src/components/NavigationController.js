@@ -116,17 +116,6 @@ class NavigationController extends React.PureComponent {
     );
   }
 
-  get tabPanelContainerPaddingTop() {
-    const navControllerTheme = this.props.theme.navigationController;
-
-    let tabPanelContainerHeight = navControllerTheme.navBar.height;
-    if (this.contextToolbar) {
-      tabPanelContainerHeight += navControllerTheme.toolBar.height;
-    }
-
-    return tabPanelContainerHeight;
-  }
-
   createContextMenu = (topbarConfig) => {
     if (!(topbarConfig && topbarConfig.contextMenuItems && topbarConfig.contextMenuItems.length)) {
       return null;
