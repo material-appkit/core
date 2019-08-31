@@ -232,8 +232,13 @@ class NavigationController extends React.PureComponent {
   };
 
   render() {
-    const { classes, theme } = this.props;
-    const selectedIndex = this.props.matches.length - 1;
+    const {
+      classes,
+      matches,
+      theme,
+    } = this.props;
+
+    const selectedIndex = matches.length - 1;
 
     const contextToolbar = this.contextToolbar;
 
@@ -283,13 +288,11 @@ class NavigationController extends React.PureComponent {
         </AppBar>
 
         <Box style={tabPanelContainerStyle}>
-          {this.props.matches.map((match, i) => (
+          {matches.map((match, i) => (
             <TabPanel
               key={match.path}
               className={classes.tabPanel}
-              style={{
-                display: (i === selectedIndex) ? 'block' : 'none',
-              }}
+              style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
             >
               <Route
                 key={match.path}
