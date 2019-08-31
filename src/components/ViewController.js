@@ -3,14 +3,39 @@ import React from 'react';
 
 class ViewController extends React.PureComponent {
   componentDidMount() {
-    if (this.props.onMount) {
-      this.props.onMount(this, this.props.mountPath);
+    const {
+      match,
+      mountPath,
+      onMount,
+      onAppear,
+    } = this.props;
+
+    if (match.isExact && onAppear) {
+      onAppear(this, mountPath);
+    }
+
+    if (onMount) {
+      onMount(this, mountPath);
     }
   }
 
-  componentDidUpdate() {
-    if (this.props.onUpdate) {
-      this.props.onUpdate(this, this.props.mountPath);
+  componentDidUpdate(prevProps) {
+    const {
+      location,
+      match,
+      mountPath,
+      onUpdate,
+      onAppear,
+    } = this.props;
+
+    if (match.isExact && (location.pathname !== prevProps.location.pathname)) {
+      if (onAppear) {
+        onAppear(this, mountPath);
+      }
+    }
+
+    if (onUpdate) {
+      onUpdate(this, mountPath);
     }
   }
 
@@ -27,10 +52,13 @@ class ViewController extends React.PureComponent {
 
 ViewController.propTypes = {
   children: PropTypes.any,
+  location: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
+  mountPath: PropTypes.string.isRequired,
   onMount: PropTypes.func,
   onUpdate: PropTypes.func,
+  onAppear: PropTypes.func,
   onUnmount: PropTypes.func,
-  mountPath: PropTypes.string,
 };
 
 export default ViewController;
