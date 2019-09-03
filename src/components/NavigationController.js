@@ -1,5 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React, {
+  Fragment,
+  useRef,
+  useState,
+} from 'react';
 import { Route, Link } from 'react-router-dom';
 
 import isEqual from 'lodash.isequal';
@@ -20,29 +24,28 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 
-class NavigationController extends React.PureComponent {
-  constructor(props) {
-    super(props);
+const styles = makeStyles((theme) => (
+  theme.navigationController
+));
 
-    this.topbarConfigMap = new Map();
+function NavigationController(props) {
+  const classes = styles();
+  const theme = useTheme();
 
-    this.state = {
-      contextMenuAnchorEl: null,
-      contextMenuIsOpen: false,
-    };
-  }
+  const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState(null);
+  const [contextMenuIsOpen, setContextMenuIsOpen] = useState(false);
+  const [topbarConfigMap, setTopbarConfigMap] = useState({});
 
-  get tabs() {
-    const { classes } = this.props;
 
-    const matches = this.props.matches;
+  const createTabs = () => {
+    const matches = props.matches;
     return matches.map((match, i) => {
       let title = '';
-      const topbarConfig = this.topbarConfigMap.get(match.path);
+      const topbarConfig = topbarConfigMap[match.path];
       if (topbarConfig && topbarConfig.title) {
         title = topbarConfig.title;
       }
@@ -69,7 +72,7 @@ class NavigationController extends React.PureComponent {
         tabComponent = (
           <Fragment>
             <Typography className={classes.activeTabTitle}>{title}</Typography>
-            {this.createContextMenu(topbarConfig)}
+            {createContextMenu(topbarConfig)}
           </Fragment>
         );
       }
@@ -80,34 +83,23 @@ class NavigationController extends React.PureComponent {
         </Tab>
       );
     });
+  };
+
+  let activeTopBarConfig = {};
+  if (props.matches.length) {
+    const activeMatch = props.matches[props.matches.length - 1];
+    activeTopBarConfig = topbarConfigMap[activeMatch.path] || {};
   }
 
-  get activeTopBarConfig() {
-    let topbarConfig = null;
-    if (this.props.matches.length) {
-      const activeMatch = this.props.matches[this.props.matches.length - 1];
-      topbarConfig = this.topbarConfigMap.get(activeMatch.path);
-    }
-    return topbarConfig || {};
-  }
+  const rightBarItem = activeTopBarConfig.rightBarItem;
+  const toolbarItems = activeTopBarConfig.toolbarItems;
 
-  get rightBarItem() {
-    return this.activeTopBarConfig.rightBarItem;
-  }
 
-  get toolbarItems() {
-    return this.activeTopBarConfig.toolbarItems;
-  }
-
-  get contextToolbar() {
-    const toolbarItems = this.toolbarItems;
-    if (!toolbarItems) {
-      return null;
-    }
-
-    return (
+  let contextToolbar = null;
+  if (toolbarItems) {
+    contextToolbar = (
       <Toolbar
-        className={this.props.classes.toolBar}
+        className={classes.toolBar}
         disableGutters
         variant="dense"
       >
@@ -116,19 +108,19 @@ class NavigationController extends React.PureComponent {
     );
   }
 
-  createContextMenu = (topbarConfig) => {
+  const createContextMenu = (topbarConfig) => {
     if (!(topbarConfig && topbarConfig.contextMenuItems && topbarConfig.contextMenuItems.length)) {
       return null;
     }
 
     return (
       <Fragment>
-        <IconButton onClick={(e) => { this.toggleContextMenu(e.target); }}>
+        <IconButton onClick={(e) => { toggleContextMenu(e.target); }}>
           <MoreHorizIcon />
         </IconButton>
         <Popper
-          open={this.state.contextMenuIsOpen}
-          anchorEl={this.state.contextMenuAnchorEl}
+          open={contextMenuIsOpen}
+          anchorEl={contextMenuAnchorEl}
           transition
           disablePortal
         >
@@ -138,9 +130,9 @@ class NavigationController extends React.PureComponent {
               style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
             >
               <Paper>
-                <ClickAwayListener onClickAway={() => { this.toggleContextMenu(false); }}>
+                <ClickAwayListener onClickAway={() => { toggleContextMenu(false); }}>
                   <MenuList>
-                    {topbarConfig.contextMenuItems.map(this.createContextMenuItem)}
+                    {topbarConfig.contextMenuItems.map(createContextMenuItem)}
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
@@ -151,12 +143,11 @@ class NavigationController extends React.PureComponent {
     );
   };
 
-  createContextMenuItem = (menuItemConfig) => {
-    const { classes } = this.props;
+  const createContextMenuItem = (menuItemConfig) => {
     const menuItemProps = {
       className: classes.contextMenuItem,
       key: menuItemConfig.key,
-      onClick: () => { this.handleContextMenuClick(menuItemConfig); },
+      onClick: () => { handleContextMenuClick(menuItemConfig); },
     };
     if (menuItemConfig.link) {
       menuItemProps.to = menuItemConfig.link;
@@ -174,23 +165,25 @@ class NavigationController extends React.PureComponent {
     );
   };
 
-  handleContextMenuClick = (menuItemConfig) => {
+  const handleContextMenuClick = (menuItemConfig) => {
     if (menuItemConfig.onClick) {
       menuItemConfig.onClick(menuItemConfig);
     }
-    this.toggleContextMenu(false);
+    toggleContextMenu(false);
   };
 
-  toggleContextMenu = (anchor) => {
+  const toggleContextMenu = (anchor) => {
     if (anchor) {
-      this.setState({ contextMenuAnchorEl: anchor, contextMenuIsOpen: true });
+      setContextMenuAnchorEl(anchor);
+      setContextMenuIsOpen(true);
     } else {
-      this.setState({ contextMenuAnchorEl: null, contextMenuIsOpen: false });
+      setContextMenuAnchorEl(null);
+      setContextMenuIsOpen(false);
     }
   };
 
-  updateTopbarConfig(viewControllerProps, path) {
-    const topbarConfig = this.topbarConfigMap.get(path);
+  const updateTopbarConfig = (viewControllerProps, path) => {
+    const topbarConfig = topbarConfigMap[path];
 
     const newTopbarConfig = {
       title: viewControllerProps.title,
@@ -200,126 +193,119 @@ class NavigationController extends React.PureComponent {
     };
 
     if (!isEqual(newTopbarConfig, topbarConfig)) {
-      this.topbarConfigMap.set(path, newTopbarConfig);
-      this.forceUpdate();
+      const newTopbarConfigMap = { ...topbarConfigMap };
+      newTopbarConfigMap[path] = newTopbarConfig;
+      setTopbarConfigMap(newTopbarConfigMap);
     }
+  };
+
+  const viewDidMount = (viewController, path) => {
+    updateTopbarConfig(viewController.props, path);
+
+    if (props.onViewDidMount) {
+      props.onViewDidMount(viewController, path);
+    }
+  };
+
+  const viewDidUpdate = (viewController, path) => {
+    updateTopbarConfig(viewController.props, path);
+
+    if (props.onViewDidUpdate) {
+      props.onViewDidUpdate(viewController, path);
+    }
+  };
+
+  const viewWillUnmount = (viewController, path) => {
+    const newTopbarConfigMap = { ...topbarConfigMap };
+    delete newTopbarConfigMap[path];
+    setTopbarConfigMap(newTopbarConfigMap);
+
+    if (props.onViewWillUnmount) {
+      props.onViewWillUnmount(viewController, path);
+    }
+  };
+
+  const { matches } = props;
+
+  const selectedIndex = matches.length - 1;
+
+  let appBarHeight = theme.navigationController.navBar.height;
+  if (contextToolbar) {
+    appBarHeight += theme.navigationController.toolBar.height;
   }
 
-  viewDidMount = (viewController, path) => {
-    this.topbarConfigMap.set(path, {});
-    this.updateTopbarConfig(viewController.props, path);
-
-    if (this.props.onViewDidMount) {
-      this.props.onViewDidMount(viewController, path);
-    }
+  const appBarStyle = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: appBarHeight,
   };
 
-  viewDidUpdate = (viewController, path) => {
-    this.updateTopbarConfig(viewController.props, path);
-
-    if (this.props.onViewDidUpdate) {
-      this.props.onViewDidUpdate(viewController, path);
-    }
+  const tabPanelContainerStyle = {
+    position: 'absolute',
+    top: appBarHeight,
+    left: 0,
+    right: 0,
+    bottom: 0,
   };
 
-  viewWillUnmount = (viewController, path) => {
-    this.topbarConfigMap.delete(path);
-    this.forceUpdate();
+  const tabs = createTabs();
 
-    if (this.props.onViewWillUnmount) {
-      this.props.onViewWillUnmount(viewController, path);
-    }
-  };
-
-  render() {
-    const {
-      classes,
-      matches,
-      theme,
-    } = this.props;
-
-    const selectedIndex = matches.length - 1;
-
-    const contextToolbar = this.contextToolbar;
-
-    let appBarHeight = theme.navigationController.navBar.height;
-    if (contextToolbar) {
-      appBarHeight += theme.navigationController.toolBar.height;
-    }
-
-    const appBarStyle = {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      height: appBarHeight,
-    };
-
-    const tabPanelContainerStyle = {
-      position: 'absolute',
-      top: appBarHeight,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    };
-
-    return (
-      <Tabs
-        className={classes.tabs}
-        forceRenderTabPanel={true}
-        selectedIndex={selectedIndex}
-        onSelect={() => {}}
+  return (
+    <Tabs
+      className={classes.tabs}
+      forceRenderTabPanel={true}
+      selectedIndex={selectedIndex}
+      onSelect={() => {}}
+    >
+      <AppBar
+        className={classes.appBar}
+        style={appBarStyle}
+        color="default"
+        elevation={0}
+        position="static"
       >
-        <AppBar
-          className={classes.appBar}
-          style={appBarStyle}
-          color="default"
-          elevation={0}
-          position="static"
-        >
-          <Toolbar className={classes.navBar} disableGutters>
-            <TabList className={classes.tabList}>
-              {this.tabs}
-            </TabList>
-            {this.rightBarItem}
-          </Toolbar>
+        <Toolbar className={classes.navBar} disableGutters>
+          <TabList className={classes.tabList}>
+            {tabs}
+          </TabList>
+          {rightBarItem}
+        </Toolbar>
 
-          {contextToolbar}
-        </AppBar>
+        {contextToolbar}
+      </AppBar>
 
-        <Box style={tabPanelContainerStyle}>
-          {matches.map((match, i) => (
-            <TabPanel
+      <Box style={tabPanelContainerStyle}>
+        {matches.map((match, i) => (
+          <TabPanel
+            key={match.path}
+            className={classes.tabPanel}
+            style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
+          >
+            <Route
               key={match.path}
-              className={classes.tabPanel}
-              style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
-            >
-              <Route
-                key={match.path}
-                path={match.path}
-                render={(props) => {
-                  return (
-                    <match.component
-                      onMount={this.viewDidMount}
-                      onUnmount={this.viewWillUnmount}
-                      onUpdate={this.viewDidUpdate}
-                      mountPath={match.path}
-                      {...props}
-                    />
-                  );
-                }}
-              />
-            </TabPanel>
-          ))}
-        </Box>
-      </Tabs>
-    );
-  }
+              path={match.path}
+              render={(props) => {
+                return (
+                  <match.component
+                    onMount={viewDidMount}
+                    onUnmount={viewWillUnmount}
+                    onUpdate={viewDidUpdate}
+                    mountPath={match.path}
+                    {...props}
+                  />
+                );
+              }}
+            />
+          </TabPanel>
+        ))}
+      </Box>
+    </Tabs>
+  );
 }
 
 NavigationController.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
   matches: PropTypes.array.isRequired,
   onViewDidMount: PropTypes.func,
   onViewDidUpdate: PropTypes.func,
@@ -330,6 +316,4 @@ NavigationController.defaultProps = {
   matches: [],
 };
 
-export default withStyles((theme) => (
-  theme.navigationController
-), { withTheme: true })(NavigationController);
+export default NavigationController;
