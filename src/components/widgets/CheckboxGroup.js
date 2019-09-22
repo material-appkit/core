@@ -27,20 +27,18 @@ function CheckboxGroupWidget(props) {
 
   const classes = styles();
 
-  const [selection, setSelection] = useState({});
+  const [selection, setSelection] = useState(new Set());
 
   const handleCheckboxClick = (choiceInfo) => {
-    const choiceValue = choiceInfo.value;
-
-    const newSelection = { ...selection };
-    if (newSelection[choiceValue]) {
-      delete newSelection[choiceValue];
+    const newSelection = new Set(selection);
+    if (newSelection.has(choiceInfo.value)) {
+      newSelection.delete(choiceInfo.value);
     } else {
-      newSelection[choiceValue] = choiceInfo;
+      newSelection.add(choiceInfo.value);
     }
     setSelection(newSelection);
 
-    onChange(newSelection);
+    onChange(Array.from(newSelection));
   };
 
   return (
@@ -57,7 +55,7 @@ function CheckboxGroupWidget(props) {
             <FormControlLabel
               control={(
                 <Checkbox
-                  checked={!!(selection[choiceInfo.value])}
+                  checked={selection.has(choiceInfo.value)}
                   onClick={() => { handleCheckboxClick(choiceInfo); }}
                   value={choiceInfo.value}
                 />
