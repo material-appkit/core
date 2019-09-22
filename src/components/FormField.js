@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import TextField from '@material-ui/core/TextField';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -123,12 +123,12 @@ function FormField(props) {
   return (
     <TextField {...textFieldProps }>
       {fieldInfo.choices &&
-        <React.Fragment>
+        <Fragment>
           <option />
           {fieldInfo.choices.map((choice) => (
             <option key={choice.value} value={choice.value}>{choice.label}</option>
           ))}
-        </React.Fragment>
+        </Fragment>
       }
     </TextField>
   );
