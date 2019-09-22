@@ -72,11 +72,16 @@ class VirtualizedList extends React.Component {
     }
   };
 
-  renderItem = (item) => {
+  renderItem = (item, groupKey) => {
+    let itemKey = this.keyForItem(item);
+    if (groupKey !== undefined) {
+      itemKey = `${groupKey}:${itemKey}`;
+    }
+
     return (
       <this.props.componentForItem
         contextProvider={this.props.itemContextProvider}
-        key={this.keyForItem(item)}
+        key={itemKey}
         item={item}
         onSelectionChange={this.handleSelectionChange}
         selected={this.isSelected(item)}
@@ -104,7 +109,7 @@ class VirtualizedList extends React.Component {
             <ListSubheader className={classes.subheader} disableSticky>
               {itemGroup[0]}
             </ListSubheader>
-            {itemGroup[1].map(this.renderItem)}
+            {itemGroup[1].map(() => this.renderItem(item, itemGroup[0]))}
           </Fragment>
         ));
       } else {
