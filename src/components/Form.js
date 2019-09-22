@@ -9,19 +9,18 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import { ServiceAgent } from '../util';
 import { arrayToObject } from '../util/array';
-import { recursiveMap } from '../util/component';
 import { reverse } from '../util/urls';
 
 import FormFieldSet from './FormFieldSet';
-import DateTimeField from './DateTimeField';
-import ItemListField from './ItemListField';
-import ModelSelectField from './ModelSelectField';
+import DateTimeWidget from './widgets/DateTime';
+import ItemListWidget from './widgets/ItemList';
+import ModelSelectWidget from './widgets/ModelSelect';
 
 class Form extends React.PureComponent {
   static widgetClassMap = {
-    'itemlist': ItemListField,
-    'datetime': DateTimeField,
-    'modelselect': ModelSelectField,
+    'itemlist': ItemListWidget,
+    'datetime': DateTimeWidget,
+    'modelselect': ModelSelectWidget,
   };
 
   static registerWidgetClass(widgetType, WidgetClass) {

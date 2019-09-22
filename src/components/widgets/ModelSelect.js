@@ -1,6 +1,6 @@
 /**
 *
-* ModelSelectField
+* ModelSelectWidget
 *
 */
 
@@ -11,10 +11,10 @@ import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-import ListDialog from './ListDialog';
+import ListDialog from '../ListDialog';
 
 
-class ModelSelectField extends React.PureComponent {
+class ModelSelectWidget extends React.PureComponent {
   static coerceValue(value) {
     return value.url;
   }
@@ -91,7 +91,7 @@ class ModelSelectField extends React.PureComponent {
   }
 }
 
-ModelSelectField.propTypes = {
+ModelSelectWidget.propTypes = {
   classes: PropTypes.object.isRequired,
   label: PropTypes.string,
   listDialogProps: PropTypes.object,
@@ -102,11 +102,11 @@ ModelSelectField.propTypes = {
   value: PropTypes.any,
 };
 
-ModelSelectField.defaultProps = {
+ModelSelectWidget.defaultProps = {
   listDialogProps: {},
 };
 
 export default withStyles((theme) => ({
   fieldset: theme.form.customControl.fieldset,
   legend: theme.form.customControl.legend,
-}))(ModelSelectField);
+}))(ModelSelectWidget);

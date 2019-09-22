@@ -1,6 +1,6 @@
 /**
 *
-* DateTimeField
+* DateTimeWidget
 *
 */
 
@@ -19,7 +19,7 @@ import {
 } from '@material-ui/pickers';
 
 
-class DateTimeField extends React.PureComponent {
+class DateTimeWidget extends React.PureComponent {
   constructor(props) {
     super(props);
 
@@ -66,16 +66,13 @@ class DateTimeField extends React.PureComponent {
   }
 }
 
-DateTimeField.propTypes = {
+DateTimeWidget.propTypes = {
   classes: PropTypes.object.isRequired,
   label: PropTypes.string,
   value: PropTypes.any,
 };
 
-DateTimeField.defaultProps = {
-};
-
 export default withStyles((theme) => ({
   fieldset: theme.form.customControl.fieldset,
   legend: theme.form.customControl.legend,
-}))(DateTimeField);
+}))(DateTimeWidget);

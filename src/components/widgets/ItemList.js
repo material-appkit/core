@@ -1,6 +1,6 @@
 /**
 *
-* ItemListField
+* ItemListWidget
 *
 */
 
@@ -12,12 +12,12 @@ import PropTypes from 'prop-types';
 import FormControl from '@material-ui/core/FormControl';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-import { removeObject } from '../util/array';
+import { removeObject } from '../../util/array';
 
-import VirtualizedListItem from './VirtualizedListItem';
-import ItemList from './ItemList';
+import VirtualizedListItem from '../VirtualizedListItem';
+import ItemList from '../ItemList';
 
-class ItemListField extends React.PureComponent {
+class ItemListWidget extends React.PureComponent {
   static coerceValue(value) {
     return value.map((item) => item.url);
   }
@@ -128,7 +128,7 @@ class ItemListField extends React.PureComponent {
   }
 }
 
-ItemListField.propTypes = {
+ItemListWidget.propTypes = {
   classes: PropTypes.object.isRequired,
   createUrl: PropTypes.string,
   editDialogProps: PropTypes.object,
@@ -146,7 +146,7 @@ ItemListField.propTypes = {
   value: PropTypes.array.isRequired,
 };
 
-ItemListField.defaultProps = {
+ItemListWidget.defaultProps = {
   editDialogProps: {},
   filterParams: {},
   listDialogProps: { selectionMode: 'multiple' },
@@ -157,4 +157,4 @@ ItemListField.defaultProps = {
 export default withStyles((theme) => ({
   fieldset: theme.form.customControl.fieldset,
   legend: theme.form.customControl.legend,
-}))(ItemListField);
+}))(ItemListWidget);
