@@ -27,12 +27,11 @@ function VirtualizedListItem(props) {
     listItemProps = contextProvider(item);
   }
 
-  listItemProps.onClick = () => {
+  listItemProps.onClick = (e) => {
     if (selectOnClick && onSelectionChange) {
+      e.preventDefault();
       onSelectionChange(item);
-    }
-
-    if (onItemClick) {
+    } else if (onItemClick) {
       onItemClick(item);
     }
   };
