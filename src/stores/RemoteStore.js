@@ -133,7 +133,7 @@ class RemoteStore extends DataStore {
   }
 
   _getTotalLength(responseData) {
-    return responseData.count;
+    return responseData.meta.pagination.total;
   }
 
   /**
@@ -141,7 +141,7 @@ class RemoteStore extends DataStore {
    * Can be overridden by subclasses to handle response bodies of different form.
    */
   _transformResponseData(responseData) {
-    return responseData.results;
+    return responseData.data;
   }
 
   /**
