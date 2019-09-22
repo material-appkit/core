@@ -23,6 +23,7 @@ import EditDialog from './EditDialog';
 import Spacer from './Spacer';
 import TextField from './TextField';
 import VirtualizedList from './VirtualizedList';
+import PagedListView from './PagedListView';
 
 import RemoteStore from '../stores/RemoteStore';
 
@@ -100,6 +101,8 @@ class ListDialog extends React.PureComponent {
       loading: false,
       selection: null,
       addDialogIsOpen: false,
+      filterParams: {...props.filterParams},
+      listViewInfo: {},
     };
   }
 
@@ -126,8 +129,7 @@ class ListDialog extends React.PureComponent {
     if (filterTerm) {
       filterParams[this.props.searchFilterParam] = filterTerm;
     }
-
-    this.store.update(filterParams);
+    this.setState({ filterParams });
   };
 
   handleEditDialogClose = () => {
@@ -180,18 +182,19 @@ class ListDialog extends React.PureComponent {
           </DialogTitle>
           <RootRef rootRef={this.dialogContentRef}>
             <DialogContent className={classes.dialogContent}>
-              <VirtualizedList
-                componentForItem={this.props.listItemComponent}
-                fullWidth
-                getScrollParent={() => this.dialogContentRef.current}
-                itemIdKey={this.props.itemIdKey}
-                itemProps={itemProps}
+              <PagedListView
+                displayMode="list"
+                defaultFilterParams={this.state.filterParams}
                 itemContextProvider={this.listItemContextProvider}
+                listItemRenderer={this.props.listItemComponent}
+                listItemProps={this.props.listItemProps}
+                onConfig={(config) => { console.log(config); this.setState({ listViewInfo: config }); }}
                 onSelectionChange={(selection) => { this.setState({ selection }); }}
+                pageSize={this.props.pageSize}
+                selectionAlways
                 selectionMode={this.props.selectionMode}
                 selectOnClick
-                store={this.store}
-                useWindow={false}
+                src={this.store.endpoint}
               />
             </DialogContent>
           </RootRef>
@@ -204,6 +207,7 @@ class ListDialog extends React.PureComponent {
                 <Spacer />
               </Fragment>
             }
+            {this.state.listViewInfo.toolbarItems}
             <Button
               color="primary"
               disabled={!this.hasSelection}
@@ -239,6 +243,7 @@ ListDialog.propTypes = {
   listItemComponent: PropTypes.func.isRequired,
   listItemProps: PropTypes.object,
   onDismiss: PropTypes.func.isRequired,
+  pageSize: PropTypes.number,
   searchFilterParam: PropTypes.string,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   store: PropTypes.object,
@@ -248,6 +253,7 @@ ListDialog.defaultProps = {
   editDialogProps: {},
   filterParams: {},
   listItemProps: {},
+  pageSize: 50,
   selectionMode: 'single',
 };
 
