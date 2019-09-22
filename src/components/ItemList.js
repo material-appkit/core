@@ -335,7 +335,6 @@ class ItemList extends React.PureComponent {
             {this.props.apiListUrl && this.state.listDialogOpen &&
               <ListDialog
                 apiCreateUrl={this.props.apiCreateUrl}
-                apiListUrl={this.props.apiListUrl}
                 editDialogProps={this.props.editDialogProps}
                 entityType={this.props.entityType}
                 filterParams={this.props.filterParams}
@@ -343,6 +342,7 @@ class ItemList extends React.PureComponent {
                 listItemProps={this.props.listItemProps}
                 onDismiss={this.handleListDialogDismiss}
                 searchFilterParam={this.props.searchFilterParam}
+                src={this.props.apiListUrl}
                 {...this.props.listDialogProps}
               />
             }

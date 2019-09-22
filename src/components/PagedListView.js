@@ -47,9 +47,12 @@ function PagedListView(props) {
     itemContextProvider,
     itemIdKey,
     location,
+    onLoad,
+    onComplete,
     pageSize,
     selectionAlways,
     selectionMode,
+    src,
   } = props;
 
   const classes = styles();
@@ -137,23 +140,33 @@ function PagedListView(props) {
       return;
     }
 
-    if (props.onLoad) {
-      props.onLoad(filterParams);
+    if (onLoad) {
+      onLoad(filterParams);
     }
 
-    const res = await ServiceAgent.get(props.src, filterParams);
-    const responseInfo = res.body;
-    setItems(responseInfo.data);
+    let onCompleteResult = null;
+    if (typeof(src) === 'string') {
+      const res = await ServiceAgent.get(src, filterParams);
+      const responseInfo = res.body;
+      setItems(responseInfo.data);
 
-    if (responseInfo.meta && responseInfo.meta.pagination) {
-      setPaginationInfo(responseInfo.meta.pagination);
+      if (responseInfo.meta && responseInfo.meta.pagination) {
+        setPaginationInfo(responseInfo.meta.pagination);
+      }
+      onCompleteResult = responseInfo;
+    } else {
+      // TODO: Filter the source array with the given params
+      const filteredItems = [...src];
+      setItems(filteredItems);
+      onCompleteResult = filteredItems;
     }
 
-    if (props.onComplete) {
-      props.onComplete(responseInfo);
+    if (onComplete) {
+      onComplete(onCompleteResult);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.src, filterParams]);
+  }, [src, filterParams]);
 
 
   /**
@@ -281,6 +294,7 @@ function PagedListView(props) {
 
 PagedListView.propTypes = {
   defaultFilterParams: PropTypes.object,
+  displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
   gridListProps: PropTypes.object,
 
   itemContextProvider: PropTypes.func,
@@ -301,9 +315,8 @@ PagedListView.propTypes = {
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionAlways: PropTypes.bool,
   selectOnClick: PropTypes.bool,
-  src: PropTypes.string,
+  src: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   tileItemRenderer: PropTypes.func,
-  displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
 };
 
 PagedListView.defaultProps = {

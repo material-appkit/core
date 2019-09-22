@@ -22,10 +22,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import EditDialog from './EditDialog';
 import Spacer from './Spacer';
 import TextField from './TextField';
-import VirtualizedList from './VirtualizedList';
 import PagedListView from './PagedListView';
-
-import RemoteStore from '../stores/RemoteStore';
 
 const DialogTitle = withStyles((theme) => ({
   root: {
@@ -87,15 +84,6 @@ class ListDialog extends React.PureComponent {
     super(props);
 
     this.dialogContentRef = React.createRef();
-
-    if (props.store) {
-      this.store = props.store;
-    } else if (props.apiListUrl) {
-      this.store = new RemoteStore({ endpoint: props.apiListUrl });
-      this.store.load(props.filterParams);
-    } else {
-      throw new Error('ListDialog requires a store or an apiListUrl prop');
-    }
 
     this.state = {
       loading: false,
@@ -186,15 +174,18 @@ class ListDialog extends React.PureComponent {
                 displayMode="list"
                 defaultFilterParams={this.state.filterParams}
                 itemContextProvider={this.listItemContextProvider}
+                itemIdKey={this.props.itemIdKey}
                 listItemRenderer={this.props.listItemComponent}
                 listItemProps={this.props.listItemProps}
-                onConfig={(config) => { console.log(config); this.setState({ listViewInfo: config }); }}
+                onConfig={(config) => { this.setState({ listViewInfo: config }); }}
+                onLoad={() => { this.setState({loading: true }); }}
+                onComplete={() => { this.setState({loading: false }); }}
                 onSelectionChange={(selection) => { this.setState({ selection }); }}
                 pageSize={this.props.pageSize}
                 selectionAlways
                 selectionMode={this.props.selectionMode}
                 selectOnClick
-                src={this.store.endpoint}
+                src={this.props.src}
               />
             </DialogContent>
           </RootRef>
@@ -246,7 +237,7 @@ ListDialog.propTypes = {
   pageSize: PropTypes.number,
   searchFilterParam: PropTypes.string,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  store: PropTypes.object,
+  src: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
 };
 
 ListDialog.defaultProps = {
