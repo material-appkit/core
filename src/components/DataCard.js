@@ -109,6 +109,7 @@ function DataCard(props) {
         )}
         classes={cardHeaderClasses}
         title={props.title}
+        subheader={props.subheader}
       />
       <CardContent classes={{ root: classes.cardContentRoot }}>
         {getActiveView()}
@@ -121,6 +122,7 @@ DataCard.propTypes = {
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
   formConfig: PropTypes.object,
   title: PropTypes.string,
+  subheader: PropTypes.string,
   variant: PropTypes.oneOf(['card', 'plain'])
 };
 
