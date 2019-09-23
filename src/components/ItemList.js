@@ -58,10 +58,17 @@ function ItemListItem(props) {
   let component = null;
   if (props.component) {
     // If a component class was explicitly provided, use it
-    component = <props.component item={props.item} onChange={onChange} />;
+    component = (
+      <props.component
+        item={props.item}
+        onChange={onChange}
+        {...props.componentProps}
+      />
+    );
   } else {
     let ComponentClass = null;
     let componentProps = {
+      ...props.componentProps,
       onClick: () => { onClick(item) },
       onChange,
     };
@@ -99,7 +106,7 @@ function ItemListItem(props) {
   }
 
   return (
-    <ListItem classes={{ root: classes.root }}>
+    <ListItem classes={{ root: classes.root }} {...props.itemProps}>
       {(props.mode === 'view' && props.icon) &&
         <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
           <props.icon className={classes.listItemIcon} />
@@ -132,6 +139,7 @@ function ItemListItem(props) {
 ItemListItem.propTypes = {
   clickAction: PropTypes.string,
   component: PropTypes.func,
+  componentProps: PropTypes.object,
   icon: PropTypes.object,
   item: PropTypes.object.isRequired,
   mode: PropTypes.oneOf(['view', 'edit']),
@@ -306,6 +314,7 @@ class ItemList extends React.PureComponent {
             <ItemListItem
               clickAction={clickAction}
               component={this.props.itemComponent}
+              componentProps={this.props.itemComponentProps}
               key={item.id}
               icon={this.props.itemIcon}
               item={item}
@@ -377,6 +386,7 @@ ItemList.propTypes = {
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
   itemComponent: PropTypes.func,
+  itemComponentProps: PropTypes.object,
   itemIcon: PropTypes.object,
   items: PropTypes.array.isRequired,
   itemKeyPath: PropTypes.string,
@@ -400,6 +410,7 @@ ItemList.defaultProps = {
   EditDialogComponent: EditDialog,
   editDialogProps: {},
   filterParams: {},
+  itemComponentProps: {},
   listDialogProps: {},
   listItemProps: {},
   mode: 'view',
