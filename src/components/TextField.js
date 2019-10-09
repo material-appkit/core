@@ -2,7 +2,6 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import warning from 'warning';
 import PropTypes from 'prop-types';
 
 import Input from '@material-ui/core/Input';
@@ -136,10 +135,6 @@ class TextField extends React.Component {
       ...other
     } = this.props;
 
-    warning(
-      !select || Boolean(children),
-      'Material-UI: `children` must be passed when using the `TextField` component with `select`.',
-    );
 
     const InputMore = {};
 
