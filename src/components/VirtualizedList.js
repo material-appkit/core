@@ -104,14 +104,19 @@ class VirtualizedList extends React.Component {
     let listChildren = null;
     if (items) {
       if (isGrouped) {
-        listChildren = items.map((itemGroup) => (
-          <Fragment key={itemGroup[0]}>
+        listChildren = items.map((itemGroup) => {
+          const groupName = itemGroup[0];
+          const groupedItems = itemGroup[1];
+
+          return (
+          <Fragment key={groupName}>
             <ListSubheader className={classes.subheader} disableSticky>
-              {itemGroup[0]}
+              {groupName}
             </ListSubheader>
-            {itemGroup[1].map(() => this.renderItem(item, itemGroup[0]))}
+            {groupedItems.map((item) => this.renderItem(item, groupName))}
           </Fragment>
-        ));
+          )
+        });
       } else {
         listChildren = items.map(this.renderItem);
       }
