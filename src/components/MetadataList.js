@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -29,15 +30,26 @@ function MetadataListItem(props) {
           {renderValue(item)}
         </ListItem>
       ));
-    } else if (fieldInfo.transform) {
-      return fieldInfo.transform(value);
-    } else if (fieldInfo.dateFormat) {
-      return moment(value).format(fieldInfo.dateFormat);
-    } else if (fieldInfo.keyPath) {
-      return valueForKeyPath(value, fieldInfo.keyPath);
-    } else {
-      return value;
     }
+
+    let renderedValue = value;
+    if (fieldInfo.transform) {
+      renderedValue = fieldInfo.transform(value);
+    } else if (fieldInfo.dateFormat) {
+      renderedValue = moment(value).format(fieldInfo.dateFormat);
+    } else if (fieldInfo.keyPath) {
+      renderedValue = valueForKeyPath(value, fieldInfo.keyPath);
+    }
+
+    if (typeof(renderedValue) === 'string') {
+      renderedValue = (
+        <Typography variant="body2">
+          {renderedValue}
+        </Typography>
+      );
+    }
+
+    return renderedValue;
   }
 
   let value = representedObject[fieldInfo.name];
@@ -83,8 +95,7 @@ function MetadataListItem(props) {
     PrimaryComponent = List;
     primaryComponentProps.disablePadding = true;
   } else {
-    PrimaryComponent = Typography;
-    primaryComponentProps.variant = 'body2';
+    PrimaryComponent = Box;
   }
 
   return (
