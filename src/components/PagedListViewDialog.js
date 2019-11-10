@@ -52,6 +52,11 @@ function PagedListViewDialog(props) {
     ...pagedListViewProps
   } = props;
 
+  const {
+    pageSize,
+    selectionAlways,
+  } = pagedListViewProps;
+
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [listViewInfo, setListViewInfo] = useState({});
@@ -82,6 +87,26 @@ function PagedListViewDialog(props) {
     title = title();
   }
 
+  const toolbarItems = [];
+  if (listViewInfo.toolbarItems && pageSize) {
+    const pagingToolbarItem = listViewInfo.toolbarItems[selectionAlways ? 0 : 1];
+    toolbarItems.push(pagingToolbarItem);
+  }
+
+  if (!commitOnSelect) {
+    toolbarItems.push(<Spacer key="spacer" />);
+    toolbarItems.push(
+      <Button
+        color="primary"
+        disabled={!selectedItems.length}
+        key="commitButton"
+        onClick={() => { onDismiss(selectedItems); }}
+      >
+        Choose
+      </Button>
+    )
+  }
+
   const classes = styles();
 
   return (
@@ -108,19 +133,7 @@ function PagedListViewDialog(props) {
       </DialogContent>
 
       <DialogActions>
-        {listViewInfo.toolbarItems}
-
-        <Spacer />
-
-        {!commitOnSelect &&
-          <Button
-            color="primary"
-            disabled={!selectedItems.length}
-            onClick={() => { onDismiss(selectedItems); }}
-          >
-            Choose
-          </Button>
-        }
+        {toolbarItems}
       </DialogActions>
     </Dialog>
   );
