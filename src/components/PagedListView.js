@@ -60,13 +60,15 @@ function PagedListView(props) {
 
   const classes = styles();
 
+  const qsParams = NavManager.qsParams;
+  const qsPageParam = parseInt(qsParams.page || 1);
+
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
-  const [page, setPage] = useState(location ? parseInt(NavManager.qsParams.page || 1) : 1);
+  const [page, setPage] = useState(location ? qsPageParam : 1);
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selection, setSelection] = useState({});
   const [selectionDisabled, setSelectionDisabled] = useState(true);
-
 
   /**
    * Update filter params when the page changes
@@ -77,11 +79,12 @@ function PagedListView(props) {
     if (pageSize) {
       params.page_size = pageSize;
       params.page = page;
+
+      if (props.location && page !== qsPageParam) {
+        NavManager.updateUrlParam('page', page);
+      }
     }
 
-    if (props.location) {
-      NavManager.updateUrlParam('page', page);
-    }
 
     if (!isEqual(params, filterParams)) {
       setFilterParams(params);
