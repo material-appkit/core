@@ -15,18 +15,19 @@
   "license": "MIT",
   "dependencies": {
     "docs.flowjs": "^2.13.0",
-    "js-cookie": "^2.2.0",
+    "js-cookie": "^2.2.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
+    "lodash.isinteger": "^4.0.4",
     "mobx-react-router": "^4.0.7",
-    "query-string": "^6.2.0",
+    "query-string": "^6.4.2",
     "react-infinite-scroller": "^1.2.4",
     "react-tabs": "^3.0.0",
-    "superagent": "^5.0.2",
+    "superagent": "^5.1.0",
     "title-case": "^2.1.1"
   },
   "peerDependencies": {
-    "@date-io/moment": "^1.3.6",
+    "@date-io/moment": "^1.3.11",
     "@material-ui/core": "^4.3.0",
     "@material-ui/icons": "^4.2.1",
     "@material-ui/pickers": "^3.2.0",
