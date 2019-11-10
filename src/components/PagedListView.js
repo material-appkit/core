@@ -22,14 +22,17 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 
-import NavManager from '@material-appkit/core/managers/NavManager';
-import ServiceAgent from '@material-appkit/core/util/ServiceAgent';
+import NavManager from '../managers/NavManager';
+import ServiceAgent from '../util/ServiceAgent';
+
+import ToolbarItem from './ToolbarItem';
 
 //------------------------------------------------------------------------------
 const styles = makeStyles((theme) => ({
   paginationToolbar: {
     height: theme.spacing(4),
     minHeight: theme.spacing(4),
+    paddingLeft: theme.spacing(1),
   },
 
   paginationActions: {
@@ -193,6 +196,27 @@ function PagedListView(props) {
   useEffect(() => {
     const toolbarItems = [];
 
+    if (!selectionAlways) {
+      toolbarItems.push(
+        <ToolbarItem
+          control={(
+            <IconButton
+              key="modeToggle"
+              color={selectionDisabled ? 'default' : 'primary' }
+              onClick={() => {
+                // Clear current selection when selection mode is enabled/disabled
+                updateSelection({});
+                setSelectionDisabled(!selectionDisabled);
+              }}
+            >
+              <GpsFixedIcon />
+            </IconButton>
+          )}
+          tooltip={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}
+          />
+      );
+    }
+
     if (paginationInfo) {
       toolbarItems.push((
         <TablePagination
@@ -209,22 +233,6 @@ function PagedListView(props) {
           onChangePage={(e, value) => { setPage(value + 1); }}
         />
       ));
-    }
-
-    if (!selectionAlways) {
-      toolbarItems.push(
-        <IconButton
-          key="modeToggle"
-          color={selectionDisabled ? 'default' : 'primary' }
-          onClick={() => {
-            // Clear current selection when selection mode is enabled/disabled
-            updateSelection({});
-            setSelectionDisabled(!selectionDisabled);
-          }}
-        >
-          <GpsFixedIcon />
-        </IconButton>
-      );
     }
 
     if (props.onConfig) {
