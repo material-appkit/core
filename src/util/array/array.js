@@ -1,3 +1,5 @@
+import slice from 'lodash.slice';
+
 /**
  * Helper function to convert an array of objects into a map using a key
  * that is common to all elements in the array.
@@ -17,4 +19,21 @@ export function removeObject(originalArray, fieldName, value) {
     }
   }
   return array;
+}
+
+export function chunk(array, size) {
+  const length = (array === null) ? 0 : array.length;
+  if (!length || size < 1) {
+    return [];
+  }
+
+  let index = 0;
+  let resIndex = 0;
+  const result = new Array(Math.ceil(length / size));
+
+  while (index < length) {
+    result[resIndex++] = slice(array, index, (index += size));
+  }
+
+  return result;
 }
