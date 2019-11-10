@@ -36,7 +36,7 @@ const styles = makeStyles((theme) => ({
   },
 
   paginationActions: {
-    marginLeft: 0,
+    marginLeft: theme.spacing(1),
 
     '& button': {
       padding: theme.spacing(1),
