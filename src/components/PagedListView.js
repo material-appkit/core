@@ -13,7 +13,6 @@ import React, {
   useState,
 } from 'react';
 
-import GridList from '@material-ui/core/GridList';
 import List from '@material-ui/core/List';
 
 import IconButton from '@material-ui/core/IconButton';
@@ -25,6 +24,7 @@ import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import NavManager from '../managers/NavManager';
 import ServiceAgent from '../util/ServiceAgent';
 
+import TileList from './TileList';
 import ToolbarItem from './ToolbarItem';
 
 //------------------------------------------------------------------------------
@@ -201,7 +201,6 @@ function PagedListView(props) {
         <ToolbarItem
           control={(
             <IconButton
-              key="modeToggle"
               color={selectionDisabled ? 'default' : 'primary' }
               onClick={() => {
                 // Clear current selection when selection mode is enabled/disabled
@@ -212,6 +211,7 @@ function PagedListView(props) {
               <GpsFixedIcon />
             </IconButton>
           )}
+          key="modeToggle"
           tooltip={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}
           />
       );
@@ -266,7 +266,6 @@ function PagedListView(props) {
     ...props.listItemProps,
   });
 
-
   if (displayMode === 'list') {
     return (
       <List disablePadding>
@@ -282,20 +281,15 @@ function PagedListView(props) {
   }
 
   if (displayMode === 'tile') {
-    const gridListProps = Object.assign({
-      cellHeight: 'auto',
-      cols: 3,
-    }, props.gridListProps);
-
     return (
-      <GridList {...gridListProps}>
+      <TileList {...props.tileListProps}>
         {items.map((item) => (
           <props.tileItemRenderer
             key={keyForItem(item)}
             {...itemProps(item)}
           />
         ))}
-      </GridList>
+      </TileList>
     );
   }
 }
@@ -303,7 +297,7 @@ function PagedListView(props) {
 PagedListView.propTypes = {
   defaultFilterParams: PropTypes.object,
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
-  gridListProps: PropTypes.object,
+  tileListProps: PropTypes.object,
 
   itemContextProvider: PropTypes.func,
   itemIdKey: PropTypes.oneOfType([
@@ -329,7 +323,7 @@ PagedListView.propTypes = {
 
 PagedListView.defaultProps = {
   defaultFilterParams: {},
-  gridListProps: {},
+  tileListProps: {},
   itemIdKey: 'id',
   selectionAlways: false,
   selectOnClick: false,
