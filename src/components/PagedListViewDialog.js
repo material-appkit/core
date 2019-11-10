@@ -46,6 +46,7 @@ const styles = makeStyles((theme) => ({
 
 function PagedListViewDialog(props) {
   const {
+    commitOnSelect,
     onDismiss,
     dialogProps,
     ...pagedListViewProps
@@ -61,12 +62,17 @@ function PagedListViewDialog(props) {
   const handleSelectionChange = (selection) => {
     if (!selection) {
       setSelectedItems([]);
-    } else {
-      if (Array.isArray(selection)) {
-        setSelectedItems(selection);
-      } else {
-        setSelectedItems([selection]);
-      }
+      return;
+    }
+
+    let newSelection = selection;
+    if (!Array.isArray(selection)) {
+      newSelection = [newSelection];
+    }
+    setSelectedItems(newSelection);
+
+    if (commitOnSelect) {
+      onDismiss(newSelection);
     }
   };
 
@@ -79,9 +85,8 @@ function PagedListViewDialog(props) {
   const classes = styles();
 
   return (
-    <Dialog
+    <Dialog open
       onClose={() => { onDismiss(null); }}
-      open
       {...dialogProps}
     >
       <DialogTitle className={classes.dialogTitle} disableTypography>
@@ -99,32 +104,37 @@ function PagedListViewDialog(props) {
           onConfig={(config) => { setListViewInfo(config); }}
           onSelectionChange={handleSelectionChange}
           {...pagedListViewProps}
-
         />
       </DialogContent>
 
       <DialogActions>
         {listViewInfo.toolbarItems}
+
         <Spacer />
-        <Button
-          color="primary"
-          disabled={!selectedItems.length}
-          onClick={() => { onDismiss(selectedItems); }}
-        >
-          Choose
-        </Button>
+
+        {!commitOnSelect &&
+          <Button
+            color="primary"
+            disabled={!selectedItems.length}
+            onClick={() => { onDismiss(selectedItems); }}
+          >
+            Choose
+          </Button>
+        }
       </DialogActions>
     </Dialog>
   );
 }
 
 PagedListViewDialog.propTypes = {
+  commitOnSelect: PropTypes.bool,
   dialogProps: PropTypes.object,
   onDismiss: PropTypes.func,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
 
 PagedListViewDialog.defaultProps = {
+  commitOnSelect: false,
   dialogProps: {},
 };
 
