@@ -67,7 +67,7 @@ function PagedListView(props) {
   const [items, setItems] = useState(null);
   const [page, setPage] = useState(location ? qsPageParam : 1);
   const [paginationInfo, setPaginationInfo] = useState(null);
-  const [selection, setSelection] = useState({});
+  const [selectedItemIds, setSelectedItemIds] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(true);
   const [toolbarItems, setToolbarItems] = useState({});
 
@@ -111,11 +111,15 @@ function PagedListView(props) {
   };
 
 
-  const updateSelection = (newSelection) => {
-    setSelection(newSelection);
+  const updateSelection = (newSelectedItemIds) => {
+    setSelectedItemIds(newSelectedItemIds);
 
     if (props.onSelectionChange) {
-      const selectedItems = Object.values(newSelection);
+      const selectedItems = items.filter((item) => {
+        const itemId = keyForItem(item);
+        return newSelectedItemIds.has(itemId);
+      });
+
       if (selectionMode === 'single') {
         props.onSelectionChange(selectedItems.pop());
       } else {
@@ -131,17 +135,20 @@ function PagedListView(props) {
   const handleSelectionControlClick = (item) => {
     const itemId = keyForItem(item);
 
-    const newSelection = {};
+    let newSelection = null;
     if (selectionMode === 'single') {
-      if (!selection[itemId]) {
-        newSelection[itemId] = item;
+
+      if (selectedItemIds.has(itemId)) {
+        newSelection = new Set();
+      } else {
+        newSelection = new Set([itemId]);
       }
     } else {
-      Object.assign(newSelection, selection);
-      if (newSelection[itemId]) {
-        delete newSelection[itemId];
+      newSelection = new Set(selectedItemIds);
+      if (selectedItemIds.has(itemId)) {
+        newSelection.delete(itemId);
       } else {
-        newSelection[itemId] = item;
+        newSelection.add(itemId);
       }
     }
 
@@ -151,7 +158,7 @@ function PagedListView(props) {
   /**
    * Instruct the list to reload using the currently set filterParams
    */
-  const reload = useCallback(async() => {
+  const reload = async() => {
     if (!filterParams) {
       return;
     }
@@ -161,36 +168,53 @@ function PagedListView(props) {
     }
 
     let onCompleteResult = null;
+    let updatedItems = null;
+
     if (typeof(src) === 'string') {
       const res = await ServiceAgent.get(src, filterParams);
       const responseInfo = res.body;
-      setItems(responseInfo.data);
+      updatedItems = responseInfo.data;
 
       if (responseInfo.meta && responseInfo.meta.pagination) {
         setPaginationInfo(responseInfo.meta.pagination);
       }
       onCompleteResult = responseInfo;
     } else {
-      // TODO: Filter the source array with the given params
       const filteredItems = [...src];
-      setItems(filteredItems);
+      // TODO: Filter the source array with the given params
+      updatedItems = filteredItems;
       onCompleteResult = filteredItems;
     }
+
+    setItems(updatedItems);
+
+    // Refresh the selection to ensure that it only includes items
+    // that are currently loaded
+    const updatedSelectedItemIds = new Set();
+    updatedItems.forEach((item) => {
+      const itemId = keyForItem(item);
+      if (selectedItemIds.has(itemId)) {
+        updatedSelectedItemIds.add(itemId);
+      }
+    });
+    setSelectedItemIds(updatedSelectedItemIds);
 
     if (onComplete) {
       onComplete(onCompleteResult);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [src, filterParams]);
+  };
 
 
   /**
    * Reload the list whenever the filterParams are altered
    */
   useEffect(() => {
-    reload();
-  }, [reload, props.src, filterParams]);
+    if (props.src) {
+      reload();
+    }
+  }, [props.src, filterParams]);
 
 
   /**
@@ -208,7 +232,7 @@ function PagedListView(props) {
               color={selectionDisabled ? 'default' : 'primary' }
               onClick={() => {
                 // Clear current selection when selection mode is enabled/disabled
-                updateSelection({});
+                updateSelection(new Set());
                 setSelectionDisabled(!selectionDisabled);
               }}
             >
@@ -242,7 +266,7 @@ function PagedListView(props) {
     setToolbarItems(newToolbarItems);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sort, filterParams, selection, selectionDisabled, paginationInfo]);
+  }, [sort, filterParams, selectedItemIds, selectionDisabled, paginationInfo]);
 
   /**
    * Invoke the onConfig callback when any exported state properties are affected
@@ -258,15 +282,14 @@ function PagedListView(props) {
       }
 
       props.onConfig({
-        reload,
-        selection,
+        selectedItemIds,
         selectionDisabled,
         sort,
         toolbarItems,
         totalCount,
       });
     }
-  }, [paginationInfo, reload, selection, selectionDisabled, sort, toolbarItems]);
+  }, [paginationInfo, selectedItemIds, selectionDisabled, sort, toolbarItems]);
 
   //----------------------------------------------------------------------------
   if (items === null) {
@@ -282,7 +305,7 @@ function PagedListView(props) {
     contextProvider: itemContextProvider,
     item: item,
     onSelectionChange: handleSelectionControlClick,
-    selected: !!selection[keyForItem(item)],
+    selected: !!selectedItemIds.has(keyForItem(item)),
     selectionMode: selectionAlways ? selectionMode : selectionDisabled ? null : selectionMode,
     ...props.listItemProps,
   });
