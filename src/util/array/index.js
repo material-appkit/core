@@ -16,11 +16,4 @@ Object.defineProperty(exports, "removeObject", {
   },
 });
 
-Object.defineProperty(exports, "chunk", {
-  enumerable: true,
-  get: function get() {
-    return _array.chunk;
-  },
-});
-
 const _array = _interopRequireDefault(require("./array"));

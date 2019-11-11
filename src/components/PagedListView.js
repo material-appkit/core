@@ -69,6 +69,17 @@ function PagedListView(props) {
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selection, setSelection] = useState({});
   const [selectionDisabled, setSelectionDisabled] = useState(true);
+  const [toolbarItems, setToolbarItems] = useState({});
+
+  /**
+   * Sort the items using the given sorting function
+   * Export: yes
+   */
+  const sort = useCallback((sortFunc) => {
+    const sortedItems = [...items];
+    sortedItems.sort(sortFunc);
+    setItems(sortedItems);
+  }, [items]);
 
   /**
    * Update filter params when the page changes
@@ -84,7 +95,6 @@ function PagedListView(props) {
         NavManager.updateUrlParam('page', page);
       }
     }
-
 
     if (!isEqual(params, filterParams)) {
       setFilterParams(params);
@@ -176,15 +186,6 @@ function PagedListView(props) {
 
 
   /**
-   *
-   */
-  const sort = useCallback((sortFunc) => {
-    const sortedItems = [...items];
-    sortedItems.sort(sortFunc);
-    setItems(sortedItems);
-  }, [items]);
-
-  /**
    * Reload the list whenever the filterParams are altered
    */
   useEffect(() => {
@@ -197,10 +198,10 @@ function PagedListView(props) {
    * In particular, update the paging control.
    */
   useEffect(() => {
-    const toolbarItems = [];
+    const newToolbarItems = {};
 
     if (!selectionAlways) {
-      toolbarItems.push(
+      newToolbarItems.selectionControl = (
         <ToolbarItem
           control={(
             <IconButton
@@ -214,14 +215,14 @@ function PagedListView(props) {
               <GpsFixedIcon />
             </IconButton>
           )}
-          key="modeToggle"
+          key="selectionControl"
           tooltip={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}
-          />
+        />
       );
     }
 
     if (paginationInfo) {
-      toolbarItems.push((
+      newToolbarItems.paginationControl = (
         <TablePagination
           classes={{
             toolbar: classes.paginationToolbar,
@@ -229,26 +230,43 @@ function PagedListView(props) {
           }}
           count={paginationInfo.total}
           component="div"
-          key="pagingControl"
+          key="paginationControl"
           page={page - 1}
           rowsPerPage={paginationInfo.per_page}
           rowsPerPageOptions={[paginationInfo.per_page]}
           onChangePage={(e, value) => { setPage(value + 1); }}
         />
-      ));
+      );
     }
 
+    setToolbarItems(newToolbarItems);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sort, filterParams, selection, selectionDisabled, paginationInfo]);
+
+  /**
+   * Invoke the onConfig callback when any exported state properties are affected
+   */
+  useEffect(() => {
     if (props.onConfig) {
+
+      let totalCount = null;
+      if (paginationInfo) {
+        totalCount = paginationInfo.total;
+      } else if (Array.isArray(items)) {
+        totalCount = items.length;
+      }
+
       props.onConfig({
         reload,
+        selection,
         selectionDisabled,
         sort,
         toolbarItems,
+        totalCount,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sort, filterParams, selectionDisabled, paginationInfo]);
-
+  }, [paginationInfo, reload, selection, selectionDisabled, sort, toolbarItems]);
 
   //----------------------------------------------------------------------------
   if (items === null) {
