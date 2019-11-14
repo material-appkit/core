@@ -173,7 +173,13 @@ function PagedListView(props) {
     if (typeof(src) === 'string') {
       const res = await ServiceAgent.get(src, filterParams);
       const responseInfo = res.body;
-      updatedItems = responseInfo.data;
+
+      let updatedItems = null;
+      if (responseInfo.data) {
+        updatedItems = responseInfo.data;
+      } else {
+        updatedItems = responseInfo;
+      }
 
       if (responseInfo.meta && responseInfo.meta.pagination) {
         setPaginationInfo(responseInfo.meta.pagination);
