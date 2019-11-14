@@ -174,7 +174,6 @@ function PagedListView(props) {
       const res = await ServiceAgent.get(src, filterParams);
       const responseInfo = res.body;
 
-      let updatedItems = null;
       if (responseInfo.data) {
         updatedItems = responseInfo.data;
       } else {
