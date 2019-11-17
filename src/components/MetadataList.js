@@ -2,7 +2,7 @@ import moment from 'moment';
 import titleCase from 'title-case';
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import Box from '@material-ui/core/Box';
@@ -25,10 +25,10 @@ function MetadataListItem(props) {
 
   function renderValue(value) {
     if (Array.isArray(value)) {
-      return value.map((item) => (
-        <ListItem key={item.id} classes={{ root: classes.nestedListItemRoot }}>
+      return value.map((item, i) => (
+        <Fragment key={i}>
           {renderValue(item)}
-        </ListItem>
+        </Fragment>
       ));
     }
 
