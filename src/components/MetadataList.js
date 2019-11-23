@@ -3,7 +3,6 @@ import titleCase from 'title-case';
 
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
@@ -20,25 +19,31 @@ import { valueForKeyPath } from '../util/object';
 const metadataListItemStyles = makeStyles((theme) => theme.metadataList.listItem);
 
 function MetadataListItem(props) {
-  const { fieldInfo, representedObject } = props;
+  const {
+    fieldInfo,
+    LinkComponent,
+    representedObject
+  } = props;
   const classes = metadataListItemStyles();
 
   function renderValue(value) {
-    if (Array.isArray(value)) {
-      return value.map((item, i) => (
+    let renderedValue = value;
+    if (fieldInfo.keyPath) {
+      renderedValue = valueForKeyPath(renderedValue, fieldInfo.keyPath);
+    }
+
+    if (Array.isArray(renderedValue)) {
+      return renderedValue.map((item, i) => (
         <Fragment key={i}>
           {renderValue(item)}
         </Fragment>
       ));
     }
 
-    let renderedValue = value;
     if (fieldInfo.transform) {
       renderedValue = fieldInfo.transform(value);
     } else if (fieldInfo.dateFormat) {
       renderedValue = moment(value).format(fieldInfo.dateFormat);
-    } else if (fieldInfo.keyPath) {
-      renderedValue = valueForKeyPath(value, fieldInfo.keyPath);
     }
 
     if (typeof(renderedValue) === 'string') {
@@ -87,9 +92,9 @@ function MetadataListItem(props) {
 
   let PrimaryComponent = null;
   const primaryComponentProps = {};
-  if (fieldInfo.type === 'link' && value.path) {
+  if (fieldInfo.type === 'link' && value.path && LinkComponent) {
     PrimaryComponent = Link;
-    primaryComponentProps.component = RouterLink;
+    primaryComponentProps.component = LinkComponent;
     primaryComponentProps.to = value.path;
   } else if (Array.isArray(value)) {
     PrimaryComponent = List;
@@ -118,6 +123,7 @@ function MetadataListItem(props) {
 MetadataListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
   nullValue: PropTypes.string,
+  LinkComponent: PropTypes.func,
   representedObject: PropTypes.object.isRequired,
 };
 
@@ -127,9 +133,15 @@ const metadataStyles = makeStyles((theme) => theme.metadataList);
 function MetadataList(props) {
   const classes = metadataStyles();
 
+  const {
+    arrangement,
+    LinkComponent,
+    representedObject
+  } = props;
+
   return (
     <List className={classes.root}>
-      {props.arrangement.map((fieldInfo) => {
+      {arrangement.map((fieldInfo) => {
         let key = fieldInfo.name;
         if (fieldInfo.keyPath) {
           key = `${key}-${fieldInfo.keyPath}`;
@@ -139,7 +151,8 @@ function MetadataList(props) {
           <MetadataListItem
             key={key}
             fieldInfo={fieldInfo}
-            representedObject={props.representedObject}
+            LinkComponent={LinkComponent}
+            representedObject={representedObject}
           />
         );
       })}
@@ -149,6 +162,7 @@ function MetadataList(props) {
 
 MetadataList.propTypes = {
   arrangement: PropTypes.array.isRequired,
+  LinkComponent: PropTypes.func,
   representedObject: PropTypes.object.isRequired,
 };
 
