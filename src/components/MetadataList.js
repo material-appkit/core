@@ -26,20 +26,18 @@ function MetadataListItem(props) {
   } = props;
   const classes = metadataListItemStyles();
 
+  //----------------------------------------------------------------------------
+  // Helper function that renders a given value or list of values
   function renderValue(value) {
-    let renderedValue = value;
-    if (fieldInfo.keyPath) {
-      renderedValue = valueForKeyPath(renderedValue, fieldInfo.keyPath);
-    }
-
-    if (Array.isArray(renderedValue)) {
-      return renderedValue.map((item, i) => (
+    if (Array.isArray(value)) {
+      return value.map((item, i) => (
         <Fragment key={i}>
           {renderValue(item)}
         </Fragment>
       ));
     }
 
+    let renderedValue = value;
     if (fieldInfo.transform) {
       renderedValue = fieldInfo.transform(value);
     } else if (fieldInfo.dateFormat) {
@@ -56,8 +54,14 @@ function MetadataListItem(props) {
 
     return renderedValue;
   }
+  //----------------------------------------------------------------------------
+  let value = null;
+  if (fieldInfo.keyPath) {
+    value = valueForKeyPath(representedObject, fieldInfo.keyPath);
+  } else {
+    value = representedObject[fieldInfo.name];
+  }
 
-  let value = representedObject[fieldInfo.name];
   if (value === undefined || value === null || (Array.isArray(value) && !value.length)) {
     if (!fieldInfo.nullValue) {
       // If no value exists for the given field and nothing has been specified
