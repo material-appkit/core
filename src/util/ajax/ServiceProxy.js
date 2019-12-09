@@ -7,12 +7,13 @@ export default class ServiceProxy {
     return cookie.get(cookieName);
   }
 
-  static setAccessToken(value) {
+  static setAccessToken(value, attrs) {
+    const cookieAttributes = attrs || {};
     const cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
     if (value) {
-      cookie.set(cookieName, value);
+      cookie.set(cookieName, value, cookieAttributes);
     } else {
-      cookie.remove(cookieName);
+      cookie.remove(cookieName, cookieAttributes);
     }
   }
 
