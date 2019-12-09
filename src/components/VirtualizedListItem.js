@@ -14,7 +14,6 @@ import Radio from '@material-ui/core/Radio';
 function VirtualizedListItem(props) {
   const {
     item,
-    contextProvider,
     onItemClick,
     onSelectionChange,
     selectionMode,
@@ -22,18 +21,15 @@ function VirtualizedListItem(props) {
     ...rest
   } = props;
 
-  let listItemProps = {};
-  if (contextProvider) {
-    listItemProps = contextProvider(item);
-  }
-
-  listItemProps.onClick = (e) => {
-    if (selectOnClick && onSelectionChange) {
-      e.preventDefault();
-      onSelectionChange(item);
-    } else if (onItemClick) {
-      onItemClick(item);
-    }
+  let listItemProps = {
+    onClick: (e) => {
+      if (selectOnClick && onSelectionChange) {
+        e.preventDefault();
+        onSelectionChange(item);
+      } else if (onItemClick) {
+        onItemClick(item);
+      }
+    },
   };
 
   const handleSelectionControlClick = (e) => {
@@ -73,8 +69,7 @@ function VirtualizedListItem(props) {
 }
 
 VirtualizedListItem.propTypes = {
-  contextProvider: PropTypes.func,
-  children: PropTypes.any,
+  children: PropTypes.node,
   item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,

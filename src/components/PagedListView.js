@@ -81,6 +81,41 @@ function PagedListView(props) {
     setItems(sortedItems);
   }, [items]);
 
+
+  /**
+   * @param item
+   * @returns {*} Unique identifier of given item
+   */
+  const keyForItem = (item) => {
+    return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
+  };
+
+
+  /**
+   *
+   * @param oldItem
+   * @param newItem
+   * Helper function to replace the item 'oldItem' with the given 'newItem'
+   */
+  const updateItem = (source, target) => {
+    const sourceItemKey = keyForItem(source);
+    const sourceItemIndex = items.findIndex((item) => {
+      const itemKey = keyForItem(item);
+      if (itemKey === sourceItemKey) {
+        return true;
+      }
+    });
+
+    if (sourceItemIndex === -1) {
+      throw new Error(`Unable to locate source item with key ${sourceItemKey}`);
+    }
+
+    const updatedItems = [...items];
+    updatedItems[sourceItemIndex] = target;
+    setItems(updatedItems);
+  };
+
+
   /**
    * Update filter params when the page changes
    */
@@ -102,13 +137,6 @@ function PagedListView(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.defaultFilterParams, page, pageSize]);
 
-  /**
-   * @param item
-   * @returns {*}
-   */
-  const keyForItem = (item) => {
-    return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
-  };
 
 
   const updateSelection = (newSelectedItemIds) => {
@@ -153,6 +181,11 @@ function PagedListView(props) {
     }
 
     updateSelection(newSelection);
+  };
+
+
+  const handleItemUpdate = (change) => {
+    updateItem(change.old, change.new);
   };
 
   /**
@@ -287,6 +320,7 @@ function PagedListView(props) {
       }
 
       props.onConfig({
+        onItemUpdate: handleItemUpdate,
         selectedItemIds,
         selectionDisabled,
         sort,
@@ -306,14 +340,18 @@ function PagedListView(props) {
   }
 
   // Let the active view mode determine whether to render a List or a Grid
-  const itemProps = (item) => ({
-    contextProvider: itemContextProvider,
-    item: item,
-    onSelectionChange: handleSelectionControlClick,
-    selected: !!selectedItemIds.has(keyForItem(item)),
-    selectionMode: selectionAlways ? selectionMode : selectionDisabled ? null : selectionMode,
-    ...props.listItemProps,
-  });
+  const itemProps = (item) => {
+    let context = itemContextProvider ? itemContextProvider(item) : {};
+
+    return {
+      item: item,
+      onSelectionChange: handleSelectionControlClick,
+      selected: !!selectedItemIds.has(keyForItem(item)),
+      selectionMode: selectionAlways ? selectionMode : selectionDisabled ? null : selectionMode,
+      ...context,
+      ...props.listItemProps,
+    };
+  };
 
   if (displayMode === 'list') {
     return (
