@@ -19,6 +19,8 @@ const styles = makeStyles((theme) => ({
 function TabView(props) {
   const {
     onConfig,
+    onTabUnmount,
+    onTabMount,
     onSave,
     tabArrangement,
     ...rest
@@ -35,19 +37,40 @@ function TabView(props) {
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(initialTabIndex);
 
+  const activeTabConfig = tabArrangement[selectedTabIndex];
+
   useEffect(() => {
     if (onConfig) {
       onConfig({
-        selectedTabIndex
+        selectedTabIndex,
+        ...activeTabConfig
       });
     }
 
   }, [selectedTabIndex]);
 
-  const activeTabConfig = tabArrangement[selectedTabIndex];
+
+  const handleTabChange = (e, index) => {
+    if (onTabUnmount) {
+      onTabUnmount(activeTabConfig);
+    }
+
+    setSelectedTabIndex(index);
+  };
+
+
+  const handleTabMount = (tabContext) => {
+    if (onTabMount) {
+      onTabMount({
+        ...activeTabConfig,
+        ...tabContext
+      });
+    }
+  };
+
+
   const activeTabProps = activeTabConfig.componentProps || {};
   activeTabProps.mountPath = activeTabConfig.path;
-
 
   const classes = styles();
 
@@ -58,7 +81,7 @@ function TabView(props) {
           value={selectedTabIndex}
           className={classes.tabs}
           indicatorColor="primary"
-          onChange={(e, index) => { setSelectedTabIndex(index); }}
+          onChange={handleTabChange}
           scrollButtons="auto"
           textColor="primary"
           variant="scrollable"
@@ -80,6 +103,7 @@ function TabView(props) {
     >
       <activeTabConfig.component
         onSave={onSave}
+        onInit={handleTabMount}
         {...activeTabProps}
         {...rest}
       />
@@ -91,6 +115,8 @@ function TabView(props) {
 TabView.propTypes = {
   location: PropTypes.object.isRequired,
   onSave: PropTypes.func,
+  onTabMount: PropTypes.func,
+  onTabUnmount: PropTypes.func,
   tabArrangement: PropTypes.array.isRequired,
 };
 
