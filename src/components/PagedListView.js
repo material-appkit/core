@@ -46,16 +46,7 @@ const styles = makeStyles((theme) => ({
 
 function PagedListView(props) {
   const {
-    displayMode,
-    itemContextProvider,
-    itemIdKey,
-    location,
-    onLoad,
-    onComplete,
-    pageSize,
-    selectionAlways,
     selectionMode,
-    src,
   } = props;
 
   const classes = styles();
@@ -65,7 +56,7 @@ function PagedListView(props) {
 
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
-  const [page, setPage] = useState(location ? qsPageParam : 1);
+  const [page, setPage] = useState(props.location ? qsPageParam : 1);
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selectedItemIds, setSelectedItemIds] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(true);
@@ -87,6 +78,7 @@ function PagedListView(props) {
    * @returns {*} Unique identifier of given item
    */
   const keyForItem = (item) => {
+    const { itemIdKey } = props;
     return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
   };
 
@@ -122,8 +114,8 @@ function PagedListView(props) {
   useEffect(() => {
     const params = { ...props.defaultFilterParams };
 
-    if (pageSize) {
-      params.page_size = pageSize;
+    if (props.pageSize) {
+      params.page_size = props.pageSize;
       params.page = page;
 
       if (props.location && page !== qsPageParam) {
@@ -135,7 +127,7 @@ function PagedListView(props) {
       setFilterParams(params);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.defaultFilterParams, page, pageSize]);
+  }, [props.defaultFilterParams, page, props.pageSize]);
 
 
 
@@ -148,7 +140,7 @@ function PagedListView(props) {
         return newSelectedItemIds.has(itemId);
       });
 
-      if (selectionMode === 'single') {
+      if (props.selectionMode === 'single') {
         props.onSelectionChange(selectedItems.pop());
       } else {
         props.onSelectionChange(selectedItems);
@@ -164,7 +156,7 @@ function PagedListView(props) {
     const itemId = keyForItem(item);
 
     let newSelection = null;
-    if (selectionMode === 'single') {
+    if (props.selectionMode === 'single') {
 
       if (selectedItemIds.has(itemId)) {
         newSelection = new Set();
@@ -196,15 +188,15 @@ function PagedListView(props) {
       return;
     }
 
-    if (onLoad) {
-      onLoad(filterParams);
+    if (props.onLoad) {
+      props.onLoad(filterParams);
     }
 
     let onCompleteResult = null;
     let updatedItems = null;
 
-    if (typeof(src) === 'string') {
-      const res = await ServiceAgent.get(src, filterParams);
+    if (typeof(props.src) === 'string') {
+      const res = await ServiceAgent.get(props.src, filterParams);
       const responseInfo = res.body;
 
       if (responseInfo.data) {
@@ -218,11 +210,14 @@ function PagedListView(props) {
       }
       onCompleteResult = responseInfo;
     } else {
-      const filteredItems = [...src];
+      const filteredItems = [...props.src];
       // TODO: Filter the source array with the given params
       updatedItems = filteredItems;
       onCompleteResult = filteredItems;
     }
+
+    // If a transformer has been supplied, apply it to the
+    // newly assigned records.
 
     setItems(updatedItems);
 
@@ -237,8 +232,8 @@ function PagedListView(props) {
     });
     setSelectedItemIds(updatedSelectedItemIds);
 
-    if (onComplete) {
-      onComplete(onCompleteResult);
+    if (props.onComplete) {
+      props.onComplete(onCompleteResult);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -262,7 +257,7 @@ function PagedListView(props) {
   useEffect(() => {
     const newToolbarItems = {};
 
-    if (!selectionAlways) {
+    if (!props.selectionAlways) {
       newToolbarItems.selectionControl = (
         <ToolbarItem
           control={(
@@ -341,6 +336,12 @@ function PagedListView(props) {
 
   // Let the active view mode determine whether to render a List or a Grid
   const itemProps = (item) => {
+    const {
+      itemContextProvider,
+      listItemProps,
+      selectionAlways,
+      selectionMode
+    } = props;
     let context = itemContextProvider ? itemContextProvider(item) : {};
 
     return {
@@ -349,11 +350,11 @@ function PagedListView(props) {
       selected: !!selectedItemIds.has(keyForItem(item)),
       selectionMode: selectionAlways ? selectionMode : selectionDisabled ? null : selectionMode,
       ...context,
-      ...props.listItemProps,
+      ...listItemProps,
     };
   };
 
-  if (displayMode === 'list') {
+  if (props.displayMode === 'list') {
     return (
       <List disablePadding>
         {items.map((item) => (
@@ -367,7 +368,7 @@ function PagedListView(props) {
     );
   }
 
-  if (displayMode === 'tile') {
+  if (props.displayMode === 'tile') {
     return (
       <TileList {...props.tileListProps}>
         {items.map((item) => (
@@ -384,15 +385,16 @@ function PagedListView(props) {
 PagedListView.propTypes = {
   defaultFilterParams: PropTypes.object,
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
-  tileListProps: PropTypes.object,
 
   itemContextProvider: PropTypes.func,
   itemIdKey: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
   ]),
+  itemTransformer: PropTypes.func,
   listItemProps: PropTypes.object,
   listItemRenderer: PropTypes.func,
+
   location: PropTypes.object,
 
   onLoad: PropTypes.func,
@@ -406,6 +408,7 @@ PagedListView.propTypes = {
   selectOnClick: PropTypes.bool,
   src: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   tileItemRenderer: PropTypes.func,
+  tileListProps: PropTypes.object,
 };
 
 PagedListView.defaultProps = {
