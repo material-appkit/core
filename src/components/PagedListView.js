@@ -45,14 +45,9 @@ const styles = makeStyles((theme) => ({
 }));
 
 function PagedListView(props) {
-  const {
-    selectionMode,
-  } = props;
-
   const classes = styles();
 
-  const qsParams = NavManager.qsParams;
-  const qsPageParam = parseInt(qsParams.page || 1);
+  const qsPageParam = parseInt(NavManager.qsParams.page || 1);
 
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
@@ -218,7 +213,9 @@ function PagedListView(props) {
 
     // If a transformer has been supplied, apply it to the
     // newly assigned records.
-
+    if (props.itemTransformer) {
+      updatedItems = updatedItems.map(props.itemTransformer);
+    }
     setItems(updatedItems);
 
     // Refresh the selection to ensure that it only includes items
