@@ -27,9 +27,11 @@ import PagedListView from './PagedListView';
 const styles = makeStyles((theme) => ({
   dialogTitle: {
     alignItems: 'center',
-    border: `1px solid ${theme.palette.grey[200]}`,
+    backgroundColor: theme.palette.grey[200],
+    borderBottom: `1px solid ${theme.palette.grey[400]}`,
     display: 'flex',
-    padding: `${theme.spacing(0.5)}px 0`,
+    justifyContent: 'space-between',
+    padding: `${theme.spacing(0.5)}px ${theme.spacing(2)}px`,
   },
 
   dialogContent: {
@@ -38,8 +40,6 @@ const styles = makeStyles((theme) => ({
 
   dialogTitleTypography: {
     fontSize: theme.typography.pxToRem(16),
-    flex: 1,
-    paddingLeft: theme.spacing(2),
   },
 
 }));
@@ -106,16 +106,17 @@ function PagedListViewDialog(props) {
   const classes = styles();
 
   return (
-    <Dialog open
+    <Dialog
+      open
       onClose={() => { onDismiss(null); }}
       {...dialogProps}
     >
       <DialogTitle className={classes.dialogTitle} disableTypography>
-        <Typography component="h1" className={classes.dialogTitleTypography}>
+        <Typography component="h2" variant="h6">
           {title}
         </Typography>
 
-        <IconButton onClick={() => { onDismiss(null); }}>
+        <IconButton onClick={() => { onDismiss(null); }} edge="end">
           <CloseIcon />
         </IconButton>
       </DialogTitle>
