@@ -90,7 +90,7 @@ class ListDialog extends React.PureComponent {
       selection: null,
       addDialogIsOpen: false,
       filterParams: {...props.filterParams},
-      listViewInfo: {},
+      listViewInfo: null,
     };
   }
 
@@ -130,6 +130,7 @@ class ListDialog extends React.PureComponent {
 
   render() {
     const { classes, listItemProps } = this.props;
+    const { listViewInfo } = this.state;
 
     const itemProps = {
       isLink: false,
@@ -184,7 +185,6 @@ class ListDialog extends React.PureComponent {
                 pageSize={this.props.pageSize}
                 selectionAlways
                 selectionMode={this.props.selectionMode}
-                selectOnClick
                 src={this.props.src}
               />
             </DialogContent>
@@ -198,7 +198,13 @@ class ListDialog extends React.PureComponent {
                 <Spacer />
               </Fragment>
             }
-            {this.state.listViewInfo.toolbarItems}
+
+            {listViewInfo !== null &&
+              <>
+                {listViewInfo.toolbarItems.paginationControl}
+              </>
+            }
+
             <Button
               color="primary"
               disabled={!this.hasSelection}
