@@ -10,12 +10,14 @@ import React, {
 } from 'react';
 
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -23,30 +25,30 @@ import CloseIcon from '@material-ui/icons/Close';
 import Spacer from '@material-appkit/core/components/Spacer';
 
 import PagedListView from './PagedListView';
+import TextField from './TextField';
 
 const styles = makeStyles((theme) => ({
+  fullHeight: {
+    height: `calc(100% - ${theme.spacing(12)}px)`,
+  },
+
   dialogTitle: {
     alignItems: 'center',
     backgroundColor: theme.palette.grey[200],
-    borderBottom: `1px solid ${theme.palette.grey[400]}`,
     display: 'flex',
     justifyContent: 'space-between',
     padding: `${theme.spacing(0.5)}px ${theme.spacing(2)}px`,
   },
 
   dialogContent: {
-    padding: theme.spacing(1),
+    padding: 0,
   },
-
-  dialogTitleTypography: {
-    fontSize: theme.typography.pxToRem(16),
-  },
-
 }));
 
 function PagedListViewDialog(props) {
   const {
     commitOnSelect,
+    fullHeight,
     onDismiss,
     dialogProps,
     ...pagedListViewProps
@@ -54,6 +56,8 @@ function PagedListViewDialog(props) {
 
   const [selectedItems, setSelectedItems] = useState([]);
   const [listViewInfo, setListViewInfo] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [filterTerm, setFilterTerm] = useState('');
 
   const handleSelectionChange = (selection) => {
     if (!selection) {
@@ -70,6 +74,10 @@ function PagedListViewDialog(props) {
     if (commitOnSelect) {
       onDismiss(newSelection);
     }
+  };
+
+  const handleSearchFilterChange = (value) => {
+    setFilterTerm(value);
   };
 
 
@@ -105,9 +113,19 @@ function PagedListViewDialog(props) {
 
   const classes = styles();
 
+  const defaultFilterParams = {};
+  if (filterTerm) {
+    defaultFilterParams[props.searchFilterParam] = filterTerm;
+  }
+
+  const dialogClasses = {};
+  if (fullHeight) {
+    dialogClasses.paper = classes.fullHeight;
+  }
+
   return (
-    <Dialog
-      open
+    <Dialog open
+      classes={dialogClasses}
       onClose={() => { onDismiss(null); }}
       {...dialogProps}
     >
@@ -122,7 +140,29 @@ function PagedListViewDialog(props) {
       </DialogTitle>
 
       <DialogContent className={classes.dialogContent}>
+        {props.searchFilterParam &&
+          <Box px={2} py={1}>
+            <TextField
+              autoFocus
+              className={classes.filterField}
+              fullWidth
+              margin="dense"
+              onTimeout={handleSearchFilterChange}
+              timeoutDelay={500}
+              placeholder="Filter by search term..."
+              variant="outlined"
+            />
+          </Box>
+        }
+
+        <LinearProgress
+          className={classes.progressBar}
+          variant={loading ? 'indeterminate' : 'determinate' }
+          value={0}
+        />
+
         <PagedListView
+          defaultFilterParams={defaultFilterParams}
           onConfig={(config) => { setListViewInfo(config); }}
           onSelectionChange={handleSelectionChange}
           selectionAlways
@@ -140,13 +180,16 @@ function PagedListViewDialog(props) {
 PagedListViewDialog.propTypes = {
   commitOnSelect: PropTypes.bool,
   dialogProps: PropTypes.object,
+  fullHeight: PropTypes.bool,
   onDismiss: PropTypes.func,
+  searchFilterParam: PropTypes.string,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
 
 PagedListViewDialog.defaultProps = {
   commitOnSelect: false,
+  fullHeight: true,
   dialogProps: {},
   selectionMode: 'single',
 };
