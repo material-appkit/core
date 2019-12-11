@@ -21,16 +21,20 @@ function VirtualizedListItem(props) {
     ...rest
   } = props;
 
-  let listItemProps = {
-    onClick: (e) => {
-      if (selectOnClick && onSelectionChange) {
+  let listItemProps = {};
+
+  if (selectOnClick) {
+    listItemProps.button = true;
+    listItemProps.onClick = (e) => {
+      if (onSelectionChange) {
         e.preventDefault();
         onSelectionChange(item);
       } else if (onItemClick) {
         onItemClick(item);
       }
-    },
-  };
+    }
+  }
+
 
   const handleSelectionControlClick = (e) => {
     e.preventDefault();
@@ -41,23 +45,26 @@ function VirtualizedListItem(props) {
   };
 
   let selectionControl = null;
-  if (selectionMode === 'single') {
-    selectionControl = (
-      <Radio
-        checked={props.selected}
-        style={{ padding: 8, marginRight: 8 }}
-        onClick={handleSelectionControlClick}
-      />
-    );
-  }
-  if (selectionMode === 'multiple') {
-    selectionControl = (
-      <Checkbox
-        checked={props.selected}
-        style={{ padding: 8, marginRight: 8 }}
-        onClick={handleSelectionControlClick}
-      />
-    );
+
+  if (!selectOnClick) {
+    if (selectionMode === 'single') {
+      selectionControl = (
+        <Radio
+          checked={props.selected}
+          style={{ padding: 8, marginRight: 8 }}
+          onClick={handleSelectionControlClick}
+        />
+      );
+    }
+    if (selectionMode === 'multiple') {
+      selectionControl = (
+        <Checkbox
+          checked={props.selected}
+          style={{ padding: 8, marginRight: 8 }}
+          onClick={handleSelectionControlClick}
+        />
+      );
+    }
   }
 
   return (
