@@ -200,9 +200,9 @@ class ListDialog extends React.PureComponent {
             }
 
             {listViewInfo !== null &&
-              <>
+              <Fragment>
                 {listViewInfo.toolbarItems.paginationControl}
-              </>
+              </Fragment>
             }
 
             <Button
