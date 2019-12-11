@@ -8,6 +8,7 @@ import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
 import React, {
+  Fragment,
   useCallback,
   useEffect,
   useState,
@@ -15,17 +16,62 @@ import React, {
 
 import List from '@material-ui/core/List';
 
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import TablePagination from '@material-ui/core/TablePagination';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
+import SortIcon from '@material-ui/icons/Sort';
 
 import NavManager from '../managers/NavManager';
 import ServiceAgent from '../util/ServiceAgent';
+import { makeChoices } from '../util/array';
 
+import PagedListViewDialog from './PagedListViewDialog';
+import SimpleListItem from './SimpleListItem';
 import TileList from './TileList';
 import ToolbarItem from './ToolbarItem';
+
+
+const sortControlStyles = makeStyles((theme) => ({
+  sortControl: {
+    fontSize: theme.typography.pxToRem(12),
+    fontWeight: 'normal',
+  },
+
+  sortIcon: {
+    marginLeft: 5,
+  },
+}));
+
+function SortControl(props) {
+  const classes = sortControlStyles();
+
+  let orderingLabel = '';
+  props.choices.forEach((choice) => {
+    if (choice[0] === props.selectedOrdering) {
+      orderingLabel = choice[1];
+    }
+  });
+
+  return (
+    <Button
+      className={classes.sortControl}
+      color="primary"
+      onClick={props.onClick}
+    >
+      {orderingLabel}
+      <SortIcon className={classes.sortIcon} />
+    </Button>
+  );
+}
+
+SortControl.propTypes = {
+  choices: PropTypes.array.isRequired,
+  selectedOrdering: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
 
 //------------------------------------------------------------------------------
 const styles = makeStyles((theme) => ({
@@ -42,20 +88,40 @@ const styles = makeStyles((theme) => ({
       padding: theme.spacing(1),
     },
   },
+
+  sortControl: {
+    fontSize: theme.typography.pxToRem(12),
+    fontWeight: 'normal',
+  },
+
+  sortIcon: {
+    marginLeft: 5,
+  },
 }));
 
 function PagedListView(props) {
   const classes = styles();
 
-  const qsPageParam = parseInt(NavManager.qsParams.page || 1);
 
+  const qsPageParam = parseInt(NavManager.qsParams.page || 1);
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
   const [page, setPage] = useState(props.location ? qsPageParam : 1);
+
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selectedItemIds, setSelectedItemIds] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(true);
   const [toolbarItems, setToolbarItems] = useState({});
+  const [sortDialogOpen, setSortDialogOpen] = useState(false);
+
+  let defaultOrdering = null;
+  if (NavManager.qsParams.order) {
+    defaultOrdering = NavManager.qsParams.order
+  } else if (props.filterMetadata) {
+    defaultOrdering = props.filterMetadata.primary_ordering;
+  }
+  const [ordering, setOrdering] = useState(defaultOrdering);
+
 
   /**
    * Sort the items using the given sorting function
@@ -104,7 +170,8 @@ function PagedListView(props) {
 
 
   /**
-   * Update filter params when the page changes
+   * Update filter params when the page changes or ordering
+   * is modified.
    */
   useEffect(() => {
     const params = { ...props.defaultFilterParams };
@@ -118,11 +185,15 @@ function PagedListView(props) {
       }
     }
 
+    if (ordering) {
+      params.order = ordering;
+    }
+
     if (!isEqual(params, filterParams)) {
       setFilterParams(params);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.defaultFilterParams, page, props.pageSize]);
+  }, [props.defaultFilterParams, ordering, page, props.pageSize]);
 
 
 
@@ -168,6 +239,17 @@ function PagedListView(props) {
     }
 
     updateSelection(newSelection);
+  };
+
+
+  const handleSortDialogDismiss = (selection) => {
+    setSortDialogOpen(false);
+
+    if (selection && selection.length === 1) {
+      const selectedOrdering = selection[0].value;
+      setOrdering(selectedOrdering);
+      NavManager.updateUrlParam('order', selectedOrdering);
+    }
   };
 
 
@@ -248,7 +330,7 @@ function PagedListView(props) {
 
 
   /**
-   * Update the list's configuration whenever the filterParams change.
+   * Update the list's configuration whenever the filterParams or ordering change.
    * In particular, update the paging control.
    */
   useEffect(() => {
@@ -293,10 +375,20 @@ function PagedListView(props) {
       );
     }
 
+    if (props.filterMetadata) {
+      newToolbarItems.sortControl = (
+        <SortControl
+          choices={props.filterMetadata.ordering_fields}
+          selectedOrdering={ordering}
+          onClick={() => { setSortDialogOpen(true); }}
+        />
+      );
+    }
+
     setToolbarItems(newToolbarItems);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sort, filterParams, selectedItemIds, selectionDisabled, paginationInfo]);
+  }, [sort, filterParams, ordering, selectedItemIds, selectionDisabled, paginationInfo]);
 
   /**
    * Invoke the onConfig callback when any exported state properties are affected
@@ -351,37 +443,55 @@ function PagedListView(props) {
     };
   };
 
-  if (props.displayMode === 'list') {
-    return (
-      <List disablePadding>
-        {items.map((item) => (
-          <props.listItemRenderer
-            key={keyForItem(item)}
-            selectOnClick={props.selectOnClick}
-            {...itemProps(item)}
-          />
-        ))}
-      </List>
-    );
-  }
+  return (
+    <Fragment>
+      {props.displayMode === 'list' ? (
+        <List disablePadding>
+          {items.map((item) => (
+            <props.listItemRenderer
+              key={keyForItem(item)}
+              selectOnClick={props.selectOnClick}
+              {...itemProps(item)}
+            />
+          ))}
+        </List>
+      ) : (
+        <TileList {...props.tileListProps}>
+          {items.map((item) => (
+            <props.tileItemRenderer
+              key={keyForItem(item)}
+              {...itemProps(item)}
+            />
+          ))}
+        </TileList>
+      )}
 
-  if (props.displayMode === 'tile') {
-    return (
-      <TileList {...props.tileListProps}>
-        {items.map((item) => (
-          <props.tileItemRenderer
-            key={keyForItem(item)}
-            {...itemProps(item)}
-          />
-        ))}
-      </TileList>
-    );
-  }
+      {sortDialogOpen &&
+        <PagedListViewDialog
+          commitOnSelect
+          displayMode="list"
+          dialogProps={{
+            fullWidth: true,
+            maxWidth: 'xs',
+          }}
+          itemIdKey="value"
+          listItemRenderer={SimpleListItem}
+          listItemProps={{ labelField: 'label' }}
+          onDismiss={handleSortDialogDismiss}
+          selectOnClick
+          src={makeChoices(props.filterMetadata.ordering_fields)}
+          title="Change sort order"
+        />
+      }
+    </Fragment>
+  );
 }
 
 PagedListView.propTypes = {
   defaultFilterParams: PropTypes.object,
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
+
+  filterMetadata: PropTypes.object,
 
   itemContextProvider: PropTypes.func,
   itemIdKey: PropTypes.oneOfType([

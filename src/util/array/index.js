@@ -16,4 +16,11 @@ Object.defineProperty(exports, "removeObject", {
   },
 });
 
+Object.defineProperty(exports, "makeChoices", {
+  enumerable: true,
+  get: function get() {
+    return _array.makeChoices;
+  },
+});
+
 const _array = _interopRequireDefault(require("./array"));

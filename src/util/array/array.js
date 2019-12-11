@@ -18,3 +18,10 @@ export function removeObject(originalArray, fieldName, value) {
   }
   return array;
 }
+
+export function makeChoices(choiceInfoList, valueKey, labelKey) {
+  return choiceInfoList.map((choiceInfo) => ({
+    [valueKey || 'value']: choiceInfo[0],
+    [labelKey || 'label']: choiceInfo[1],
+  }));
+}

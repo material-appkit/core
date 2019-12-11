@@ -7,9 +7,39 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { Link as RouterLink } from 'react-router-dom';
+
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItem from '@material-ui/core/ListItem';
 import Radio from '@material-ui/core/Radio';
+
+// -----------------------------------------------------------------------------
+export const listItemProps = (props) => {
+  const { isLink, ...rest } = props;
+
+  const listItemProps = {
+    divider: true,
+    ...rest,
+  };
+
+  if (isLink && props.item.path) {
+    listItemProps.button = true;
+    listItemProps.component = RouterLink;
+    listItemProps.to = props.item.path;
+  }
+
+  return listItemProps;
+};
+
+export const commonPropTypes = {
+  item: PropTypes.object,
+  isLink: PropTypes.bool,
+};
+
+export const commonDefaultProps = {
+  isLink: true,
+};
+
 
 function VirtualizedListItem(props) {
   const {
