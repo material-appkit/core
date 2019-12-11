@@ -80,8 +80,9 @@ function VirtualizedListItem(props) {
     selectionControl = (
       <Radio
         checked={props.selected}
-        style={{ padding: 8, marginRight: 8 }}
+        edge="start"
         onClick={handleSelectionControlClick}
+        style={{ padding: 8, marginRight: 8 }}
       />
     );
   }
@@ -89,8 +90,9 @@ function VirtualizedListItem(props) {
     selectionControl = (
       <Checkbox
         checked={props.selected}
-        style={{ padding: 8, marginRight: 8 }}
+        edge="start"
         onClick={handleSelectionControlClick}
+        style={{ padding: 8, marginRight: 8 }}
       />
     );
   }
