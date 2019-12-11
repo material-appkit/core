@@ -207,6 +207,12 @@ function NavigationController(props) {
     }
   };
 
+  const viewDidAppear = (viewController, path) => {
+    if (props.onViewDidAppear) {
+      props.onViewDidAppear(viewController, path);
+    }
+  };
+
   const viewDidUpdate = (viewController, path) => {
     updateTopbarConfig(viewController.props, path);
 
@@ -289,6 +295,7 @@ function NavigationController(props) {
               render={(props) => {
                 return (
                   <match.component
+                    onAppear={viewDidAppear}
                     onMount={viewDidMount}
                     onUnmount={viewWillUnmount}
                     onUpdate={viewDidUpdate}
@@ -307,6 +314,7 @@ function NavigationController(props) {
 
 NavigationController.propTypes = {
   matches: PropTypes.array.isRequired,
+  onViewDidAppear: PropTypes.func,
   onViewDidMount: PropTypes.func,
   onViewDidUpdate: PropTypes.func,
   onViewWillUnmount: PropTypes.func,
