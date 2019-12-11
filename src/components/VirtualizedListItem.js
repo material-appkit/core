@@ -76,25 +76,23 @@ function VirtualizedListItem(props) {
 
   let selectionControl = null;
 
-  if (!selectOnClick) {
-    if (selectionMode === 'single') {
-      selectionControl = (
-        <Radio
-          checked={props.selected}
-          style={{ padding: 8, marginRight: 8 }}
-          onClick={handleSelectionControlClick}
-        />
-      );
-    }
-    if (selectionMode === 'multiple') {
-      selectionControl = (
-        <Checkbox
-          checked={props.selected}
-          style={{ padding: 8, marginRight: 8 }}
-          onClick={handleSelectionControlClick}
-        />
-      );
-    }
+  if (selectionMode === 'single') {
+    selectionControl = (
+      <Radio
+        checked={props.selected}
+        style={{ padding: 8, marginRight: 8 }}
+        onClick={handleSelectionControlClick}
+      />
+    );
+  }
+  if (selectionMode === 'multiple') {
+    selectionControl = (
+      <Checkbox
+        checked={props.selected}
+        style={{ padding: 8, marginRight: 8 }}
+        onClick={handleSelectionControlClick}
+      />
+    );
   }
 
   return (

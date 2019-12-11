@@ -52,18 +52,9 @@ function PagedListViewDialog(props) {
     ...pagedListViewProps
   } = props;
 
-  const {
-    pageSize,
-    selectionAlways,
-  } = pagedListViewProps;
-
-
   const [selectedItems, setSelectedItems] = useState([]);
   const [listViewInfo, setListViewInfo] = useState({});
 
-  /**
-   *
-   */
   const handleSelectionChange = (selection) => {
     if (!selection) {
       setSelectedItems([]);
@@ -88,8 +79,13 @@ function PagedListViewDialog(props) {
   }
 
   const toolbarItems = [];
-  if (listViewInfo.toolbarItems && pageSize) {
-    const pagingToolbarItem = listViewInfo.toolbarItems[selectionAlways ? 0 : 1];
+  if (listViewInfo.toolbarItems && pagedListViewProps.pageSize) {
+    let pagingToolbarItem = null;
+    if (pagedListViewProps.selectionAlways) {
+      pagingToolbarItem = listViewInfo.toolbarItems[0];
+    } else {
+      pagingToolbarItem = listViewInfo.toolbarItems[1];
+    }
     toolbarItems.push(pagingToolbarItem);
   }
 
@@ -128,6 +124,7 @@ function PagedListViewDialog(props) {
         <PagedListView
           onConfig={(config) => { setListViewInfo(config); }}
           onSelectionChange={handleSelectionChange}
+          selectionAlways
           {...pagedListViewProps}
         />
       </DialogContent>
@@ -143,12 +140,14 @@ PagedListViewDialog.propTypes = {
   commitOnSelect: PropTypes.bool,
   dialogProps: PropTypes.object,
   onDismiss: PropTypes.func,
+  selectionMode: PropTypes.oneOf(['single', 'multiple']),
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
 
 PagedListViewDialog.defaultProps = {
   commitOnSelect: false,
   dialogProps: {},
+  selectionMode: 'single',
 };
 
 export default PagedListViewDialog;

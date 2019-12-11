@@ -102,7 +102,6 @@ const styles = makeStyles((theme) => ({
 function PagedListView(props) {
   const classes = styles();
 
-
   const qsPageParam = parseInt(NavManager.qsParams.page || 1);
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
@@ -114,9 +113,9 @@ function PagedListView(props) {
   const [toolbarItems, setToolbarItems] = useState({});
   const [sortDialogOpen, setSortDialogOpen] = useState(false);
 
-  let defaultOrdering = null;
-  if (NavManager.qsParams.order) {
-    defaultOrdering = NavManager.qsParams.order
+  let defaultOrdering = props.defaultOrdering;
+  if (NavManager.qsParams.sort) {
+    defaultOrdering = NavManager.qsParams.sort;
   } else if (props.filterMetadata) {
     defaultOrdering = props.filterMetadata.primary_ordering;
   }
@@ -186,7 +185,7 @@ function PagedListView(props) {
     }
 
     if (ordering) {
-      params.order = ordering;
+      params.sort = ordering;
     }
 
     if (!isEqual(params, filterParams)) {
@@ -248,7 +247,7 @@ function PagedListView(props) {
     if (selection && selection.length === 1) {
       const selectedOrdering = selection[0].value;
       setOrdering(selectedOrdering);
-      NavManager.updateUrlParam('order', selectedOrdering);
+      NavManager.updateUrlParam('sort', selectedOrdering);
     }
   };
 
@@ -489,6 +488,7 @@ function PagedListView(props) {
 
 PagedListView.propTypes = {
   defaultFilterParams: PropTypes.object,
+  defaultOrdering: PropTypes.string,
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
 
   filterMetadata: PropTypes.object,
