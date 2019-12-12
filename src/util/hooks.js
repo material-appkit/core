@@ -3,6 +3,11 @@ import { useEffect, useRef } from 'react';
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
+/**
+ * See: https://reactjs.org/docs/hooks-faq.html
+ * @param value
+ * @returns {*}
+ */
 export function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
@@ -10,6 +15,7 @@ export function usePrevious(value) {
   });
   return ref.current;
 }
+
 
 export function useInit(initFunc, disposer) {
   useEffect(() => {

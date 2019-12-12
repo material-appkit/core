@@ -11,6 +11,7 @@ import React, {
   Fragment,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -88,15 +89,6 @@ const styles = makeStyles((theme) => ({
       padding: theme.spacing(1),
     },
   },
-
-  sortControl: {
-    fontSize: theme.typography.pxToRem(12),
-    fontWeight: 'normal',
-  },
-
-  sortIcon: {
-    marginLeft: 5,
-  },
 }));
 
 function PagedListView(props) {
@@ -106,12 +98,15 @@ function PagedListView(props) {
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
   const [page, setPage] = useState(props.location ? qsPageParam : 1);
-
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selectedItemIds, setSelectedItemIds] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(true);
-  const [toolbarItems, setToolbarItems] = useState({});
   const [sortDialogOpen, setSortDialogOpen] = useState(false);
+  const [toolbarItems, setToolbarItems] = useState({});
+
+  // Maintain a reference to the fetch request so it can be aborted
+  // if this component is unmounted while it is in flight.
+  const fetchRequestRef = useRef();
 
   let defaultOrdering = props.defaultOrdering;
   if (NavManager.qsParams.sort) {
@@ -120,7 +115,6 @@ function PagedListView(props) {
     defaultOrdering = props.filterMetadata.primary_ordering;
   }
   const [ordering, setOrdering] = useState(defaultOrdering);
-
 
   /**
    * Sort the items using the given sorting function
@@ -156,7 +150,6 @@ function PagedListView(props) {
         return true;
       }
     });
-
   };
 
   /**
@@ -204,6 +197,18 @@ function PagedListView(props) {
     setItems(updatedItems);
   };
 
+
+  /**
+   * When the component is being unmounted,
+   * abort the current fetch request if it is in flight.
+   */
+  useEffect(() => {
+    return (() => {
+      if (fetchRequestRef.current) {
+        fetchRequestRef.current.abort();
+      }
+    });
+  }, []);
 
   /**
    * Update filter params when the page changes or ordering
@@ -299,6 +304,43 @@ function PagedListView(props) {
     }
   };
 
+  const fetchItems = async() => {
+    return new Promise((resolve, reject) => {
+      const request = ServiceAgent.get(props.src, filterParams);
+
+      fetchRequestRef.current = request;
+      request.then((response) => {
+        fetchRequestRef.current = null;
+
+        const responseInfo = response.body;
+
+        let loadedItems = null;
+        if (responseInfo.data) {
+          loadedItems = responseInfo.data;
+        } else {
+          loadedItems = responseInfo;
+        }
+
+        if (responseInfo.meta && responseInfo.meta.pagination) {
+          setPaginationInfo(responseInfo.meta.pagination);
+        }
+
+        resolve(loadedItems);
+      }).catch((err) => {
+        if (err.code !== 'ABORTED') {
+          reject(err);
+        }
+      });
+    });
+  };
+
+  const refreshItems = () => {
+    const filteredItems = [...props.src];
+    // TODO: Filter the source array with the given params
+    const updatedItems = filteredItems;
+    return updatedItems;
+  };
+
   /**
    * Instruct the list to reload using the currently set filterParams
    */
@@ -311,28 +353,12 @@ function PagedListView(props) {
       props.onLoad(filterParams);
     }
 
-    let onCompleteResult = null;
     let updatedItems = null;
 
     if (typeof(props.src) === 'string') {
-      const res = await ServiceAgent.get(props.src, filterParams);
-      const responseInfo = res.body;
-
-      if (responseInfo.data) {
-        updatedItems = responseInfo.data;
-      } else {
-        updatedItems = responseInfo;
-      }
-
-      if (responseInfo.meta && responseInfo.meta.pagination) {
-        setPaginationInfo(responseInfo.meta.pagination);
-      }
-      onCompleteResult = responseInfo;
+      updatedItems = await fetchItems();
     } else {
-      const filteredItems = [...props.src];
-      // TODO: Filter the source array with the given params
-      updatedItems = filteredItems;
-      onCompleteResult = filteredItems;
+      updatedItems = refreshItems();
     }
 
     // If a transformer has been supplied, apply it to the
@@ -354,10 +380,8 @@ function PagedListView(props) {
     setSelectedItemIds(updatedSelectedItemIds);
 
     if (props.onComplete) {
-      props.onComplete(onCompleteResult);
+      props.onComplete(updatedItems);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
 
