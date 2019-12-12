@@ -176,7 +176,7 @@ function PagedListView(props) {
     }
 
     const updatedItems = [...items];
-    updatedItems.splice(1, sourceItemIndex);
+    updatedItems.splice(sourceItemIndex, 1);
     setItems(updatedItems);
   };
 
