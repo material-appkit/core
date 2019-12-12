@@ -145,21 +145,58 @@ function PagedListView(props) {
 
   /**
    *
-   * @param oldItem
-   * @param newItem
-   * Helper function to replace the item 'oldItem' with the given 'newItem'
+   * @param item
+   * Helper function to locate the index of the given item
    */
-  const updateItem = (source, target) => {
-    const sourceItemKey = keyForItem(source);
-    const sourceItemIndex = items.findIndex((item) => {
+  const findItemIndex = (item) => {
+    const sourceItemKey = keyForItem(item);
+    return items.findIndex((item) => {
       const itemKey = keyForItem(item);
       if (itemKey === sourceItemKey) {
         return true;
       }
     });
 
+  };
+
+  /**
+   *
+   * @param item
+   * Helper function to add the given item to the beginning of the list
+   */
+  const addItem = (item) => {
+    const updatedItems = [...items];
+    updatedItems.unshift(item);
+    setItems(updatedItems);
+  };
+
+
+  /**
+   *
+   * @param item
+   * Helper function to remove the given item from the list
+   */
+  const removeItem = (item) => {
+    const sourceItemIndex = findItemIndex(item);
     if (sourceItemIndex === -1) {
-      throw new Error(`Unable to locate source item with key ${sourceItemKey}`);
+      throw new Error(`Unable to locate source for item with key: ${keyForItem(item)}`);
+    }
+
+    const updatedItems = [...items];
+    updatedItems.splice(1, sourceItemIndex);
+    setItems(updatedItems);
+  };
+
+  /**
+   *
+   * @param oldItem
+   * @param newItem
+   * Helper function to replace the item 'oldItem' with the given 'newItem'
+   */
+  const updateItem = (source, target) => {
+    const sourceItemIndex = findItemIndex(source);
+    if (sourceItemIndex === -1) {
+      throw new Error(`Unable to locate source for item with key: ${keyForItem(item)}`);
     }
 
     const updatedItems = [...items];
@@ -253,7 +290,13 @@ function PagedListView(props) {
 
 
   const handleItemUpdate = (change) => {
-    updateItem(change.old, change.new);
+    if (change.old && change.new === null) {
+      removeItem(change.old);
+    } else if (change.old === null && change.new) {
+      addItem(change.new);
+    }else {
+      updateItem(change.old, change.new);
+    }
   };
 
   /**
