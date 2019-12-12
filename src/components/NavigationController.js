@@ -202,12 +202,20 @@ function NavigationController(props) {
   const viewDidMount = (viewController, path) => {
     updateTopbarConfig(viewController.props, path);
 
+    if (viewController.props.onViewDidMount) {
+      viewController.props.onViewDidMount(path);
+    }
+
     if (props.onViewDidMount) {
       props.onViewDidMount(viewController, path);
     }
   };
 
   const viewDidAppear = (viewController, path) => {
+    if (viewController.props.onViewDidAppear) {
+      viewController.props.onViewDidAppear(path);
+    }
+
     if (props.onViewDidAppear) {
       props.onViewDidAppear(viewController, path);
     }
@@ -215,6 +223,10 @@ function NavigationController(props) {
 
   const viewDidUpdate = (viewController, path) => {
     updateTopbarConfig(viewController.props, path);
+
+    if (viewController.props.onViewDidUpdate) {
+      viewController.props.onViewDidUpdate(path);
+    }
 
     if (props.onViewDidUpdate) {
       props.onViewDidUpdate(viewController, path);
@@ -225,6 +237,10 @@ function NavigationController(props) {
     const newTopbarConfigMap = { ...topbarConfigMap };
     delete newTopbarConfigMap[path];
     setTopbarConfigMap(newTopbarConfigMap);
+
+    if (viewController.props.onViewWillUnmount) {
+      viewController.props.onViewWillUnmount(path);
+    }
 
     if (props.onViewWillUnmount) {
       props.onViewWillUnmount(viewController, path);
