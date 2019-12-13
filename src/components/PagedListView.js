@@ -70,7 +70,6 @@ function SortControl(props) {
 
 SortControl.propTypes = {
   choices: PropTypes.array.isRequired,
-  selectedOrdering: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
 };
 
