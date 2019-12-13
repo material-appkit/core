@@ -17,9 +17,9 @@ import React, {
 
 import List from '@material-ui/core/List';
 
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import TablePagination from '@material-ui/core/TablePagination';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
@@ -35,20 +35,7 @@ import TileList from './TileList';
 import ToolbarItem from './ToolbarItem';
 
 
-const sortControlStyles = makeStyles((theme) => ({
-  sortControl: {
-    fontSize: theme.typography.pxToRem(12),
-    fontWeight: 'normal',
-  },
-
-  sortIcon: {
-    marginLeft: 5,
-  },
-}));
-
 function SortControl(props) {
-  const classes = sortControlStyles();
-
   let orderingLabel = '';
   props.choices.forEach((choice) => {
     if (choice[0] === props.selectedOrdering) {
@@ -57,14 +44,15 @@ function SortControl(props) {
   });
 
   return (
-    <Button
-      className={classes.sortControl}
-      color="primary"
-      onClick={props.onClick}
-    >
-      {orderingLabel}
-      <SortIcon className={classes.sortIcon} />
-    </Button>
+    <Tooltip title={orderingLabel}>
+      <IconButton
+        color="primary"
+        onClick={props.onClick}
+        style={{ borderRadius: 0 }}
+      >
+        <SortIcon />
+      </IconButton>
+    </Tooltip>
   );
 }
 
