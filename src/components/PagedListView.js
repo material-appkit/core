@@ -161,6 +161,12 @@ function PagedListView(props) {
     const updatedItems = [...items];
     updatedItems.unshift(item);
     setItems(updatedItems);
+
+    if (paginationInfo) {
+      const updatedPaginationInfo = { ...paginationInfo };
+      updatedPaginationInfo.total += 1;
+      setPaginationInfo(updatedPaginationInfo);
+    }
   };
 
 
@@ -178,6 +184,12 @@ function PagedListView(props) {
     const updatedItems = [...items];
     updatedItems.splice(sourceItemIndex, 1);
     setItems(updatedItems);
+
+    if (paginationInfo) {
+      const updatedPaginationInfo = { ...paginationInfo };
+      updatedPaginationInfo.total -= 1;
+      setPaginationInfo(updatedPaginationInfo);
+    }
   };
 
   /**
