@@ -1,14 +1,14 @@
+import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
+
 import React, {
   Fragment,
   useRef,
   useState,
 } from 'react';
-import { Route, Link } from 'react-router-dom';
+import { Route, Link as RouterLink } from 'react-router-dom';
 
-import isEqual from 'lodash.isequal';
-
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { Tabs, TabPanel } from 'react-tabs';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
@@ -16,6 +16,7 @@ import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -25,123 +26,42 @@ import Popper from '@material-ui/core/Popper';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-const styles = makeStyles((theme) => (
-  theme.navigationController
-));
+import NavigationControllerTab from './NavigationControllerTab';
+import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
+
+const styles = makeStyles((theme) => ({
+  navBar: {
+    borderBottom: `1px solid ${theme.palette.grey[400]}`,
+    paddingLeft: theme.spacing(2),
+  },
+
+  navBarBreadcrumbs: {
+    flexGrow: 1,
+  },
+
+  tabPanel: {
+    height: '100%',
+    overflow: 'auto',
+  },
+
+  toolBar: {
+    borderBottom: `1px solid ${theme.palette.grey[400]}`,
+  },
+
+}));
 
 function NavigationController(props) {
-  const classes = styles();
+  const { matches } = props;
   const theme = useTheme();
+  const classes = styles();
 
-  const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState(null);
+  const contextMenuAnchorRef = useRef(null);
   const [contextMenuIsOpen, setContextMenuIsOpen] = useState(false);
+
   const [topbarConfigMap, setTopbarConfigMap] = useState({});
 
-
-  const createTabs = () => {
-    const matches = props.matches;
-    return matches.map((match, i) => {
-      let title = '';
-      const topbarConfig = topbarConfigMap[match.path];
-      if (topbarConfig && topbarConfig.title) {
-        title = topbarConfig.title;
-      }
-
-      let tabComponent = null;
-
-      if (i < matches.length - 1) {
-        tabComponent = (
-          <Fragment>
-            <Button
-              component={Link}
-              to={match.url}
-              classes={{
-                root: classes.breadcrumbButton,
-                label: classes.breadcrumbButtonLabel,
-              }}
-            >
-              {title}
-            </Button>
-            <KeyboardArrowRightIcon/>
-          </Fragment>
-        );
-      } else {
-        tabComponent = (
-          <Fragment>
-            <Typography className={classes.activeTabTitle}>{title}</Typography>
-            {createContextMenu(topbarConfig)}
-          </Fragment>
-        );
-      }
-
-      return (
-        <Tab key={match.path} className={classes.tab}>
-          {tabComponent}
-        </Tab>
-      );
-    });
-  };
-
-  let activeTopBarConfig = {};
-  if (props.matches.length) {
-    const activeMatch = props.matches[props.matches.length - 1];
-    activeTopBarConfig = topbarConfigMap[activeMatch.path] || {};
-  }
-
-  const rightBarItem = activeTopBarConfig.rightBarItem;
-  const toolbarItems = activeTopBarConfig.toolbarItems;
-
-
-  let contextToolbar = null;
-  if (toolbarItems) {
-    contextToolbar = (
-      <Toolbar
-        className={classes.toolBar}
-        disableGutters
-        variant="dense"
-      >
-        {toolbarItems}
-      </Toolbar>
-    );
-  }
-
-  const createContextMenu = (topbarConfig) => {
-    if (!(topbarConfig && topbarConfig.contextMenuItems && topbarConfig.contextMenuItems.length)) {
-      return null;
-    }
-
-    return (
-      <Fragment>
-        <IconButton onClick={(e) => { toggleContextMenu(e.target); }}>
-          <MoreHorizIcon />
-        </IconButton>
-        <Popper
-          open={contextMenuIsOpen}
-          anchorEl={contextMenuAnchorEl}
-          transition
-          disablePortal
-        >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={() => { toggleContextMenu(false); }}>
-                  <MenuList>
-                    {topbarConfig.contextMenuItems.map(createContextMenuItem)}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </Fragment>
-    );
-  };
 
   const createContextMenuItem = (menuItemConfig) => {
     const menuItemProps = {
@@ -165,22 +85,109 @@ function NavigationController(props) {
     );
   };
 
+
+  const breadcrumbs = matches.map((match, i) => {
+    let title = '';
+    const topbarConfig = topbarConfigMap[match.path];
+    if (topbarConfig && topbarConfig.title) {
+      title = topbarConfig.title;
+    }
+
+    let tabComponent = null;
+
+    if (i < matches.length - 1) {
+      tabComponent = (
+        <Link component={RouterLink} to={match.url}>
+          {title}
+        </Link>
+      );
+    } else {
+      if (topbarConfig && topbarConfig.contextMenuItems) {
+        tabComponent = (
+          <Fragment>
+            <Button
+              endIcon={<ExpandMoreIcon/>}
+              onClick={() => {  setContextMenuIsOpen(prevOpen => !prevOpen); }}
+              ref={contextMenuAnchorRef}
+            >
+              {title}
+            </Button>
+            <Popper
+              open={contextMenuIsOpen}
+              anchorEl={contextMenuAnchorRef.current}
+              transition
+              disablePortal
+            >
+              {({ TransitionProps, placement }) => (
+                <Grow
+                  {...TransitionProps}
+                  style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+                >
+                  <Paper>
+                    <ClickAwayListener onClickAway={handleContextMenuClose}>
+                      <MenuList>
+                        {topbarConfig.contextMenuItems.map(createContextMenuItem)}
+                      </MenuList>
+                    </ClickAwayListener>
+                  </Paper>
+                </Grow>
+              )}
+            </Popper>
+          </Fragment>
+        );
+      } else {
+        tabComponent = <Typography>{title}</Typography>;
+      }
+    }
+
+    return (
+      <NavigationControllerTab key={match.path} className={classes.tab}>
+        {tabComponent}
+      </NavigationControllerTab>
+    );
+  });
+
+
+
+  let activeTopBarConfig = {};
+  if (matches.length) {
+    const activeMatch = matches[matches.length - 1];
+    activeTopBarConfig = topbarConfigMap[activeMatch.path] || {};
+  }
+
+  const rightBarItem = activeTopBarConfig.rightBarItem;
+  const toolbarItems = activeTopBarConfig.toolbarItems;
+
+
+  let contextToolbar = null;
+  if (toolbarItems) {
+    contextToolbar = (
+      <Toolbar className={classes.toolBar} disableGutters variant="dense">
+        {toolbarItems}
+      </Toolbar>
+    );
+  }
+
+
+
   const handleContextMenuClick = (menuItemConfig) => {
     if (menuItemConfig.onClick) {
       menuItemConfig.onClick(menuItemConfig);
     }
-    toggleContextMenu(false);
+    setContextMenuIsOpen(false);
   };
 
-  const toggleContextMenu = (anchor) => {
-    if (anchor) {
-      setContextMenuAnchorEl(anchor);
-      setContextMenuIsOpen(true);
-    } else {
-      setContextMenuAnchorEl(null);
-      setContextMenuIsOpen(false);
+
+
+  const handleContextMenuClose = (event) => {
+    if (contextMenuAnchorRef.current && contextMenuAnchorRef.current.contains(event.target)) {
+      return;
     }
+
+    setContextMenuIsOpen(false);
   };
+
+
 
   const updateTopbarConfig = (viewControllerProps, path) => {
     const topbarConfig = topbarConfigMap[path];
@@ -199,6 +206,7 @@ function NavigationController(props) {
     }
   };
 
+
   const viewDidMount = (viewController, path) => {
     updateTopbarConfig(viewController.props, path);
 
@@ -211,6 +219,7 @@ function NavigationController(props) {
     }
   };
 
+
   const viewDidAppear = (viewController, path) => {
     if (viewController.props.onViewDidAppear) {
       viewController.props.onViewDidAppear(path);
@@ -220,6 +229,7 @@ function NavigationController(props) {
       props.onViewDidAppear(viewController, path);
     }
   };
+
 
   const viewDidUpdate = (viewController, path) => {
     updateTopbarConfig(viewController.props, path);
@@ -247,13 +257,12 @@ function NavigationController(props) {
     }
   };
 
-  const { matches } = props;
 
   const selectedIndex = matches.length - 1;
 
-  let appBarHeight = theme.navigationController.navBar.height;
+  let appBarHeight = theme.sizes.navigationController.navbarHeight;
   if (contextToolbar) {
-    appBarHeight += theme.navigationController.toolBar.height;
+    appBarHeight += theme.sizes.navigationController.toolbarHeight;
   }
 
   const appBarStyle = {
@@ -272,26 +281,22 @@ function NavigationController(props) {
     bottom: 0,
   };
 
-  const tabs = createTabs();
-
   return (
     <Tabs
-      className={classes.tabs}
       forceRenderTabPanel={true}
       selectedIndex={selectedIndex}
       onSelect={() => {}}
     >
       <AppBar
-        className={classes.appBar}
         style={appBarStyle}
         color="default"
         elevation={0}
         position="static"
       >
         <Toolbar className={classes.navBar} disableGutters>
-          <TabList className={classes.tabList}>
-            {tabs}
-          </TabList>
+          <NavigationControllerBreadcrumbs className={classes.navBarBreadcrumbs}>
+            {breadcrumbs}
+          </NavigationControllerBreadcrumbs>
           {rightBarItem}
         </Toolbar>
 
