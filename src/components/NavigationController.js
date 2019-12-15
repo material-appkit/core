@@ -15,7 +15,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
-import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -32,6 +31,10 @@ import NavigationControllerTab from './NavigationControllerTab';
 import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
 
 const styles = makeStyles((theme) => ({
+  breadcrumbButton: {
+    minWidth: 'initial',
+  },
+
   navBar: {
     borderBottom: `1px solid ${theme.palette.grey[400]}`,
     paddingLeft: theme.spacing(2),
@@ -49,7 +52,6 @@ const styles = makeStyles((theme) => ({
   toolBar: {
     borderBottom: `1px solid ${theme.palette.grey[400]}`,
   },
-
 }));
 
 function NavigationController(props) {
@@ -97,16 +99,21 @@ function NavigationController(props) {
 
     if (i < matches.length - 1) {
       tabComponent = (
-        <Link component={RouterLink} to={match.url}>
+        <Button
+          className={classes.breadcrumbButton}
+          component={RouterLink}
+          to={match.url}
+        >
           {title}
-        </Link>
+        </Button>
       );
     } else {
       if (topbarConfig && topbarConfig.contextMenuItems) {
         tabComponent = (
           <Fragment>
             <Button
-              endIcon={<ExpandMoreIcon/>}
+              className={classes.breadcrumbButton}
+              endIcon={<ExpandMoreIcon />}
               onClick={() => {  setContextMenuIsOpen(prevOpen => !prevOpen); }}
               ref={contextMenuAnchorRef}
             >
@@ -123,7 +130,7 @@ function NavigationController(props) {
                   {...TransitionProps}
                   style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
                 >
-                  <Paper>
+                  <Paper className={classes.contextMenuPaper}>
                     <ClickAwayListener onClickAway={handleContextMenuClose}>
                       <MenuList>
                         {topbarConfig.contextMenuItems.map(createContextMenuItem)}
@@ -136,7 +143,11 @@ function NavigationController(props) {
           </Fragment>
         );
       } else {
-        tabComponent = <Typography>{title}</Typography>;
+        tabComponent = (
+          <Button className={classes.breadcrumbButton}>
+            {title}
+          </Button>
+        );
       }
     }
 
@@ -294,7 +305,10 @@ function NavigationController(props) {
         position="static"
       >
         <Toolbar className={classes.navBar} disableGutters>
-          <NavigationControllerBreadcrumbs className={classes.navBarBreadcrumbs}>
+          <NavigationControllerBreadcrumbs
+            className={classes.navBarBreadcrumbs}
+            separator="›"
+          >
             {breadcrumbs}
           </NavigationControllerBreadcrumbs>
           {rightBarItem}
