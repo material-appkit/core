@@ -25,3 +25,13 @@ export function makeChoices(choiceInfoList, valueKey, labelKey) {
     [labelKey || 'label']: choiceInfo[1],
   }));
 }
+
+export function shuffle(array) {
+  const arrayLength = array.length;
+  for (let i = arrayLength - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * i);
+    const temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+}

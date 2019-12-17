@@ -23,4 +23,11 @@ Object.defineProperty(exports, "makeChoices", {
   },
 });
 
+Object.defineProperty(exports, "shuffle", {
+  enumerable: true,
+  get: function get() {
+    return _array.shuffle;
+  },
+});
+
 const _array = _interopRequireDefault(require("./array"));
