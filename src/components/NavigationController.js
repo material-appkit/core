@@ -23,7 +23,6 @@ import MenuList from '@material-ui/core/MenuList';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
@@ -116,7 +115,7 @@ function NavigationController(props) {
             <Button
               className={classes.breadcrumbButton}
               endIcon={<ExpandMoreIcon />}
-              onClick={() => {  setContextMenuIsOpen(prevOpen => !prevOpen); }}
+              onClick={() => { setContextMenuIsOpen(prevOpen => !prevOpen); }}
               ref={contextMenuAnchorRef}
             >
               {title}
