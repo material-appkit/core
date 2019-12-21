@@ -15,7 +15,11 @@ import Radio from '@material-ui/core/Radio';
 
 // -----------------------------------------------------------------------------
 export const listItemProps = (props) => {
-  const { isLink, ...rest } = props;
+  const {
+    isLink,
+    onItemUpdate,
+    ...rest
+} = props;
 
   const listItemProps = {
     divider: true,
