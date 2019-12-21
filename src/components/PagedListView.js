@@ -96,8 +96,8 @@ function PagedListView(props) {
   const fetchRequestRef = useRef();
 
   let defaultOrdering = props.defaultOrdering;
-  if (NavManager.qsParams.sort) {
-    defaultOrdering = NavManager.qsParams.sort;
+  if (NavManager.qsParams[props.orderParamName]) {
+    defaultOrdering = NavManager.qsParams[props.orderParamName];
   } else if (props.filterMetadata) {
     defaultOrdering = props.filterMetadata.primary_ordering;
   }
@@ -226,7 +226,7 @@ function PagedListView(props) {
     }
 
     if (ordering) {
-      params.sort = ordering;
+      params[props.orderParamName] = ordering;
     }
 
     if (!isEqual(params, filterParams)) {
@@ -288,7 +288,7 @@ function PagedListView(props) {
     if (selection && selection.length === 1) {
       const selectedOrdering = selection[0].value;
       setOrdering(selectedOrdering);
-      NavManager.updateUrlParam('sort', selectedOrdering);
+      NavManager.updateUrlParam(props.orderParamName, selectedOrdering);
     }
   };
 
@@ -575,6 +575,8 @@ PagedListView.propTypes = {
   onConfig: PropTypes.func,
   onSelectionChange: PropTypes.func,
 
+  orderParamName: PropTypes.string,
+
   pageSize: PropTypes.number,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionAlways: PropTypes.bool,
@@ -586,10 +588,11 @@ PagedListView.propTypes = {
 
 PagedListView.defaultProps = {
   defaultFilterParams: {},
-  tileListProps: {},
   itemIdKey: 'id',
+  orderParamName: 'order',
   selectionAlways: false,
   selectOnClick: false,
+  tileListProps: {},
 };
 
 export default PagedListView;
