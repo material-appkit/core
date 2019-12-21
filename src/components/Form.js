@@ -14,14 +14,12 @@ import { reverse } from '../util/urls';
 import FormFieldSet from './FormFieldSet';
 
 import CheckboxGroupWidget from './widgets/CheckboxGroup';
-import DateTimeWidget from './widgets/DateTime';
 import ItemListWidget from './widgets/ItemList';
 import ModelSelectWidget from './widgets/ModelSelect';
 
 class Form extends React.PureComponent {
   static widgetClassMap = {
     'checkboxgroup': CheckboxGroupWidget,
-    'datetime': DateTimeWidget,
     'itemlist': ItemListWidget,
     'modelselect': ModelSelectWidget,
   };

@@ -1,4 +1,3 @@
-import moment from 'moment';
 import titleCase from 'title-case';
 
 import PropTypes from 'prop-types';
@@ -40,8 +39,6 @@ function MetadataListItem(props) {
     let renderedValue = value;
     if (fieldInfo.transform) {
       renderedValue = fieldInfo.transform(value);
-    } else if (fieldInfo.dateFormat) {
-      renderedValue = moment(value).format(fieldInfo.dateFormat);
     }
 
     if (typeof(renderedValue) === 'string') {
