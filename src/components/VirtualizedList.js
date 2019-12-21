@@ -2,7 +2,6 @@ import { observer } from 'mobx-react';
 
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-import InfiniteScroll from 'react-infinite-scroller';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import List from '@material-ui/core/List';
@@ -98,7 +97,6 @@ class VirtualizedList extends React.Component {
       dense,
       isGrouped,
       items,
-      store
     } = this.props;
 
     let listChildren = null;
@@ -119,24 +117,6 @@ class VirtualizedList extends React.Component {
         });
       } else {
         listChildren = items.map(this.renderItem);
-      }
-    } else if (store) {
-      if (store.items) {
-        listChildren = (
-          <InfiniteScroll
-            getScrollParent={this.props.getScrollParent}
-            initialLoad={false}
-            pageStart={1}
-            loadMore={(page) => { store.loadMore(page); }}
-            hasMore={!store.isLoaded}
-            loader={this.loadMoreProgressIndicator}
-            useWindow={this.props.useWindow}
-          >
-            {store.items.map(this.renderItem)}
-          </InfiniteScroll>
-        );
-      } else {
-        listChildren = this.loadMoreProgressIndicator;
       }
     } else {
       return null;
@@ -167,7 +147,6 @@ VirtualizedList.propTypes = {
   onSelectionChange: PropTypes.func,
   selectOnClick: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  store: PropTypes.object,
   useWindow: PropTypes.bool,
 };
 
