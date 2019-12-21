@@ -440,7 +440,7 @@ function PagedListView(props) {
       );
     }
 
-    if (props.filterMetadata) {
+    if (props.filterMetadata && props.filterMetadata.ordering_fields) {
       newToolbarItems.sortControl = (
         <SortControl
           choices={props.filterMetadata.ordering_fields}
