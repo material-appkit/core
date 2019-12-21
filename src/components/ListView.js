@@ -191,7 +191,6 @@ class ListView extends React.PureComponent {
       listItemComponent,
       store,
       isGrouped,
-      itemContextProvider,
       itemIdKey,
       itemProps,
       items,
@@ -205,7 +204,6 @@ class ListView extends React.PureComponent {
         componentForItem={listItemComponent}
         store={store}
         isGrouped={isGrouped}
-        itemContextProvider={itemContextProvider}
         itemIdKey={itemIdKey}
         itemProps={itemProps}
         items={items}
@@ -241,7 +239,6 @@ ListView.propTypes = {
   entityType: PropTypes.string,
   filterParams: PropTypes.object,
   isGrouped: PropTypes.bool,
-  itemContextProvider: PropTypes.func,
   itemIdKey: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
