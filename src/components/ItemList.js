@@ -106,7 +106,7 @@ function ItemListItem(props) {
   }
 
   return (
-    <ListItem classes={{ root: classes.root }} {...props.itemProps}>
+    <ListItem classes={{ root: classes.root }} {...props.listItemProps}>
       {(props.mode === 'view' && props.icon) &&
         <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
           <props.icon className={classes.listItemIcon} />
@@ -142,11 +142,16 @@ ItemListItem.propTypes = {
   componentProps: PropTypes.object,
   icon: PropTypes.object,
   item: PropTypes.object.isRequired,
+  listItemProps: PropTypes.object,
   mode: PropTypes.oneOf(['view', 'edit']),
   onClick: PropTypes.func.isRequired,
   onChange: PropTypes.func,
   onRemove: PropTypes.func,
   titleKey: PropTypes.any,
+};
+
+ItemListItem.defaultProps = {
+  listItemProps: {},
 };
 
 // -----------------------------------------------------------------------------
@@ -319,6 +324,7 @@ class ItemList extends React.PureComponent {
               icon={this.props.itemIcon}
               item={item}
               itemKeyPath={this.props.itemKeyPath}
+              listItemProps={this.props.itemListItemProps}
               mode={mode}
               onChange={this.handleItemChange}
               onClick={this.handleItemClick}
@@ -387,6 +393,7 @@ ItemList.propTypes = {
   filterParams: PropTypes.object,
   itemComponent: PropTypes.func,
   itemComponentProps: PropTypes.object,
+  itemListItemProps: PropTypes.object,
   itemIcon: PropTypes.object,
   items: PropTypes.array.isRequired,
   itemKeyPath: PropTypes.string,
@@ -411,6 +418,7 @@ ItemList.defaultProps = {
   editDialogProps: {},
   filterParams: {},
   itemComponentProps: {},
+  itemListItemProps: { disableGutters: true },
   listDialogProps: {},
   listItemProps: {},
   mode: 'view',
