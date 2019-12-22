@@ -3,8 +3,7 @@ import request from 'superagent';
 
 export default class ServiceProxy {
   static getAccessToken() {
-    const cookieName = process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME;
-    return cookie.get(cookieName);
+    return cookie.get(process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME);
   }
 
   static setAccessToken(value, attrs) {
