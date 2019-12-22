@@ -94,7 +94,7 @@ function PagedListView(props) {
 
   // Maintain a reference to the fetch request so it can be aborted
   // if this component is unmounted while it is in flight.
-  const fetchRequestContextRef = useRef();
+  const [fetchRequestContext, setFetchRequestContext] = useState(null);
 
   let defaultOrdering = props.defaultOrdering;
   if (NavManager.qsParams[props.orderParamName]) {
@@ -208,8 +208,8 @@ function PagedListView(props) {
    */
   useEffect(() => {
     return (() => {
-      if (fetchRequestContextRef.current) {
-        const inFlightRequest = fetchRequestContextRef.current.request;
+      if (fetchRequestContext) {
+        const inFlightRequest = fetchRequestContext.request;
         inFlightRequest.abort();
       }
     });
@@ -332,16 +332,17 @@ function PagedListView(props) {
 
   const fetchItems = async() => {
     return new Promise((resolve, reject) => {
-      if (fetchRequestContextRef.current) {
-        const inFlightRequest = fetchRequestContextRef.current.request;
+      if (fetchRequestContext) {
+        const inFlightRequest = fetchRequestContext.request;
         inFlightRequest.abort();
       }
 
-      fetchRequestContextRef.current = {};
-      const request = ServiceAgent.get(props.src, filterParams, fetchRequestContextRef.current);
+      const requestContext = {};
+      setFetchRequestContext(requestContext);
+      const request = ServiceAgent.get(props.src, filterParams, requestContext);
 
       request.then((response) => {
-        fetchRequestContextRef.current = null;
+        setFetchRequestContext(null);
         if (response === null) {
           return;
         }
@@ -356,7 +357,7 @@ function PagedListView(props) {
 
         resolve(loadedItems);
       }).catch((err) => {
-        fetchRequestContextRef.current = null;
+        setFetchRequestContext(null);
         if (err.code !== 'ABORTED') {
           reject(err);
         }
@@ -499,6 +500,7 @@ function PagedListView(props) {
       }
 
       props.onConfig({
+        loading: !!fetchRequestContext,
         onItemUpdate: handleItemUpdate,
         selectedItemIds,
         selectionDisabled,
