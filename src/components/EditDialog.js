@@ -91,8 +91,8 @@ class EditDialog extends React.Component {
     }
 
     const {
-      persistedObject,
       classes,
+      onSave,
       FormProps,
       ...rest
     } = this.props;
@@ -115,7 +115,7 @@ class EditDialog extends React.Component {
           />
         </DialogContent>
         <div className={classes.dialogActions}>
-          {persistedObject &&
+          {(this.props.persistedObject && this.props.canDelete) &&
             <Fragment>
               <Button
                 className={classes.deleteButton}
@@ -140,6 +140,7 @@ class EditDialog extends React.Component {
 
 EditDialog.propTypes = {
   apiDetailUrl: PropTypes.string,
+  canDelete: PropTypes.bool,
   classes: PropTypes.object,
   entityType: PropTypes.string.isRequired,
   FormProps: PropTypes.object,
@@ -152,6 +153,7 @@ EditDialog.propTypes = {
 };
 
 EditDialog.defaultProps = {
+  canDelete: true,
   FormProps: {},
   labels: {
     ADD: 'Add',
@@ -175,6 +177,6 @@ export default withStyles((theme) => ({
   },
 
   deleteButton: {
-    color: '#f93d3d',
+    color: theme.palette.error.main,
   },
 }))(EditDialog);
