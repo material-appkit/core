@@ -34,6 +34,7 @@ const styles = makeStyles((theme) => {
   const defaultNavigationControllerTheme = {
     contextMenuIcon: {
       marginRight: theme.spacing(1),
+      minWidth: 'initial',
     },
 
     navBarBreadcrumbsRoot: {
