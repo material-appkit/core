@@ -23,37 +23,51 @@ import MenuList from '@material-ui/core/MenuList';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import NavigationControllerTab from './NavigationControllerTab';
 import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
 
-const styles = makeStyles((theme) => ({
-  breadcrumbButton: {
-    minWidth: 'initial',
-  },
+const styles = makeStyles((theme) => {
+  const defaultNavigationControllerTheme = {
+    contextMenuIcon: {
+      marginRight: theme.spacing(1),
+    },
 
-  navBar: {
-    borderBottom: `1px solid ${theme.palette.grey[400]}`,
-    height: theme.sizes.navigationController.navbarHeight,
-    paddingLeft: theme.spacing(2),
-  },
+    navBarBreadcrumbsRoot: {
+      flex: 1,
+    },
 
-  navBarBreadcrumbs: {
-    flexGrow: 1,
-  },
+    breadcrumbButton: {
+      minWidth: 'initial',
+      maxWidth: '100%',
+    },
 
-  tabPanel: {
-    height: '100%',
-    overflow: 'auto',
-  },
+    navBar: {
+      borderBottom: `1px solid ${theme.palette.grey[400]}`,
+      height: theme.sizes.navigationController.navbarHeight,
+      paddingLeft: theme.spacing(1),
+    },
 
-  toolBar: {
-    borderBottom: `1px solid ${theme.palette.grey[400]}`,
-    height: theme.sizes.navigationController.toolbarHeight,
-  },
-}));
+    tabPanel: {
+      height: '100%',
+      overflow: 'auto',
+    },
+
+    toolBar: {
+      borderBottom: `1px solid ${theme.palette.grey[400]}`,
+      height: theme.sizes.navigationController.toolbarHeight,
+    },
+  };
+
+  if (theme.navigationController) {
+    Object.assign(defaultNavigationControllerTheme, theme.navigationController);
+  }
+
+  return defaultNavigationControllerTheme;
+});
 
 function NavigationController(props) {
   const { matches } = props;
@@ -98,6 +112,12 @@ function NavigationController(props) {
 
     let tabComponent = null;
 
+    const breadcrumbLabel = (
+      <Typography noWrap variant="button">
+        {title}
+        </Typography>
+      );
+
     if (i < matches.length - 1) {
       tabComponent = (
         <Button
@@ -105,7 +125,7 @@ function NavigationController(props) {
           component={RouterLink}
           to={match.url}
         >
-          {title}
+          {breadcrumbLabel}
         </Button>
       );
     } else {
@@ -118,7 +138,7 @@ function NavigationController(props) {
               onClick={() => { setContextMenuIsOpen(prevOpen => !prevOpen); }}
               ref={contextMenuAnchorRef}
             >
-              {title}
+              {breadcrumbLabel}
             </Button>
             <Popper
               open={contextMenuIsOpen}
@@ -146,14 +166,14 @@ function NavigationController(props) {
       } else {
         tabComponent = (
           <Button className={classes.breadcrumbButton}>
-            {title}
+            {breadcrumbLabel}
           </Button>
         );
       }
     }
 
     return (
-      <NavigationControllerTab key={match.path} className={classes.tab}>
+      <NavigationControllerTab key={match.path}>
         {tabComponent}
       </NavigationControllerTab>
     );
@@ -307,7 +327,10 @@ function NavigationController(props) {
       >
         <Toolbar className={classes.navBar} disableGutters>
           <NavigationControllerBreadcrumbs
-            className={classes.navBarBreadcrumbs}
+            classes={{
+              root: classes.navBarBreadcrumbsRoot,
+              ol: classes.navBarBreadcrumbsList,
+            }}
             separator="›"
           >
             {breadcrumbs}

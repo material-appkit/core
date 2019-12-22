@@ -1,11 +1,12 @@
 /**
  * See: https://github.com/reactjs/react-tabs/blob/master/src/components/Tab.js
  */
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
 import cx from 'classnames';
 
-export default class Tab extends Component {
+import PropTypes from 'prop-types';
+import React from 'react';
+
+export default class Tab extends React.PureComponent {
   static defaultProps = {
     focus: false,
     id: null,
