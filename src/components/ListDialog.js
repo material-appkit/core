@@ -176,7 +176,7 @@ class ListDialog extends React.PureComponent {
                 defaultFilterParams={this.state.filterParams}
                 itemContextProvider={this.listItemContextProvider}
                 itemIdKey={this.props.itemIdKey}
-                listItemRenderer={this.props.listItemComponent}
+                listItemComponent={this.props.listItemComponent}
                 listItemProps={this.props.listItemProps}
                 onConfig={(config) => { this.setState({ listViewInfo: config }); }}
                 onLoad={() => { this.setState({loading: true }); }}

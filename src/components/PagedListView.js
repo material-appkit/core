@@ -513,7 +513,7 @@ function PagedListView(props) {
       {props.displayMode === 'list' ? (
         <List disablePadding>
           {items.map((item) => (
-            <props.listItemRenderer
+            <props.listItemComponent
               key={keyForItem(item)}
               selectOnClick={props.selectOnClick}
               {...itemProps(item)}
@@ -523,7 +523,7 @@ function PagedListView(props) {
       ) : (
         <TileList {...props.tileListProps}>
           {items.map((item) => (
-            <props.tileItemRenderer
+            <props.tileItemComponent
               key={keyForItem(item)}
               {...itemProps(item)}
             />
@@ -540,7 +540,7 @@ function PagedListView(props) {
             maxWidth: 'xs',
           }}
           itemIdKey="value"
-          listItemRenderer={SimpleListItem}
+          listItemComponent={SimpleListItem}
           listItemProps={{ labelField: 'label' }}
           onDismiss={handleSortDialogDismiss}
           selectOnClick
@@ -566,7 +566,7 @@ PagedListView.propTypes = {
   ]),
   itemTransformer: PropTypes.func,
   listItemProps: PropTypes.object,
-  listItemRenderer: PropTypes.func,
+  listItemComponent: PropTypes.func,
 
   location: PropTypes.object,
 
@@ -582,7 +582,7 @@ PagedListView.propTypes = {
   selectionAlways: PropTypes.bool,
   selectOnClick: PropTypes.bool,
   src: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-  tileItemRenderer: PropTypes.func,
+  tileItemComponent: PropTypes.func,
   tileListProps: PropTypes.object,
 };
 
