@@ -5,7 +5,6 @@
 */
 
 import React, { Fragment } from 'react';
-// import PropTypes from 'prop-types';
 
 import { observable } from 'mobx';
 import { observer } from 'mobx-react';
@@ -51,8 +50,10 @@ class AlertManager extends React.Component {
     this.queue.delete(key);
   }
 
-  get dialogs() {
+
+  render() {
     const dialogs = [];
+
     AlertManager.queue.forEach((alertInfo, key) => {
       const alertType = alertInfo.ALERT_TYPE;
       let commitValue = true;
@@ -117,15 +118,8 @@ class AlertManager extends React.Component {
         </Dialog>
       ));
     });
-    return dialogs;
-  }
 
-  render() {
-    return (
-      <Fragment>
-        {this.dialogs}
-      </Fragment>
-    );
+    return dialogs;
   }
 }
 
