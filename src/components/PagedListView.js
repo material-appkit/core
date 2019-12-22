@@ -165,7 +165,9 @@ function PagedListView(props) {
   const removeItem = (item) => {
     const sourceItemIndex = findItemIndex(item);
     if (sourceItemIndex === -1) {
-      throw new Error(`Unable to locate source for item with key: ${keyForItem(item)}`);
+      // This situation is most likely to occur when a record has been updated
+      // that is not within the loaded page
+      return;
     }
 
     const updatedItems = [...items];
@@ -188,7 +190,9 @@ function PagedListView(props) {
   const updateItem = (source, target) => {
     const sourceItemIndex = findItemIndex(source);
     if (sourceItemIndex === -1) {
-      throw new Error(`Unable to locate source for item with key: ${keyForItem(item)}`);
+      // This situation is most likely to occur when a record has been updated
+      // that is not within the loaded page
+      return;
     }
 
     const updatedItems = [...items];
