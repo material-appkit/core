@@ -59,20 +59,6 @@ class ListView extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.refresh();
-  }
-
-  componentDidUpdate() {
-    this.refresh();
-  }
-
-  refresh = () => {
-    if (!this.isActive) {
-      // Since this component may be mounted in the background, only respond
-      // to location changes when it is "active"
-      return;
-    }
-
     if (this.subsetArrangement) {
       let tabIndex = indexOfKey(this.subsetKey, this.subsetArrangement);
       if (tabIndex === -1) {
@@ -98,14 +84,8 @@ class ListView extends React.PureComponent {
     } else {
       this.syncItemStore();
     }
-  };
-
-  get isActive() {
-    const { location, mountPath } = this.props;
-
-    const match = matchPath(location.pathname, { path: mountPath });
-    return match.isExact;
   }
+
 
   get tabs() {
     if (!this.tabConfigList || this.state.selectedTabIndex === null) {
