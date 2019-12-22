@@ -93,7 +93,7 @@ function PagedListView(props) {
 
   // Maintain a reference to the fetch request so it can be aborted
   // if this component is unmounted while it is in flight.
-  const fetchRequestRef = useRef();
+  const fetchRequestContextRef = useRef();
 
   let defaultOrdering = props.defaultOrdering;
   if (NavManager.qsParams[props.orderParamName]) {
@@ -203,8 +203,9 @@ function PagedListView(props) {
    */
   useEffect(() => {
     return (() => {
-      if (fetchRequestRef.current) {
-        fetchRequestRef.current.abort();
+      if (fetchRequestContextRef.current) {
+        const inFlightRequest = fetchRequestContextRef.current.request;
+        inFlightRequest.abort();
       }
     });
   }, []);
@@ -305,20 +306,18 @@ function PagedListView(props) {
 
   const fetchItems = async() => {
     return new Promise((resolve, reject) => {
-      const request = ServiceAgent.get(props.src, filterParams);
+      fetchRequestContextRef.current = {};
+      const request = ServiceAgent.get(props.src, filterParams, fetchRequestContextRef.current);
 
-      fetchRequestRef.current = request;
       request.then((response) => {
-        fetchRequestRef.current = null;
+        fetchRequestContextRef.current = null;
+        if (response === null) {
+          return;
+        }
 
         const responseInfo = response.body;
 
-        let loadedItems = null;
-        if (responseInfo.data) {
-          loadedItems = responseInfo.data;
-        } else {
-          loadedItems = responseInfo;
-        }
+        const loadedItems = responseInfo.data ? responseInfo.data : responseInfo;
 
         if (responseInfo.meta && responseInfo.meta.pagination) {
           setPaginationInfo(responseInfo.meta.pagination);
@@ -326,6 +325,7 @@ function PagedListView(props) {
 
         resolve(loadedItems);
       }).catch((err) => {
+        fetchRequestContextRef.current = null;
         if (err.code !== 'ABORTED') {
           reject(err);
         }
