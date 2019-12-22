@@ -13,6 +13,16 @@ export function filterByKeys(object, keys) {
   return filteredObject;
 }
 
+export function filterExcludeKeys(object, keys) {
+  const filteredObject = {};
+  Object.keys(object).forEach((key) => {
+    if (keys.indexOf(key) === -1) {
+      filteredObject[key] = object[key];
+    }
+  });
+  return filteredObject;
+}
+
 
 /**
  * Return a new object containing only those key/value pairs

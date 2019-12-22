@@ -28,6 +28,7 @@ import SortIcon from '@material-ui/icons/Sort';
 import NavManager from '../managers/NavManager';
 import ServiceAgent from '../util/ServiceAgent';
 import { makeChoices } from '../util/array';
+import { filterExcludeKeys } from '../util/object'
 
 import PagedListViewDialog from './PagedListViewDialog';
 import SimpleListItem from './SimpleListItem';
@@ -81,7 +82,7 @@ const styles = makeStyles((theme) => ({
 function PagedListView(props) {
   const classes = styles();
 
-  const qsPageParam = parseInt(NavManager.qsParams.page || 1);
+  const qsPageParam = parseInt(NavManager.qsParams[props.pageParamName] || 1);
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
   const [page, setPage] = useState(props.location ? qsPageParam : 1);
@@ -221,12 +222,23 @@ function PagedListView(props) {
   useEffect(() => {
     const params = { ...props.defaultFilterParams };
 
+    let pageIndex = page;
+    if (filterParams) {
+      const keysToExclude = [props.pageParamName, 'page_size', props.orderParamName];
+      const currentDefaultFilterParams = filterExcludeKeys(filterParams, keysToExclude);
+
+      if (!isEqual(params, currentDefaultFilterParams)) {
+        pageIndex = 1;
+        setPage(pageIndex);
+      }
+    }
+
     if (props.pageSize) {
       params.page_size = props.pageSize;
-      params.page = page;
 
-      if (props.location && page !== qsPageParam) {
-        NavManager.updateUrlParam('page', page);
+      params[props.pageParamName] = pageIndex;
+      if (props.location && pageIndex !== qsPageParam) {
+        NavManager.updateUrlParam(props.pageParamName, pageIndex);
       }
     }
 
@@ -238,7 +250,7 @@ function PagedListView(props) {
       setFilterParams(params);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.defaultFilterParams, ordering, page, props.pageSize]);
+  }, [props.defaultFilterParams, ordering, props.pageSize]);
 
 
 
@@ -308,8 +320,23 @@ function PagedListView(props) {
     }
   };
 
+
+  const handlePageChange = (e, value) => {
+    setPage(value + 1);
+
+    const updatedFilterParams = {...filterParams};
+    updatedFilterParams[props.pageParamName] = value + 1;
+    setFilterParams(updatedFilterParams);
+  };
+
+
   const fetchItems = async() => {
     return new Promise((resolve, reject) => {
+      if (fetchRequestContextRef.current) {
+        const inFlightRequest = fetchRequestContextRef.current.request;
+        inFlightRequest.abort();
+      }
+
       fetchRequestContextRef.current = {};
       const request = ServiceAgent.get(props.src, filterParams, fetchRequestContextRef.current);
 
@@ -348,10 +375,6 @@ function PagedListView(props) {
    * Instruct the list to reload using the currently set filterParams
    */
   const reload = async() => {
-    if (!filterParams) {
-      return;
-    }
-
     if (props.onLoad) {
       props.onLoad(filterParams);
     }
@@ -392,9 +415,12 @@ function PagedListView(props) {
    * Reload the list whenever the filterParams are altered
    */
   useEffect(() => {
-    if (props.src) {
-      reload();
+    if (!(props.src && filterParams)) {
+      return;
     }
+
+    reload();
+
   }, [props.src, filterParams]);
 
 
@@ -439,7 +465,7 @@ function PagedListView(props) {
           page={page - 1}
           rowsPerPage={paginationInfo.per_page}
           rowsPerPageOptions={[paginationInfo.per_page]}
-          onChangePage={(e, value) => { setPage(value + 1); }}
+          onChangePage={handlePageChange}
         />
       );
     }
@@ -580,6 +606,7 @@ PagedListView.propTypes = {
   onSelectionChange: PropTypes.func,
 
   orderParamName: PropTypes.string,
+  pageParamName: PropTypes.string,
 
   pageSize: PropTypes.number,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
@@ -594,6 +621,7 @@ PagedListView.defaultProps = {
   defaultFilterParams: {},
   itemIdKey: 'id',
   orderParamName: 'order',
+  pageParamName: 'page',
   selectionAlways: false,
   selectOnClick: false,
   tileListProps: {},

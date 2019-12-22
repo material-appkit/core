@@ -9,6 +9,13 @@ Object.defineProperty(exports, "filterByKeys", {
   },
 });
 
+Object.defineProperty(exports, "filterExcludeKeys", {
+  enumerable: true,
+  get: function get() {
+    return _object.filterExcludeKeys;
+  },
+});
+
 Object.defineProperty(exports, "filterEmptyValues", {
   enumerable: true,
   get: function get() {
