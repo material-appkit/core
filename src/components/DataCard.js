@@ -7,6 +7,7 @@
 import PropTypes from 'prop-types';
 import React, { useState, useRef } from 'react';
 
+import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -112,7 +113,9 @@ function DataCard(props) {
         subheader={props.subheader}
       />
       <CardContent classes={{ root: classes.cardContentRoot }}>
-        {getActiveView()}
+        <Box {...props.contentBoxProps}>
+          {getActiveView()}
+        </Box>
       </CardContent>
     </Card>
   );
@@ -120,13 +123,15 @@ function DataCard(props) {
 
 DataCard.propTypes = {
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
+  contentBoxProps: PropTypes.object,
   formConfig: PropTypes.object,
-  title: PropTypes.string,
   subheader: PropTypes.string,
+  title: PropTypes.string,
   variant: PropTypes.oneOf(['card', 'plain'])
 };
 
 DataCard.defaultProps = {
+  contentBoxProps: { px: 2 },
   variant: 'card',
 };
 
