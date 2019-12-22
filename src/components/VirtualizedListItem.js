@@ -61,9 +61,18 @@ function VirtualizedListItem(props) {
     listItemProps.button = true;
     listItemProps.onClick = (e) => {
       if (onSelectionChange) {
-        e.preventDefault();
-        onSelectionChange(item);
-      } else if (onItemClick) {
+        if (e.key !== 'Enter') {
+          // It seems that the "Enter" key also triggers a button's click
+          // event, presumably for accessibility reasons. We do NOT want
+          // this behavior since the enter key is also commonly used to
+          // dismiss modals in which these list items appear.
+          // By not disallowing the use of the enter key to affect selection,
+          // the selection state of the focused list item gets inadvertently
+          // toggled when a modal containing the item is dismissed.
+          onSelectionChange(item);
+        }
+      }
+      if (onItemClick) {
         onItemClick(item);
       }
     }
@@ -84,6 +93,7 @@ function VirtualizedListItem(props) {
     selectionControl = (
       <Radio
         checked={props.selected}
+        disableRipple
         edge="start"
         onClick={handleSelectionControlClick}
         style={{ padding: 8, marginRight: 8 }}
@@ -94,6 +104,7 @@ function VirtualizedListItem(props) {
     selectionControl = (
       <Checkbox
         checked={props.selected}
+        disableRipple
         edge="start"
         onClick={handleSelectionControlClick}
         style={{ padding: 8, marginRight: 8 }}

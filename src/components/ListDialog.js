@@ -83,8 +83,6 @@ class ListDialog extends React.PureComponent {
   constructor(props) {
     super(props);
 
-    this.dialogContentRef = React.createRef();
-
     this.state = {
       loading: false,
       selection: null,
@@ -105,7 +103,7 @@ class ListDialog extends React.PureComponent {
     this.props.onDismiss(value);
   };
 
-  handleKeyPress = (e) => {
+  handleKeyUp = (e) => {
     const { selection } = this.state;
     if (e.key === 'Enter' && selection) {
       this.dismiss(selection);
@@ -144,7 +142,7 @@ class ListDialog extends React.PureComponent {
         <Dialog
           classes={{ paper: classes.paper }}
           onClose={() => { this.dismiss(null); }}
-          onKeyPress={this.handleKeyPress}
+          onKeyUp={this.handleKeyUp}
           open
         >
           <DialogTitle
@@ -169,26 +167,29 @@ class ListDialog extends React.PureComponent {
               value={0}
             />
           </DialogTitle>
-          <RootRef rootRef={this.dialogContentRef}>
-            <DialogContent className={classes.dialogContent}>
-              <PagedListView
-                displayMode="list"
-                defaultFilterParams={this.state.filterParams}
-                itemContextProvider={this.listItemContextProvider}
-                itemIdKey={this.props.itemIdKey}
-                listItemComponent={this.props.listItemComponent}
-                listItemProps={this.props.listItemProps}
-                onConfig={(config) => { this.setState({ listViewInfo: config }); }}
-                onLoad={() => { this.setState({loading: true }); }}
-                onComplete={() => { this.setState({loading: false }); }}
-                onSelectionChange={(selection) => { this.setState({ selection }); }}
-                pageSize={this.props.pageSize}
-                selectionAlways
-                selectionMode={this.props.selectionMode}
-                src={this.props.src}
-              />
-            </DialogContent>
-          </RootRef>
+
+          <DialogContent className={classes.dialogContent}>
+            <PagedListView
+              displayMode="list"
+              defaultFilterParams={this.state.filterParams}
+              itemContextProvider={this.listItemContextProvider}
+              itemIdKey={this.props.itemIdKey}
+              listItemComponent={this.props.listItemComponent}
+              listItemProps={{
+                ...this.props.listItemProps,
+                isLink: false,
+              }}
+              onConfig={(config) => { this.setState({ listViewInfo: config }); }}
+              onLoad={() => { this.setState({loading: true }); }}
+              onComplete={() => { this.setState({loading: false }); }}
+              onSelectionChange={(selection) => { this.setState({ selection }); }}
+              pageSize={this.props.pageSize}
+              selectionAlways
+              selectOnClick
+              selectionMode={this.props.selectionMode}
+              src={this.props.src}
+            />
+          </DialogContent>
           <DialogActions>
             {this.props.apiCreateUrl &&
               <Fragment>
