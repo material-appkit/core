@@ -14,8 +14,37 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { valueForKeyPath } from '../util/object';
 
+//----------------------------------------------------------------------------
+// Helper function that renders a given value or list of values
+function renderValue(value, fieldInfo) {
+  if (Array.isArray(value)) {
+    return value.map((item, i) => (
+      <Fragment key={i}>
+        {renderValue(item, fieldInfo)}
+      </Fragment>
+    ));
+  }
+
+  let renderedValue = value;
+  if (fieldInfo.transform) {
+    renderedValue = fieldInfo.transform(value);
+  }
+
+  if (typeof(renderedValue) === 'string') {
+    renderedValue = (
+      <Typography variant="body2">
+        {renderedValue}
+      </Typography>
+    );
+  }
+
+  return renderedValue;
+}
+
 // -----------------------------------------------------------------------------
-const metadataListItemStyles = makeStyles((theme) => theme.metadataList.listItem);
+const metadataListItemStyles = makeStyles(
+  (theme) => theme.metadataList.listItem
+);
 
 function MetadataListItem(props) {
   const {
@@ -25,32 +54,6 @@ function MetadataListItem(props) {
   } = props;
   const classes = metadataListItemStyles();
 
-  //----------------------------------------------------------------------------
-  // Helper function that renders a given value or list of values
-  function renderValue(value) {
-    if (Array.isArray(value)) {
-      return value.map((item, i) => (
-        <Fragment key={i}>
-          {renderValue(item)}
-        </Fragment>
-      ));
-    }
-
-    let renderedValue = value;
-    if (fieldInfo.transform) {
-      renderedValue = fieldInfo.transform(value);
-    }
-
-    if (typeof(renderedValue) === 'string') {
-      renderedValue = (
-        <Typography variant="body2">
-          {renderedValue}
-        </Typography>
-      );
-    }
-
-    return renderedValue;
-  }
   //----------------------------------------------------------------------------
   let value = null;
   if (fieldInfo.keyPath) {
@@ -91,17 +94,14 @@ function MetadataListItem(props) {
     }
   }
 
-  let PrimaryComponent = null;
+  let PrimaryComponent = Box;
   const primaryComponentProps = {};
   if (fieldInfo.type === 'link' && value.path && LinkComponent) {
     PrimaryComponent = Link;
     primaryComponentProps.component = LinkComponent;
     primaryComponentProps.to = value.path;
   } else if (Array.isArray(value)) {
-    PrimaryComponent = List;
-    primaryComponentProps.disablePadding = true;
-  } else {
-    PrimaryComponent = Box;
+    primaryComponentProps.className = classes.nestedList;
   }
 
   return (
@@ -113,7 +113,7 @@ function MetadataListItem(props) {
         disableTypography
         primary={(
           <PrimaryComponent {...primaryComponentProps}>
-            {renderValue(value)}
+            {renderValue(value, fieldInfo)}
           </PrimaryComponent>
         )}
       />
