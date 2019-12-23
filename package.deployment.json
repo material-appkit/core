@@ -1,6 +1,6 @@
 {
   "name": "@material-appkit/core",
-  "version": "1.4.9",
+  "version": "1.5.0",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "main": "dist/index.js",
   "keywords": [
@@ -31,8 +31,8 @@
     "@material-ui/pickers": "^3.2.6",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "react-router-dom": "^5.0.1"
   }
 }
