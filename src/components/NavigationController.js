@@ -202,14 +202,12 @@ function NavigationController(props) {
   }
 
 
-
   const handleContextMenuClick = (menuItemConfig) => {
     if (menuItemConfig.onClick) {
       menuItemConfig.onClick(menuItemConfig);
     }
     setContextMenuIsOpen(false);
   };
-
 
 
   const handleContextMenuClose = (event) => {
