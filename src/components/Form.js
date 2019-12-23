@@ -349,13 +349,13 @@ class Form extends React.PureComponent {
   handleFormSubmit = (e) => {
     e.preventDefault();
 
-    if (e.target !== this.formRef.current) {
-      // Due to event bubbling, a <form> is submitted within a dialog that
-      // is rendered atop a view that also has a <form>, the underlying
-      // form also gets submitted.
-      // This check ensures that only the intended save method is invoked.
-      return;
-    }
+    // Due to event bubbling, a <form> is submitted within a dialog that
+    // is rendered atop a view that also has a <form>, the underlying
+    // form also gets submitted.
+    // Stopping the form submission event propagation ensures that only
+    // the explicitly submitted form gets processed.
+    e.stopPropagation();
+
 
     this.save();
   };
@@ -366,20 +366,18 @@ class Form extends React.PureComponent {
    * NOTE: This is only applicable when editing a persisted record.
    */
   handleFormChange = (e) => {
-    if (e.currentTarget !== this.formRef.current) {
-      // Due to event bubbling, a <form> is submitted within a dialog that
-      // is rendered atop a view that also has a <form>, the underlying
-      // form also gets submitted.
-      // This check ensures that only the intended save method is invoked.
-      return;
-    }
+    // See comment above (in handleFormSubmit) for explanation for why
+    // event propagation is stopped here.
+    e.stopPropagation();
 
     if (this.detailUrl && this.props.autosaveDelay) {
       if (this.autoSaveTimer) {
         clearTimeout(this.autoSaveTimer);
       }
       this.autoSaveTimer = setTimeout(() => {
-        this.save();
+        if (!this.state.saving) {
+          this.save();
+        }
       }, this.props.autosaveDelay);
     }
   };
