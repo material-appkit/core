@@ -1,11 +1,7 @@
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
-import React, {
-  Fragment,
-  useRef,
-  useState,
-} from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { Route, Link as RouterLink } from 'react-router-dom';
 
 import { Tabs, TabPanel } from 'react-tabs';
@@ -13,15 +9,10 @@ import { Tabs, TabPanel } from 'react-tabs';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
 import Link from '@material-ui/core/Link';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -32,9 +23,13 @@ import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
 
 const styles = makeStyles((theme) => {
   const defaultNavigationControllerTheme = {
+    contextMenuContent: {
+      alignItems: 'center',
+      display: 'flex',
+    },
+
     contextMenuIcon: {
       marginRight: theme.spacing(1),
-      minWidth: 'initial',
     },
 
     navBarBreadcrumbsRoot: {
@@ -70,13 +65,13 @@ const styles = makeStyles((theme) => {
   return defaultNavigationControllerTheme;
 });
 
+
 function NavigationController(props) {
   const { matches } = props;
   const theme = useTheme();
   const classes = styles();
 
-  const contextMenuAnchorRef = useRef(null);
-  const [contextMenuIsOpen, setContextMenuIsOpen] = useState(false);
+  const [contextMenuButtonEl, setContextMenuButtonEl] = useState(null);
 
   const [topbarConfigMap, setTopbarConfigMap] = useState({});
 
@@ -85,20 +80,30 @@ function NavigationController(props) {
     const menuItemProps = {
       className: classes.contextMenuItem,
       key: menuItemConfig.key,
-      onClick: () => { handleContextMenuClick(menuItemConfig); },
+      onClick: () => {
+        if (menuItemConfig.onClick) {
+          menuItemConfig.onClick(menuItemConfig);
+        }
+        setContextMenuButtonEl(null);
+      },
     };
     if (menuItemConfig.link) {
       menuItemProps.to = menuItemConfig.link;
       menuItemProps.component = Link;
     }
+
     return (
       <MenuItem {...menuItemProps}>
-        {menuItemConfig.icon &&
-          <ListItemIcon className={classes.contextMenuIcon}>
-            <menuItemConfig.icon />
-          </ListItemIcon>
-        }
-        <ListItemText primary={menuItemConfig.title} className={classes.contextMenuText} />
+        <ListItemText disableTypography primary={(
+          <span className={classes.contextMenuContent}>
+            {menuItemConfig.icon &&
+              <menuItemConfig.icon className={classes.contextMenuIcon} />
+            }
+            <Typography>
+              {menuItemConfig.title}
+            </Typography>
+          </span>
+        )} />
       </MenuItem>
     );
   };
@@ -116,8 +121,8 @@ function NavigationController(props) {
     const breadcrumbLabel = (
       <Typography noWrap variant="button">
         {title}
-        </Typography>
-      );
+      </Typography>
+    );
 
     if (i < matches.length - 1) {
       tabComponent = (
@@ -134,34 +139,14 @@ function NavigationController(props) {
         tabComponent = (
           <Fragment>
             <Button
+              aria-controls="context-menu"
+              aria-haspopup="true"
               className={classes.breadcrumbButton}
               endIcon={<ExpandMoreIcon />}
-              onClick={() => { setContextMenuIsOpen(prevOpen => !prevOpen); }}
-              ref={contextMenuAnchorRef}
+              onClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
             >
               {breadcrumbLabel}
             </Button>
-            <Popper
-              open={contextMenuIsOpen}
-              anchorEl={contextMenuAnchorRef.current}
-              transition
-              disablePortal
-            >
-              {({ TransitionProps, placement }) => (
-                <Grow
-                  {...TransitionProps}
-                  style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-                >
-                  <Paper className={classes.contextMenuPaper}>
-                    <ClickAwayListener onClickAway={handleContextMenuClose}>
-                      <MenuList>
-                        {topbarConfig.contextMenuItems.map(createContextMenuItem)}
-                      </MenuList>
-                    </ClickAwayListener>
-                  </Paper>
-                </Grow>
-              )}
-            </Popper>
           </Fragment>
         );
       } else {
@@ -200,24 +185,6 @@ function NavigationController(props) {
       </Toolbar>
     );
   }
-
-
-  const handleContextMenuClick = (menuItemConfig) => {
-    if (menuItemConfig.onClick) {
-      menuItemConfig.onClick(menuItemConfig);
-    }
-    setContextMenuIsOpen(false);
-  };
-
-
-  const handleContextMenuClose = (event) => {
-    if (contextMenuAnchorRef.current && contextMenuAnchorRef.current.contains(event.target)) {
-      return;
-    }
-
-    setContextMenuIsOpen(false);
-  };
-
 
 
   const updateTopbarConfig = (viewControllerProps, path) => {
@@ -334,6 +301,27 @@ function NavigationController(props) {
           >
             {breadcrumbs}
           </NavigationControllerBreadcrumbs>
+
+          {activeTopBarConfig.contextMenuItems &&
+            <Menu
+              id="context-menu"
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+              getContentAnchorEl={null}
+              anchorEl={contextMenuButtonEl}
+              open={Boolean(contextMenuButtonEl)}
+              onClose={() => { setContextMenuButtonEl(null); }}
+            >
+              {activeTopBarConfig.contextMenuItems.map(createContextMenuItem)}
+            </Menu>
+          }
+
           {rightBarItem}
         </Toolbar>
 
