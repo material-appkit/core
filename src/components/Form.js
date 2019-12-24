@@ -66,17 +66,18 @@ class Form extends React.PureComponent {
     this.autoSaveTimer = null;
     this.formRef = React.createRef();
 
+    let representedObjectId = props.representedObjectId;
+    if (!representedObjectId && props.persistedObject) {
+      representedObjectId = props.persistedObject.id;
+    }
+
     let detailUrl = null;
     if (props.apiDetailUrl) {
       detailUrl = props.apiDetailUrl;
-    } else if (props.persistedObject) {
-      if (props.persistedObject.url) {
-        detailUrl = props.persistedObject.url;
-      } else {
-        detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.persistedObject.id });
-      }
-    } else if (props.representedObjectId) {
-      detailUrl = reverse(this.props.apiDetailUrlPath, { pk: props.representedObjectId });
+    } else if (props.persistedObject && props.persistedObject.url) {
+      detailUrl = props.persistedObject.url;
+    } else if (this.props.apiDetailUrlPath && representedObjectId) {
+      detailUrl = reverse(this.props.apiDetailUrlPath, {pk: representedObjectId});
     }
     this.detailUrl = detailUrl;
   }
@@ -243,7 +244,10 @@ class Form extends React.PureComponent {
     // If the fields have not been explicitly provided, issue an OPTIONS request for
     // metadata about the represented object so the fields can be generated dynamically.
     const optionsUrl = apiCreateUrl || this.detailUrl;
-    requests.push(ServiceAgent.options(optionsUrl, optionsRequestParams));
+    requests.push(ServiceAgent.options(optionsUrl, {
+      ...optionsRequestParams,
+      action: this.detailUrl ? 'update' : 'create'
+    }));
 
     if (!referenceObject) {
       if (this.detailUrl) {
