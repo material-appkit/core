@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import withStyles from '@material-ui/core/styles/withStyles';
 
 import { ServiceAgent } from '../util';
 import { arrayToObject } from '../util/array';
@@ -468,6 +467,4 @@ Form.defaultProps = {
   updateMethod: 'PATCH',
 };
 
-export default withStyles((theme) => {
-  return theme.form;
-})(Form);
+export default Form;
