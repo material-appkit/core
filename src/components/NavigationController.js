@@ -36,6 +36,12 @@ const styles = makeStyles((theme) => {
       flex: 1,
     },
 
+    navBarBreadcrumbsList: {
+      display: 'grid',
+      gridAutoFlow: 'column',
+      gridAutoColumns: 'minmax(20px, max-content)',
+    },
+
     breadcrumbButton: {
       minWidth: 'initial',
       maxWidth: '100%',
@@ -126,13 +132,9 @@ function NavigationController(props) {
 
     if (i < matches.length - 1) {
       tabComponent = (
-        <Button
-          className={classes.breadcrumbButton}
-          component={RouterLink}
-          to={match.url}
-        >
-          {breadcrumbLabel}
-        </Button>
+        <Link color="textPrimary" component={RouterLink} to={match.url}>
+          <Typography noWrap>{breadcrumbLabel}</Typography>
+        </Link>
       );
     } else {
       if (topbarConfig && topbarConfig.contextMenuItems) {
@@ -145,15 +147,13 @@ function NavigationController(props) {
               endIcon={<ExpandMoreIcon />}
               onClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
             >
-              {breadcrumbLabel}
+              <Typography noWrap>{breadcrumbLabel}</Typography>
             </Button>
           </Fragment>
         );
       } else {
         tabComponent = (
-          <Button className={classes.breadcrumbButton}>
-            {breadcrumbLabel}
-          </Button>
+          <Typography noWrap>{breadcrumbLabel}</Typography>
         );
       }
     }
