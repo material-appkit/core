@@ -230,15 +230,24 @@ class Form extends React.PureComponent {
   load = async() => {
     this.setState({ loading: true });
 
-    let referenceObject = this.props.persistedObject;
+    const {
+      apiCreateUrl,
+      optionsRequestParams,
+      onLoad,
+      persistedObject,
+    } = this.props;
+
+    let referenceObject = persistedObject;
     let metadata = null;
     const requests = [];
 
     // If the fields have not been explicitly provided, issue an OPTIONS request for
     // metadata about the represented object so the fields can be generated dynamically.
-    const optionsUrl = this.props.apiCreateUrl || this.detailUrl;
-    const optionsRequestParams = this.props.optionsRequestParams;
-    requests.push(ServiceAgent.options(optionsUrl, optionsRequestParams));
+    const optionsUrl = apiCreateUrl || this.detailUrl;
+    requests.push(ServiceAgent.options(optionsUrl, {
+      ...optionsRequestParams,
+      action: this.detailUrl ? 'update' : 'create'
+    }));
 
     if (!referenceObject) {
       if (this.detailUrl) {
@@ -271,13 +280,13 @@ class Form extends React.PureComponent {
       referenceObject,
     });
 
-    if (this.props.onLoad) {
-      this.props.onLoad(referenceObject, this.getFieldInfoMap(metadata));
+    if (onLoad) {
+      onLoad(referenceObject, this.getFieldInfoMap(metadata));
     }
   };
 
   save = async() => {
-    const { updateMethod} = this.props;
+    const { updateMethod } = this.props;
     const { formData, metadata, referenceObject } = this.state;
 
     this.setState({ errors: {}, saving: true });
