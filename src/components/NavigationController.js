@@ -50,7 +50,7 @@ const styles = makeStyles((theme) => {
     navBar: {
       borderBottom: `1px solid ${theme.palette.grey[400]}`,
       height: theme.sizes.navigationController.navbarHeight,
-      paddingLeft: theme.spacing(1),
+      paddingLeft: theme.spacing(2),
     },
 
     tabPanel: {
