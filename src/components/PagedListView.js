@@ -17,6 +17,7 @@ import React, {
 
 import List from '@material-ui/core/List';
 
+import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -77,6 +78,17 @@ const styles = makeStyles((theme) => ({
       padding: theme.spacing(1),
     },
   },
+
+  noResults: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    border: `3px dashed ${theme.palette.grey[600]}`,
+    borderRadius: theme.shape.borderRadius,
+  }
 }));
 
 function PagedListView(props) {
@@ -517,7 +529,13 @@ function PagedListView(props) {
   }
 
   if (!items.length) {
-    return <Typography>No items to show</Typography>;
+    return (
+      <Box p={2} width="100%" height="100%">
+        <div className={classes.noResults}>
+          <Typography variant="body2">No items to display</Typography>
+        </div>
+      </Box>
+    );
   }
 
   // Let the active view mode determine whether to render a List or a Grid
