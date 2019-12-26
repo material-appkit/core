@@ -10,28 +10,17 @@ import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
+import ContextMenu from '@material-appkit/core/components/ContextMenu';
 import NavigationControllerTab from './NavigationControllerTab';
 import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
 
 const styles = makeStyles((theme) => {
   const defaultNavigationControllerTheme = {
-    contextMenuContent: {
-      alignItems: 'center',
-      display: 'flex',
-    },
-
-    contextMenuIcon: {
-      marginRight: theme.spacing(1),
-    },
-
     navBarBreadcrumbsRoot: {
       flex: 1,
     },
@@ -80,39 +69,6 @@ function NavigationController(props) {
   const [contextMenuButtonEl, setContextMenuButtonEl] = useState(null);
 
   const [topbarConfigMap, setTopbarConfigMap] = useState({});
-
-
-  const createContextMenuItem = (menuItemConfig) => {
-    const menuItemProps = {
-      className: classes.contextMenuItem,
-      key: menuItemConfig.key,
-      onClick: () => {
-        if (menuItemConfig.onClick) {
-          menuItemConfig.onClick(menuItemConfig);
-        }
-        setContextMenuButtonEl(null);
-      },
-    };
-    if (menuItemConfig.link) {
-      menuItemProps.to = menuItemConfig.link;
-      menuItemProps.component = Link;
-    }
-
-    return (
-      <MenuItem {...menuItemProps}>
-        <ListItemText disableTypography primary={(
-          <span className={classes.contextMenuContent}>
-            {menuItemConfig.icon &&
-              <menuItemConfig.icon className={classes.contextMenuIcon} />
-            }
-            <Typography>
-              {menuItemConfig.title}
-            </Typography>
-          </span>
-        )} />
-      </MenuItem>
-    );
-  };
 
 
   const breadcrumbs = matches.map((match, i) => {
@@ -303,8 +259,13 @@ function NavigationController(props) {
           </NavigationControllerBreadcrumbs>
 
           {activeTopBarConfig.contextMenuItems &&
-            <Menu
+            <ContextMenu
+              anchorEl={contextMenuButtonEl}
               id="context-menu"
+              getContentAnchorEl={null}
+              open={Boolean(contextMenuButtonEl)}
+              onClose={() => { setContextMenuButtonEl(null); }}
+              menuItemArrangement={activeTopBarConfig.contextMenuItems}
               anchorOrigin={{
                 vertical: 'bottom',
                 horizontal: 'center',
@@ -313,13 +274,7 @@ function NavigationController(props) {
                 vertical: 'top',
                 horizontal: 'center',
               }}
-              getContentAnchorEl={null}
-              anchorEl={contextMenuButtonEl}
-              open={Boolean(contextMenuButtonEl)}
-              onClose={() => { setContextMenuButtonEl(null); }}
-            >
-              {activeTopBarConfig.contextMenuItems.map(createContextMenuItem)}
-            </Menu>
+            />
           }
 
           {rightBarItem}
