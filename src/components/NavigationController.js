@@ -34,6 +34,7 @@ const styles = makeStyles((theme) => {
     breadcrumbButton: {
       minWidth: 'initial',
       maxWidth: '100%',
+      padding: '6px 4px',
     },
 
     navBar: {
