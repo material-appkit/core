@@ -80,6 +80,8 @@ class Form extends React.PureComponent {
       detailUrl = reverse(this.props.apiDetailUrlPath, {pk: representedObjectId});
     }
     this.detailUrl = detailUrl;
+
+    this.requestUrl = this.detailUrl || this.props.apiCreateUrl;
   }
 
   componentDidMount() {
@@ -98,6 +100,14 @@ class Form extends React.PureComponent {
     if (this.autoSaveTimer) {
       clearTimeout(this.autoSaveTimer);
       this.autoSaveTimer = null;
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.props.onConfig) {
+      this.props.onConfig({
+        requestUrl: this.requestUrl,
+      });
     }
   }
 
@@ -231,7 +241,6 @@ class Form extends React.PureComponent {
     this.setState({ loading: true });
 
     const {
-      apiCreateUrl,
       optionsRequestParams,
       onLoad,
       persistedObject,
@@ -243,8 +252,7 @@ class Form extends React.PureComponent {
 
     // If the fields have not been explicitly provided, issue an OPTIONS request for
     // metadata about the represented object so the fields can be generated dynamically.
-    const optionsUrl = apiCreateUrl || this.detailUrl;
-    requests.push(ServiceAgent.options(optionsUrl, {
+    requests.push(ServiceAgent.options(this.requestUrl, {
       ...optionsRequestParams,
       action: this.detailUrl ? 'update' : 'create'
     }));
@@ -291,13 +299,10 @@ class Form extends React.PureComponent {
 
     this.setState({ errors: {}, saving: true });
 
-    let requestUrl = null;
     let requestMethod = null;
     let requestData = null;
 
-    const detailUrl = this.detailUrl;
-    if (detailUrl) {
-      requestUrl = detailUrl;
+    if (this.detailUrl) {
       if (updateMethod === 'PATCH') {
         const persistedData = this.initialData(metadata, referenceObject);
         const changedData = {};
@@ -314,12 +319,11 @@ class Form extends React.PureComponent {
         requestMethod = 'PUT';
       }
     } else {
-      requestUrl = this.props.apiCreateUrl;
       requestData = formData;
       requestMethod = 'POST';
     }
 
-    if (!(requestMethod && requestUrl && requestData)) {
+    if (!(requestMethod && this.requestUrl && requestData)) {
       throw new Error('Missing one or more required parameters for form request');
     }
 
@@ -330,7 +334,7 @@ class Form extends React.PureComponent {
         this.props.onWillSave(requestData);
       }
 
-      const response = await ServiceAgent.request(requestMethod, requestUrl, requestData);
+      const response = await ServiceAgent.request(requestMethod, this.requestUrl, requestData);
       const persistedObject = response.body;
 
       this.setState({
@@ -447,12 +451,13 @@ Form.propTypes = {
   fieldArrangement: PropTypes.array,
   fieldInfoProvider: PropTypes.func,
   representedObjectId: PropTypes.number,
+  onConfig: PropTypes.func,
+  onError: PropTypes.func,
   onMount: PropTypes.func,
-  onUnmount: PropTypes.func,
   onLoad: PropTypes.func,
   onWillSave: PropTypes.func,
   onSave: PropTypes.func,
-  onError: PropTypes.func,
+  onUnmount: PropTypes.func,
   optionsRequestParams: PropTypes.object,
   persistedObject: PropTypes.object,
   loadingIndicator: PropTypes.node,
