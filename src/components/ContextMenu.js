@@ -25,6 +25,7 @@ const styles = makeStyles((theme) => ({
 
 function ContextMenu(props) {
   const {
+    dense,
     menuItemArrangement,
     menuItemProps,
     ...menuProps
@@ -60,7 +61,11 @@ function ContextMenu(props) {
         }
 
         return (
-          <MenuItem key={menuItemInfo.key} {...allMenuItemProps}>
+          <MenuItem
+            dense={dense}
+            key={menuItemInfo.key}
+            {...allMenuItemProps}
+          >
             {menuItemInfo.icon &&
               <ListItemIcon className={classes.listItemIcon}>
                 <menuItemInfo.icon className={classes.icon} />
@@ -75,13 +80,14 @@ function ContextMenu(props) {
 }
 
 ContextMenu.propTypes = {
+  dense: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   menuItemArrangement: PropTypes.array.isRequired,
   menuItemProps: PropTypes.object,
 };
 
 ContextMenu.defaultProps = {
+  dense: true,
   menuItemProps: { }
 };
-
 export default ContextMenu;
