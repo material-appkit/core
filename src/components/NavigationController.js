@@ -284,30 +284,35 @@ function NavigationController(props) {
       </AppBar>
 
       <Box style={tabPanelContainerStyle}>
-        {matches.map((match, i) => (
-          <TabPanel
-            key={match.path}
-            className={classes.tabPanel}
-            style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
-          >
-            <Route
-              key={match.path}
-              path={match.path}
-              render={(props) => {
-                return (
-                  <match.component
-                    onAppear={viewDidAppear}
-                    onMount={viewDidMount}
-                    onUnmount={viewWillUnmount}
-                    onUpdate={viewDidUpdate}
-                    mountPath={match.path}
-                    {...props}
-                  />
-                );
-              }}
-            />
-          </TabPanel>
-        ))}
+        {matches.map((routeInfo, i) => {
+          const componentProps = routeInfo.componentProps || {};
+
+          return (
+            <TabPanel
+              key={routeInfo.path}
+              className={classes.tabPanel}
+              style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
+            >
+              <Route
+                key={routeInfo.path}
+                path={routeInfo.path}
+                render={(props) => {
+                  return (
+                    <routeInfo.component
+                      {...props}
+                      {...componentProps}
+                      onAppear={viewDidAppear}
+                      onMount={viewDidMount}
+                      onUnmount={viewWillUnmount}
+                      onUpdate={viewDidUpdate}
+                      mountPath={routeInfo.path}
+                    />
+                  );
+                }}
+              />
+            </TabPanel>
+          );
+        })}
       </Box>
     </Tabs>
   );
