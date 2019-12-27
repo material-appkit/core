@@ -31,6 +31,7 @@ import ServiceAgent from '../util/ServiceAgent';
 import { makeChoices } from '../util/array';
 import { filterExcludeKeys } from '../util/object'
 
+import PlaceholderView from './PlaceholderView';
 import PagedListViewDialog from './PagedListViewDialog';
 import SimpleListItem from './SimpleListItem';
 import TileList from './TileList';
@@ -78,17 +79,6 @@ const styles = makeStyles((theme) => ({
       padding: theme.spacing(1),
     },
   },
-
-  noResults: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    border: `3px dashed ${theme.palette.grey[600]}`,
-    borderRadius: theme.shape.borderRadius,
-  }
 }));
 
 function PagedListView(props) {
@@ -524,17 +514,17 @@ function PagedListView(props) {
   }, [paginationInfo, selectedItemIds, selectionDisabled, sort, toolbarItems]);
 
   //----------------------------------------------------------------------------
-  if (items === null) {
+  if (!items) {
     return null;
   }
 
   if (!items.length) {
     return (
-      <Box p={2} width="100%" height="100%">
-        <div className={classes.noResults}>
-          <Typography variant="body2">No items to display</Typography>
-        </div>
-      </Box>
+      <PlaceholderView padding={2}>
+        <Typography variant="body2">
+          No items to display
+        </Typography>
+      </PlaceholderView>
     );
   }
 
