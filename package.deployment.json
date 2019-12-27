@@ -19,7 +19,7 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
     "mobx-react-router": "^4.0.7",
-    "query-string": "^6.4.2",
+    "query-string": "^6.8.3",
     "react-tabs": "^3.0.0",
     "superagent": "^5.1.0",
     "title-case": "^2.1.1"
