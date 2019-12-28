@@ -561,7 +561,10 @@ function PagedListView(props) {
           ))}
         </List>
       ) : (
-        <TileList {...props.tileListProps}>
+        <TileList
+          selectionDisabled={selectionDisabled}
+          {...props.tileListProps}
+        >
           {items.map((item) => (
             <props.tileItemComponent
               key={keyForItem(item)}
