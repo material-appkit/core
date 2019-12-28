@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 function TileList(props) {
   const gridStyles = Object.assign(props.styles || {}, {
-    gridGap: 0,
+    gridGap: props.gridGap,
     gridTemplateColumns: `repeat(${props.columns}, 1fr)`,
   });
 
@@ -26,10 +26,12 @@ function TileList(props) {
 TileList.propTypes = {
   children: PropTypes.array.isRequired,
   columns: PropTypes.number,
+  gridGap: PropTypes.number,
 };
 
 TileList.defaultProps = {
   columns: 3,
+  gridGap: 2,
 };
 
 export default TileList;
