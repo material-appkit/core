@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CheckCircleTwoToneIcon from '@material-ui/icons/CheckCircleTwoTone';
 
 const styles = makeStyles((theme) => ({
-  box: {
+  root: {
     position: 'relative',
   },
 
@@ -39,6 +39,7 @@ const styles = makeStyles((theme) => ({
 function TileListItem(props) {
   const {
     item,
+    component,
     contextProvider,
     onItemClick,
     onSelectionChange,
@@ -47,6 +48,7 @@ function TileListItem(props) {
     ...rest
   } = props;
 
+  const Component = component;
   const listTileProps = contextProvider ? contextProvider(item) : {};
 
   listTileProps.onClick = (e) => {
@@ -67,8 +69,8 @@ function TileListItem(props) {
   }
 
   return (
-    <Box
-      className={classes.box}
+    <Component
+      className={classes.root}
       {...listTileProps}
       {...rest}
     >
@@ -79,12 +81,12 @@ function TileListItem(props) {
       {selected &&
         <CheckCircleTwoToneIcon className={classes.selectedIcon} />
       }
-
-    </Box>
+    </Component>
   );
 }
 
 TileListItem.propTypes = {
+  component: PropTypes.any,
   contextProvider: PropTypes.func,
   children: PropTypes.any,
   item: PropTypes.object.isRequired,
@@ -92,6 +94,10 @@ TileListItem.propTypes = {
   onSelectionChange: PropTypes.func,
   selected: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
+};
+
+TileListItem.defaultProps = {
+  component: 'span',
 };
 
 export default TileListItem;
