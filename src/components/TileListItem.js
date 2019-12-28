@@ -15,7 +15,6 @@ import CheckCircleTwoToneIcon from '@material-ui/icons/CheckCircleTwoTone';
 
 const styles = makeStyles((theme) => ({
   box: {
-    cursor: 'pointer',
     position: 'relative',
   },
 
@@ -54,13 +53,13 @@ function TileListItem(props) {
     listTileProps = contextProvider(item);
   }
 
-  listTileProps.onClick = () => {
+  listTileProps.onClick = (e) => {
     if (selectionMode && onSelectionChange) {
       onSelectionChange(item);
     }
 
     if (onItemClick) {
-      onItemClick(item);
+      onItemClick(item, e);
     }
   };
 
