@@ -17,7 +17,6 @@ import React, {
 
 import List from '@material-ui/core/List';
 
-import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
