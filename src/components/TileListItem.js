@@ -47,11 +47,7 @@ function TileListItem(props) {
     ...rest
   } = props;
 
-  let listTileProps = {};
-
-  if (contextProvider) {
-    listTileProps = contextProvider(item);
-  }
+  const listTileProps = contextProvider ? contextProvider(item) : {};
 
   listTileProps.onClick = (e) => {
     if (selectionMode && onSelectionChange) {
