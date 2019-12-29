@@ -1,3 +1,5 @@
+import cx from 'classnames';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -11,7 +13,9 @@ const styles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
 
+  borderedContent: {
     border: `3px dashed ${theme.palette.grey[600]}`,
     borderRadius: theme.shape.borderRadius,
   }
@@ -21,6 +25,7 @@ const PlaceholderView = React.forwardRef((props, ref) => {
   const classes = styles();
 
   const {
+    border,
     children,
     component,
     padding,
@@ -28,11 +33,15 @@ const PlaceholderView = React.forwardRef((props, ref) => {
   } = props;
 
   const Component = component;
+  const classNames = [classes.content];
+  if (border) {
+    classNames.push(classes.borderedContent);
+  }
 
   return (
     <Box width="100%" height="100%" p={padding}>
       <Component
-        className={classes.content}
+        className={cx(classNames)}
         ref={ref}
         {...componentProps}
       >
@@ -43,12 +52,14 @@ const PlaceholderView = React.forwardRef((props, ref) => {
 });
 
 PlaceholderView.propTypes = {
+  border: PropTypes.bool,
   children: PropTypes.node,
   component: PropTypes.any,
   padding: PropTypes.number,
 };
 
 PlaceholderView.defaultProps = {
+  border: true,
   component: 'div',
   padding: 0,
 };
