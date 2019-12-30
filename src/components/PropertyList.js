@@ -46,7 +46,7 @@ const metadataListItemStyles = makeStyles(
   (theme) => theme.metadataList.listItem
 );
 
-function MetadataListItem(props) {
+function PropertyListItem(props) {
   const {
     fieldInfo,
     LinkComponent,
@@ -121,7 +121,7 @@ function MetadataListItem(props) {
   );
 }
 
-MetadataListItem.propTypes = {
+PropertyListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
   nullValue: PropTypes.string,
   LinkComponent: PropTypes.func,
@@ -131,7 +131,7 @@ MetadataListItem.propTypes = {
 // -----------------------------------------------------------------------------
 const metadataStyles = makeStyles((theme) => theme.metadataList);
 
-function MetadataList(props) {
+function PropertyList(props) {
   const classes = metadataStyles();
 
   const {
@@ -149,7 +149,7 @@ function MetadataList(props) {
         }
 
         return (
-          <MetadataListItem
+          <PropertyListItem
             key={key}
             fieldInfo={fieldInfo}
             LinkComponent={LinkComponent}
@@ -161,10 +161,10 @@ function MetadataList(props) {
   );
 }
 
-MetadataList.propTypes = {
+PropertyList.propTypes = {
   arrangement: PropTypes.array.isRequired,
   LinkComponent: PropTypes.func,
   representedObject: PropTypes.object.isRequired,
 };
 
-export default MetadataList;
+export default PropertyList;
