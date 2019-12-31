@@ -54,8 +54,8 @@ export default class NotificationCenter {
       });
     }
 
-    // Send notification to observers interested only those dispatched by the given sender
-    if (this._notificationSenders[notificationSender]) {
+    // Send notification to observers interested only those dispatched by a given sender
+    if (notificationSender && this._notificationSenders[notificationSender]) {
       invocations = this._notificationSenders[notificationSender][notificationName];
       if (invocations) {
         invocations.forEach((invocation) => {
