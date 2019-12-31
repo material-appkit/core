@@ -343,7 +343,7 @@ class Form extends React.PureComponent {
       });
 
       if (this.props.onSave) {
-        this.props.onSave(persistedObject);
+        this.props.onSave(persistedObject, response);
       }
 
       return persistedObject;
