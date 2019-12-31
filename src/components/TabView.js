@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
@@ -27,17 +27,27 @@ function TabView(props) {
   } = props;
 
 
-  let initialTabIndex = 0;
-  const currentLocationPath = props.location.pathname;
-  tabArrangement.forEach((tabConfig, tabIndex) => {
-    if (currentLocationPath === tabConfig.path) {
-      initialTabIndex = tabIndex;
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  const [activeTabConfig, setActiveTabConfig] = useState(null);
+
+  useEffect(() => {
+    if (tabArrangement) {
+      const currentLocationPath = props.location.pathname;
+      tabArrangement.forEach((tabConfig, tabIndex) => {
+        if (currentLocationPath === tabConfig.path) {
+          setSelectedTabIndex(tabIndex);
+        }
+      });
     }
-  });
+  }, [tabArrangement]);
 
-  const [selectedTabIndex, setSelectedTabIndex] = useState(initialTabIndex);
 
-  const activeTabConfig = tabArrangement[selectedTabIndex];
+  useEffect(() => {
+    if (tabArrangement && selectedTabIndex !== null) {
+      setActiveTabConfig(tabArrangement[selectedTabIndex]);
+    }
+  }, [tabArrangement, selectedTabIndex]);
+
 
   const handleTabChange = (e, index) => {
     if (onTabUnmount) {
@@ -68,45 +78,49 @@ function TabView(props) {
   };
 
 
-  const activeTabProps = activeTabConfig.componentProps || {};
-  activeTabProps.mountPath = activeTabConfig.path;
-
   const classes = styles();
 
   return (
     <SplitView
       bar={(
-        <Tabs
-          value={selectedTabIndex}
-          className={classes.tabs}
-          indicatorColor="primary"
-          onChange={handleTabChange}
-          scrollButtons="auto"
-          textColor="primary"
-          variant="scrollable"
-          {...rest}
-        >
-          {tabArrangement.map((tabConfig) => (
-            <Tab
-              key={tabConfig.path}
-              component={Link}
-              to={tabConfig.path}
-              label={tabConfig.label}
-            />
-          ))}
-        </Tabs>
+        <Fragment>
+          {tabArrangement &&
+            <Tabs
+              value={selectedTabIndex}
+              className={classes.tabs}
+              indicatorColor="primary"
+              onChange={handleTabChange}
+              scrollButtons="auto"
+              textColor="primary"
+              variant="scrollable"
+              {...rest}
+            >
+              {tabArrangement.map((tabConfig) => (
+                <Tab
+                  key={tabConfig.path}
+                  component={Link}
+                  to={tabConfig.path}
+                  label={tabConfig.label}
+                />
+              ))}
+            </Tabs>
+          }
+        </Fragment>
       )}
       barSize={48}
       placement="top"
       scrollContent
     >
-      <activeTabConfig.component
-        onConfig={handleTabConfig}
-        onMount={handleTabMount}
-        onUpdate={onUpdate}
-        {...activeTabProps}
-        {...rest}
-      />
+      {activeTabConfig &&
+        <activeTabConfig.component
+          onConfig={handleTabConfig}
+          onMount={handleTabMount}
+          onUpdate={onUpdate}
+          mountPath={activeTabConfig.path}
+          {...(activeTabConfig.componentProps || {})}
+          {...rest}
+        />
+      }
     </SplitView>
   );
 
@@ -118,7 +132,7 @@ TabView.propTypes = {
   onTabMount: PropTypes.func,
   onTabConfig: PropTypes.func,
   onTabUnmount: PropTypes.func,
-  tabArrangement: PropTypes.array.isRequired,
+  tabArrangement: PropTypes.array,
 };
 
 export default TabView;
