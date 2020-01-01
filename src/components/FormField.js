@@ -1,33 +1,56 @@
+/**
+ * Given a field's metadata description, construct a component widget
+ */
+
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { makeStyles } from '@material-ui/core/styles';
 
-import Form from './Form';
+//------------------------------------------------------------------------------
+export const fromRepresentation = (value, fieldInfo) => {
+  const { widget } = fieldInfo.ui || {};
 
-const fromRepresentation = (value, fieldInfo) => {
-  if (fieldInfo.type === 'checkbox') {
-    switch (value) {
-      case true:
-      case 'true':
-      case 'True':
-        return 'true';
-      case false:
-      case 'false':
-      case 'False':
-      case '':
-        return 'false';
-      default:
-        break;
-    }
+  switch (widget) {
+    case 'itemlist':
+      return value || [];
+    case 'select':
+      if (!value) {
+        return '';
+      } else if (typeof(value) === 'object') {
+        return value.url;
+      } else {
+        return value;
+      }
+    default:
+      if (fieldInfo.type === 'checkbox') {
+        switch (value) {
+          case true:
+          case 'true':
+          case 'True':
+            return (widget === 'switch')  ? true : 'true';
+          case false:
+          case 'false':
+          case 'False':
+          case '':
+            return (widget === 'switch')  ? false : 'true';
+          default:
+            throw new Error(`Invalid boolean value: ${value}`);
+        }
+      }
+
+      return value;
   }
-  return value;
 };
 
-export const toRepresentation = (value, fieldInfo) => {
+//------------------------------------------------------------------------------
+export const toRepresentation = (value, fieldInfo, form) => {
   const { widget } = fieldInfo.ui || {};
-  const WidgetClass = Form.widgetClassForType(widget);
+  const WidgetClass = form.constructor.widgetClassForType(widget);
   if (WidgetClass && WidgetClass.hasOwnProperty('toRepresentation')) {
     return WidgetClass.toRepresentation(value);
   }
@@ -43,72 +66,38 @@ export const toRepresentation = (value, fieldInfo) => {
   }
 };
 
-/**
- * Given a field's metadata description, construct a component widget
- * @param fieldInfo
- */
 
-function FormField(props) {
-  const {
-    classes,
-    errorText,
-    fieldArrangementInfo,
-    fieldInfo,
-    form,
-    onChange,
-  } = props;
-
-  const { formData } = form.state;
-
-  const fieldName = fieldInfo.key;
-  const fieldValue = fromRepresentation(formData[fieldName], fieldInfo);
-
-  const { autoFocus, help, label, widget } = fieldInfo.ui;
-
-  const commonFieldProps = {
-    value: fieldValue,
-    name: fieldName,
-  };
-
-  if (fieldInfo.hidden || widget === 'hidden') {
-    return <input type="hidden" {...commonFieldProps} />;
-  }
-
-  Object.assign(commonFieldProps, {
-    autoFocus,
-    error: errorText ? true : false,
-    helperText: errorText || help,
-    label,
-  });
-
-  //----------------------------------------------------------------------------
-  const handleFieldChange = (value) => {
-    form.setValue(fieldName, value);
-    onChange(value, fieldInfo);
-  };
-
-  let WidgetComponent = fieldArrangementInfo.widget;
-  if (!WidgetComponent) {
-    WidgetComponent = form.constructor.widgetClassForType(widget);
-  }
-  if (WidgetComponent) {
-    // If a widget component has been been specified, use it
-    return (
-      <WidgetComponent
-        fieldInfo={fieldInfo}
-        onChange={(value) => { handleFieldChange(value); }}
-        {...commonFieldProps}
-        {...fieldArrangementInfo}
+//------------------------------------------------------------------------------
+function renderSwitchField(props, fieldInfo, onChange) {
+  return (
+    <FormGroup row>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={props.value}
+            onChange={(e) => { onChange(e.target.checked); }}
+          />
+        }
+        label={props.label}
       />
-    );
-  }
+    </FormGroup>
+  );
+}
+
+//------------------------------------------------------------------------------
+const textFieldStyles = makeStyles((theme) => {
+  return theme.form;
+});
+
+function renderTextField(props, fieldInfo, onChange) {
+  const classes = textFieldStyles();
 
   const textFieldProps = {
-    ...commonFieldProps,
+    ...props,
     fullWidth: true,
     InputLabelProps: { classes: { root: classes.inputLabel } },
     margin: "normal",
-    onChange: (e) => { handleFieldChange(e.target.value); },
+    onChange: (e) => { onChange(e.target.value); },
     type: fieldInfo.type,
     variant: "outlined",
   };
@@ -118,7 +107,7 @@ function FormField(props) {
     textFieldProps.SelectProps = { native: true };
   }
 
-  if (widget === 'textarea') {
+  if (fieldInfo.ui.widget === 'textarea') {
     textFieldProps.multiline = true;
     textFieldProps.rows = 2;
     textFieldProps.rowsMax = 20;
@@ -154,8 +143,72 @@ function FormField(props) {
   );
 }
 
+//------------------------------------------------------------------------------
+function FormField(props) {
+  const {
+    errorText,
+    fieldArrangementInfo,
+    fieldInfo,
+    form,
+    onChange,
+  } = props;
+
+  const { formData } = form.state;
+
+  const fieldName = fieldInfo.key;
+
+
+  const commonFieldProps = {
+    name: fieldName,
+    value: formData[fieldName],
+  };
+
+  if (fieldInfo.hidden || widget === 'hidden') {
+    return <input type="hidden" {...commonFieldProps} />;
+  }
+
+  const { autoFocus, help, label, widget } = fieldInfo.ui;
+
+  Object.assign(commonFieldProps, {
+    autoFocus,
+    error: errorText ? true : false,
+    helperText: errorText || help,
+    label,
+  });
+
+  //----------------------------------------------------------------------------
+  const handleFieldChange = (value) => {
+    form.setValue(fieldName, value);
+    onChange(value, fieldInfo);
+  };
+
+  let WidgetComponent = fieldArrangementInfo.widget;
+  if (!WidgetComponent) {
+    WidgetComponent = form.constructor.widgetClassForType(widget);
+  }
+  if (WidgetComponent) {
+    // If a widget component has been been specified, use it
+    return (
+      <WidgetComponent
+        fieldInfo={fieldInfo}
+        onChange={(value) => { handleFieldChange(value); }}
+        {...commonFieldProps}
+        {...fieldArrangementInfo}
+      />
+    );
+  }
+
+  switch (widget) {
+    case 'switch':
+      return renderSwitchField(commonFieldProps, fieldInfo, handleFieldChange);
+    default:
+    // If no special widget has been designated for this form field,
+    // render it as a TextField
+    return renderTextField(commonFieldProps, fieldInfo, handleFieldChange);
+  }
+}
+
 FormField.propTypes = {
-  classes: PropTypes.object,
   errorText: PropTypes.any,
   fieldArrangementInfo: PropTypes.object.isRequired,
   fieldInfo: PropTypes.object.isRequired,
@@ -163,7 +216,5 @@ FormField.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-export default withStyles((theme) => {
-  return theme.form;
-})(FormField);
+export default FormField;
 

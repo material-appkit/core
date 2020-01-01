@@ -16,7 +16,7 @@ import CheckboxGroupWidget from './widgets/CheckboxGroup';
 import ItemListWidget from './widgets/ItemList';
 import ModelSelectWidget from './widgets/ModelSelect';
 
-import { toRepresentation } from './FormField';
+import { fromRepresentation, toRepresentation } from './FormField';
 
 class Form extends React.PureComponent {
   static widgetClassMap = {
@@ -167,25 +167,7 @@ class Form extends React.PureComponent {
     const fieldNames = this.getFieldNames(metadata);
     fieldNames.forEach((fieldName) => {
       const fieldInfo = fieldInfoMap[fieldName];
-      const { widget } = fieldInfo.ui || {};
-      let value = referenceObject[fieldName];
-      switch (widget) {
-        case 'itemlist':
-          value = value || [];
-          break;
-        case 'select':
-          if (!value) {
-            value = '';
-          } else if (typeof(value) === 'object') {
-            value = value.url;
-          }
-          break;
-        default:
-          value = value || '';
-          break;
-      }
-
-      data[fieldName] = value;
+      data[fieldName] = fromRepresentation(referenceObject[fieldName], fieldInfo);
     });
 
     return cloneDeep(data);
@@ -203,7 +185,7 @@ class Form extends React.PureComponent {
       const fieldInfo = fieldInfoMap[fieldName];
       const value = data[fieldName];
       if (fieldInfo) {
-        coercedData[fieldName] = toRepresentation(value, fieldInfo);
+        coercedData[fieldName] = toRepresentation(value, fieldInfo, this);
       } else {
         coercedData[fieldName] = value;
       }
