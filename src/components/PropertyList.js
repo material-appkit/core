@@ -18,11 +18,7 @@ import { valueForKeyPath } from '../util/object';
 // Helper function that renders a given value or list of values
 function renderValue(value, fieldInfo) {
   if (Array.isArray(value)) {
-    return value.map((item, i) => (
-      <Fragment key={i}>
-        {renderValue(item, fieldInfo)}
-      </Fragment>
-    ));
+    return value.map((item, i) => renderValue(item, fieldInfo));
   }
 
   let renderedValue = value;
@@ -30,7 +26,8 @@ function renderValue(value, fieldInfo) {
     renderedValue = fieldInfo.transform(value);
   }
 
-  if (typeof(renderedValue) === 'string') {
+  const valueType = typeof(renderedValue);
+  if (valueType === 'string' || valueType === 'number') {
     renderedValue = (
       <Typography variant="body2">
         {renderedValue}
@@ -100,8 +97,6 @@ function PropertyListItem(props) {
     PrimaryComponent = Link;
     primaryComponentProps.component = LinkComponent;
     primaryComponentProps.to = value.path;
-  } else if (Array.isArray(value)) {
-    primaryComponentProps.className = classes.nestedList;
   }
 
   return (
@@ -111,7 +106,22 @@ function PropertyListItem(props) {
       <ListItemText
         classes={{ root: classes.listItemTextRoot }}
         disableTypography
-        primary={(
+        primary={Array.isArray(value) ? (
+          <List
+            disablePadding
+            className={fieldInfo.inline ? classes.inlineNestedList : classes.nestedList}
+          >
+            {renderValue(value, fieldInfo).map((nestedValue, i) => (
+              <ListItem
+                className={classes.nestedListItem}
+                disableGutters
+                key={i}
+              >
+                {nestedValue}
+              </ListItem>
+            ))}
+          </List>
+        ) : (
           <PrimaryComponent {...primaryComponentProps}>
             {renderValue(value, fieldInfo)}
           </PrimaryComponent>
@@ -129,7 +139,9 @@ PropertyListItem.propTypes = {
 };
 
 // -----------------------------------------------------------------------------
-const metadataStyles = makeStyles((theme) => theme.metadataList);
+const metadataStyles = makeStyles(
+  (theme) => theme.metadataList
+);
 
 function PropertyList(props) {
   const classes = metadataStyles();
