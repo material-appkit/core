@@ -35,11 +35,9 @@ export const toRepresentation = (value, fieldInfo) => {
   switch (fieldInfo.type) {
     case 'date':
     case 'datetime':
+      return (value === '') ? null : value;
     case 'number':
-      if (value === '') {
-        return null;
-      }
-      break;
+      return (value === '') ? null : parseFloat(value);
     default:
       return value;
   }
@@ -85,7 +83,7 @@ function FormField(props) {
 
   //----------------------------------------------------------------------------
   const handleFieldChange = (value) => {
-    form.setValue(fieldName, toRepresentation(fieldInfo, value));
+    form.setValue(fieldName, value);
     onChange(value, fieldInfo);
   };
 
