@@ -18,6 +18,8 @@ import React, {
 import List from '@material-ui/core/List';
 
 import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -31,12 +33,10 @@ import { makeChoices } from '../util/array';
 import { filterExcludeKeys } from '../util/object'
 
 import PlaceholderView from './PlaceholderView';
-import PagedListViewDialog from './PagedListViewDialog';
-import SimpleListItem from './SimpleListItem';
 import TileList from './TileList';
 import ToolbarItem from './ToolbarItem';
 
-
+//------------------------------------------------------------------------------
 function SortControl(props) {
   let orderingLabel = '';
   props.choices.forEach((choice) => {
@@ -90,7 +90,7 @@ function PagedListView(props) {
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selectedItemIds, setSelectedItemIds] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(true);
-  const [sortDialogOpen, setSortDialogOpen] = useState(false);
+  const [sortControlEl, setSortControlEl] = useState(null);
   const [toolbarItems, setToolbarItems] = useState({});
 
   // Maintain a reference to the fetch request so it can be aborted
@@ -105,9 +105,10 @@ function PagedListView(props) {
   }
   const [ordering, setOrdering] = useState(defaultOrdering);
 
+
   /**
    * Sort the items using the given sorting function
-   * Export: yes
+   * Exported: yes
    */
   const sort = useCallback((sortFunc) => {
     const sortedItems = [...items];
@@ -300,13 +301,12 @@ function PagedListView(props) {
   };
 
 
-  const handleSortDialogDismiss = (selection) => {
-    setSortDialogOpen(false);
+  const handleSortDialogDismiss = (choice) => {
+    setSortControlEl(null);
 
-    if (selection && selection.length === 1) {
-      const selectedOrdering = selection[0].value;
-      setOrdering(selectedOrdering);
-      NavManager.updateUrlParam(props.orderParamName, selectedOrdering);
+    if (choice) {
+      setOrdering(choice.value);
+      NavManager.updateUrlParam(props.orderParamName, choice.value);
     }
   };
 
@@ -477,7 +477,7 @@ function PagedListView(props) {
         <SortControl
           choices={props.filterMetadata.ordering_fields}
           selectedOrdering={ordering}
-          onClick={() => { setSortDialogOpen(true); }}
+          onClick={(e) => { setSortControlEl(e.currentTarget); }}
         />
       );
     }
@@ -573,23 +573,33 @@ function PagedListView(props) {
         </TileList>
       )}
 
-      {sortDialogOpen &&
-        <PagedListViewDialog
-          commitOnSelect
-          displayMode="list"
-          dialogProps={{
-            fullWidth: true,
-            maxWidth: 'xs',
+      {toolbarItems.sortControl &&
+        <Menu
+          anchorEl={sortControlEl}
+          getContentAnchorEl={null}
+          id="sort-menu"
+          open={Boolean(sortControlEl)}
+          onClose={() => { handleSortDialogDismiss(null); }}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
           }}
-          itemIdKey="value"
-          listItemComponent={SimpleListItem}
-          listItemProps={{ labelField: 'label' }}
-          onDismiss={handleSortDialogDismiss}
-          selectOnClick
-          src={makeChoices(props.filterMetadata.ordering_fields)}
-          title="Change sort order"
-        />
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          {makeChoices(props.filterMetadata.ordering_fields).map((sortChoice) => (
+            <MenuItem
+              key={sortChoice.value}
+              onClick={() => { handleSortDialogDismiss(sortChoice); }}
+            >
+              {sortChoice.label}
+            </MenuItem>
+          ))}
+        </Menu>
       }
+
     </Fragment>
   );
 }
