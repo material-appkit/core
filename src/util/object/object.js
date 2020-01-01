@@ -1,4 +1,5 @@
 import { isValue } from '../value';
+import { valueForKeyPath as arrayValueForKeyPath } from '../array';
 /**
  * Given an object, return a new object with only the keys
  * contained in the given `keys` array
@@ -54,15 +55,22 @@ export function valueForKeyPath(object, keyPath) {
   const keys = keyPath.split('.');
   let value = object;
 
-  for (let i = 0, n = keys.length; i < n; ++i) {
-    const key = keys[i];
+  while (keys.length) {
+    const key = keys.shift();
 
     // If the encoutnered property doesn't exist, bail out.
     if (value === null || value.hasOwnProperty(key) === false) {
       return null;
     }
 
-    value = value[key];
+    if (Array.isArray(value[key])) {
+      // If at some point along the keypath an array is encountered,
+      // let the array implementation of 'valueForKeyPath' be used
+      // for the remainder of the keys
+      return arrayValueForKeyPath(value[key], keys.join('.'));
+    } else {
+      value = value[key];
+    }
   }
 
   return value;

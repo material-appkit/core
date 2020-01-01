@@ -30,4 +30,11 @@ Object.defineProperty(exports, "shuffle", {
   },
 });
 
+Object.defineProperty(exports, "valueForKeyPath", {
+  enumerable: true,
+  get: function get() {
+    return _array.valueForKeyPath;
+  },
+});
+
 const _array = _interopRequireDefault(require("./array"));
