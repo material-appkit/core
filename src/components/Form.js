@@ -16,6 +16,8 @@ import CheckboxGroupWidget from './widgets/CheckboxGroup';
 import ItemListWidget from './widgets/ItemList';
 import ModelSelectWidget from './widgets/ModelSelect';
 
+import { toRepresentation } from './FormField';
+
 class Form extends React.PureComponent {
   static widgetClassMap = {
     'checkboxgroup': CheckboxGroupWidget,
@@ -29,25 +31,6 @@ class Form extends React.PureComponent {
 
   static widgetClassForType(widgetType) {
     return widgetType ? this.widgetClassMap[widgetType] : null;
-  }
-
-  static coerceValue(value, fieldInfo) {
-    const { widget } = fieldInfo.ui || {};
-    const WidgetClass = this.widgetClassForType(widget);
-    if (WidgetClass && WidgetClass.hasOwnProperty('coerceValue')) {
-      return WidgetClass.coerceValue(value);
-    }
-
-    const fieldType =  fieldInfo.type;
-    if (
-      (fieldType === 'date' || fieldType === 'datetime' || fieldType === 'number') &&
-      value === ''
-    ) {
-      // For values representing numbers or dates, convert the empty string to null
-      return null;
-    }
-
-    return value;
   }
 
   constructor(props) {
@@ -220,7 +203,7 @@ class Form extends React.PureComponent {
       const fieldInfo = fieldInfoMap[fieldName];
       const value = data[fieldName];
       if (fieldInfo) {
-        coercedData[fieldName] = this.constructor.coerceValue(value, fieldInfo);
+        coercedData[fieldName] = toRepresentation(value, fieldInfo);
       } else {
         coercedData[fieldName] = value;
       }

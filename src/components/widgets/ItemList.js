@@ -18,7 +18,7 @@ import VirtualizedListItem from '../VirtualizedListItem';
 import ItemList from '../ItemList';
 
 class ItemListWidget extends React.PureComponent {
-  static coerceValue(value) {
+  static toRepresentation(value) {
     return value.map((item) => item.url);
   }
 

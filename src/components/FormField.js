@@ -4,7 +4,9 @@ import React, { Fragment } from 'react';
 import TextField from '@material-ui/core/TextField';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-const fromRepresentation = (fieldInfo, value) => {
+import Form from './Form';
+
+const fromRepresentation = (value, fieldInfo) => {
   if (fieldInfo.type === 'checkbox') {
     switch (value) {
       case true:
@@ -21,6 +23,26 @@ const fromRepresentation = (fieldInfo, value) => {
     }
   }
   return value;
+};
+
+export const toRepresentation = (value, fieldInfo) => {
+  const { widget } = fieldInfo.ui || {};
+  const WidgetClass = Form.widgetClassForType(widget);
+  if (WidgetClass && WidgetClass.hasOwnProperty('toRepresentation')) {
+    return WidgetClass.toRepresentation(value);
+  }
+
+  switch (fieldInfo.type) {
+    case 'date':
+    case 'datetime':
+    case 'number':
+      if (value === '') {
+        return null;
+      }
+      break;
+    default:
+      return value;
+  }
 };
 
 /**
@@ -41,7 +63,7 @@ function FormField(props) {
   const { formData } = form.state;
 
   const fieldName = fieldInfo.key;
-  const fieldValue = fromRepresentation(fieldInfo, formData[fieldName]);
+  const fieldValue = fromRepresentation(formData[fieldName], fieldInfo);
 
   const { autoFocus, help, label, widget } = fieldInfo.ui;
 
@@ -63,7 +85,7 @@ function FormField(props) {
 
   //----------------------------------------------------------------------------
   const handleFieldChange = (value) => {
-    form.setValue(fieldName, value);
+    form.setValue(fieldName, toRepresentation(fieldInfo, value));
     onChange(value, fieldInfo);
   };
 

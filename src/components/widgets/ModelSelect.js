@@ -15,7 +15,7 @@ import ListDialog from '../ListDialog';
 
 
 class ModelSelectWidget extends React.PureComponent {
-  static coerceValue(value) {
+  static toRepresentation(value) {
     return value.url;
   }
 
