@@ -106,7 +106,7 @@ class EditDialog extends React.Component {
         <DialogTitle id="form-dialog-title">{this.state.title}</DialogTitle>
         <DialogContent>
           <Form
-            innerRef={this.formRef}
+            ref={this.formRef}
             onLoad={this.handleFormLoad}
             onSave={this.handleFormSave}
             onError={this.handleFormError}
