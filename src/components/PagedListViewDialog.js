@@ -30,13 +30,23 @@ import PagedListView from './PagedListView';
 import TextField from './TextField';
 
 const styles = makeStyles((theme) => ({
+  filterFieldContainer: {
+    backgroundColor: theme.palette.grey[200],
+    borderBottom: `1px solid ${theme.palette.background.default}`,
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+  },
+
   fullHeight: {
     height: `calc(100% - ${theme.spacing(12)}px)`,
   },
 
   dialogTitle: {
-    alignItems: 'center',
     backgroundColor: theme.palette.grey[300],
+    padding: 0,
+  },
+
+  dialogTitleContent: {
+    alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
     padding: `${theme.spacing(0.5)}px ${theme.spacing(2)}px`,
@@ -48,6 +58,7 @@ const styles = makeStyles((theme) => ({
 
   tabsControlContainer: {
     backgroundColor: theme.palette.grey[200],
+    borderBottom: `1px solid ${theme.palette.grey[300]}`
   },
 }));
 
@@ -107,21 +118,26 @@ function PagedListViewDialog(props) {
       {...dialogProps}
     >
       <DialogTitle className={classes.dialogTitle} disableTypography>
-        <Typography component="h2" variant="h6">
-          {title}
-        </Typography>
+        <Box className={classes.dialogTitleContent}>
+          <Typography component="h2" variant="h6">
+            {title}
+          </Typography>
 
-        <IconButton onClick={() => { onDismiss(null); }} edge="end">
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
+          <IconButton onClick={() => { onDismiss(null); }} edge="end">
+            <CloseIcon />
+          </IconButton>
+        </Box>
 
-      <DialogContent className={classes.dialogContent}>
+        <LinearProgress
+          className={classes.progressBar}
+          variant={loading ? 'indeterminate' : 'determinate' }
+          value={0}
+        />
+
         {props.searchFilterParam &&
-          <Box px={2} py={1}>
+          <Box className={classes.filterFieldContainer}>
             <TextField
               autoFocus
-              className={classes.filterField}
               fullWidth
               margin="dense"
               onTimeout={(value) => { setFilterTerm(value); }}
@@ -132,18 +148,14 @@ function PagedListViewDialog(props) {
           </Box>
         }
 
-        <LinearProgress
-          className={classes.progressBar}
-          variant={loading ? 'indeterminate' : 'determinate' }
-          value={0}
-        />
-
         {(listViewInfo && listViewInfo.toolbarItems.tabsControl) &&
           <Box className={classes.tabsControlContainer}>
             {listViewInfo.toolbarItems.tabsControl}
           </Box>
         }
+      </DialogTitle>
 
+      <DialogContent className={classes.dialogContent}>
         <PagedListView
           defaultFilterParams={defaultFilterParams}
           onConfig={(config) => { setListViewInfo(config); }}
