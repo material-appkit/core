@@ -207,10 +207,17 @@ function PagedListView(props) {
 
 
   /**
-   * When the component is being unmounted,
-   * abort the current fetch request if it is in flight.
+   * Initialization
    */
   useEffect(() => {
+    if (props.onOptionsLoad && typeof(props.src) === 'string') {
+      const fetchOptions = async(requestUrl) => {
+        const res = await ServiceAgent.options(requestUrl);
+        props.onOptionsLoad(res.body);
+      };
+      fetchOptions(props.src);
+    }
+
     let initialOrdering = props.defaultOrdering;
     if (NavManager.qsParams[props.orderParamName]) {
       initialOrdering = NavManager.qsParams[props.orderParamName];
@@ -219,6 +226,18 @@ function PagedListView(props) {
     }
     setOrdering(initialOrdering);
 
+    return (() => {
+      // When the component is being unmounted,
+      // abort the current fetch request if it is in flight.
+      if (fetchRequestContext) {
+        const inFlightRequest = fetchRequestContext.request;
+        inFlightRequest.abort();
+      }
+    });
+  }, []);
+
+
+  useEffect(() => {
     // Let the querystring params determine the initially selected tab
     if (props.subsetFilterArrangement) {
       let initialSubsetArrangementIndex = -1;
@@ -232,14 +251,7 @@ function PagedListView(props) {
       initialSubsetArrangementIndex = Math.max(0, initialSubsetArrangementIndex);
       setSelectedSubsetArrangementIndex(initialSubsetArrangementIndex);
     }
-
-    return (() => {
-      if (fetchRequestContext) {
-        const inFlightRequest = fetchRequestContext.request;
-        inFlightRequest.abort();
-      }
-    });
-  }, []);
+  }, [props.subsetFilterArrangement]);
 
   /**
    * Update filter params when:
@@ -275,7 +287,7 @@ function PagedListView(props) {
     if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
       const subsetInfo = props.subsetFilterArrangement[selectedSubsetArrangementIndex];
       Object.assign(params, subsetInfo.params);
-      if (qsParams[props.subsetParamName] !== subsetInfo.label) {
+      if (props.location && qsParams[props.subsetParamName] !== subsetInfo.label) {
         NavManager.updateUrlParam(props.subsetParamName, subsetInfo.label);
       }
     }
@@ -687,9 +699,10 @@ PagedListView.propTypes = {
 
   location: PropTypes.object,
 
-  onLoad: PropTypes.func,
   onComplete: PropTypes.func,
   onConfig: PropTypes.func,
+  onOptionsLoad: PropTypes.func,
+  onLoad: PropTypes.func,
   onSelectionChange: PropTypes.func,
 
   orderParamName: PropTypes.string,
