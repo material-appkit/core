@@ -20,6 +20,8 @@ import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -78,16 +80,24 @@ const styles = makeStyles((theme) => ({
       padding: theme.spacing(1),
     },
   },
+
+  tabs: {
+    flex: 1,
+  }
 }));
 
 function PagedListView(props) {
   const classes = styles();
 
-  const qsPageParam = parseInt(NavManager.qsParams[props.pageParamName] || 1);
+  const qsParams = NavManager.qsParams;
+  const qsPageParam = parseInt(qsParams[props.pageParamName] || 1);
+
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
-  const [page, setPage] = useState(props.location ? qsPageParam : 1);
+  const [ordering, setOrdering] = useState(null);
+  const [page, setPage] = useState(qsPageParam);
   const [paginationInfo, setPaginationInfo] = useState(null);
+  const [selectedSubsetArrangementIndex, setSelectedSubsetArrangementIndex] = useState(null);
   const [selectedItemIds, setSelectedItemIds] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(true);
   const [sortControlEl, setSortControlEl] = useState(null);
@@ -96,14 +106,6 @@ function PagedListView(props) {
   // Maintain a reference to the fetch request so it can be aborted
   // if this component is unmounted while it is in flight.
   const [fetchRequestContext, setFetchRequestContext] = useState(null);
-
-  let defaultOrdering = props.defaultOrdering;
-  if (NavManager.qsParams[props.orderParamName]) {
-    defaultOrdering = NavManager.qsParams[props.orderParamName];
-  } else if (props.filterMetadata) {
-    defaultOrdering = props.filterMetadata.primary_ordering;
-  }
-  const [ordering, setOrdering] = useState(defaultOrdering);
 
 
   /**
@@ -209,6 +211,28 @@ function PagedListView(props) {
    * abort the current fetch request if it is in flight.
    */
   useEffect(() => {
+    let initialOrdering = props.defaultOrdering;
+    if (NavManager.qsParams[props.orderParamName]) {
+      initialOrdering = NavManager.qsParams[props.orderParamName];
+    } else if (props.filterMetadata) {
+      initialOrdering = props.filterMetadata.primary_ordering;
+    }
+    setOrdering(initialOrdering);
+
+    // Let the querystring params determine the initially selected tab
+    if (props.subsetFilterArrangement) {
+      let initialSubsetArrangementIndex = -1;
+
+      const initialSubsetLabel = NavManager.qsParams[props.subsetParamName];
+      if (initialSubsetLabel) {
+        initialSubsetArrangementIndex = props.subsetFilterArrangement.findIndex(
+          (arrangementInfo) => arrangementInfo.label === initialSubsetLabel
+        );
+      }
+      initialSubsetArrangementIndex = Math.max(0, initialSubsetArrangementIndex);
+      setSelectedSubsetArrangementIndex(initialSubsetArrangementIndex);
+    }
+
     return (() => {
       if (fetchRequestContext) {
         const inFlightRequest = fetchRequestContext.request;
@@ -218,29 +242,41 @@ function PagedListView(props) {
   }, []);
 
   /**
-   * Update filter params when the page changes or ordering
-   * is modified.
+   * Update filter params when:
+   * - The page changes
+   * - Ordering is modified
+   * - Selected subset arrangement is changed.
    */
   useEffect(() => {
     const params = { ...props.defaultFilterParams };
 
+    let defaultFilterParamsChanged = false;
     let pageIndex = page;
     if (filterParams) {
       const keysToExclude = [props.pageParamName, 'page_size', props.orderParamName];
       const currentDefaultFilterParams = filterExcludeKeys(filterParams, keysToExclude);
 
-      if (!isEqual(params, currentDefaultFilterParams)) {
-        pageIndex = 1;
-        setPage(pageIndex);
-      }
+      defaultFilterParamsChanged = !isEqual(params, currentDefaultFilterParams);
     }
 
     if (props.pageSize) {
-      params.page_size = props.pageSize;
+      if (defaultFilterParamsChanged) {
+        pageIndex = 1;
+        setPage(pageIndex);
+      }
 
+      params.page_size = props.pageSize;
       params[props.pageParamName] = pageIndex;
       if (props.location && pageIndex !== qsPageParam) {
         NavManager.updateUrlParam(props.pageParamName, pageIndex);
+      }
+    }
+
+    if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
+      const subsetInfo = props.subsetFilterArrangement[selectedSubsetArrangementIndex];
+      Object.assign(params, subsetInfo.params);
+      if (qsParams[props.subsetParamName] !== subsetInfo.label) {
+        NavManager.updateUrlParam(props.subsetParamName, subsetInfo.label);
       }
     }
 
@@ -251,8 +287,13 @@ function PagedListView(props) {
     if (!isEqual(params, filterParams)) {
       setFilterParams(params);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.defaultFilterParams, ordering, props.pageSize]);
+
+  }, [
+    props.defaultFilterParams,
+    ordering,
+    props.pageSize,
+    selectedSubsetArrangementIndex
+  ]);
 
 
 
@@ -472,7 +513,7 @@ function PagedListView(props) {
       );
     }
 
-    if (props.filterMetadata && props.filterMetadata.ordering_fields) {
+    if (props.filterMetadata && props.filterMetadata.ordering_fields && props.filterMetadata.ordering_fields.length) {
       newToolbarItems.sortControl = (
         <SortControl
           choices={props.filterMetadata.ordering_fields}
@@ -482,10 +523,34 @@ function PagedListView(props) {
       );
     }
 
+    if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
+      newToolbarItems.tabsControl = (
+        <Tabs
+          className={classes.tabs}
+          onChange={(e, tabIndex) => { setSelectedSubsetArrangementIndex(tabIndex); }}
+          scrollButtons="auto"
+          value={selectedSubsetArrangementIndex}
+          variant="scrollable"
+        >
+          {props.subsetFilterArrangement.map((subsetInfo) => (
+            <Tab key={subsetInfo.label} label={subsetInfo.label} />
+          ))}
+        </Tabs>
+      );
+    }
+
     setToolbarItems(newToolbarItems);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sort, filterParams, ordering, selectedItemIds, selectionDisabled, paginationInfo]);
+  }, [
+    sort,
+    filterParams,
+    ordering,
+    selectedItemIds,
+    selectionDisabled,
+    selectedSubsetArrangementIndex,
+    paginationInfo
+  ]);
 
   /**
    * Invoke the onConfig callback when any exported state properties are affected
@@ -629,12 +694,17 @@ PagedListView.propTypes = {
 
   orderParamName: PropTypes.string,
   pageParamName: PropTypes.string,
-
   pageSize: PropTypes.number,
+
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionAlways: PropTypes.bool,
   selectOnClick: PropTypes.bool,
+
   src: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+
+  subsetParamName: PropTypes.string,
+  subsetFilterArrangement: PropTypes.array,
+
   tileItemComponent: PropTypes.func,
   tileListProps: PropTypes.object,
 };
@@ -646,6 +716,7 @@ PagedListView.defaultProps = {
   pageParamName: 'page',
   selectionAlways: false,
   selectOnClick: false,
+  subsetParamName: 'subset',
   tileListProps: {},
 };
 
