@@ -6,6 +6,8 @@
 
 import PropTypes from 'prop-types';
 import React, {
+  Fragment,
+  useEffect,
   useState,
 } from 'react';
 
@@ -34,7 +36,7 @@ const styles = makeStyles((theme) => ({
 
   dialogTitle: {
     alignItems: 'center',
-    backgroundColor: theme.palette.grey[200],
+    backgroundColor: theme.palette.grey[300],
     display: 'flex',
     justifyContent: 'space-between',
     padding: `${theme.spacing(0.5)}px ${theme.spacing(2)}px`,
@@ -42,6 +44,10 @@ const styles = makeStyles((theme) => ({
 
   dialogContent: {
     padding: 0,
+  },
+
+  tabsControlContainer: {
+    backgroundColor: theme.palette.grey[200],
   },
 }));
 
@@ -55,7 +61,7 @@ function PagedListViewDialog(props) {
   } = props;
 
   const [selectedItems, setSelectedItems] = useState([]);
-  const [listViewInfo, setListViewInfo] = useState({});
+  const [listViewInfo, setListViewInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [filterTerm, setFilterTerm] = useState('');
 
@@ -76,39 +82,10 @@ function PagedListViewDialog(props) {
     }
   };
 
-  const handleSearchFilterChange = (value) => {
-    setFilterTerm(value);
-  };
-
 
   let title = props.title;
   if (typeof(title) === 'function') {
     title = title();
-  }
-
-  const toolbarItems = [];
-  if (listViewInfo.toolbarItems && pagedListViewProps.pageSize) {
-    let pagingToolbarItem = null;
-    if (pagedListViewProps.selectionAlways) {
-      pagingToolbarItem = listViewInfo.toolbarItems[0];
-    } else {
-      pagingToolbarItem = listViewInfo.toolbarItems[1];
-    }
-    toolbarItems.push(pagingToolbarItem);
-  }
-
-  if (!commitOnSelect) {
-    toolbarItems.push(<Spacer key="spacer" />);
-    toolbarItems.push(
-      <Button
-        color="primary"
-        disabled={!selectedItems.length}
-        key="commitButton"
-        onClick={() => { onDismiss(selectedItems); }}
-      >
-        Choose
-      </Button>
-    )
   }
 
   const classes = styles();
@@ -147,7 +124,7 @@ function PagedListViewDialog(props) {
               className={classes.filterField}
               fullWidth
               margin="dense"
-              onTimeout={handleSearchFilterChange}
+              onTimeout={(value) => { setFilterTerm(value); }}
               timeoutDelay={500}
               placeholder="Filter by search term..."
               variant="outlined"
@@ -161,17 +138,41 @@ function PagedListViewDialog(props) {
           value={0}
         />
 
+        {(listViewInfo && listViewInfo.toolbarItems.tabsControl) &&
+          <Box className={classes.tabsControlContainer}>
+            {listViewInfo.toolbarItems.tabsControl}
+          </Box>
+        }
+
         <PagedListView
           defaultFilterParams={defaultFilterParams}
           onConfig={(config) => { setListViewInfo(config); }}
           onSelectionChange={handleSelectionChange}
           selectionAlways
+          selectOnClick
           {...pagedListViewProps}
         />
       </DialogContent>
 
       <DialogActions>
-        {toolbarItems}
+        {listViewInfo && (
+          <Fragment>
+            {listViewInfo.toolbarItems.paginationControl}
+          </Fragment>
+        )}
+
+        <Spacer />
+
+        {!commitOnSelect &&
+          <Button
+            color="primary"
+            disabled={!selectedItems.length}
+            key="commitButton"
+            onClick={() => { onDismiss(selectedItems); }}
+          >
+            Choose
+          </Button>
+        }
       </DialogActions>
     </Dialog>
   );
@@ -189,8 +190,8 @@ PagedListViewDialog.propTypes = {
 
 PagedListViewDialog.defaultProps = {
   commitOnSelect: false,
-  fullHeight: true,
   dialogProps: {},
+  fullHeight: true,
   selectionMode: 'single',
 };
 
