@@ -94,17 +94,7 @@ function PagedListViewDialog(props) {
   };
 
 
-  let title = props.title;
-  if (typeof(title) === 'function') {
-    title = title();
-  }
-
   const classes = styles();
-
-  const defaultFilterParams = {};
-  if (filterTerm) {
-    defaultFilterParams[props.searchFilterParam] = filterTerm;
-  }
 
   const dialogClasses = {};
   if (fullHeight) {
@@ -120,7 +110,7 @@ function PagedListViewDialog(props) {
       <DialogTitle className={classes.dialogTitle} disableTypography>
         <Box className={classes.dialogTitleContent}>
           <Typography component="h2" variant="h6">
-            {title}
+            {typeof(title) === 'function' ? props.title() : props.title}
           </Typography>
 
           <IconButton onClick={() => { onDismiss(null); }} edge="end">
@@ -157,7 +147,10 @@ function PagedListViewDialog(props) {
 
       <DialogContent className={classes.dialogContent}>
         <PagedListView
-          defaultFilterParams={defaultFilterParams}
+          defaultFilterParams={
+            filterTerm ? { [props.searchFilterParam]: filterTerm } : null
+          }
+          listItemProps={{ isLink: false }}
           onConfig={(config) => { setListViewInfo(config); }}
           onSelectionChange={handleSelectionChange}
           selectionAlways
@@ -168,9 +161,7 @@ function PagedListViewDialog(props) {
 
       <DialogActions>
         {listViewInfo && (
-          <Fragment>
-            {listViewInfo.toolbarItems.paginationControl}
-          </Fragment>
+          listViewInfo.toolbarItems.paginationControl
         )}
 
         <Spacer />
@@ -193,18 +184,24 @@ function PagedListViewDialog(props) {
 PagedListViewDialog.propTypes = {
   commitOnSelect: PropTypes.bool,
   dialogProps: PropTypes.object,
+  displayMode: PropTypes.string,
   fullHeight: PropTypes.bool,
   onDismiss: PropTypes.func,
   searchFilterParam: PropTypes.string,
+  selectOnClick: PropTypes.bool,
+  selectionAlways: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
 
 PagedListViewDialog.defaultProps = {
   commitOnSelect: false,
-  dialogProps: {},
+  dialogProps: { fullWidth: true },
+  displayMode: 'list',
   fullHeight: true,
-  selectionMode: 'single',
+  selectionAlways: true,
+  selectionMode: 'multiple',
+  selectOnClick: true,
 };
 
 export default PagedListViewDialog;
