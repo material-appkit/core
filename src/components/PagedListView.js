@@ -277,8 +277,8 @@ function PagedListView(props) {
         setPage(pageIndex);
       }
 
-      params.page_size = props.pageSize;
-      params[props.pageParamName] = pageIndex;
+      // params.page_size = props.pageSize;
+      // params[props.pageParamName] = pageIndex;
       if (props.location && pageIndex !== qsPageParam) {
         NavManager.updateUrlParam(props.pageParamName, pageIndex);
       }
@@ -292,10 +292,6 @@ function PagedListView(props) {
       }
     }
 
-    if (ordering) {
-      params[props.orderParamName] = ordering;
-    }
-
     if (!isEqual(params, filterParams)) {
       setFilterParams(params);
     }
@@ -303,6 +299,7 @@ function PagedListView(props) {
   }, [
     props.defaultFilterParams,
     ordering,
+    page,
     props.pageSize,
     selectedSubsetArrangementIndex
   ]);
@@ -369,22 +366,13 @@ function PagedListView(props) {
       removeItem(change.old);
     } else if (change.old === null && change.new) {
       addItem(change.new);
-    }else {
+    } else {
       updateItem(change.old, change.new);
     }
   };
 
 
-  const handlePageChange = (e, value) => {
-    setPage(value + 1);
-
-    const updatedFilterParams = {...filterParams};
-    updatedFilterParams[props.pageParamName] = value + 1;
-    setFilterParams(updatedFilterParams);
-  };
-
-
-  const fetchItems = async() => {
+  const fetchItems = async(requestUrl, requestParams) => {
     return new Promise((resolve, reject) => {
       if (fetchRequestContext) {
         const inFlightRequest = fetchRequestContext.request;
@@ -394,7 +382,7 @@ function PagedListView(props) {
       const requestContext = {};
       setFetchRequestContext(requestContext);
 
-      ServiceAgent.get(props.src, filterParams, requestContext)
+      ServiceAgent.get(requestUrl, requestParams, requestContext)
         .then((response) => {
             setFetchRequestContext(null);
             if (response === null) {
@@ -428,14 +416,29 @@ function PagedListView(props) {
    * Instruct the list to reload using the currently set filterParams
    */
   const reload = async() => {
+    if (!(props.src && filterParams)) {
+      return;
+    }
+
+    const requestParams = {...filterParams};
+
+    if (props.pageSize) {
+      requestParams.page_size = props.pageSize;
+      requestParams[props.pageParamName] = page;
+    }
+
+    if (ordering) {
+      requestParams[props.orderParamName] = ordering;
+    }
+
     if (props.onLoad) {
-      props.onLoad(filterParams);
+      props.onLoad(requestParams);
     }
 
     let updatedItems = null;
 
     if (typeof(props.src) === 'string') {
-      updatedItems = await fetchItems();
+      updatedItems = await fetchItems(props.src, requestParams);
     } else {
       updatedItems = refreshItems();
     }
@@ -468,13 +471,13 @@ function PagedListView(props) {
    * Reload the list whenever the filterParams are altered
    */
   useEffect(() => {
-    if (!(props.src && filterParams)) {
-      return;
-    }
-
     reload();
-
-  }, [props.src, filterParams]);
+  }, [
+    props.src,
+    filterParams,
+    ordering,
+    page
+  ]);
 
 
   /**
@@ -518,7 +521,7 @@ function PagedListView(props) {
           page={page - 1}
           rowsPerPage={paginationInfo.per_page}
           rowsPerPageOptions={[paginationInfo.per_page]}
-          onChangePage={handlePageChange}
+          onChangePage={(e, value) => { setPage(value + 1); }}
         />
       );
     }

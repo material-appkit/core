@@ -31,8 +31,8 @@ import TextField from './TextField';
 
 const styles = makeStyles((theme) => ({
   filterFieldContainer: {
-    backgroundColor: theme.palette.grey[200],
-    borderBottom: `1px solid ${theme.palette.background.default}`,
+    backgroundColor: theme.palette.background.paper,
+    borderBottom: `2px solid ${theme.palette.grey[200]}`,
     padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
   },
 
@@ -76,6 +76,7 @@ function PagedListViewDialog(props) {
   const [loading, setLoading] = useState(false);
   const [filterTerm, setFilterTerm] = useState('');
 
+  //----------------------------------------------------------------------------
   const handleSelectionChange = (selection) => {
     if (!selection) {
       setSelectedItems([]);
@@ -93,18 +94,21 @@ function PagedListViewDialog(props) {
     }
   };
 
+  //----------------------------------------------------------------------------
+  const handleKeyUp = (e) => {
+    if (e.key === 'Enter' && selectedItems.length) {
+      onDismiss(selectedItems);
+    }
+  };
 
+  //----------------------------------------------------------------------------
   const classes = styles();
-
-  const dialogClasses = {};
-  if (fullHeight) {
-    dialogClasses.paper = classes.fullHeight;
-  }
 
   return (
     <Dialog open
-      classes={dialogClasses}
+      classes={fullHeight ? { paper: classes.fullHeight } : null}
       onClose={() => { onDismiss(null); }}
+      onKeyUp={handleKeyUp}
       {...dialogProps}
     >
       <DialogTitle className={classes.dialogTitle} disableTypography>
@@ -187,6 +191,7 @@ PagedListViewDialog.propTypes = {
   displayMode: PropTypes.string,
   fullHeight: PropTypes.bool,
   onDismiss: PropTypes.func,
+  pageSize: PropTypes.number,
   searchFilterParam: PropTypes.string,
   selectOnClick: PropTypes.bool,
   selectionAlways: PropTypes.bool,
@@ -199,6 +204,7 @@ PagedListViewDialog.defaultProps = {
   dialogProps: { fullWidth: true },
   displayMode: 'list',
   fullHeight: true,
+  pageSize: 50,
   selectionAlways: true,
   selectionMode: 'multiple',
   selectOnClick: true,
