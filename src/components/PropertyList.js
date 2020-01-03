@@ -39,8 +39,8 @@ function renderValue(value, fieldInfo) {
 }
 
 // -----------------------------------------------------------------------------
-const metadataListItemStyles = makeStyles(
-  (theme) => theme.metadataList.listItem
+const propertyListItemStyles = makeStyles(
+  (theme) => theme.propertyList.listItem
 );
 
 function PropertyListItem(props) {
@@ -49,7 +49,7 @@ function PropertyListItem(props) {
     LinkComponent,
     representedObject
   } = props;
-  const classes = metadataListItemStyles();
+  const classes = propertyListItemStyles();
 
   //----------------------------------------------------------------------------
   let value = null;
@@ -140,7 +140,7 @@ PropertyListItem.propTypes = {
 
 // -----------------------------------------------------------------------------
 const metadataStyles = makeStyles(
-  (theme) => theme.metadataList
+  (theme) => theme.propertyList
 );
 
 function PropertyList(props) {
