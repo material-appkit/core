@@ -45,7 +45,8 @@ class ModelSelectWidget extends React.PureComponent {
 
   handleListDialogDismiss = (selection) => {
     const newState = { listDialogOpen: false };
-    if (selection.length) {
+
+    if (selection && selection.length) {
       const selectedModel = selection[0];
       newState.selectedModel = selectedModel;
 
@@ -53,6 +54,7 @@ class ModelSelectWidget extends React.PureComponent {
         this.props.onChange(selectedModel);
       }
     }
+
     this.setState(newState);
   };
 
@@ -85,6 +87,7 @@ class ModelSelectWidget extends React.PureComponent {
             onDismiss={this.handleListDialogDismiss}
             selectionMode="single"
             src={apiListUrl}
+            title={`Select ${fieldInfo.ui.label}`}
           />
         }
       </FormControl>
