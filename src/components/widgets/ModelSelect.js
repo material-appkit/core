@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import withStyles from '@material-ui/core/styles/withStyles';
 
-import ListDialog from '../ListDialog';
+import PagedListViewDialog from '../PagedListViewDialog';
 
 
 class ModelSelectWidget extends React.PureComponent {
@@ -80,10 +80,10 @@ class ModelSelectWidget extends React.PureComponent {
         </fieldset>
 
         {this.state.listDialogOpen &&
-          <ListDialog
-            src={apiListUrl}
+          <PagedListViewDialog {...listDialogProps}
             onDismiss={this.handleListDialogDismiss}
-            {...listDialogProps}
+            selectionMode="single"
+            src={apiListUrl}
           />
         }
       </FormControl>
