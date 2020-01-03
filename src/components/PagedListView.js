@@ -393,29 +393,27 @@ function PagedListView(props) {
 
       const requestContext = {};
       setFetchRequestContext(requestContext);
-      const request = ServiceAgent.get(props.src, filterParams, requestContext);
 
-      request.then((response) => {
-        setFetchRequestContext(null);
-        if (response === null) {
-          return;
-        }
+      ServiceAgent.get(props.src, filterParams, requestContext)
+        .then((response) => {
+            setFetchRequestContext(null);
+            if (response === null) {
+              return;
+            }
 
-        const responseInfo = response.body;
+            const responseInfo = response.body;
+            const loadedItems = responseInfo.data ? responseInfo.data : responseInfo;
 
-        const loadedItems = responseInfo.data ? responseInfo.data : responseInfo;
+            if (responseInfo.meta && responseInfo.meta.pagination) {
+              setPaginationInfo(responseInfo.meta.pagination);
+            }
 
-        if (responseInfo.meta && responseInfo.meta.pagination) {
-          setPaginationInfo(responseInfo.meta.pagination);
-        }
-
-        resolve(loadedItems);
-      }).catch((err) => {
-        setFetchRequestContext(null);
-        if (err.code !== 'ABORTED') {
-          reject(err);
-        }
-      });
+            resolve(loadedItems);
+          })
+          .catch((err) => {
+            setFetchRequestContext(null);
+            reject(err);
+          });
     });
   };
 
