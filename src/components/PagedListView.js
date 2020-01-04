@@ -33,6 +33,7 @@ import NavManager from '../managers/NavManager';
 import ServiceAgent from '../util/ServiceAgent';
 import { makeChoices } from '../util/array';
 import { filterExcludeKeys } from '../util/object'
+import { find as setFind } from '../util/set';
 
 import PlaceholderView from './PlaceholderView';
 import TileList from './TileList';
@@ -98,7 +99,7 @@ function PagedListView(props) {
   const [page, setPage] = useState(qsPageParam);
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selectedSubsetArrangementIndex, setSelectedSubsetArrangementIndex] = useState(null);
-  const [selectedItemIds, setSelectedItemIds] = useState(new Set());
+  const [selection, setSelection] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(true);
   const [sortControlEl, setSortControlEl] = useState(null);
   const [toolbarItems, setToolbarItems] = useState({});
@@ -306,19 +307,18 @@ function PagedListView(props) {
 
 
 
-  const updateSelection = (newSelectedItemIds) => {
-    setSelectedItemIds(newSelectedItemIds);
+  const updateSelection = (newSelection) => {
+    setSelection(newSelection);
 
     if (props.onSelectionChange) {
-      const selectedItems = items.filter((item) => {
-        const itemId = keyForItem(item);
-        return newSelectedItemIds.has(itemId);
-      });
-
       if (props.selectionMode === 'single') {
-        props.onSelectionChange(selectedItems.pop());
+        if (newSelection.size) {
+          props.onSelectionChange(Array.from(newSelection).pop());
+        } else {
+          props.onSelectionChange(null);
+        }
       } else {
-        props.onSelectionChange(selectedItems);
+        props.onSelectionChange(newSelection);
       }
     }
   };
@@ -329,21 +329,20 @@ function PagedListView(props) {
    */
   const handleSelectionControlClick = (item) => {
     const itemId = keyForItem(item);
+    const selectedItem = setFind(selection, (i) => keyForItem(i) === itemId);
 
-    let newSelection = null;
+    let newSelection = new Set(selection);
     if (props.selectionMode === 'single') {
-
-      if (selectedItemIds.has(itemId)) {
-        newSelection = new Set();
+      if (selectedItem) {
+        newSelection.delete(selectedItem);
       } else {
-        newSelection = new Set([itemId]);
+        newSelection.add(item);
       }
     } else {
-      newSelection = new Set(selectedItemIds);
-      if (selectedItemIds.has(itemId)) {
-        newSelection.delete(itemId);
+      if (selectedItem) {
+        newSelection.delete(selectedItem);
       } else {
-        newSelection.add(itemId);
+        newSelection.add(item);
       }
     }
 
@@ -363,6 +362,7 @@ function PagedListView(props) {
 
   const handleItemUpdate = (change) => {
     if (change.old && change.new === null) {
+      console.log('TODO: Remove items from selection if they were removed from the list');
       removeItem(change.old);
     } else if (change.old === null && change.new) {
       addItem(change.new);
@@ -449,17 +449,6 @@ function PagedListView(props) {
       updatedItems = updatedItems.map(props.itemTransformer);
     }
     setItems(updatedItems);
-
-    // Refresh the selection to ensure that it only includes items
-    // that are currently loaded
-    const updatedSelectedItemIds = new Set();
-    updatedItems.forEach((item) => {
-      const itemId = keyForItem(item);
-      if (selectedItemIds.has(itemId)) {
-        updatedSelectedItemIds.add(itemId);
-      }
-    });
-    setSelectedItemIds(updatedSelectedItemIds);
 
     if (props.onComplete) {
       props.onComplete(updatedItems);
@@ -559,7 +548,7 @@ function PagedListView(props) {
     sort,
     filterParams,
     ordering,
-    selectedItemIds,
+    selection,
     selectionDisabled,
     selectedSubsetArrangementIndex,
     paginationInfo
@@ -581,14 +570,14 @@ function PagedListView(props) {
       props.onConfig({
         loading: !!fetchRequestContext,
         onItemUpdate: handleItemUpdate,
-        selectedItemIds,
+        selection,
         selectionDisabled,
         sort,
         toolbarItems,
         totalCount,
       });
     }
-  }, [paginationInfo, selectedItemIds, selectionDisabled, sort, toolbarItems]);
+  }, [paginationInfo, selection, selectionDisabled, sort, toolbarItems]);
 
   //----------------------------------------------------------------------------
   if (!items) {
@@ -615,10 +604,13 @@ function PagedListView(props) {
     } = props;
     let context = itemContextProvider ? itemContextProvider(item) : {};
 
+    const itemKey = keyForItem(item);
+    let selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
+
     return {
       item: item,
       onSelectionChange: handleSelectionControlClick,
-      selected: !!selectedItemIds.has(keyForItem(item)),
+      selected,
       selectionMode: selectionAlways ? selectionMode : selectionDisabled ? null : selectionMode,
       ...context,
       ...listItemProps,
