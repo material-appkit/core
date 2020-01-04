@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import React, {
   Fragment,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -77,11 +78,12 @@ function PagedListViewDialog(props) {
   } = props;
 
   const [listViewInfo, setListViewInfo] = useState(null);
-
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
   const [filterTerm, setFilterTerm] = useState('');
   const [dialogTitle, setDialogTitle] = useState(null);
+
+  const dialogRef = useRef(null);
 
   useEffect(() => {
     if (listViewInfo) {
@@ -102,7 +104,7 @@ function PagedListViewDialog(props) {
   };
 
   //----------------------------------------------------------------------------
-  const handleSelectionChange = (selection) => {
+  const handleSelectionChange = () => {
     if (commitOnSelect) {
       commit();
     }
@@ -121,9 +123,8 @@ function PagedListViewDialog(props) {
   };
 
   const handleEditDialogSave = (record) => {
-    // TODO: Add saved item to selection
-    console.log('add item to list and selection', record);
-    // onDismiss([record]);
+    // Add the newly saved item to the list's selection
+    listViewInfo.extendSelection(record);
   };
 
   //----------------------------------------------------------------------------
@@ -135,6 +136,7 @@ function PagedListViewDialog(props) {
         classes={fullHeight ? { paper: classes.fullHeight } : null}
         onClose={() => { onDismiss(null); }}
         onKeyUp={handleKeyUp}
+        ref={dialogRef}
         {...dialogProps}
       >
         <DialogTitle className={classes.dialogTitle} disableTypography>
