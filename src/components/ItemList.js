@@ -421,7 +421,7 @@ ItemList.defaultProps = {
   itemComponentProps: {},
   itemListItemProps: { disableGutters: true },
   listDialogProps: {},
-  listItemProps: {},
+  listItemProps: { isLink: false },
   mode: 'view',
   warnOnDelete: true,
 };
