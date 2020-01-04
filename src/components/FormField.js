@@ -34,10 +34,11 @@ export const fromRepresentation = (value, fieldInfo) => {
           case 'True':
             return (widget === 'switch')  ? true : 'true';
           case false:
+          case undefined:
           case 'false':
           case 'False':
           case '':
-            return (widget === 'switch')  ? false : 'true';
+            return (widget === 'switch')  ? false : 'false';
           default:
             throw new Error(`Invalid boolean value: ${value}`);
         }
