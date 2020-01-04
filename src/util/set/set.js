@@ -44,3 +44,13 @@ export function difference(setA, setB) {
   }
   return _difference;
 }
+
+
+export function find(set, resolverFunc) {
+  for (const item of set) {
+    if (resolverFunc(item)) {
+      return item;
+    }
+  }
+  return null;
+}

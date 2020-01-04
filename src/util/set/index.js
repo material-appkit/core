@@ -37,4 +37,11 @@ Object.defineProperty(exports, "difference", {
   },
 });
 
+Object.defineProperty(exports, "find", {
+  enumerable: true,
+  get: function get() {
+    return _set.find;
+  },
+});
+
 const _set = _interopRequireDefault(require("./set"));
