@@ -359,6 +359,7 @@ class ItemList extends React.PureComponent {
                 onDismiss={this.handleListDialogDismiss}
                 searchFilterParam={this.props.searchFilterParam}
                 src={this.props.apiListUrl}
+                title={`Choose ${this.props.entityType}`}
                 {...this.props.listDialogProps}
               />
             }
