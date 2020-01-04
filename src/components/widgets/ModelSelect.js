@@ -84,6 +84,7 @@ class ModelSelectWidget extends React.PureComponent {
 
         {this.state.listDialogOpen &&
           <PagedListViewDialog {...listDialogProps}
+            apiCreateUrl={apiListUrl}
             onDismiss={this.handleListDialogDismiss}
             selectionMode="single"
             src={apiListUrl}
