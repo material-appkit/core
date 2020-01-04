@@ -75,6 +75,7 @@ class ModelSelectWidget extends React.PureComponent {
             <legend className={classes.legend}>{label}</legend>
           }
           <Button
+            className={classes.button}
             color="primary"
             onClick={() => { this.setState({ listDialogOpen: true }); }}
           >
@@ -114,4 +115,7 @@ ModelSelectWidget.defaultProps = {
 export default withStyles((theme) => ({
   fieldset: theme.form.customControl.fieldset,
   legend: theme.form.customControl.legend,
+  button: {
+    minWidth: 'initial',
+  },
 }))(ModelSelectWidget);
