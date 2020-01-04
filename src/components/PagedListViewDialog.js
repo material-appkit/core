@@ -76,34 +76,42 @@ function PagedListViewDialog(props) {
     ...pagedListViewProps
   } = props;
 
-  const [selectedItems, setSelectedItems] = useState([]);
   const [listViewInfo, setListViewInfo] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
   const [filterTerm, setFilterTerm] = useState('');
+  const [dialogTitle, setDialogTitle] = useState(null);
+
+  useEffect(() => {
+    if (listViewInfo) {
+      let title = typeof(props.title) === 'function' ? props.title() : props.title;
+      title = `${title} (${listViewInfo.selection.size} selected)`;
+      setDialogTitle(title);
+    } else {
+      setDialogTitle('Loading...');
+    }
+
+  }, [listViewInfo]);
+
+
+  //----------------------------------------------------------------------------
+  const commit = () => {
+    const selection = Array.from(listViewInfo.selection);
+    onDismiss(selection);
+  };
 
   //----------------------------------------------------------------------------
   const handleSelectionChange = (selection) => {
-    if (!selection) {
-      setSelectedItems([]);
-      return;
-    }
-
-    let newSelection = selection;
-    if (!Array.isArray(selection)) {
-      newSelection = [newSelection];
-    }
-    setSelectedItems(newSelection);
-
     if (commitOnSelect) {
-      onDismiss(newSelection);
+      commit();
     }
   };
 
   //----------------------------------------------------------------------------
   const handleKeyUp = (e) => {
-    if (e.key === 'Enter' && selectedItems.length) {
-      onDismiss(selectedItems);
+    if (e.key === 'Enter') {
+      commit();
     }
   };
 
@@ -113,7 +121,9 @@ function PagedListViewDialog(props) {
   };
 
   const handleEditDialogSave = (record) => {
-    onDismiss([record]);
+    // TODO: Add saved item to selection
+    console.log('add item to list and selection', record);
+    // onDismiss([record]);
   };
 
   //----------------------------------------------------------------------------
@@ -130,7 +140,7 @@ function PagedListViewDialog(props) {
         <DialogTitle className={classes.dialogTitle} disableTypography>
           <Box className={classes.dialogTitleContent}>
             <Typography component="h2" variant="h6">
-              {typeof(title) === 'function' ? props.title() : props.title}
+              {dialogTitle}
             </Typography>
 
             <IconButton onClick={() => { onDismiss(null); }} edge="end">
@@ -195,9 +205,9 @@ function PagedListViewDialog(props) {
           {!commitOnSelect &&
             <Button
               color="primary"
-              disabled={!selectedItems.length}
+              disabled={!(listViewInfo && listViewInfo.selection.size)}
               key="commitButton"
-              onClick={() => { onDismiss(selectedItems); }}
+              onClick={() => { commit(); }}
             >
               Choose
             </Button>
