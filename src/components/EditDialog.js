@@ -72,6 +72,7 @@ class EditDialog extends React.Component {
     SnackbarManager.error(errorMessage);
   };
 
+
   handleDeleteButtonClick = () => {
     AlertManager.confirm({
       title: `Please Confirm`,
@@ -83,6 +84,12 @@ class EditDialog extends React.Component {
         }
       },
     });
+  };
+
+  handleKeyUp = (e) => {
+    if (e.key === 'Enter') {
+      this.commit();
+    }
   };
 
   render() {
@@ -101,6 +108,7 @@ class EditDialog extends React.Component {
       <Dialog
         classes={{ paper: classes.paper }}
         onClose={() => { this.dismiss(); }}
+        onKeyUp={this.handleKeyUp}
         open
       >
         <DialogTitle id="form-dialog-title">{this.state.title}</DialogTitle>
