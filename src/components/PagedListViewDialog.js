@@ -26,6 +26,7 @@ import CloseIcon from '@material-ui/icons/Close';
 
 import Spacer from '@material-appkit/core/components/Spacer';
 
+import EditDialog from './EditDialog';
 import PagedListView from './PagedListView';
 import TextField from './TextField';
 
@@ -56,6 +57,10 @@ const styles = makeStyles((theme) => ({
     padding: 0,
   },
 
+  dialogActions: {
+    justifyContent: 'space-between',
+  },
+
   tabsControlContainer: {
     backgroundColor: theme.palette.grey[200],
     borderBottom: `1px solid ${theme.palette.grey[300]}`
@@ -74,6 +79,7 @@ function PagedListViewDialog(props) {
   const [selectedItems, setSelectedItems] = useState([]);
   const [listViewInfo, setListViewInfo] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
   const [filterTerm, setFilterTerm] = useState('');
 
   //----------------------------------------------------------------------------
@@ -102,90 +108,121 @@ function PagedListViewDialog(props) {
   };
 
   //----------------------------------------------------------------------------
+  const handleEditDialogClose = () => {
+    setAddDialogIsOpen(false);
+  };
+
+  const handleEditDialogSave = (record) => {
+    onDismiss([record]);
+  };
+
+  //----------------------------------------------------------------------------
   const classes = styles();
 
   return (
-    <Dialog open
-      classes={fullHeight ? { paper: classes.fullHeight } : null}
-      onClose={() => { onDismiss(null); }}
-      onKeyUp={handleKeyUp}
-      {...dialogProps}
-    >
-      <DialogTitle className={classes.dialogTitle} disableTypography>
-        <Box className={classes.dialogTitleContent}>
-          <Typography component="h2" variant="h6">
-            {typeof(title) === 'function' ? props.title() : props.title}
-          </Typography>
+    <Fragment>
+      <Dialog open
+        classes={fullHeight ? { paper: classes.fullHeight } : null}
+        onClose={() => { onDismiss(null); }}
+        onKeyUp={handleKeyUp}
+        {...dialogProps}
+      >
+        <DialogTitle className={classes.dialogTitle} disableTypography>
+          <Box className={classes.dialogTitleContent}>
+            <Typography component="h2" variant="h6">
+              {typeof(title) === 'function' ? props.title() : props.title}
+            </Typography>
 
-          <IconButton onClick={() => { onDismiss(null); }} edge="end">
-            <CloseIcon />
-          </IconButton>
-        </Box>
-
-        <LinearProgress
-          className={classes.progressBar}
-          variant={loading ? 'indeterminate' : 'determinate' }
-          value={0}
-        />
-
-        {props.searchFilterParam &&
-          <Box className={classes.filterFieldContainer}>
-            <TextField
-              autoFocus
-              fullWidth
-              margin="dense"
-              onTimeout={(value) => { setFilterTerm(value); }}
-              timeoutDelay={500}
-              placeholder="Filter by search term..."
-              variant="outlined"
-            />
+            <IconButton onClick={() => { onDismiss(null); }} edge="end">
+              <CloseIcon />
+            </IconButton>
           </Box>
-        }
 
-        {(listViewInfo && listViewInfo.toolbarItems.tabsControl) &&
-          <Box className={classes.tabsControlContainer}>
-            {listViewInfo.toolbarItems.tabsControl}
-          </Box>
-        }
-      </DialogTitle>
+          <LinearProgress
+            className={classes.progressBar}
+            variant={loading ? 'indeterminate' : 'determinate' }
+            value={0}
+          />
 
-      <DialogContent className={classes.dialogContent}>
-        <PagedListView
-          defaultFilterParams={
-            filterTerm ? { [props.searchFilterParam]: filterTerm } : null
+          {props.searchFilterParam &&
+            <Box className={classes.filterFieldContainer}>
+              <TextField
+                autoFocus
+                fullWidth
+                margin="dense"
+                onTimeout={(value) => { setFilterTerm(value); }}
+                timeoutDelay={500}
+                placeholder="Filter by search term..."
+                variant="outlined"
+              />
+            </Box>
           }
-          listItemProps={{ isLink: false }}
-          onConfig={(config) => { setListViewInfo(config); }}
-          onSelectionChange={handleSelectionChange}
-          selectionAlways
-          selectOnClick
-          {...pagedListViewProps}
+
+          {(listViewInfo && listViewInfo.toolbarItems.tabsControl) &&
+            <Box className={classes.tabsControlContainer}>
+              {listViewInfo.toolbarItems.tabsControl}
+            </Box>
+          }
+        </DialogTitle>
+
+        <DialogContent className={classes.dialogContent}>
+          <PagedListView
+            defaultFilterParams={
+              filterTerm ? { [props.searchFilterParam]: filterTerm } : null
+            }
+            listItemProps={{ isLink: false }}
+            onConfig={(config) => { setListViewInfo(config); }}
+            onSelectionChange={handleSelectionChange}
+            selectionAlways
+            selectOnClick
+            {...pagedListViewProps}
+          />
+        </DialogContent>
+
+        <DialogActions className={classes.dialogActions}>
+          {props.apiCreateUrl &&
+            <Button onClick={() => { setAddDialogIsOpen(true); }}>
+              Create
+            </Button>
+          }
+
+          {(listViewInfo && listViewInfo.toolbarItems.paginationControl) ? (
+            listViewInfo.toolbarItems.paginationControl
+          ) : (
+            <Spacer />
+          )}
+
+          {!commitOnSelect &&
+            <Button
+              color="primary"
+              disabled={!selectedItems.length}
+              key="commitButton"
+              onClick={() => { onDismiss(selectedItems); }}
+            >
+              Choose
+            </Button>
+          }
+        </DialogActions>
+      </Dialog>
+
+      {addDialogIsOpen &&
+        <EditDialog
+          apiCreateUrl={props.apiCreateUrl}
+          entityType={props.entityType}
+          onClose={handleEditDialogClose}
+          onSave={handleEditDialogSave}
+          {...props.editDialogProps}
         />
-      </DialogContent>
+      }
 
-      <DialogActions>
-        {listViewInfo && (
-          listViewInfo.toolbarItems.paginationControl
-        )}
+    </Fragment>
 
-        <Spacer />
 
-        {!commitOnSelect &&
-          <Button
-            color="primary"
-            disabled={!selectedItems.length}
-            key="commitButton"
-            onClick={() => { onDismiss(selectedItems); }}
-          >
-            Choose
-          </Button>
-        }
-      </DialogActions>
-    </Dialog>
   );
 }
 
 PagedListViewDialog.propTypes = {
+  apiCreateUrl: PropTypes.string,
   commitOnSelect: PropTypes.bool,
   dialogProps: PropTypes.object,
   displayMode: PropTypes.string,
