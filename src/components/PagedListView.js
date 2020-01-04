@@ -346,14 +346,15 @@ function PagedListView(props) {
     const itemId = keyForItem(item);
     const selectedItem = setFind(selection, (i) => keyForItem(i) === itemId);
 
-    let newSelection = new Set(selection);
+    let newSelection = null;
+
     if (props.selectionMode === 'single') {
-      if (selectedItem) {
-        newSelection.delete(selectedItem);
-      } else {
+      newSelection = new Set();
+      if (!selectedItem) {
         newSelection.add(item);
       }
     } else {
+      newSelection = new Set(selection);
       if (selectedItem) {
         newSelection.delete(selectedItem);
       } else {
