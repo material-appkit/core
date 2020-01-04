@@ -121,6 +121,21 @@ function PagedListView(props) {
 
 
   /**
+   * Extend the selection to include the given item and
+   * insert it into the item list
+   * Exported: yes
+   */
+  const extendSelection = useCallback((item) => {
+    const newSelection = new Set(selection);
+    newSelection.add(item);
+    setSelection(newSelection);
+
+    const updatedItems = [...items];
+    updatedItems.unshift(item);
+    setItems(updatedItems);
+  }, [selection, items]);
+
+  /**
    * @param item
    * @returns {*} Unique identifier of given item
    */
@@ -457,16 +472,11 @@ function PagedListView(props) {
 
 
   /**
-   * Reload the list whenever the filterParams are altered
+   * Reload the list whenever the listed dependent properties are altered
    */
   useEffect(() => {
     reload();
-  }, [
-    props.src,
-    filterParams,
-    ordering,
-    page
-  ]);
+  }, [props.src, filterParams, ordering, page]);
 
 
   /**
@@ -545,13 +555,14 @@ function PagedListView(props) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    sort,
+    extendSelection,
     filterParams,
     ordering,
+    paginationInfo,
     selection,
     selectionDisabled,
     selectedSubsetArrangementIndex,
-    paginationInfo
+    sort,
   ]);
 
   /**
@@ -568,6 +579,7 @@ function PagedListView(props) {
       }
 
       props.onConfig({
+        extendSelection,
         loading: !!fetchRequestContext,
         onItemUpdate: handleItemUpdate,
         selection,
@@ -577,7 +589,14 @@ function PagedListView(props) {
         totalCount,
       });
     }
-  }, [paginationInfo, selection, selectionDisabled, sort, toolbarItems]);
+  }, [
+    extendSelection,
+    paginationInfo,
+    selection,
+    selectionDisabled,
+    sort,
+    toolbarItems
+  ]);
 
   //----------------------------------------------------------------------------
   if (!items) {
