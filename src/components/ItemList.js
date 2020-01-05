@@ -355,7 +355,10 @@ class ItemList extends React.PureComponent {
                 entityType={this.props.entityType}
                 filterParams={this.props.filterParams}
                 listItemComponent={this.props.listItemComponent}
-                listItemProps={this.props.listItemProps}
+                listItemProps={{
+                  ...(this.props.listItemProps || {}),
+                  isLink: false,
+                }}
                 onDismiss={this.handleListDialogDismiss}
                 searchFilterParam={this.props.searchFilterParam}
                 src={this.props.apiListUrl}
@@ -401,7 +404,6 @@ ItemList.propTypes = {
   itemKeyPath: PropTypes.string,
   listDialogProps: PropTypes.object,
   listItemComponent: PropTypes.func,
-  listItemProps: PropTypes.object,
   onItemClick: PropTypes.func,
   onAdd: PropTypes.func,
   onRemove: PropTypes.func,
@@ -422,7 +424,6 @@ ItemList.defaultProps = {
   itemComponentProps: {},
   itemListItemProps: { disableGutters: true },
   listDialogProps: {},
-  listItemProps: { isLink: false },
   mode: 'view',
   warnOnDelete: true,
 };

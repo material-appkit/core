@@ -111,8 +111,11 @@ function PagedListViewDialog(props) {
   };
 
   //----------------------------------------------------------------------------
-  const handleKeyUp = (e) => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+
       commit();
     }
   };
@@ -135,7 +138,7 @@ function PagedListViewDialog(props) {
       <Dialog open
         classes={fullHeight ? { paper: classes.fullHeight } : null}
         onClose={() => { onDismiss(null); }}
-        onKeyUp={handleKeyUp}
+        onKeyDown={handleKeyDown}
         ref={dialogRef}
         {...dialogProps}
       >
@@ -182,7 +185,6 @@ function PagedListViewDialog(props) {
             defaultFilterParams={
               filterTerm ? { [props.searchFilterParam]: filterTerm } : null
             }
-            listItemProps={{ isLink: false }}
             onConfig={(config) => { setListViewInfo(config); }}
             onSelectionChange={handleSelectionChange}
             selectionAlways
