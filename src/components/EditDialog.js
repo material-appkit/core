@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,14 +18,6 @@ import Spacer from './Spacer';
 
 const styles = makeStyles((theme) => ({
   paper: theme.editDialog.paper,
-
-  dialogActions: {
-    flex: '0 0 auto',
-    margin: '8px 4px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
 
   deleteButton: {
     color: theme.palette.error.main,
@@ -97,6 +90,20 @@ function EditDialog(props) {
     });
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      // Intercept the "Enter" key in order to prevent the dialog form
+      // (as well as any underlying forms) from being automatically
+      // submitted.
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Explicitly submit our own form
+      formRef.current.save();
+    }
+  };
+
+
   const {
     onSave,
     FormProps,
@@ -109,6 +116,7 @@ function EditDialog(props) {
     <Dialog
       classes={{ paper: classes.paper }}
       onClose={() => { dismiss(); }}
+      onKeyDown={handleKeyDown}
       open
     >
       <DialogTitle id="form-dialog-title">{title}</DialogTitle>
@@ -122,7 +130,8 @@ function EditDialog(props) {
           {...rest}
         />
       </DialogContent>
-      <div className={classes.dialogActions}>
+
+      <DialogActions>
         {(props.persistedObject && props.canDelete) &&
           <Fragment>
             <Button
@@ -131,19 +140,21 @@ function EditDialog(props) {
             >
               {props.labels.DELETE}
             </Button>
-            <Spacer />
           </Fragment>
         }
+
+        <Spacer />
+
         <Button onClick={() => { dismiss(); }}>
           {props.labels.CANCEL}
         </Button>
-        <Button onClick={() => { commit(); }} color="primary">
+
+        <Button color="primary" onClick={() => { commit(); }}>
           {props.labels.SAVE}
         </Button>
-      </div>
+      </DialogActions>
     </Dialog>
   );
-
 }
 
 EditDialog.propTypes = {
