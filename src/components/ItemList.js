@@ -389,7 +389,7 @@ ItemList.propTypes = {
   canDelete: PropTypes.bool,
   classes: PropTypes.object,
   clickAction: PropTypes.oneOf(['link', 'edit']),
-  EditDialogComponent: PropTypes.object,
+  EditDialogComponent: PropTypes.func,
   editDialogProps: PropTypes.object,
   entityType: PropTypes.string,
   filterParams: PropTypes.object,

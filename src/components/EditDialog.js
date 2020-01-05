@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { makeStyles } from '@material-ui/core/styles';
 
 import AlertManager from '../managers/AlertManager';
 import SnackbarManager from '../managers/SnackbarManager';
@@ -15,135 +15,135 @@ import ServiceAgent from '../util/ServiceAgent';
 import Form from './Form';
 import Spacer from './Spacer';
 
-class EditDialog extends React.Component {
-  constructor(props) {
-    super(props);
+const styles = makeStyles((theme) => ({
+  paper: theme.editDialog.paper,
 
-    this.formRef = React.createRef();
+  dialogActions: {
+    flex: '0 0 auto',
+    margin: '8px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+
+  deleteButton: {
+    color: theme.palette.error.main,
+  },
+}));
+
+function EditDialog(props) {
+    const formRef = useRef(null);
+
 
     let title = props.entityType;
     if (props.persistedObject || props.apiDetailUrl || props.representedObjectId) {
-      title = `${this.props.labels.UPDATE} ${title}`;
+      title = `${props.labels.UPDATE} ${title}`;
     } else {
-      title = `${this.props.labels.ADD} ${title}`;
+      title = `${props.labels.ADD} ${title}`;
     }
 
-    this.state = {
-      title,
-      redirectTo: null,
-    };
-  }
 
-  deleteRepresentedObject = async() => {
-    const { persistedObject } = this.props;
+
+
+  const deleteRepresentedObject = async() => {
+    const { persistedObject } = props;
     await ServiceAgent.delete(persistedObject.url);
 
-    if (this.props.onDelete) {
-      this.props.onDelete(persistedObject);
+    if (props.onDelete) {
+      props.onDelete(persistedObject);
     }
 
-    this.dismiss();
+    dismiss();
   };
 
-  dismiss() {
-    this.props.onClose(this);
-  }
+  const dismiss = () => {
+    props.onClose(this);
+  };
 
-  commit() {
-    this.formRef.current.save();
-  }
+  const commit = () => {
+    formRef.current.save();
+  };
 
-  handleFormLoad = (representedObject, fieldInfoMap) => {
-    if (this.props.onLoad) {
-      this.props.onLoad(representedObject, fieldInfoMap);
+  const handleFormLoad = (representedObject, fieldInfoMap) => {
+    if (props.onLoad) {
+      props.onLoad(representedObject, fieldInfoMap);
     }
   };
 
-  handleFormSave = (representedObject) => {
-    if (this.props.onSave) {
-      this.props.onSave(representedObject);
+  const handleFormSave = (representedObject) => {
+    if (props.onSave) {
+      props.onSave(representedObject);
     }
 
-    this.dismiss();
+    dismiss();
   };
 
-  handleFormError = () => {
-    const errorMessage = this.props.labels.SAVE_FAIL_NOTIFICATION;
+  const handleFormError = () => {
+    const errorMessage = props.labels.SAVE_FAIL_NOTIFICATION;
     SnackbarManager.error(errorMessage);
   };
 
 
-  handleDeleteButtonClick = () => {
+  const handleDeleteButtonClick = () => {
     AlertManager.confirm({
       title: `Please Confirm`,
       description: 'Are you sure you want to delete this item?',
       confirmButtonTitle: 'Delete',
       onDismiss: (flag) => {
         if (flag) {
-          this.deleteRepresentedObject();
+          deleteRepresentedObject();
         }
       },
     });
   };
 
-  handleKeyUp = (e) => {
-    if (e.key === 'Enter') {
-      this.commit();
-    }
-  };
+  const {
+    onSave,
+    FormProps,
+    ...rest
+  } = props;
 
-  render() {
-    if (this.state.redirectTo) {
-      return <Redirect to={this.state.redirectTo} />;
-    }
+  const classes = styles();
 
-    const {
-      classes,
-      onSave,
-      FormProps,
-      ...rest
-    } = this.props;
+  return (
+    <Dialog
+      classes={{ paper: classes.paper }}
+      onClose={() => { dismiss(); }}
+      open
+    >
+      <DialogTitle id="form-dialog-title">{title}</DialogTitle>
+      <DialogContent>
+        <Form
+          ref={formRef}
+          onLoad={handleFormLoad}
+          onSave={handleFormSave}
+          onError={handleFormError}
+          {...FormProps}
+          {...rest}
+        />
+      </DialogContent>
+      <div className={classes.dialogActions}>
+        {(props.persistedObject && props.canDelete) &&
+          <Fragment>
+            <Button
+              className={classes.deleteButton}
+              onClick={handleDeleteButtonClick}
+            >
+              {props.labels.DELETE}
+            </Button>
+            <Spacer />
+          </Fragment>
+        }
+        <Button onClick={() => { dismiss(); }}>
+          {props.labels.CANCEL}
+        </Button>
+        <Button onClick={() => { commit(); }} color="primary">
+          {props.labels.SAVE}
+        </Button>
+      </div>
+    </Dialog>
+  );
 
-    return (
-      <Dialog
-        classes={{ paper: classes.paper }}
-        onClose={() => { this.dismiss(); }}
-        onKeyUp={this.handleKeyUp}
-        open
-      >
-        <DialogTitle id="form-dialog-title">{this.state.title}</DialogTitle>
-        <DialogContent>
-          <Form
-            ref={this.formRef}
-            onLoad={this.handleFormLoad}
-            onSave={this.handleFormSave}
-            onError={this.handleFormError}
-            {...FormProps}
-            {...rest}
-          />
-        </DialogContent>
-        <div className={classes.dialogActions}>
-          {(this.props.persistedObject && this.props.canDelete) &&
-            <Fragment>
-              <Button
-                className={classes.deleteButton}
-                onClick={this.handleDeleteButtonClick}
-              >
-                {this.props.labels.DELETE}
-              </Button>
-              <Spacer />
-            </Fragment>
-          }
-          <Button onClick={() => { this.dismiss(); }}>
-            {this.props.labels.CANCEL}
-          </Button>
-          <Button onClick={() => { this.commit(); }} color="primary">
-            {this.props.labels.SAVE}
-          </Button>
-        </div>
-      </Dialog>
-    );
-  }
 }
 
 EditDialog.propTypes = {
@@ -173,18 +173,4 @@ EditDialog.defaultProps = {
   },
 };
 
-export default withStyles((theme) => ({
-  paper: theme.editDialog.paper,
-
-  dialogActions: {
-    flex: '0 0 auto',
-    margin: '8px 4px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-
-  deleteButton: {
-    color: theme.palette.error.main,
-  },
-}))(EditDialog);
+export default EditDialog;
