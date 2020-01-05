@@ -355,10 +355,6 @@ class ItemList extends React.PureComponent {
                 entityType={this.props.entityType}
                 filterParams={this.props.filterParams}
                 listItemComponent={this.props.listItemComponent}
-                listItemProps={{
-                  ...(this.props.listItemProps || {}),
-                  isLink: false,
-                }}
                 onDismiss={this.handleListDialogDismiss}
                 searchFilterParam={this.props.searchFilterParam}
                 src={this.props.apiListUrl}

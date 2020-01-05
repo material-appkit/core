@@ -182,14 +182,18 @@ function PagedListViewDialog(props) {
 
         <DialogContent className={classes.dialogContent}>
           <PagedListView
+            {...pagedListViewProps}
             defaultFilterParams={
               filterTerm ? { [props.searchFilterParam]: filterTerm } : null
             }
+            listItemProps={{
+              ...(pagedListViewProps.listItemProps || {}),
+              isLink: false,
+            }}
             onConfig={(config) => { setListViewInfo(config); }}
             onSelectionChange={handleSelectionChange}
             selectionAlways
             selectOnClick
-            {...pagedListViewProps}
           />
         </DialogContent>
 
