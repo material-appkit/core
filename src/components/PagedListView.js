@@ -126,13 +126,12 @@ function PagedListView(props) {
    * Exported: yes
    */
   const extendSelection = useCallback((item) => {
-    const newSelection = new Set(selection);
-    newSelection.add(item);
-    setSelection(newSelection);
-
     const updatedItems = [...items];
     updatedItems.unshift(item);
     setItems(updatedItems);
+
+    updateSelection(item);
+
   }, [selection, items]);
 
   /**
@@ -322,27 +321,7 @@ function PagedListView(props) {
 
 
 
-  const updateSelection = (newSelection) => {
-    setSelection(newSelection);
-
-    if (props.onSelectionChange) {
-      if (props.selectionMode === 'single') {
-        if (newSelection.size) {
-          props.onSelectionChange(Array.from(newSelection).pop());
-        } else {
-          props.onSelectionChange(null);
-        }
-      } else {
-        props.onSelectionChange(newSelection);
-      }
-    }
-  };
-
-  /**
-   * Handle changes to the selection
-   * @param item Record whose selection control has been clicked
-   */
-  const handleSelectionControlClick = (item) => {
+  const updateSelection = (item) => {
     const itemId = keyForItem(item);
     const selectedItem = setFind(selection, (i) => keyForItem(i) === itemId);
 
@@ -362,7 +341,28 @@ function PagedListView(props) {
       }
     }
 
-    updateSelection(newSelection);
+    setSelection(newSelection);
+
+
+    if (props.onSelectionChange) {
+      if (props.selectionMode === 'single') {
+        if (newSelection.size) {
+          props.onSelectionChange(Array.from(newSelection).pop());
+        } else {
+          props.onSelectionChange(null);
+        }
+      } else {
+        props.onSelectionChange(newSelection);
+      }
+    }
+  };
+
+  /**
+   * Handle changes to the selection
+   * @param item Record whose selection control has been clicked
+   */
+  const handleSelectionControlClick = (item) => {
+    updateSelection(item);
   };
 
 
@@ -495,7 +495,7 @@ function PagedListView(props) {
               color={selectionDisabled ? 'default' : 'primary' }
               onClick={() => {
                 // Clear current selection when selection mode is enabled/disabled
-                updateSelection(new Set());
+                setSelection(new Set());
                 setSelectionDisabled(!selectionDisabled);
               }}
             >
