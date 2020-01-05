@@ -87,6 +87,6 @@ ContextMenu.propTypes = {
 };
 
 ContextMenu.defaultProps = {
-  dense: true,
+  dense: false,
 };
 export default ContextMenu;
