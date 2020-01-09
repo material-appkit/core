@@ -74,6 +74,7 @@ function PagedListViewDialog(props) {
     fullHeight,
     onDismiss,
     dialogProps,
+    listItemProps,
     ...pagedListViewProps
   } = props;
 
@@ -187,7 +188,7 @@ function PagedListViewDialog(props) {
               filterTerm ? { [props.searchFilterParam]: filterTerm } : null
             }
             listItemProps={{
-              ...(pagedListViewProps.listItemProps || {}),
+              ...(listItemProps || {}),
               isLink: false,
             }}
             onConfig={(config) => { setListViewInfo(config); }}
