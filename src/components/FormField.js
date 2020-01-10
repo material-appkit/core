@@ -154,10 +154,10 @@ function FormField(props) {
     onChange,
   } = props;
 
-  const { formData } = form.state;
-
+  const { autoFocus, help, label, widget } = fieldInfo.ui;
   const fieldName = fieldInfo.key;
 
+  const { formData } = form.state;
 
   const commonFieldProps = {
     name: fieldName,
@@ -167,8 +167,6 @@ function FormField(props) {
   if (fieldInfo.hidden || widget === 'hidden') {
     return <input type="hidden" {...commonFieldProps} />;
   }
-
-  const { autoFocus, help, label, widget } = fieldInfo.ui;
 
   Object.assign(commonFieldProps, {
     autoFocus,
