@@ -59,6 +59,7 @@ const styles = makeStyles((theme) => ({
   },
 
   dialogActions: {
+    borderTop: `1px solid ${theme.palette.grey[300]}`,
     justifyContent: 'space-between',
   },
 
@@ -89,7 +90,6 @@ function PagedListViewDialog(props) {
   useEffect(() => {
     if (listViewInfo) {
       let title = typeof(props.title) === 'function' ? props.title() : props.title;
-      title = `${title} (${listViewInfo.selection.size} selected)`;
       setDialogTitle(title);
     } else {
       setDialogTitle('Loading...');
@@ -145,9 +145,17 @@ function PagedListViewDialog(props) {
       >
         <DialogTitle className={classes.dialogTitle} disableTypography>
           <Box className={classes.dialogTitleContent}>
-            <Typography component="h2" variant="h6">
-              {dialogTitle}
-            </Typography>
+            <Box flex="1">
+              <Typography component="h2" variant="h6">
+                {dialogTitle}
+              </Typography>
+
+              {listViewInfo &&
+                <Typography variant="subtitle2" color="textSecondary">
+                  {`${listViewInfo.selection.size} selected`}
+                </Typography>
+              }
+            </Box>
 
             <IconButton onClick={() => { onDismiss(null); }} edge="end">
               <CloseIcon />
