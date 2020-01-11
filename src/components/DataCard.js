@@ -9,6 +9,7 @@ import React, { useState, useRef } from 'react';
 
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import IconButton from '@material-ui/core/IconButton';
@@ -87,9 +88,15 @@ function DataCard(props) {
     title: classes.cardHeaderTitle,
   };
 
+  const cardActionClasses = {
+    root: classes.cardActionsRoot,
+  };
+
   if (variant === 'plain') {
     cardProps.elevation = 0;
     cardHeaderClasses.root = classes.plainCardHeaderRoot;
+  } else {
+    cardProps.variant = variant;
   }
 
   return (
@@ -117,22 +124,29 @@ function DataCard(props) {
           {getActiveView()}
         </Box>
       </CardContent>
+
+      {props.actions &&
+        <CardActions classes={cardActionClasses}>
+          {props.actions}
+        </CardActions>
+      }
     </Card>
   );
 }
 
 DataCard.propTypes = {
+  actions: PropTypes.element,
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.array]),
   contentBoxProps: PropTypes.object,
   formConfig: PropTypes.object,
   subheader: PropTypes.string,
   title: PropTypes.string,
-  variant: PropTypes.oneOf(['card', 'plain'])
+  variant: PropTypes.oneOf(['elevation', 'outlined', 'plain'])
 };
 
 DataCard.defaultProps = {
   contentBoxProps: { px: 2 },
-  variant: 'card',
+  variant: 'elevation',
 };
 
 export default DataCard;
