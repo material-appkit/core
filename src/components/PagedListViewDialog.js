@@ -72,12 +72,14 @@ const styles = makeStyles((theme) => ({
 function PagedListViewDialog(props) {
   const {
     commitOnSelect,
+    defaultFilterParams,
+    dialogProps,
     fullHeight,
     onDismiss,
-    dialogProps,
     listItemProps,
     ...pagedListViewProps
   } = props;
+
 
   const [listViewInfo, setListViewInfo] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -133,6 +135,11 @@ function PagedListViewDialog(props) {
 
   //----------------------------------------------------------------------------
   const classes = styles();
+
+  const filterParams = { ...defaultFilterParams };
+  if (filterTerm) {
+    filterParams[props.searchFilterParam] = filterTerm;
+  }
 
   return (
     <Fragment>
@@ -192,9 +199,7 @@ function PagedListViewDialog(props) {
         <DialogContent className={classes.dialogContent}>
           <PagedListView
             {...pagedListViewProps}
-            defaultFilterParams={
-              filterTerm ? { [props.searchFilterParam]: filterTerm } : null
-            }
+            defaultFilterParams={filterParams}
             listItemProps={{
               ...(listItemProps || {}),
               isLink: false,
