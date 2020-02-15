@@ -164,21 +164,24 @@ class Form extends React.PureComponent {
 
 
   coerceRequestData(data) {
+    const coercedData = { ...data };
+
     const fieldInfoMap = this.getFieldInfoMap(this.state.metadata);
-    if (!fieldInfoMap) {
-      return data;
+    if (fieldInfoMap) {
+      Object.keys(data).forEach((fieldName) => {
+        const fieldInfo = fieldInfoMap[fieldName];
+        const value = data[fieldName];
+        if (fieldInfo) {
+          coercedData[fieldName] = toRepresentation(value, fieldInfo, this);
+        } else {
+          coercedData[fieldName] = value;
+        }
+      });
     }
 
-    const coercedData = {};
-    Object.keys(data).forEach((fieldName) => {
-      const fieldInfo = fieldInfoMap[fieldName];
-      const value = data[fieldName];
-      if (fieldInfo) {
-        coercedData[fieldName] = toRepresentation(value, fieldInfo, this);
-      } else {
-        coercedData[fieldName] = value;
-      }
-    });
+    // Inject any additionally supplied context parameters
+    Object.assign(coercedData, this.props.requestContext);
+
     return coercedData;
   }
 
@@ -408,20 +411,20 @@ Form.propTypes = {
   children: PropTypes.any,
   defaultValues: PropTypes.object,
   entityType: PropTypes.string,
+  requestContext: PropTypes.object,
   FieldSet: PropTypes.func,
   fieldArrangement: PropTypes.array,
   fieldInfoProvider: PropTypes.func,
-  representedObjectId: PropTypes.number,
   onConfig: PropTypes.func,
   onError: PropTypes.func,
-  onMount: PropTypes.func,
   onLoad: PropTypes.func,
-  onWillSave: PropTypes.func,
+  onMount: PropTypes.func,
   onSave: PropTypes.func,
+  onWillSave: PropTypes.func,
   onUnmount: PropTypes.func,
   optionsRequestParams: PropTypes.object,
   persistedObject: PropTypes.object,
-  loadingIndicator: PropTypes.node,
+  representedObjectId: PropTypes.number,
   updateMethod: PropTypes.oneOf(['PUT', 'PATCH']),
 };
 
@@ -429,8 +432,9 @@ Form.defaultProps = {
   autosaveDelay: null,
   defaultValues: {},
   entityType: '',
-  optionsRequestParams: {},
   FieldSet: FormFieldSet,
+  optionsRequestParams: {},
+  requestContext: {},
   updateMethod: 'PATCH',
 };
 
