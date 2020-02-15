@@ -27,9 +27,8 @@ const styles = makeStyles((theme) => ({
 function EditDialog(props) {
     const formRef = useRef(null);
 
-
     let title = props.entityType;
-    if (props.persistedObject || props.apiDetailUrl || props.representedObjectId) {
+    if (props.persistedObject) {
       title = `${props.labels.UPDATE} ${title}`;
     } else {
       title = `${props.labels.ADD} ${title}`;
@@ -119,7 +118,10 @@ function EditDialog(props) {
       onKeyDown={handleKeyDown}
       open
     >
-      <DialogTitle id="form-dialog-title">{title}</DialogTitle>
+      <DialogTitle>
+        {title}
+      </DialogTitle>
+
       <DialogContent>
         <Form
           ref={formRef}
@@ -133,14 +135,12 @@ function EditDialog(props) {
 
       <DialogActions>
         {(props.persistedObject && props.canDelete) &&
-          <Fragment>
-            <Button
-              className={classes.deleteButton}
-              onClick={handleDeleteButtonClick}
-            >
-              {props.labels.DELETE}
-            </Button>
-          </Fragment>
+          <Button
+            className={classes.deleteButton}
+            onClick={handleDeleteButtonClick}
+          >
+            {props.labels.DELETE}
+          </Button>
         }
 
         <Spacer />
@@ -160,7 +160,6 @@ function EditDialog(props) {
 EditDialog.propTypes = {
   apiDetailUrl: PropTypes.string,
   canDelete: PropTypes.bool,
-  classes: PropTypes.object,
   entityType: PropTypes.string.isRequired,
   FormProps: PropTypes.object,
   labels: PropTypes.object,

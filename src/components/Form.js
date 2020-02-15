@@ -94,17 +94,6 @@ class Form extends React.PureComponent {
     }
   }
 
-  get defaultValues() {
-    const { defaultValues } = this.props;
-    Object.keys(defaultValues).forEach((key) => {
-      const defaultValue = defaultValues[key];
-      if (typeof(defaultValue) === 'function') {
-        defaultValues[key] = defaultValue();
-      }
-    });
-    return defaultValues;
-  }
-
   getFieldNames(metadata) {
     if (this.props.fieldArrangement) {
       const fieldNames = [];
@@ -206,6 +195,7 @@ class Form extends React.PureComponent {
     this.setState({ loading: true });
 
     const {
+      defaultValues,
       optionsRequestParams,
       onLoad,
       persistedObject,
@@ -227,7 +217,13 @@ class Form extends React.PureComponent {
         // If an original object was not explicitly provided, attempt to load one from the given detailUrl
         requests.push(ServiceAgent.get(this.detailUrl));
       } else {
-        referenceObject = this.defaultValues;
+        referenceObject = { ...defaultValues };
+        Object.keys(referenceObject).forEach((key) => {
+          const value = referenceObject[key];
+          if (typeof(value) === 'function') {
+            referenceObject[key] = value();
+          }
+        });
       }
     }
 
