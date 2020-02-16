@@ -195,28 +195,13 @@ class ItemList extends React.PureComponent {
     }
 
     const attachUrl = this.attachUrl;
-
-    if (records.length === 1) {
-      let record = records[0];
-
-      const items = this.items;
-      const recordIndex = items.findIndex((item) => {
-        return item.id === record.id;
-      });
-
-      if (recordIndex !== -1) {
-        items[recordIndex] = record;
-        if (this.props.onUpdate) {
-          this.props.onUpdate(record, recordIndex);
-        }
-      } else {
-        if (attachUrl) {
-          const res = await ServiceAgent.post(this.attachUrl, {item_id: record.id});
-          record = res.body;
-        }
-        if (this.props.onAdd) {
-          this.props.onAdd([record]);
-        }
+    if (attachUrl) {
+      const record_ids = records.map((r) => r.id);
+      const item_id = record_ids.length === 1 ? record_ids[0]  : record_ids;
+      const res = await ServiceAgent.post(this.attachUrl, { item_id });
+      const result = res.body;
+      if (this.props.onAdd) {
+        this.props.onAdd(result);
       }
     } else {
       if (this.props.onAdd) {
