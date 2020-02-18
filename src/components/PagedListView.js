@@ -280,7 +280,7 @@ function PagedListView(props) {
     let defaultFilterParamsChanged = false;
     let pageIndex = page;
     if (filterParams) {
-      const keysToExclude = [props.pageParamName, 'page_size', props.orderParamName];
+      const keysToExclude = [props.pageParamName, props.pageSizeParamName, props.orderParamName];
       const currentDefaultFilterParams = filterExcludeKeys(filterParams, keysToExclude);
 
       defaultFilterParamsChanged = !isEqual(params, currentDefaultFilterParams);
@@ -292,8 +292,6 @@ function PagedListView(props) {
         setPage(pageIndex);
       }
 
-      // params.page_size = props.pageSize;
-      // params[props.pageParamName] = pageIndex;
       if (props.location && pageIndex !== qsPageParam) {
         NavManager.updateUrlParam(props.pageParamName, pageIndex);
       }
@@ -439,7 +437,7 @@ function PagedListView(props) {
     const requestParams = {...filterParams};
 
     if (props.pageSize) {
-      requestParams.page_size = props.pageSize;
+      requestParams[props.pageSizeParamName] = props.pageSize;
       requestParams[props.pageParamName] = page;
     }
 
@@ -721,6 +719,7 @@ PagedListView.propTypes = {
   orderParamName: PropTypes.string,
   pageParamName: PropTypes.string,
   pageSize: PropTypes.number,
+  pageSizeParamName: PropTypes.string,
 
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionAlways: PropTypes.bool,
@@ -740,6 +739,7 @@ PagedListView.defaultProps = {
   itemIdKey: 'id',
   orderParamName: 'order',
   pageParamName: 'page',
+  pageSizeParamName: 'page_size',
   selectionAlways: false,
   selectOnClick: false,
   subsetParamName: 'subset',
