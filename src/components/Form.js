@@ -15,6 +15,7 @@ import FormFieldSet from './FormFieldSet';
 import CheckboxGroupWidget from './widgets/CheckboxGroup';
 import ItemListWidget from './widgets/ItemList';
 import ModelSelectWidget from './widgets/ModelSelect';
+import RadioGroupWidget from './widgets/RadioGroup';
 
 import { fromRepresentation, toRepresentation } from './FormField';
 
@@ -23,6 +24,7 @@ class Form extends React.PureComponent {
     'checkboxgroup': CheckboxGroupWidget,
     'itemlist': ItemListWidget,
     'modelselect': ModelSelectWidget,
+    'radiogroup': RadioGroupWidget,
   };
 
   static registerWidgetClass(widgetType, WidgetClass) {

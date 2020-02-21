@@ -1,16 +1,17 @@
 /**
 *
-* CheckboxGroupWidget
+* RadioGroupWidget
 *
 */
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Checkbox from '@material-ui/core/Checkbox';
+
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import { makeStyles } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme) => ({
@@ -18,7 +19,7 @@ const styles = makeStyles((theme) => ({
   legend: theme.form.customControl.legend,
 }));
 
-function CheckboxGroupWidget(props) {
+function RadioGroupWidget(props) {
   const {
     fieldInfo,
     label,
@@ -26,19 +27,16 @@ function CheckboxGroupWidget(props) {
   } = props;
 
   const classes = styles();
+  const [selectedValue, setSelectedValue] = useState(props.value);
 
-  const [selection, setSelection] = useState(new Set());
-
-  const handleCheckboxClick = (choiceInfo) => {
-    const newSelection = new Set(selection);
-    if (newSelection.has(choiceInfo.value)) {
-      newSelection.delete(choiceInfo.value);
-    } else {
-      newSelection.add(choiceInfo.value);
+  const handleRadioButtonClick = (choice) => {
+    let value = choice.value;
+    if (value === selectedValue) {
+      value = null;
     }
-    setSelection(newSelection);
 
-    onChange(Array.from(newSelection));
+    setSelectedValue(value);
+    onChange(value);
   };
 
   return (
@@ -50,33 +48,33 @@ function CheckboxGroupWidget(props) {
           </legend>
         }
 
-        <FormGroup
-          row={fieldInfo.direction === 'row'}
+        <RadioGroup
+          row={fieldInfo.ui.direction === 'row'}
+          value={selectedValue}
         >
-          {fieldInfo.choices.map((choiceInfo) => (
+          {fieldInfo.choices.map((choice) => (
             <FormControlLabel
-              key={choiceInfo.value}
               control={(
-                <Checkbox
-                  checked={selection.has(choiceInfo.value)}
-                  onClick={() => { handleCheckboxClick(choiceInfo); }}
-                  value={choiceInfo.value}
+                <Radio
+                  onClick={() => { handleRadioButtonClick(choice); }}
                 />
               )}
-              label={choiceInfo.label}
+              key={choice.value}
+              label={choice.label}
+              value={choice.value}
             />
           ))}
-        </FormGroup>
+        </RadioGroup>
       </fieldset>
     </FormControl>
   );
 }
 
-CheckboxGroupWidget.propTypes = {
+RadioGroupWidget.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
   label: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   value: PropTypes.any,
 };
 
-export default CheckboxGroupWidget;
+export default RadioGroupWidget;
