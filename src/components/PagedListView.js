@@ -97,9 +97,12 @@ function SelectionControl(props) {
   const { selectionDisabled } = props;
 
 
-  const handleSelectionMenuItemClick = (choice) => {
+  const handleSelectionMenuDismiss = (choice) => {
     setSelectMenuEl(null);
-    props.onSelectionMenuItemClick(choice);
+
+    if (choice) {
+      props.onSelectionMenuItemClick(choice);
+    }
   };
 
   const classes = selectionControlStyles();
@@ -152,10 +155,10 @@ function SelectionControl(props) {
         open={Boolean(selectMenuEl)}
         onClose={() => { handleSelectionMenuDismiss(null); }}
       >
-        <MenuItem onClick={() => { handleSelectionMenuItemClick('all'); }}>
+        <MenuItem onClick={() => { handleSelectionMenuDismiss('all'); }}>
           Select All
         </MenuItem>
-        <MenuItem onClick={() => { handleSelectionMenuItemClick('none'); }}>
+        <MenuItem onClick={() => { handleSelectionMenuDismiss('none'); }}>
           Deselect All
         </MenuItem>
       </Menu>
