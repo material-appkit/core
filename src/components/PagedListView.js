@@ -66,6 +66,43 @@ SortControl.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
+
+//------------------------------------------------------------------------------
+const selectionControlStyles = makeStyles({
+  button: {
+    borderRadius: 0,
+  },
+});
+
+function SelectionControl(props) {
+  const {
+    onClick,
+    selectionDisabled,
+  } = props;
+
+  const classes = selectionControlStyles();
+
+  return (
+    <ToolbarItem
+      control={(
+        <IconButton
+          className={classes.button}
+          color={selectionDisabled ? 'default' : 'primary' }
+          onClick={onClick}
+        >
+          <GpsFixedIcon />
+        </IconButton>
+      )}
+      tooltip={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}
+    />
+  )
+};
+
+SelectionControl.propTypes = {
+  selectionDisabled: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
+
 //------------------------------------------------------------------------------
 const styles = makeStyles((theme) => ({
   tabs: {
@@ -493,21 +530,16 @@ function PagedListView(props) {
 
     if (!props.selectionAlways) {
       newToolbarItems.selectionControl = (
-        <ToolbarItem
-          control={(
-            <IconButton
-              color={selectionDisabled ? 'default' : 'primary' }
-              onClick={() => {
-                // Clear current selection when selection mode is enabled/disabled
-                setSelection(new Set());
-                setSelectionDisabled(!selectionDisabled);
-              }}
-            >
-              <GpsFixedIcon />
-            </IconButton>
-          )}
+        <SelectionControl
           key="selectionControl"
-          tooltip={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}
+          onClick={() => {
+            // When the selection control button is clicked, toggle selection mode.
+            setSelectionDisabled(!selectionDisabled);
+
+            // _Always_ clear current selection when selection mode is toggled
+            setSelection(new Set());
+          }}
+          selectionDisabled={selectionDisabled}
         />
       );
     }

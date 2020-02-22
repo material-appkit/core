@@ -18,7 +18,7 @@ const styles = makeStyles((theme) => ({
   },
 
   paginationButton: {
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(0.75),
   }
 }));
 
