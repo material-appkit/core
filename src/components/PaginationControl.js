@@ -1,8 +1,12 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment, useState } from 'react';
 
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -10,7 +14,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const styles = makeStyles((theme) => ({
   label: {
-    fontWeight: 'normal',
+    fontWeight: 400,
   },
 
   paginationButton: {
@@ -19,18 +23,38 @@ const styles = makeStyles((theme) => ({
 }));
 
 function PaginationControl(props) {
-  const classes = styles();
+  const [pageSizeAnchorEl, setPageSizeAnchorEl] = useState(null);
+
 
   const {
     count,
     onPageChange,
+    onPageSizeChange,
     page,
     pageSize,
+    pageSizeChoices,
     typographyProps,
   } = props;
 
   const offset = page * pageSize;
   const pageCount = Math.floor(count / pageSize);
+
+  const labelText = `${offset + 1} - ${Math.min(offset + pageSize, count)} of ${count}`;
+
+  const handlePageSizeButtonClick = (e) => {
+    setPageSizeAnchorEl(e.currentTarget);
+  };
+
+  const handlePageSizeMenuClose = () => {
+    setPageSizeAnchorEl(null);
+  };
+
+  const handlePageSizeMenuItemClick = (value) => {
+    onPageSizeChange(value);
+    handlePageSizeMenuClose();
+  };
+
+  const classes = styles();
 
   return (
     <Box display="flex" alignItems="center">
@@ -42,9 +66,42 @@ function PaginationControl(props) {
         <ChevronLeftIcon />
       </IconButton>
 
-      <Typography className={classes.label} {...typographyProps}>
-        {offset + 1} - {Math.min(offset + pageSize, count)} of {count}
-      </Typography>
+      {(pageSizeChoices && pageSizeChoices.length > 1) ? (
+        <Fragment>
+          <Link
+            aria-controls="page-size-menu"
+            aria-haspopup="true"
+            onClick={handlePageSizeButtonClick}
+            component={Button}
+            {...typographyProps}
+          >
+            {labelText}
+          </Link>
+
+          <Menu
+            id="page-size-menu"
+            anchorEl={pageSizeAnchorEl}
+            keepMounted
+            open={Boolean(pageSizeAnchorEl)}
+            onClose={handlePageSizeMenuClose}
+          >
+            {pageSizeChoices.map((value) => (
+              <MenuItem
+                key={value}
+                onClick={() => { handlePageSizeMenuItemClick(value); }}
+                selected={value === pageSize}
+              >
+                {value}
+              </MenuItem>
+            ))}
+          </Menu>
+
+        </Fragment>
+      ) : (
+        <Typography className={classes.label} {...typographyProps}>
+          {labelText}
+        </Typography>
+      )}
 
       <IconButton
         className={classes.paginationButton}
@@ -69,7 +126,9 @@ PaginationControl.propTypes = {
 
 PaginationControl.defaultProps = {
   page: 0,
+  pageSizeChoices: [10, 25, 50, 100, 250, 500],
   typographyProps: {
+    color: 'textSecondary',
     variant: 'subtitle2',
   }
 };
