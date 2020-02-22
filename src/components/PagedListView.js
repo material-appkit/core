@@ -22,7 +22,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import TablePagination from '@material-ui/core/TablePagination';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -35,6 +34,7 @@ import { makeChoices } from '../util/array';
 import { filterExcludeKeys } from '../util/object'
 import { find as setFind } from '../util/set';
 
+import PaginationControl from './PaginationControl';
 import PlaceholderView from './PlaceholderView';
 import TileList from './TileList';
 import ToolbarItem from './ToolbarItem';
@@ -68,20 +68,6 @@ SortControl.propTypes = {
 
 //------------------------------------------------------------------------------
 const styles = makeStyles((theme) => ({
-  paginationToolbar: {
-    height: theme.spacing(4),
-    minHeight: theme.spacing(4),
-    paddingLeft: theme.spacing(1),
-  },
-
-  paginationActions: {
-    marginLeft: theme.spacing(1),
-
-    '& button': {
-      padding: theme.spacing(1),
-    },
-  },
-
   tabs: {
     flex: 1,
   }
@@ -91,12 +77,14 @@ function PagedListView(props) {
   const classes = styles();
 
   const qsParams = NavManager.qsParams;
-  const qsPageParam = parseInt(qsParams[props.pageParamName] || 1);
+  const qsPageParam = qsParams[props.pageParamName] ? parseInt(qsParams[props.pageParamName]) : 1;
+  const qsPageSizeParam = qsParams[props.pageSizeParamName] || null;
 
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
   const [ordering, setOrdering] = useState(null);
   const [page, setPage] = useState(qsPageParam);
+  const [pageSize, setPageSize] = useState(qsPageSizeParam);
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selectedSubsetArrangementIndex, setSelectedSubsetArrangementIndex] = useState(null);
   const [selection, setSelection] = useState(new Set());
@@ -271,6 +259,7 @@ function PagedListView(props) {
   /**
    * Update filter params when:
    * - The page changes
+   * - (TODO) The page size changes
    * - Ordering is modified
    * - Selected subset arrangement is changed.
    */
@@ -286,7 +275,7 @@ function PagedListView(props) {
       defaultFilterParamsChanged = !isEqual(params, currentDefaultFilterParams);
     }
 
-    if (props.pageSize) {
+    if (props.paginated) {
       if (defaultFilterParamsChanged) {
         pageIndex = 1;
         setPage(pageIndex);
@@ -313,7 +302,6 @@ function PagedListView(props) {
     props.defaultFilterParams,
     ordering,
     page,
-    props.pageSize,
     selectedSubsetArrangementIndex
   ]);
 
@@ -386,6 +374,10 @@ function PagedListView(props) {
   };
 
 
+  const handleTablePaginationPageChange = (value) => {
+    setPage(value + 1);
+  };
+
   const fetchItems = async(requestUrl, requestParams) => {
     return new Promise((resolve, reject) => {
       if (fetchRequestContext) {
@@ -419,13 +411,6 @@ function PagedListView(props) {
     });
   };
 
-  const refreshItems = () => {
-    const filteredItems = [...props.src];
-    // TODO: Filter the source array with the given params
-    const updatedItems = filteredItems;
-    return updatedItems;
-  };
-
   /**
    * Instruct the list to reload using the currently set filterParams
    */
@@ -436,9 +421,11 @@ function PagedListView(props) {
 
     const requestParams = {...filterParams};
 
-    if (props.pageSize) {
-      requestParams[props.pageSizeParamName] = props.pageSize;
+    if (props.paginated) {
       requestParams[props.pageParamName] = page;
+      if (qsPageSizeParam) {
+        requestParams[props.pageSizeParamName] = qsPageSizeParam;
+      }
     }
 
     if (ordering) {
@@ -454,7 +441,8 @@ function PagedListView(props) {
     if (typeof(props.src) === 'string') {
       updatedItems = await fetchItems(props.src, requestParams);
     } else {
-      updatedItems = refreshItems();
+      // TODO: Filter the source array with the given params
+      updatedItems = [...props.src];
     }
 
     // If a transformer has been supplied, apply it to the
@@ -508,18 +496,13 @@ function PagedListView(props) {
 
     if (paginationInfo) {
       newToolbarItems.paginationControl = (
-        <TablePagination
-          classes={{
-            toolbar: classes.paginationToolbar,
-            actions: classes.paginationActions,
-          }}
+        <PaginationControl
           count={paginationInfo.total}
-          component="div"
           key="paginationControl"
-          page={page - 1}
-          rowsPerPage={paginationInfo.per_page}
-          rowsPerPageOptions={[paginationInfo.per_page]}
-          onChangePage={(e, value) => { setPage(value + 1); }}
+          page={(paginationInfo.current_page) - 1}
+          pageSize={paginationInfo.per_page}
+          pageSizeChoices={[10, 25, 50, 100, 250, 500, 1000]}
+          onPageChange={handleTablePaginationPageChange}
         />
       );
     }
@@ -718,8 +701,8 @@ PagedListView.propTypes = {
 
   orderParamName: PropTypes.string,
   pageParamName: PropTypes.string,
-  pageSize: PropTypes.number,
   pageSizeParamName: PropTypes.string,
+  paginated: PropTypes.bool,
 
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionAlways: PropTypes.bool,
@@ -740,6 +723,7 @@ PagedListView.defaultProps = {
   orderParamName: 'order',
   pageParamName: 'page',
   pageSizeParamName: 'page_size',
+  paginated: true,
   selectionAlways: false,
   selectOnClick: false,
   subsetParamName: 'subset',
