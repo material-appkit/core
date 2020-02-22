@@ -25,12 +25,12 @@ const styles = makeStyles((theme) => ({
 function PaginationControl(props) {
   const [pageSizeAnchorEl, setPageSizeAnchorEl] = useState(null);
 
-
   const {
     count,
     onPageChange,
     onPageSizeChange,
     page,
+    pageLabel,
     pageSize,
     pageSizeChoices,
     typographyProps,
@@ -39,7 +39,6 @@ function PaginationControl(props) {
   const offset = page * pageSize;
   const pageCount = Math.floor(count / pageSize);
 
-  const labelText = `${offset + 1} - ${Math.min(offset + pageSize, count)} of ${count}`;
 
   const handlePageSizeButtonClick = (e) => {
     setPageSizeAnchorEl(e.currentTarget);
@@ -56,17 +55,17 @@ function PaginationControl(props) {
 
   const classes = styles();
 
-  return (
-    <Box display="flex" alignItems="center">
-      <IconButton
-        className={classes.paginationButton}
-        disabled={page <= 0 }
-        onClick={() => { onPageChange(page - 1); }}
-      >
-        <ChevronLeftIcon />
-      </IconButton>
-
-      {(pageSizeChoices && pageSizeChoices.length > 1) ? (
+  let pageControl = null;
+  if (pageLabel) {
+    pageControl = (
+      <Typography className={classes.label} {...typographyProps}>
+        {pageLabel}
+      </Typography>
+    );
+  } else {
+    const labelText = `${offset + 1} - ${Math.min(offset + pageSize, count)} of ${count}`;
+    if (pageSizeChoices && pageSizeChoices.length > 1) {
+      pageControl = (
         <Fragment>
           <Link
             aria-controls="page-size-menu"
@@ -95,13 +94,28 @@ function PaginationControl(props) {
               </MenuItem>
             ))}
           </Menu>
-
         </Fragment>
-      ) : (
+      );
+    } else {
+      pageControl = (
         <Typography className={classes.label} {...typographyProps}>
           {labelText}
         </Typography>
-      )}
+      );
+    }
+  }
+
+  return (
+    <Box display="flex" alignItems="center">
+      <IconButton
+        className={classes.paginationButton}
+        disabled={page <= 0 }
+        onClick={() => { onPageChange(page - 1); }}
+      >
+        <ChevronLeftIcon />
+      </IconButton>
+
+      {pageControl}
 
       <IconButton
         className={classes.paginationButton}
@@ -117,6 +131,7 @@ function PaginationControl(props) {
 PaginationControl.propTypes = {
   count: PropTypes.number,
   page: PropTypes.number,
+  pageLabel: PropTypes.string,
   pageSize: PropTypes.number,
   pageSizeChoices: PropTypes.array,
   onPageChange: PropTypes.func,

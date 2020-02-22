@@ -635,6 +635,7 @@ function PagedListView(props) {
           count={paginationInfo.total}
           key="paginationControl"
           page={(paginationInfo.current_page) - 1}
+          pageLabel={selectionDisabled ? null : `${selection.size} of ${paginationInfo.total} selected`}
           pageSize={paginationInfo.per_page}
           onPageChange={handleTablePaginationPageChange}
           onPageSizeChange={handleTablePaginationPageSizeChange}
