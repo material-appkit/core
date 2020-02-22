@@ -17,6 +17,9 @@ import React, {
 
 import List from '@material-ui/core/List';
 
+import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -25,6 +28,7 @@ import Tab from '@material-ui/core/Tab';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import SortIcon from '@material-ui/icons/Sort';
 
@@ -68,39 +72,102 @@ SortControl.propTypes = {
 
 
 //------------------------------------------------------------------------------
-const selectionControlStyles = makeStyles({
+const selectionControlStyles = makeStyles((theme) => ({
   button: {
-    borderRadius: 0,
+    padding: `${theme.spacing(0.5)}px ${theme.spacing(1)}px`,
   },
-});
+
+  menuButton: {
+    borderColor: `${theme.palette.grey[400]} !important`,
+    minWidth: 0,
+    padding: 0,
+  },
+
+  disabled: {
+    color: theme.palette.text.secondary,
+  },
+
+  enabled: {
+    color: theme.palette.primary.main,
+  },
+}));
 
 function SelectionControl(props) {
-  const {
-    onClick,
-    selectionDisabled,
-  } = props;
+  const [selectMenuEl, setSelectMenuEl] = useState(null);
+  const { selectionDisabled } = props;
+
+
+  const handleSelectionMenuItemClick = (choice) => {
+    setSelectMenuEl(null);
+    props.onSelectionMenuItemClick(choice);
+  };
 
   const classes = selectionControlStyles();
 
+  if (!props.selectionMenu) {
+    return (
+      <ToolbarItem
+        control={(
+          <IconButton
+            color={selectionDisabled ? 'default' : 'primary' }
+            onClick={props.onClick}
+          >
+            <GpsFixedIcon />
+          </IconButton>
+        )}
+        tooltip={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}
+      />
+    );
+  }
+
   return (
-    <ToolbarItem
-      control={(
-        <IconButton
-          className={classes.button}
-          color={selectionDisabled ? 'default' : 'primary' }
-          onClick={onClick}
+    <Fragment>
+      <ButtonGroup>
+        <Tooltip title={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}>
+          <Button
+            classes={{
+              root: classes.button,
+              outlined: selectionDisabled ? classes.disabled : classes.enabled,
+            }}
+            onClick={props.onClick}
+            variant="outlined"
+          >
+            <GpsFixedIcon />
+          </Button>
+        </Tooltip>
+
+        <Button
+          className={classes.menuButton}
+          disabled={selectionDisabled}
+          onClick={(e) => { setSelectMenuEl(e.currentTarget); }}
+          size="small"
         >
-          <GpsFixedIcon />
-        </IconButton>
-      )}
-      tooltip={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}
-    />
-  )
-};
+          <ArrowDropDownIcon />
+        </Button>
+      </ButtonGroup>
+
+      <Menu
+        anchorEl={selectMenuEl}
+        id="selection-menu"
+        open={Boolean(selectMenuEl)}
+        onClose={() => { handleSelectionMenuDismiss(null); }}
+      >
+        <MenuItem onClick={() => { handleSelectionMenuItemClick('all'); }}>
+          Select All
+        </MenuItem>
+        <MenuItem onClick={() => { handleSelectionMenuItemClick('none'); }}>
+          Deselect All
+        </MenuItem>
+      </Menu>
+    </Fragment>
+  );
+}
 
 SelectionControl.propTypes = {
   selectionDisabled: PropTypes.bool.isRequired,
+  selectionMenu: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
+  onSelectionMenuItemClick: PropTypes.func.isRequired,
 };
 
 //------------------------------------------------------------------------------
@@ -404,6 +471,22 @@ function PagedListView(props) {
     updateSelection(item);
   };
 
+  /**
+   * Respond to selection menu by updating selection accordingly
+   */
+  const handleSelectionMenuItemClick = (action) => {
+    switch (action) {
+      case 'all':
+        setSelection(new Set(items));
+        break;
+      case 'none':
+        setSelection(new Set());
+        break;
+      default:
+        throw new Error(`Unsupported selection action: ${action}`);
+    }
+  };
+
 
   const handleSortDialogDismiss = (choice) => {
     setSortControlEl(null);
@@ -539,7 +622,9 @@ function PagedListView(props) {
             // _Always_ clear current selection when selection mode is toggled
             setSelection(new Set());
           }}
+          onSelectionMenuItemClick={handleSelectionMenuItemClick}
           selectionDisabled={selectionDisabled}
+          selectionMenu={props.selectionMenu}
         />
       );
     }
@@ -755,8 +840,9 @@ PagedListView.propTypes = {
   pageSizeParamName: PropTypes.string,
   paginated: PropTypes.bool,
 
-  selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionAlways: PropTypes.bool,
+  selectionMode: PropTypes.oneOf(['single', 'multiple']),
+  selectionMenu: PropTypes.bool,
   selectOnClick: PropTypes.bool,
 
   src: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
@@ -776,6 +862,7 @@ PagedListView.defaultProps = {
   pageSizeParamName: 'page_size',
   paginated: true,
   selectionAlways: false,
+  selectionMenu: false,
   selectOnClick: false,
   subsetParamName: 'subset',
   tileListProps: {},
