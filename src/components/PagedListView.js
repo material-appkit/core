@@ -78,7 +78,7 @@ function PagedListView(props) {
 
   const qsParams = NavManager.qsParams;
   const qsPageParam = qsParams[props.pageParamName] ? parseInt(qsParams[props.pageParamName]) : 1;
-  const qsPageSizeParam = qsParams[props.pageSizeParamName] || null;
+  const qsPageSizeParam = qsParams[props.pageSizeParamName] ? parseInt(qsParams[props.pageSizeParamName]) : null;
 
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
@@ -259,7 +259,7 @@ function PagedListView(props) {
   /**
    * Update filter params when:
    * - The page changes
-   * - (TODO) The page size changes
+   * - The page size changes
    * - Ordering is modified
    * - Selected subset arrangement is changed.
    */
@@ -276,14 +276,29 @@ function PagedListView(props) {
     }
 
     if (props.paginated) {
+      // When the default filter params change, reset to page 1
       if (defaultFilterParamsChanged) {
         pageIndex = 1;
-        setPage(pageIndex);
       }
 
-      if (props.location && pageIndex !== qsPageParam) {
-        NavManager.updateUrlParam(props.pageParamName, pageIndex);
+      if (props.location) {
+        const updatedQueryParams = {};
+        if (pageIndex !== qsPageParam) {
+          updatedQueryParams[props.pageParamName] = pageIndex;
+        }
+        if (pageSize !== qsPageSizeParam) {
+          // When the page size changes, reset to page 1
+          pageIndex = 1;
+          updatedQueryParams[props.pageParamName] = pageIndex;
+          updatedQueryParams[props.pageSizeParamName] = pageSize;
+        }
+
+        if (Object.keys(updatedQueryParams).length) {
+          NavManager.updateUrlParams(updatedQueryParams, true);
+        }
       }
+
+      setPage(pageIndex);
     }
 
     if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
@@ -302,6 +317,7 @@ function PagedListView(props) {
     props.defaultFilterParams,
     ordering,
     page,
+    pageSize,
     selectedSubsetArrangementIndex
   ]);
 
@@ -378,6 +394,10 @@ function PagedListView(props) {
     setPage(value + 1);
   };
 
+  const handleTablePaginationPageSizeChange = (value) => {
+    setPageSize(value);
+  };
+
   const fetchItems = async(requestUrl, requestParams) => {
     return new Promise((resolve, reject) => {
       if (fetchRequestContext) {
@@ -423,9 +443,7 @@ function PagedListView(props) {
 
     if (props.paginated) {
       requestParams[props.pageParamName] = page;
-      if (qsPageSizeParam) {
-        requestParams[props.pageSizeParamName] = qsPageSizeParam;
-      }
+      requestParams[props.pageSizeParamName] = pageSize;
     }
 
     if (ordering) {
@@ -463,7 +481,7 @@ function PagedListView(props) {
    */
   useEffect(() => {
     reload();
-  }, [props.src, filterParams, ordering, page]);
+  }, [props.src, filterParams, ordering, page, pageSize]);
 
 
   /**
@@ -501,8 +519,8 @@ function PagedListView(props) {
           key="paginationControl"
           page={(paginationInfo.current_page) - 1}
           pageSize={paginationInfo.per_page}
-          pageSizeChoices={[10, 25, 50, 100, 250, 500, 1000]}
           onPageChange={handleTablePaginationPageChange}
+          onPageSizeChange={handleTablePaginationPageSizeChange}
         />
       );
     }
