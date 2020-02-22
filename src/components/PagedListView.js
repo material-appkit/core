@@ -49,7 +49,7 @@ function SortControl(props) {
   });
 
   return (
-    <Tooltip title={orderingLabel}>
+    <Tooltip title={`Ordered by: ${orderingLabel}`}>
       <IconButton
         color="primary"
         onClick={props.onClick}
@@ -714,6 +714,7 @@ function PagedListView(props) {
             <MenuItem
               key={sortChoice.value}
               onClick={() => { handleSortDialogDismiss(sortChoice); }}
+              selected={sortChoice.value === ordering}
             >
               {sortChoice.label}
             </MenuItem>
