@@ -1,4 +1,4 @@
-import titleCase from 'title-case';
+import { titleCase } from 'title-case';
 
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
