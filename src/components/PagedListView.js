@@ -15,11 +15,13 @@ import React, {
   useState,
 } from 'react';
 
-import List from '@material-ui/core/List';
+import { VariableSizeList, VariableSizeGrid } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
+import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -177,7 +179,7 @@ SelectionControl.propTypes = {
 const styles = makeStyles((theme) => ({
   tabs: {
     flex: 1,
-  }
+  },
 }));
 
 function PagedListView(props) {
@@ -188,7 +190,10 @@ function PagedListView(props) {
   const qsPageSizeParam = qsParams[props.pageSizeParamName] ? parseInt(qsParams[props.pageSizeParamName]) : null;
 
   const [filterParams, setFilterParams] = useState(null);
+
   const [items, setItems] = useState(null);
+  const itemHeights = useRef(null);
+
   const [ordering, setOrdering] = useState(null);
   const [page, setPage] = useState(qsPageParam);
   const [pageSize, setPageSize] = useState(qsPageSizeParam);
@@ -202,6 +207,14 @@ function PagedListView(props) {
   // Maintain a reference to the fetch request so it can be aborted
   // if this component is unmounted while it is in flight.
   const [fetchRequestContext, setFetchRequestContext] = useState(null);
+
+  // The view is assumed to be 'loading' whenever a fetchRequestContext is set.
+  const loading = !!fetchRequestContext;
+
+  const [viewWidth, setViewWidth] = useState(0);
+  const [viewHeight, setViewHeight] = useState(0);
+
+  const [measuring, setMeasuring] = useState(false);
 
 
   /**
@@ -229,6 +242,7 @@ function PagedListView(props) {
 
   }, [selection, items]);
 
+
   /**
    * @param item
    * @returns {*} Unique identifier of given item
@@ -236,6 +250,34 @@ function PagedListView(props) {
   const keyForItem = (item) => {
     const { itemIdKey } = props;
     return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
+  };
+
+
+  /**
+   * Function to generate the ListItem props for a given item
+   * @param item
+   * @returns Object containing properties to supply to the list item
+   */
+  const itemProps = (item) => {
+    const {
+      itemContextProvider,
+      listItemProps,
+      selectionAlways,
+      selectionMode
+    } = props;
+    let context = itemContextProvider ? itemContextProvider(item) : {};
+
+    const itemKey = keyForItem(item);
+    let selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
+
+    return {
+      item: item,
+      onSelectionChange: handleSelectionControlClick,
+      selected,
+      selectionMode: selectionAlways ? selectionMode : selectionDisabled ? null : selectionMode,
+      ...context,
+      ...listItemProps,
+    };
   };
 
 
@@ -253,6 +295,7 @@ function PagedListView(props) {
       }
     });
   };
+
 
   /**
    *
@@ -296,6 +339,7 @@ function PagedListView(props) {
     }
   };
 
+
   /**
    *
    * @param oldItem
@@ -315,7 +359,7 @@ function PagedListView(props) {
     setItems(updatedItems);
   };
 
-
+  // ---------------------------------------------------------------------------
   /**
    * Initialization
    */
@@ -362,6 +406,7 @@ function PagedListView(props) {
       setSelectedSubsetArrangementIndex(initialSubsetArrangementIndex);
     }
   }, [props.subsetFilterArrangement]);
+
 
   /**
    * Update filter params when:
@@ -429,7 +474,6 @@ function PagedListView(props) {
   ]);
 
 
-
   const updateSelection = (item) => {
     const itemId = keyForItem(item);
     const selectedItem = setFind(selection, (i) => keyForItem(i) === itemId);
@@ -466,6 +510,28 @@ function PagedListView(props) {
     }
   };
 
+  // ---------------------------------------------------------------------------
+  /**
+   * Invoked whenever the list container dimensions change
+   * @param height
+   * @param width
+   */
+  const handleAutoSizerResize = ({ height, width }) => {
+    setViewHeight(height);
+    setViewWidth(width);
+  };
+
+  /**
+   *
+   */
+  const handleListItemMount = (item, itemIndex, element) => {
+    itemHeights.current[itemIndex] = element.getBoundingClientRect().height;
+
+    if (itemIndex === items.length - 1) {
+      setMeasuring(false);
+    }
+  };
+
   /**
    * Handle changes to the selection
    * @param item Record whose selection control has been clicked
@@ -480,7 +546,9 @@ function PagedListView(props) {
   const handleSelectionMenuItemClick = (action) => {
     switch (action) {
       case 'all':
-        setSelection(new Set(items));
+        const newSelection = new Set(selection);
+        items.forEach((item) => { newSelection.add(item); });
+        setSelection(newSelection);
         break;
       case 'none':
         setSelection(new Set());
@@ -521,6 +589,7 @@ function PagedListView(props) {
     setPageSize(value);
   };
 
+  // ---------------------------------------------------------------------------
   const fetchItems = async(requestUrl, requestParams) => {
     return new Promise((resolve, reject) => {
       if (fetchRequestContext) {
@@ -533,24 +602,24 @@ function PagedListView(props) {
 
       ServiceAgent.get(requestUrl, requestParams, requestContext)
         .then((response) => {
-            setFetchRequestContext(null);
-            if (response === null) {
-              return;
-            }
+          setFetchRequestContext(null);
+          if (response === null) {
+            return;
+          }
 
-            const responseInfo = response.body;
-            const loadedItems = responseInfo.data ? responseInfo.data : responseInfo;
+          const responseInfo = response.body;
+          const loadedItems = responseInfo.data ? responseInfo.data : responseInfo;
 
-            if (responseInfo.meta && responseInfo.meta.pagination) {
-              setPaginationInfo(responseInfo.meta.pagination);
-            }
+          if (responseInfo.meta && responseInfo.meta.pagination) {
+            setPaginationInfo(responseInfo.meta.pagination);
+          }
 
-            resolve(loadedItems);
-          })
-          .catch((err) => {
-            setFetchRequestContext(null);
-            reject(err);
-          });
+          resolve(loadedItems);
+        })
+        .catch((err) => {
+          setFetchRequestContext(null);
+          reject(err);
+        });
     });
   };
 
@@ -560,6 +629,17 @@ function PagedListView(props) {
   const reload = async() => {
     if (!(props.src && filterParams)) {
       return;
+    }
+
+    // When in windowed mode, setting the 'measuring' flag causes the list
+    // items to be rendered into a hidden  container so their individual
+    // heights can be determined.
+    // After all items have been measured the hidden container is replaced
+    // with a VariableSizedList / VariableSizedGrid
+    itemHeights.current = null;
+    setItems(null);
+    if (props.windowed) {
+      setMeasuring(true);
     }
 
     const requestParams = {...filterParams};
@@ -591,6 +671,9 @@ function PagedListView(props) {
     if (props.itemTransformer) {
       updatedItems = updatedItems.map(props.itemTransformer);
     }
+
+    itemHeights.current = new Array(updatedItems.length).fill(0);
+
     setItems(updatedItems);
 
     if (props.onComplete) {
@@ -598,7 +681,7 @@ function PagedListView(props) {
     }
   };
 
-
+  // ---------------------------------------------------------------------------
   /**
    * Reload the list whenever the listed dependent properties are altered
    */
@@ -701,7 +784,7 @@ function PagedListView(props) {
 
       props.onConfig({
         extendSelection,
-        loading: !!fetchRequestContext,
+        loading,
         onItemUpdate: handleItemUpdate,
         selection,
         selectionDisabled,
@@ -720,8 +803,28 @@ function PagedListView(props) {
   ]);
 
   //----------------------------------------------------------------------------
-  if (!items) {
-    return null;
+  /**
+   * Produce a list item from the given item
+   * @param item: Item to be rendered
+   * @param style: Additional style params (primarily used in windowed mode)
+   * @param onMount: Optional callback to be invoked when the list item mounts
+   */
+  const renderListItem = (item, itemIndex, style, onMount) => (
+    <props.listItemComponent
+      key={keyForItem(item)}
+      onMount={(element) => { handleListItemMount(item, itemIndex, element); }}
+      selectOnClick={props.selectOnClick}
+      style={style}
+      {...itemProps(item)}
+    />
+  );
+
+  if (!items || loading) {
+    return (
+      <PlaceholderView border={false}>
+        <CircularProgress />
+      </PlaceholderView>
+    );
   }
 
   if (!items.length) {
@@ -734,42 +837,43 @@ function PagedListView(props) {
     );
   }
 
-  // Let the active view mode determine whether to render a List or a Grid
-  const itemProps = (item) => {
-    const {
-      itemContextProvider,
-      listItemProps,
-      selectionAlways,
-      selectionMode
-    } = props;
-    let context = itemContextProvider ? itemContextProvider(item) : {};
+  let view = null;
 
-    const itemKey = keyForItem(item);
-    let selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
-
-    return {
-      item: item,
-      onSelectionChange: handleSelectionControlClick,
-      selected,
-      selectionMode: selectionAlways ? selectionMode : selectionDisabled ? null : selectionMode,
-      ...context,
-      ...listItemProps,
-    };
-  };
-
-  return (
-    <Fragment>
-      {props.displayMode === 'list' ? (
-        <List disablePadding>
-          {items.map((item) => (
-            <props.listItemComponent
-              key={keyForItem(item)}
-              selectOnClick={props.selectOnClick}
-              {...itemProps(item)}
-            />
-          ))}
+  if (props.displayMode === 'list') {
+    if (props.windowed) {
+      view = measuring ? (
+        <List
+          disablePadding
+          style={{ width: viewWidth, visibility: 'hidden' }}
+        >
+          {items.map((item, itemIndex) => renderListItem(item, itemIndex))}
         </List>
       ) : (
+        <VariableSizeList
+          height={viewHeight}
+          innerElementType={List}
+          itemData={{ items }}
+          itemCount={items.length}
+          itemSize={(index) => itemHeights.current[index]}
+          width={viewWidth}
+        >
+          {({ data, index, style }) => (
+            renderListItem(data.items[index], index, style)
+          )}
+        </VariableSizeList>
+      );
+    } else {
+      view = (
+        <List disablePadding style={{ width: viewWidth }}>
+          {items.map((item, itemIndex) => renderListItem(item, itemIndex))}
+        </List>
+      );
+    }
+  } else {
+    if (props.windowed) {
+      console.log('TODO: Implement windowed grid view!');
+    } else {
+      view = (
         <TileList
           selectionDisabled={selectionDisabled}
           {...props.tileListProps}
@@ -781,7 +885,15 @@ function PagedListView(props) {
             />
           ))}
         </TileList>
-      )}
+      );
+    }
+  }
+
+  return (
+    <Fragment>
+      <AutoSizer onResize={handleAutoSizerResize}>
+        {() => view}
+      </AutoSizer>
 
       {toolbarItems.sortControl &&
         <Menu
@@ -810,7 +922,6 @@ function PagedListView(props) {
           ))}
         </Menu>
       }
-
     </Fragment>
   );
 }
@@ -856,6 +967,7 @@ PagedListView.propTypes = {
 
   tileItemComponent: PropTypes.func,
   tileListProps: PropTypes.object,
+  windowed: PropTypes.bool,
 };
 
 PagedListView.defaultProps = {
@@ -870,6 +982,7 @@ PagedListView.defaultProps = {
   selectOnClick: false,
   subsetParamName: 'subset',
   tileListProps: {},
+  windowed: true,
 };
 
 export default PagedListView;

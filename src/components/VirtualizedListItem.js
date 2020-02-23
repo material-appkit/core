@@ -5,13 +5,15 @@
 */
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { Link as RouterLink } from 'react-router-dom';
 
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItem from '@material-ui/core/ListItem';
 import Radio from '@material-ui/core/Radio';
+
+import { useInit } from '../util/hooks';
 
 // -----------------------------------------------------------------------------
 export const listItemProps = (props) => {
@@ -38,24 +40,45 @@ export const listItemProps = (props) => {
 export const commonPropTypes = {
   item: PropTypes.object,
   isLink: PropTypes.bool,
+  onItemUpdate: PropTypes.func,
+  onMount: PropTypes.func,
+  onUnmount: PropTypes.func,
 };
 
 export const commonDefaultProps = {
   isLink: true,
 };
 
-
+// -----------------------------------------------------------------------------
 function VirtualizedListItem(props) {
   const {
     item,
     onItemClick,
+    onMount,
+    onUnmount,
     onSelectionChange,
     selectionMode,
     selectOnClick,
     ...rest
   } = props;
 
-  let listItemProps = {};
+
+  const listItemRef = useRef(null);
+
+  useInit(() => {
+    if (onMount) {
+      onMount(listItemRef.current, item);
+    }
+  }, () => {
+    if (onUnmount) {
+      onUnmount(listItemRef.current, item);
+    }
+  });
+
+  const listItemProps = {
+    ref: listItemRef,
+    ...rest
+  };
 
   if (selectOnClick) {
     listItemProps.button = true;
@@ -78,7 +101,6 @@ function VirtualizedListItem(props) {
     }
   }
 
-
   const handleSelectionControlClick = (e) => {
     e.preventDefault();
 
@@ -87,34 +109,25 @@ function VirtualizedListItem(props) {
     }
   };
 
-  let selectionControl = null;
 
-  if (selectionMode === 'single') {
-    selectionControl = (
-      <Radio
-        checked={props.selected}
-        disableRipple
-        edge="start"
-        onClick={handleSelectionControlClick}
-        style={{ padding: 8, marginRight: 8 }}
-      />
-    );
-  }
+  let SelectionComponent = null;
   if (selectionMode === 'multiple') {
-    selectionControl = (
-      <Checkbox
-        checked={props.selected}
-        disableRipple
-        edge="start"
-        onClick={handleSelectionControlClick}
-        style={{ padding: 8, marginRight: 8 }}
-      />
-    );
+    SelectionComponent = Checkbox;
+  } else if (selectionMode === 'single') {
+    SelectionComponent = Radio;
   }
 
   return (
-    <ListItem {...listItemProps} {...rest}>
-      {selectionControl}
+    <ListItem {...listItemProps}>
+      {SelectionComponent !== null &&
+        <SelectionComponent
+          checked={props.selected}
+          disableRipple
+          edge="start"
+          onClick={handleSelectionControlClick}
+          style={{ padding: 8, marginRight: 8 }}
+        />
+      }
       {props.children}
     </ListItem>
   );

@@ -63,8 +63,14 @@ function PaginationControl(props) {
       </Typography>
     );
   } else {
-    const labelText = `${offset + 1} - ${Math.min(offset + pageSize, count)} of ${count}`;
-    if (pageSizeChoices && pageSizeChoices.length > 1) {
+
+    const labelText = count ? (
+      `${offset + 1} - ${Math.min(offset + pageSize, count)} of ${count}`
+    ) : (
+      'No Results'
+    );
+
+    if (count && pageSizeChoices && pageSizeChoices.length > 1) {
       pageControl = (
         <Fragment>
           <Link
