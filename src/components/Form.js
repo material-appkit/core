@@ -175,8 +175,6 @@ class Form extends React.PureComponent {
         const value = data[fieldName];
         if (fieldInfo) {
           coercedData[fieldName] = toRepresentation(value, fieldInfo, this);
-        } else {
-          coercedData[fieldName] = value;
         }
       });
     }

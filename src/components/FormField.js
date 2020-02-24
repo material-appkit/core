@@ -11,6 +11,8 @@ import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { isValue } from '../util/value';
+
 //------------------------------------------------------------------------------
 export const fromRepresentation = (value, fieldInfo) => {
   const { widget } = fieldInfo.ui || {};
@@ -56,14 +58,19 @@ export const toRepresentation = (value, fieldInfo, form) => {
     return WidgetClass.toRepresentation(value);
   }
 
+  let coercedValue = value;
+  if (!isValue(coercedValue) && isValue(fieldInfo.default)) {
+    coercedValue = fieldInfo.default;
+  }
+
   switch (fieldInfo.type) {
     case 'date':
     case 'datetime':
-      return (value === '') ? null : value;
+      return (coercedValue === '') ? null : coercedValue;
     case 'number':
-      return (value === '') ? null : parseFloat(value);
+      return (coercedValue === '') ? null : parseFloat(coercedValue);
     default:
-      return value;
+      return coercedValue;
   }
 };
 
