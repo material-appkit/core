@@ -281,6 +281,21 @@ function PagedListView(props) {
   };
 
 
+  const coerceFilterParams = (params) => {
+    const coercedParams = { ...params };
+    Object.keys(coercedParams).forEach((paramName) => {
+
+      // Let params specified as arrays (typically M2M relationships)
+      // be cast to comma-separated strings
+      if (Array.isArray(coercedParams[paramName])) {
+        coercedParams[paramName] = coercedParams[paramName].join(',');
+      }
+    });
+
+    return coercedParams;
+  };
+
+
   /**
    *
    * @param item
@@ -416,21 +431,18 @@ function PagedListView(props) {
    * - Selected subset arrangement is changed.
    */
   useEffect(() => {
-    const params = { ...props.defaultFilterParams };
-
-    let defaultFilterParamsChanged = false;
-    let pageIndex = page;
-    if (filterParams) {
-      const keysToExclude = [props.pageParamName, props.pageSizeParamName, props.orderParamName];
-      const currentDefaultFilterParams = filterExcludeKeys(filterParams, keysToExclude);
-
-      defaultFilterParamsChanged = !isEqual(params, currentDefaultFilterParams);
-    }
+    let params = { ...props.defaultFilterParams };
 
     if (props.paginated) {
+      let pageIndex = page;
+
       // When the default filter params change, reset to page 1
-      if (defaultFilterParamsChanged) {
-        pageIndex = 1;
+      if (filterParams) {
+        const keysToExclude = [props.pageParamName, props.pageSizeParamName, props.orderParamName];
+        const currentDefaultFilterParams = filterExcludeKeys(filterParams, keysToExclude);
+        if (!isEqual(params, currentDefaultFilterParams)) {
+          pageIndex = 1;
+        }
       }
 
       if (props.location) {
@@ -456,10 +468,14 @@ function PagedListView(props) {
     if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
       const subsetInfo = props.subsetFilterArrangement[selectedSubsetArrangementIndex];
       Object.assign(params, subsetInfo.params);
+
       if (props.location && qsParams[props.subsetParamName] !== subsetInfo.label) {
         NavManager.updateUrlParam(props.subsetParamName, subsetInfo.label);
       }
     }
+
+    // Let the filter params be transformed before they're committed
+    params = coerceFilterParams(params);
 
     if (!isEqual(params, filterParams)) {
       setFilterParams(params);
