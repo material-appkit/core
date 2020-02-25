@@ -1,6 +1,6 @@
 {
   "name": "@material-appkit/core",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "main": "dist/index.js",
   "keywords": [
