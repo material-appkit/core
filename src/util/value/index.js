@@ -9,4 +9,11 @@ Object.defineProperty(exports, "isValue", {
   },
 });
 
+Object.defineProperty(exports, "isSet", {
+  enumerable: true,
+  get: function get() {
+    return _value.isSet;
+  },
+});
+
 const _value = _interopRequireDefault(require("./value"));

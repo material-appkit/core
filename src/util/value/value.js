@@ -13,3 +13,7 @@ export function isValue(value) {
     !Number.isNaN(value)
   );
 }
+
+export function isSet(value) {
+  return (value !== undefined && value !== null);
+}
