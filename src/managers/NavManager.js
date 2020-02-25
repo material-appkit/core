@@ -2,6 +2,8 @@ import qs from 'query-string';
 import { createBrowserHistory } from 'history';
 import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 
+import { isSet } from '../util/value';
+
 class NavManager {
   static routerStore = null;
   static history = null;
@@ -38,11 +40,11 @@ class NavManager {
   static setUrlParams(params, pathname, replace, state) {
     const qsParams = params || qs.parse(this.routerStore.location.search);
 
-    // Filter out any parameters with unset values
+    // Filter out any null/undefined parameters
     const filteredParams = {};
     Object.keys(qsParams).forEach((paramName) => {
       const value = qsParams[paramName];
-      if (value) {
+      if (isSet(value)) {
         filteredParams[paramName] = value;
       }
     });
