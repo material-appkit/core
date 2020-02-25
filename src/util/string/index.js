@@ -16,4 +16,11 @@ Object.defineProperty(exports, "rstrip", {
   },
 });
 
+Object.defineProperty(exports, "titleCase", {
+  enumerable: true,
+  get: function get() {
+    return _string.titleCase;
+  },
+});
+
 const _string = _interopRequireDefault(require('./string'));

@@ -1,5 +1,3 @@
-import { titleCase } from 'title-case';
-
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 
@@ -13,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { valueForKeyPath } from '../util/object';
+import { titleCase } from '../util/string';
 
 //----------------------------------------------------------------------------
 // Helper function that renders a given value or list of values
