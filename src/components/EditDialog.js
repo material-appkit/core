@@ -25,17 +25,15 @@ const styles = makeStyles((theme) => ({
 }));
 
 function EditDialog(props) {
-    const formRef = useRef(null);
+  const formRef = useRef(null);
+  const [saving, setSaving] = useState(false);
 
-    let title = props.entityType;
-    if (props.persistedObject) {
-      title = `${props.labels.UPDATE} ${title}`;
-    } else {
-      title = `${props.labels.ADD} ${title}`;
-    }
-
-
-
+  let title = props.entityType;
+  if (props.persistedObject) {
+    title = `${props.labels.UPDATE} ${title}`;
+  } else {
+    title = `${props.labels.ADD} ${title}`;
+  }
 
   const deleteRepresentedObject = async() => {
     const { persistedObject } = props;
@@ -52,9 +50,6 @@ function EditDialog(props) {
     props.onClose(this);
   };
 
-  const commit = () => {
-    formRef.current.save();
-  };
 
   const handleFormLoad = (representedObject, fieldInfoMap) => {
     if (props.onLoad) {
@@ -62,7 +57,13 @@ function EditDialog(props) {
     }
   };
 
+  const handleFormWillSave = () => {
+    setSaving(true);
+  };
+
   const handleFormSave = (representedObject) => {
+    setSaving(false);
+
     if (props.onSave) {
       props.onSave(representedObject);
     }
@@ -70,8 +71,19 @@ function EditDialog(props) {
     dismiss();
   };
 
-  const handleFormError = () => {
-    const errorMessage = props.labels.SAVE_FAIL_NOTIFICATION;
+  const handleFormError = (err) => {
+    setSaving(false);
+
+    let errorMessage = props.labels.SAVE_FAIL_NOTIFICATION;
+
+    const errors = err.response.body;
+    Object.keys(errors).forEach((errorKey) => {
+      const errorValue = errors[errorKey];
+      if (props.labels[errorValue]) {
+        errorMessage = props.labels[errorValue];
+      }
+    });
+
     SnackbarManager.error(errorMessage);
   };
 
@@ -126,6 +138,7 @@ function EditDialog(props) {
         <Form
           ref={formRef}
           onLoad={handleFormLoad}
+          onWillSave={handleFormWillSave}
           onSave={handleFormSave}
           onError={handleFormError}
           {...FormProps}
@@ -149,8 +162,12 @@ function EditDialog(props) {
           {props.labels.CANCEL}
         </Button>
 
-        <Button color="primary" onClick={() => { commit(); }}>
-          {props.labels.SAVE}
+        <Button
+          color="primary"
+          disabled={saving}
+          onClick={() => { formRef.current.save(); }}
+        >
+          {saving ? props.labels.SAVING : props.labels.SAVE}
         </Button>
       </DialogActions>
     </Dialog>
@@ -177,7 +194,9 @@ EditDialog.defaultProps = {
     ADD: 'Add',
     CANCEL: 'Cancel',
     DELETE: 'Delete',
+    E_CREATE_DUPLICATE_RECORD: 'Refused to create duplicate record',
     SAVE: 'Save',
+    SAVING: 'Saving...',
     SAVE_FAIL_NOTIFICATION: 'Unable to Save',
     UPDATE: 'Update',
   },
