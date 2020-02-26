@@ -541,7 +541,8 @@ function PagedListView(props) {
    *
    */
   const handleListItemMount = (item, itemIndex, element) => {
-    itemHeights.current[itemIndex] = element.getBoundingClientRect().height;
+    const listItemRect = element.getBoundingClientRect();
+    itemHeights.current[itemIndex] = listItemRect.height;
 
     if (itemIndex === items.length - 1) {
       setMeasuring(false);
@@ -822,6 +823,7 @@ function PagedListView(props) {
   /**
    * Produce a list item from the given item
    * @param item: Item to be rendered
+   * @param itemIndex: Array index of item being rendered
    * @param style: Additional style params (primarily used in windowed mode)
    * @param onMount: Optional callback to be invoked when the list item mounts
    */
@@ -858,29 +860,30 @@ function PagedListView(props) {
   if (props.displayMode === 'list') {
     if (props.windowed) {
       view = measuring ? (
-        <List
-          disablePadding
-          style={{ width: viewWidth, visibility: 'hidden' }}
-        >
+        <List disablePadding style={{ visibility: 'hidden' }}>
           {items.map((item, itemIndex) => renderListItem(item, itemIndex))}
         </List>
       ) : (
-        <VariableSizeList
-          height={viewHeight}
-          innerElementType={List}
-          itemData={{ items }}
-          itemCount={items.length}
-          itemSize={(index) => itemHeights.current[index]}
-          width={viewWidth}
-        >
-          {({ data, index, style }) => (
-            renderListItem(data.items[index], index, style)
+        <AutoSizer onResize={handleAutoSizerResize}>
+          {({width, height}) => (
+            <VariableSizeList
+              height={height}
+              innerElementType={List}
+              itemData={{ items }}
+              itemCount={items.length}
+              itemSize={(index) => itemHeights.current[index]}
+              width={width}
+            >
+              {({ data, index, style }) => (
+                renderListItem(data.items[index], index, style)
+              )}
+            </VariableSizeList>
           )}
-        </VariableSizeList>
+        </AutoSizer>
       );
     } else {
       view = (
-        <List disablePadding style={{ width: viewWidth }}>
+        <List disablePadding>
           {items.map((item, itemIndex) => renderListItem(item, itemIndex))}
         </List>
       );
@@ -907,9 +910,7 @@ function PagedListView(props) {
 
   return (
     <Fragment>
-      <AutoSizer onResize={handleAutoSizerResize}>
-        {() => view}
-      </AutoSizer>
+      {view}
 
       {toolbarItems.sortControl &&
         <Menu
@@ -992,13 +993,13 @@ PagedListView.defaultProps = {
   orderParamName: 'order',
   pageParamName: 'page',
   pageSizeParamName: 'page_size',
-  paginated: true,
+  paginated: false,
   selectionAlways: false,
   selectionMenu: false,
   selectOnClick: false,
   subsetParamName: 'subset',
   tileListProps: {},
-  windowed: true,
+  windowed: false,
 };
 
 export default PagedListView;
