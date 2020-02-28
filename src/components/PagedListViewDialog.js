@@ -208,7 +208,7 @@ function PagedListViewDialog(props) {
             onSelectionChange={handleSelectionChange}
             paginated={props.paginated}
             selectionDisabled={false}
-            selectionMode={commitOnSelect ? 'single' : selectionMode}
+            selectionMode={commitOnSelect ? 'single' : props.selectionMode}
             selectOnClick
           />
         </DialogContent>

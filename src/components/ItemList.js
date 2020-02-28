@@ -258,14 +258,7 @@ class ItemList extends React.PureComponent {
 
   handleListDialogDismiss = (selection) => {
     this.setState({ listDialogOpen: false });
-    if (selection) {
-      if (Array.isArray(selection)) {
-        this.attachRecords(selection);
-      } else {
-        this.attachRecords([selection]);
-      }
-
-    }
+    this.attachRecords(selection);
   };
 
   handleItemClick = (item) => {
@@ -359,7 +352,7 @@ class ItemList extends React.PureComponent {
             apiDetailUrl={this.state.editingObject ? this.state.editingObject.url : null}
             entityType={this.props.entityType}
             onClose={this.handleEditDialogClose}
-            onSave={(record) => { this.attachRecords([record]) }}
+            onSave={this.handleItemChange}
             {...this.props.editDialogProps}
           />
         }
