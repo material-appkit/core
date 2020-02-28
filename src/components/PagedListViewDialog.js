@@ -107,7 +107,7 @@ function PagedListViewDialog(props) {
 
   //----------------------------------------------------------------------------
   const handleSelectionChange = (selection) => {
-    if (selection && commitOnSelect) {
+    if (commitOnSelect) {
       onDismiss(Array.from(selection));
     }
   };
@@ -207,6 +207,7 @@ function PagedListViewDialog(props) {
             onConfig={(config) => { setListViewInfo(config); }}
             onSelectionChange={handleSelectionChange}
             selectionDisabled={false}
+            selectionMode={commitOnSelect ? 'single' : selectionMode}
             selectOnClick
           />
         </DialogContent>
