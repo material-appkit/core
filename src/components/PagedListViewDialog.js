@@ -106,9 +106,9 @@ function PagedListViewDialog(props) {
   };
 
   //----------------------------------------------------------------------------
-  const handleSelectionChange = () => {
-    if (commitOnSelect) {
-      commit();
+  const handleSelectionChange = (selection) => {
+    if (selection && commitOnSelect) {
+      onDismiss(Array.from(selection));
     }
   };
 
