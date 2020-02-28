@@ -80,7 +80,6 @@ function PagedListViewDialog(props) {
     ...pagedListViewProps
   } = props;
 
-
   const [listViewInfo, setListViewInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
@@ -202,11 +201,12 @@ function PagedListViewDialog(props) {
             defaultFilterParams={filterParams}
             listItemProps={{
               ...(listItemProps || {}),
+              commitOnSelect: props.commitOnSelect,
               isLink: false,
             }}
             onConfig={(config) => { setListViewInfo(config); }}
             onSelectionChange={handleSelectionChange}
-            selectionAlways
+            selectionDisabled={false}
             selectOnClick
           />
         </DialogContent>
@@ -263,7 +263,6 @@ PagedListViewDialog.propTypes = {
   pageSize: PropTypes.number,
   searchFilterParam: PropTypes.string,
   selectOnClick: PropTypes.bool,
-  selectionAlways: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
@@ -274,7 +273,6 @@ PagedListViewDialog.defaultProps = {
   displayMode: 'list',
   fullHeight: true,
   pageSize: 50,
-  selectionAlways: true,
   selectionMode: 'multiple',
   selectOnClick: true,
 };

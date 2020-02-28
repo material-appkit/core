@@ -52,16 +52,17 @@ export const commonDefaultProps = {
 // -----------------------------------------------------------------------------
 function VirtualizedListItem(props) {
   const {
+    commitOnSelect,
     item,
     onItemClick,
     onMount,
     onUnmount,
     onSelectionChange,
     selectionMode,
+    selectionDisabled,
     selectOnClick,
     ...rest
   } = props;
-
 
   const listItemRef = useRef(null);
 
@@ -111,10 +112,12 @@ function VirtualizedListItem(props) {
 
 
   let SelectionComponent = null;
-  if (selectionMode === 'multiple') {
-    SelectionComponent = Checkbox;
-  } else if (selectionMode === 'single') {
-    SelectionComponent = Radio;
+  if (!(selectionDisabled || commitOnSelect)) {
+    if (selectionMode === 'multiple') {
+      SelectionComponent = Checkbox;
+    } else if (selectionMode === 'single') {
+      SelectionComponent = Radio;
+    }
   }
 
   return (
@@ -141,6 +144,7 @@ VirtualizedListItem.propTypes = {
   selected: PropTypes.bool,
   selectOnClick: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
+  selectionDisabled: PropTypes.bool,
 };
 
 export default VirtualizedListItem;

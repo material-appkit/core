@@ -200,7 +200,7 @@ function PagedListView(props) {
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selectedSubsetArrangementIndex, setSelectedSubsetArrangementIndex] = useState(null);
   const [selection, setSelection] = useState(new Set());
-  const [selectionDisabled, setSelectionDisabled] = useState(true);
+  const [selectionDisabled, setSelectionDisabled] = useState(props.selectionDisabled);
   const [sortControlEl, setSortControlEl] = useState(null);
   const [toolbarItems, setToolbarItems] = useState({});
 
@@ -262,8 +262,7 @@ function PagedListView(props) {
     const {
       itemContextProvider,
       listItemProps,
-      selectionAlways,
-      selectionMode
+      selectionMode,
     } = props;
     let context = itemContextProvider ? itemContextProvider(item) : {};
 
@@ -274,7 +273,8 @@ function PagedListView(props) {
       item: item,
       onSelectionChange: handleSelectionControlClick,
       selected,
-      selectionMode: selectionAlways ? selectionMode : selectionDisabled ? null : selectionMode,
+      selectionMode,
+      selectionDisabled,
       ...context,
       ...listItemProps,
     };
@@ -714,23 +714,21 @@ function PagedListView(props) {
   useEffect(() => {
     const newToolbarItems = {};
 
-    if (!props.selectionAlways) {
-      newToolbarItems.selectionControl = (
-        <SelectionControl
-          key="selectionControl"
-          onClick={() => {
-            // When the selection control button is clicked, toggle selection mode.
-            setSelectionDisabled(!selectionDisabled);
+    newToolbarItems.selectionControl = (
+      <SelectionControl
+        key="selectionControl"
+        onClick={() => {
+          // When the selection control button is clicked, toggle selection mode.
+          setSelectionDisabled(!selectionDisabled);
 
-            // _Always_ clear current selection when selection mode is toggled
-            setSelection(new Set());
-          }}
-          onSelectionMenuItemClick={handleSelectionMenuItemClick}
-          selectionDisabled={selectionDisabled}
-          selectionMenu={props.selectionMenu}
-        />
-      );
-    }
+          // _Always_ clear current selection when selection mode is toggled
+          setSelection(new Set());
+        }}
+        onSelectionMenuItemClick={handleSelectionMenuItemClick}
+        selectionDisabled={selectionDisabled}
+        selectionMenu={props.selectionMenu}
+      />
+    );
 
     if (paginationInfo) {
       newToolbarItems.paginationControl = (
@@ -972,7 +970,7 @@ PagedListView.propTypes = {
   pageSizeParamName: PropTypes.string,
   paginated: PropTypes.bool,
 
-  selectionAlways: PropTypes.bool,
+  selectionDisabled: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionMenu: PropTypes.bool,
   selectOnClick: PropTypes.bool,
@@ -994,7 +992,7 @@ PagedListView.defaultProps = {
   pageParamName: 'page',
   pageSizeParamName: 'page_size',
   paginated: false,
-  selectionAlways: false,
+  selectionDisabled: true,
   selectionMenu: false,
   selectOnClick: false,
   subsetParamName: 'subset',
