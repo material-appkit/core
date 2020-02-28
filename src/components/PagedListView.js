@@ -512,17 +512,8 @@ function PagedListView(props) {
 
     setSelection(newSelection);
 
-
     if (props.onSelectionChange) {
-      if (props.selectionMode === 'single') {
-        if (newSelection.size) {
-          props.onSelectionChange(Array.from(newSelection).pop());
-        } else {
-          props.onSelectionChange(null);
-        }
-      } else {
-        props.onSelectionChange(newSelection);
-      }
+      props.onSelectionChange(newSelection);
     }
   };
 
@@ -731,12 +722,16 @@ function PagedListView(props) {
     );
 
     if (paginationInfo) {
+      let pageLabel = null;
+      if (!selectionDisabled && props.selectionMode === 'multiple') {
+        pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
+      }
       newToolbarItems.paginationControl = (
         <PaginationControl
           count={paginationInfo.total}
           key="paginationControl"
           page={(paginationInfo.current_page) - 1}
-          pageLabel={selectionDisabled ? null : `${selection.size} of ${paginationInfo.total} selected`}
+          pageLabel={pageLabel}
           pageSize={paginationInfo.per_page}
           onPageChange={handleTablePaginationPageChange}
           onPageSizeChange={handleTablePaginationPageSizeChange}
