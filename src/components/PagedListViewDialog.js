@@ -206,6 +206,7 @@ function PagedListViewDialog(props) {
             }}
             onConfig={(config) => { setListViewInfo(config); }}
             onSelectionChange={handleSelectionChange}
+            paginated={props.paginated}
             selectionDisabled={false}
             selectionMode={commitOnSelect ? 'single' : selectionMode}
             selectOnClick
@@ -261,7 +262,7 @@ PagedListViewDialog.propTypes = {
   displayMode: PropTypes.string,
   fullHeight: PropTypes.bool,
   onDismiss: PropTypes.func,
-  pageSize: PropTypes.number,
+  paginated: PropTypes.bool,
   searchFilterParam: PropTypes.string,
   selectOnClick: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
@@ -273,7 +274,7 @@ PagedListViewDialog.defaultProps = {
   dialogProps: { fullWidth: true },
   displayMode: 'list',
   fullHeight: true,
-  pageSize: 50,
+  paginated: true,
   selectionMode: 'multiple',
   selectOnClick: true,
 };
