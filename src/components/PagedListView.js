@@ -994,7 +994,6 @@ PagedListView.propTypes = {
 PagedListView.defaultProps = {
   defaultFilterParams: {},
   itemIdKey: 'id',
-  itemLinkKey: 'path',
   orderParamName: 'order',
   pageParamName: 'page',
   pageSizeParamName: 'page_size',
