@@ -7,7 +7,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import VirtualizedListItem, {
   listItemProps,
   commonPropTypes,
-  commonDefaultProps,
 } from './VirtualizedListItem';
 
 // -----------------------------------------------------------------------------
@@ -31,7 +30,6 @@ SimpleListItem.propTypes = {
   labelField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   ...commonPropTypes,
 };
-SimpleListItem.defaultProps = commonDefaultProps;
 
 
 // -----------------------------------------------------------------------------

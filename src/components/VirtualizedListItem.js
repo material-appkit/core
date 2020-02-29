@@ -45,10 +45,6 @@ export const commonPropTypes = {
   onUnmount: PropTypes.func,
 };
 
-export const commonDefaultProps = {
-  isLink: true,
-};
-
 // -----------------------------------------------------------------------------
 function VirtualizedListItem(props) {
   const {
