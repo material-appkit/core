@@ -257,8 +257,11 @@ class ItemList extends React.PureComponent {
   };
 
   handleListDialogDismiss = (selection) => {
+    if (selection) {
+      this.attachRecords(selection);
+    }
+
     this.setState({ listDialogOpen: false });
-    this.attachRecords(selection);
   };
 
   handleItemClick = (item) => {
