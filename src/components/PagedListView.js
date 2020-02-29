@@ -176,15 +176,7 @@ SelectionControl.propTypes = {
 };
 
 //------------------------------------------------------------------------------
-const styles = makeStyles((theme) => ({
-  tabs: {
-    flex: 1,
-  },
-}));
-
 function PagedListView(props) {
-  const classes = styles();
-
   const qsParams = NavManager.qsParams;
   const qsPageParam = qsParams[props.pageParamName] ? parseInt(qsParams[props.pageParamName]) : 1;
   const qsPageSizeParam = qsParams[props.pageSizeParamName] ? parseInt(qsParams[props.pageSizeParamName]) : null;
@@ -250,6 +242,19 @@ function PagedListView(props) {
   const keyForItem = (item) => {
     const { itemIdKey } = props;
     return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
+  };
+
+  /**
+   *
+   * @param item
+   * @returns {*} Path item should link to
+   */
+  const pathForItem = (item) => {
+    const { itemLinkKey } = props;
+    if (!itemLinkKey) {
+      return null;
+    }
+    return (typeof itemLinkKey === 'function') ? itemLinkKey(item) : item[itemLinkKey];
   };
 
 
@@ -752,7 +757,7 @@ function PagedListView(props) {
     if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
       newToolbarItems.tabsControl = (
         <Tabs
-          className={classes.tabs}
+          style={{ flex: 1 }}
           onChange={(e, tabIndex) => { setSelectedSubsetArrangementIndex(tabIndex); }}
           scrollButtons="auto"
           value={selectedSubsetArrangementIndex}
@@ -823,6 +828,7 @@ function PagedListView(props) {
   const renderListItem = (item, itemIndex, style, onMount) => (
     <props.listItemComponent
       key={keyForItem(item)}
+      to={pathForItem(item)}
       onMount={(element) => { handleListItemMount(item, itemIndex, element); }}
       selectOnClick={props.selectOnClick}
       style={style}
@@ -948,7 +954,12 @@ PagedListView.propTypes = {
     PropTypes.string,
     PropTypes.func,
   ]),
+  itemLinkKey: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+  ]),
   itemTransformer: PropTypes.func,
+
   listItemProps: PropTypes.object,
   listItemComponent: PropTypes.func,
 
@@ -983,6 +994,7 @@ PagedListView.propTypes = {
 PagedListView.defaultProps = {
   defaultFilterParams: {},
   itemIdKey: 'id',
+  itemLinkKey: 'path',
   orderParamName: 'order',
   pageParamName: 'page',
   pageSizeParamName: 'page_size',

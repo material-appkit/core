@@ -202,7 +202,6 @@ function PagedListViewDialog(props) {
             listItemProps={{
               ...(listItemProps || {}),
               commitOnSelect: props.commitOnSelect,
-              isLink: false,
             }}
             onConfig={(config) => { setListViewInfo(config); }}
             onSelectionChange={handleSelectionChange}

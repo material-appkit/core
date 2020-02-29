@@ -18,28 +18,18 @@ import { useInit } from '../util/hooks';
 // -----------------------------------------------------------------------------
 export const listItemProps = (props) => {
   const {
-    isLink,
     onItemUpdate,
     ...rest
 } = props;
 
-  const listItemProps = {
+  return {
     divider: true,
     ...rest,
   };
-
-  if (isLink && props.item.path) {
-    listItemProps.button = true;
-    listItemProps.component = RouterLink;
-    listItemProps.to = props.item.path;
-  }
-
-  return listItemProps;
 };
 
 export const commonPropTypes = {
   item: PropTypes.object,
-  isLink: PropTypes.bool,
   onItemUpdate: PropTypes.func,
   onMount: PropTypes.func,
   onUnmount: PropTypes.func,
@@ -57,6 +47,7 @@ function VirtualizedListItem(props) {
     selectionMode,
     selectionDisabled,
     selectOnClick,
+    to,
     ...rest
   } = props;
 
@@ -72,10 +63,14 @@ function VirtualizedListItem(props) {
     }
   });
 
-  const listItemProps = {
-    ref: listItemRef,
-    ...rest
-  };
+
+  const listItemProps = { ref: listItemRef, ...rest };
+
+  if (to) {
+    listItemProps.button = true;
+    listItemProps.component = RouterLink;
+    listItemProps.to = to;
+  }
 
   if (selectOnClick) {
     listItemProps.button = true;
@@ -141,6 +136,7 @@ VirtualizedListItem.propTypes = {
   selectOnClick: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionDisabled: PropTypes.bool,
+  to: PropTypes.string,
 };
 
 export default VirtualizedListItem;
