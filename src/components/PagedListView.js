@@ -384,7 +384,7 @@ function PagedListView(props) {
    * Initialization
    */
   useEffect(() => {
-    if (props.onOptionsLoad && typeof(props.src) === 'string') {
+    if (props.src && props.onOptionsLoad) {
       const fetchOptions = async(requestUrl) => {
         const res = await ServiceAgent.options(requestUrl);
         props.onOptionsLoad(res.body);
@@ -537,11 +537,13 @@ function PagedListView(props) {
    *
    */
   const handleListItemMount = (item, itemIndex, element) => {
-    const listItemRect = element.getBoundingClientRect();
-    itemHeights.current[itemIndex] = listItemRect.height;
+    if (itemHeights.current) {
+      const listItemRect = element.getBoundingClientRect();
+      itemHeights.current[itemIndex] = listItemRect.height;
 
-    if (itemIndex === items.length - 1) {
-      setMeasuring(false);
+      if (itemIndex === items.length - 1) {
+        setMeasuring(false);
+      }
     }
   };
 
@@ -677,14 +679,7 @@ function PagedListView(props) {
       props.onLoad(requestParams);
     }
 
-    let updatedItems = null;
-
-    if (typeof(props.src) === 'string') {
-      updatedItems = await fetchItems(props.src, requestParams);
-    } else {
-      // TODO: Filter the source array with the given params
-      updatedItems = [...props.src];
-    }
+    let updatedItems = await fetchItems(props.src, requestParams);
 
     // If a transformer has been supplied, apply it to the
     // newly assigned records.
@@ -707,7 +702,7 @@ function PagedListView(props) {
    */
   useEffect(() => {
     reload();
-  }, [props.src, filterParams, ordering, page, pageSize]);
+  }, [props.src, props.items, filterParams, ordering, page, pageSize]);
 
 
   /**
@@ -843,7 +838,12 @@ function PagedListView(props) {
     />
   );
 
-  if (!items || loading) {
+  //----------------------------------------------------------------------------
+  // Putting it all together...time to render the main view
+  //----------------------------------------------------------------------------
+  const renderedItems = props.items || items;
+
+  if (!renderedItems || loading) {
     return (
       <PlaceholderView border={false}>
         <CircularProgress />
@@ -851,7 +851,7 @@ function PagedListView(props) {
     );
   }
 
-  if (!items.length) {
+  if (!renderedItems.length) {
     return (
       <PlaceholderView padding={2}>
         <Typography variant="body2">
@@ -867,7 +867,9 @@ function PagedListView(props) {
     if (props.windowed) {
       view = measuring ? (
         <List disablePadding style={{ visibility: 'hidden' }}>
-          {items.map((item, itemIndex) => renderListItem(item, itemIndex))}
+          {renderedItems.map(
+            (item, itemIndex) => renderListItem(item, itemIndex)
+          )}
         </List>
       ) : (
         <AutoSizer onResize={handleAutoSizerResize}>
@@ -875,7 +877,7 @@ function PagedListView(props) {
             <VariableSizeList
               height={height}
               innerElementType={List}
-              itemData={{ items }}
+              itemData={{ items: renderedItems }}
               itemCount={items.length}
               itemSize={(index) => itemHeights.current[index]}
               width={width}
@@ -890,7 +892,9 @@ function PagedListView(props) {
     } else {
       view = (
         <List disablePadding>
-          {items.map((item, itemIndex) => renderListItem(item, itemIndex))}
+          {renderedItems.map(
+            (item, itemIndex) => renderListItem(item, itemIndex)
+          )}
         </List>
       );
     }
@@ -957,6 +961,7 @@ PagedListView.propTypes = {
   filterMetadata: PropTypes.object,
   filterParamTransformer: PropTypes.func,
 
+  items: PropTypes.array,
   itemContextProvider: PropTypes.func,
   itemIdKey: PropTypes.oneOfType([
     PropTypes.string,
@@ -989,7 +994,7 @@ PagedListView.propTypes = {
   selectionMenu: PropTypes.bool,
   selectOnClick: PropTypes.bool,
 
-  src: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+  src: PropTypes.string,
 
   subsetParamName: PropTypes.string,
   subsetFilterArrangement: PropTypes.array,
