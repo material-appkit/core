@@ -655,7 +655,7 @@ function PagedListView(props) {
       setMeasuring(true);
     }
 
-    const requestParams = {...filterParams};
+    let requestParams = {...filterParams};
 
     if (props.paginated) {
       requestParams[props.pageParamName] = page;
@@ -664,6 +664,13 @@ function PagedListView(props) {
 
     if (ordering) {
       requestParams[props.orderParamName] = ordering;
+    }
+
+    // Enable the filter parameters be modified by the consumer prior
+    // to issuing the API request. An example use case would be to convert
+    // "param=null" to "param__isnull=true"
+    if (props.filterParamTransformer) {
+      requestParams = props.filterParamTransformer(requestParams);
     }
 
     if (props.onLoad) {
@@ -948,6 +955,7 @@ PagedListView.propTypes = {
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
 
   filterMetadata: PropTypes.object,
+  filterParamTransformer: PropTypes.func,
 
   itemContextProvider: PropTypes.func,
   itemIdKey: PropTypes.oneOfType([
