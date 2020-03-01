@@ -1,22 +1,25 @@
 /**
 *
-* ModelSelectWidget
+* ModelSelect
 *
 */
 
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
-import withStyles from '@material-ui/core/styles/withStyles';
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/core/styles';
+import CloseIcon from '@material-ui/icons/Close';
 
 import PagedListViewDialog from '../PagedListViewDialog';
 
 
 class ModelSelectWidget extends React.PureComponent {
   static toRepresentation(value) {
-    return value.url;
+    return value ? value.url : null;
   }
 
   constructor(props) {
@@ -43,16 +46,28 @@ class ModelSelectWidget extends React.PureComponent {
     }
   }
 
+  get selectedModel() {
+    return this.state.selectedModel;
+  }
+
+  set selectedModel(value) {
+    this.setState({ selectedModel: value });
+
+    if (this.props.onChange) {
+      this.props.onChange(value);
+    }
+  }
+
+
+  handleClearButtonClick = () => {
+    this.selectedModel = null;
+  };
+
   handleListDialogDismiss = (selection) => {
     const newState = { listDialogOpen: false };
 
     if (selection && selection.length) {
-      const selectedModel = selection[0];
-      newState.selectedModel = selectedModel;
-
-      if (this.props.onChange) {
-        this.props.onChange(selectedModel);
-      }
+      this.selectedModel = selection[0];
     }
 
     this.setState(newState);
@@ -74,13 +89,24 @@ class ModelSelectWidget extends React.PureComponent {
           {label &&
             <legend className={classes.legend}>{label}</legend>
           }
-          <Button
-            className={classes.button}
-            color="primary"
-            onClick={() => { this.setState({ listDialogOpen: true }); }}
-          >
-            {this.buttonLabel}
-          </Button>
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <Button
+              className={classes.button}
+              color="primary"
+              onClick={() => { this.setState({ listDialogOpen: true }); }}
+            >
+              {this.buttonLabel}
+            </Button>
+
+            {this.selectedModel &&
+              <IconButton
+                className={classes.clearButton}
+                onClick={() => { this.selectedModel = null; }}
+              >
+                <CloseIcon />
+              </IconButton>
+            }
+          </Box>
         </fieldset>
 
         {this.state.listDialogOpen &&
@@ -118,4 +144,7 @@ export default withStyles((theme) => ({
   button: {
     minWidth: 'initial',
   },
+  clearButton: {
+    padding: 6,
+  }
 }))(ModelSelectWidget);
