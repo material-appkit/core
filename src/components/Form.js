@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid';
 
 import CheckboxGroupWidget from './widgets/CheckboxGroup';
 import FormFieldSet from './FormFieldSet';
@@ -27,11 +26,15 @@ export const getFieldNames = (metadata, fieldArrangement) => {
   if (fieldArrangement) {
     const fieldNames = [];
     fieldArrangement.forEach((fieldInfo) => {
-      const fieldInfoType = typeof(fieldInfo);
-      if (fieldInfoType === 'string') {
-        fieldNames.push(fieldInfo);
-      } else if (fieldInfoType === 'object') {
-        fieldNames.push(fieldInfo.name)
+      if (Array.isArray(fieldInfo)) {
+        fieldNames.push(...getFieldNames(metadata, fieldInfo));
+      } else {
+        const fieldInfoType = typeof(fieldInfo);
+        if (fieldInfoType === 'string') {
+          fieldNames.push(fieldInfo);
+        } else if (fieldInfoType === 'object') {
+          fieldNames.push(fieldInfo.name)
+        }
       }
     });
     return fieldNames;
@@ -368,17 +371,15 @@ class Form extends React.PureComponent {
         onChange={this.handleFormChange}
         ref={this.formRef}
       >
-        <Grid container>
-          <this.props.FieldSetComponent
-            errors={this.state.errors}
-            fieldArrangement={this.props.fieldArrangement}
-            form={this}
-            onFieldChange={this.handleFormFieldChange}
-            metadata={this.state.metadata}
-            representedObject={this.state.referenceObject}
-          />
-          {this.props.children}
-        </Grid>
+        <this.props.FieldSetComponent
+          errors={this.state.errors}
+          fieldArrangement={this.props.fieldArrangement}
+          form={this}
+          onFieldChange={this.handleFormFieldChange}
+          metadata={this.state.metadata}
+          representedObject={this.state.referenceObject}
+        />
+        {this.props.children}
       </form>
     );
   }

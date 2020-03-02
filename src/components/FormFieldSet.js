@@ -7,36 +7,9 @@ import FormField from './FormField';
 import { getFieldInfoMap, getFieldNames } from './Form';
 
 
-const getFieldArrangementMap = (metadata, fieldArrangement, fieldInfoProvider) => {
-
-  const fieldArrangementMap = {};
-  if (fieldArrangement) {
-    fieldArrangement.forEach((fieldInfo) => {
-      if (typeof(fieldInfo) === 'string') {
-        fieldInfo = { name: fieldInfo };
-      }
-      fieldArrangementMap[fieldInfo.name] = fieldInfo;
-    });
-  } else if (metadata) {
-    metadata.forEach((fieldInfo) => {
-      if (!fieldInfo.read_only) {
-        const fieldName = fieldInfo.key;
-        if (fieldInfoProvider) {
-          fieldArrangementMap[fieldName] = fieldInfoProvider(fieldInfo);
-        } else {
-          fieldArrangementMap[fieldName] = { name: fieldName };
-        }
-      }
-    });
-  }
-  return fieldArrangementMap;
-};
-
-
 function FormFieldSet(props) {
   const {
     errors,
-    fieldArrangement,
     fieldInfoProvider,
     form,
     onFieldChange,
@@ -45,47 +18,72 @@ function FormFieldSet(props) {
 
   const fieldInfoMap = getFieldInfoMap(metadata);
   const fieldNames = getFieldNames(metadata, fieldArrangement);
-  const fieldArrangementMap = getFieldArrangementMap(metadata, fieldArrangement, fieldInfoProvider);
 
+  let fieldArrangement = props.fieldArrangement;
+  if (!fieldArrangement) {
+    // It is safe to assume that if we haven't been given an explicit field arrangement,
+    // we HAVE been given a list of field metadata.
+    // We can use that to dynamically generate a field arrangement.
+    fieldArrangement = [];
+    metadata.forEach((fieldInfo) => {
+      if (!fieldInfo.read_only) {
+        const fieldName = fieldInfo.key;
+        if (fieldInfoProvider) {
+          fieldArrangement.push(fieldInfoProvider(fieldInfo));
+        } else {
+          fieldArrangement.push({ name: fieldName });
+        }
+      }
+    });
+  }
 
   const handleFormFieldChange = (value, fieldInfo) => {
     onFieldChange(value, fieldInfo);
   };
 
+  const renderFieldGroup = (fieldGroup, indexPath, childProps) => (
+    fieldGroup.map((fieldArrangementInfo, fieldIndex) => {
+      const fieldArrangementIndexPath = [...indexPath, fieldIndex];
 
-  const fields = [];
-  let fieldCount = 0;
-  fieldNames.forEach((fieldName, fieldIndex) => {
-    const fieldInfo = fieldInfoMap[fieldName];
-    if (!fieldInfo.read_only) {
-      if (!fieldInfo.ui) {
-        fieldInfo.ui = {};
+      if (Array.isArray(fieldArrangementInfo)) {
+        return renderFieldGroup(fieldArrangementInfo, fieldArrangementIndexPath, {
+          xs: 12,
+          md: Math.floor(12 / fieldArrangementInfo.length),
+        });
       }
-      if (fieldCount === 0) {
-        fieldInfo.ui.autoFocus = true;
+
+      if (typeof(fieldArrangementInfo) === 'string') {
+        fieldArrangementInfo = {name: fieldArrangementInfo};
       }
-      fields.push(
+
+      const fieldName = fieldArrangementInfo.name;
+
+      return (
         <Grid
           container
           item
-          key={fieldName}
+          key={fieldArrangementIndexPath.join(':')}
           xs={12}
+          spacing={1}
+          {...childProps}
         >
           <FormField
             errorText={errors[fieldName]}
             form={form}
-            fieldInfo={fieldInfo}
-            fieldArrangementInfo={fieldArrangementMap[fieldName]}
+            fieldInfo={fieldInfoMap[fieldName]}
+            fieldArrangementInfo={fieldArrangementInfo}
             onChange={handleFormFieldChange}
           />
         </Grid>
       );
+    })
+  );
 
-      fieldCount += 1;
-    }
-  });
-
-  return fields;
+  return (
+    <Grid container>
+      {renderFieldGroup(fieldArrangement, [0])}
+    </Grid>
+  );
 }
 
 FormFieldSet.propTypes = {
