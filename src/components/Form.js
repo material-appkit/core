@@ -5,18 +5,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
-
-import { ServiceAgent } from '../util';
-import { arrayToObject } from '../util/array';
-import { reverse } from '../util/urls';
-
-import FormFieldSet from './FormFieldSet';
+import Grid from '@material-ui/core/Grid';
 
 import CheckboxGroupWidget from './widgets/CheckboxGroup';
+import FormFieldSet from './FormFieldSet';
 import ItemListWidget from './widgets/ItemList';
 import ModelSelectWidget from './widgets/ModelSelect';
 import RadioGroupWidget from './widgets/RadioGroup';
 
+import ServiceAgent from '../util/ServiceAgent';
+import { arrayToObject } from '../util/array';
+import { reverse } from '../util/urls';
 import { fromRepresentation, toRepresentation } from './FormField';
 
 class Form extends React.PureComponent {
@@ -388,16 +387,18 @@ class Form extends React.PureComponent {
         onChange={this.handleFormChange}
         ref={this.formRef}
       >
-        <this.props.FieldSet
-          errors={this.state.errors}
-          fieldArrangementMap={this.getFieldArrangementMap(this.state.metadata)}
-          fieldInfoMap={this.getFieldInfoMap(this.state.metadata)}
-          fieldNames={this.getFieldNames(this.state.metadata)}
-          form={this}
-          onFieldChange={this.handleFormFieldChange}
-          representedObject={this.state.referenceObject}
-        />
-        {this.props.children}
+        <Grid container>
+          <this.props.FieldSetComponent
+            errors={this.state.errors}
+            fieldArrangementMap={this.getFieldArrangementMap(this.state.metadata)}
+            fieldInfoMap={this.getFieldInfoMap(this.state.metadata)}
+            fieldNames={this.getFieldNames(this.state.metadata)}
+            form={this}
+            onFieldChange={this.handleFormFieldChange}
+            representedObject={this.state.referenceObject}
+          />
+          {this.props.children}
+        </Grid>
       </form>
     );
   }
@@ -412,7 +413,7 @@ Form.propTypes = {
   defaultValues: PropTypes.object,
   entityType: PropTypes.string,
   requestContext: PropTypes.object,
-  FieldSet: PropTypes.func,
+  FieldSetComponent: PropTypes.func,
   fieldArrangement: PropTypes.array,
   fieldInfoProvider: PropTypes.func,
   onConfig: PropTypes.func,
@@ -432,7 +433,7 @@ Form.defaultProps = {
   autosaveDelay: null,
   defaultValues: {},
   entityType: '',
-  FieldSet: FormFieldSet,
+  FieldSetComponent: FormFieldSet,
   optionsRequestParams: {},
   requestContext: {},
   updateMethod: 'PATCH',

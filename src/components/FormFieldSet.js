@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Grid from '@material-ui/core/Grid';
+
 import FormField from './FormField';
 
 function FormFieldSet(props) {
@@ -29,14 +31,19 @@ function FormFieldSet(props) {
         fieldInfo.ui.autoFocus = true;
       }
       fields.push(
-        <FormField
-          errorText={errors[fieldName]}
-          form={form}
-          fieldInfo={fieldInfo}
-          fieldArrangementInfo={fieldArrangementMap[fieldName]}
+        <Grid
+          item
           key={fieldName}
-          onChange={handleFormFieldChange}
-        />
+          xs={12}
+        >
+          <FormField
+            errorText={errors[fieldName]}
+            form={form}
+            fieldInfo={fieldInfo}
+            fieldArrangementInfo={fieldArrangementMap[fieldName]}
+            onChange={handleFormFieldChange}
+          />
+        </Grid>
       );
 
       fieldCount += 1;
