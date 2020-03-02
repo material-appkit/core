@@ -156,7 +156,7 @@ function PagedListViewDialog(props) {
                 {dialogTitle}
               </Typography>
 
-              {listViewInfo &&
+              {(props.selectionMode === 'multiple' && listViewInfo) &&
                 <Typography variant="subtitle2" color="textSecondary">
                   {`${listViewInfo.selection.size} selected`}
                 </Typography>
