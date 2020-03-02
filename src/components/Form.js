@@ -4,8 +4,6 @@ import cloneDeep from 'lodash.clonedeep';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-
 import CheckboxGroupWidget from './widgets/CheckboxGroup';
 import FormFieldSet from './FormFieldSet';
 import ItemListWidget from './widgets/ItemList';
@@ -354,15 +352,7 @@ class Form extends React.PureComponent {
 
   render() {
     if (this.state.loading || !this.state.referenceObject) {
-      const loadingIndicatorContainerStyle = {
-        display: 'flex',
-        justifyContent: 'center',
-      };
-      return (
-        <div style={loadingIndicatorContainerStyle}>
-          <CircularProgress />
-        </div>
-      );
+      return null;
     }
 
     return (
