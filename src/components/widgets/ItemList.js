@@ -17,13 +17,6 @@ import { removeObject } from '../../util/array';
 import VirtualizedListItem from '../VirtualizedListItem';
 import ItemList from '../ItemList';
 
-const DEFAULT_LIST_DIALOG_PROPS = {
-  dialogProps: { fullWidth: true },
-  pageSize: 30,
-  selectionMode: 'multiple',
-};
-
-
 class ItemListWidget extends React.PureComponent {
   static toRepresentation(value) {
     return value.map((item) => item.url);
@@ -120,7 +113,7 @@ class ItemListWidget extends React.PureComponent {
             items={this.props.value}
             itemKeyPath={this.props.itemKeyPath}
             listDialogProps={{
-              ...DEFAULT_LIST_DIALOG_PROPS,
+              fullWidth: true,
               ...this.props.listDialogProps,
             }}
             listItemComponent={this.props.listItemComponent}
@@ -159,7 +152,7 @@ ItemListWidget.propTypes = {
 ItemListWidget.defaultProps = {
   editDialogProps: {},
   filterParams: {},
-  listDialogProps: DEFAULT_LIST_DIALOG_PROPS,
+  listDialogProps: {},
   listItemComponent: VirtualizedListItem,
   listItemProps: {},
 };

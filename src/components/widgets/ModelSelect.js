@@ -91,9 +91,10 @@ class ModelSelectWidget extends React.PureComponent {
           }
           <Box display="flex" alignItems="center" justifyContent="space-between">
             <Button
-              className={classes.button}
               color="primary"
+              className={classes.button}
               onClick={() => { this.setState({ listDialogOpen: true }); }}
+              size="small"
             >
               {this.buttonLabel}
             </Button>

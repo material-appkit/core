@@ -322,10 +322,10 @@ class ItemList extends React.PureComponent {
             {this.props.onAdd &&
               <Button
                 color="primary"
-                className={classes.addButton}
                 onClick={this.handleAddButtonClick}
+                size="small"
+                startIcon={<AddIcon />}
               >
-                <AddIcon className={classes.addButtonIcon} />
                 Add {this.props.entityType}
               </Button>
             }
@@ -412,6 +412,5 @@ ItemList.defaultProps = {
 
 export default withStyles((theme) => ({
   root: theme.itemList.root,
-  addButton: theme.itemList.addButton,
   addButtonIcon: theme.itemList.addButtonIcon,
 }))(ItemList);
