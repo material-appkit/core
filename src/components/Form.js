@@ -18,6 +18,41 @@ import { arrayToObject } from '../util/array';
 import { reverse } from '../util/urls';
 import { fromRepresentation, toRepresentation } from './FormField';
 
+//------------------------------------------------------------------------------
+export const getFieldNames = (metadata, fieldArrangement) => {
+  if (!(metadata || fieldArrangement)) {
+    throw new Error('Unable to determine form field names. You must supply field arrangement or a map of field metadata');
+  }
+
+  if (fieldArrangement) {
+    const fieldNames = [];
+    fieldArrangement.forEach((fieldInfo) => {
+      const fieldInfoType = typeof(fieldInfo);
+      if (fieldInfoType === 'string') {
+        fieldNames.push(fieldInfo);
+      } else if (fieldInfoType === 'object') {
+        fieldNames.push(fieldInfo.name)
+      }
+    });
+    return fieldNames;
+  }
+
+  // In absence of a given field arrangement, let the form's metadata define
+  // the set of field names as those fields which are not read-only
+  return metadata
+    .filter((fieldInfo) => !fieldInfo.read_only)
+    .map((fieldInfo) => fieldInfo.key);
+};
+
+export const getFieldInfoMap = (metadata) => {
+  if (!metadata) {
+    return null;
+  }
+
+  return arrayToObject(metadata, 'key');
+};
+
+//------------------------------------------------------------------------------
 class Form extends React.PureComponent {
   static widgetClassMap = {
     'checkboxgroup': CheckboxGroupWidget,
@@ -95,66 +130,12 @@ class Form extends React.PureComponent {
     }
   }
 
-  getFieldNames(metadata) {
-    if (this.props.fieldArrangement) {
-      const fieldNames = [];
-      this.props.fieldArrangement.forEach((fieldInfo) => {
-        const fieldInfoType = typeof(fieldInfo);
-        if (fieldInfoType === 'string') {
-          fieldNames.push(fieldInfo);
-        } else if (fieldInfoType === 'object') {
-          fieldNames.push(fieldInfo.name)
-        }
-      });
-      return fieldNames;
-    } else if (metadata) {
-      return metadata
-        .filter((fieldInfo) => !fieldInfo.read_only)
-        .map((fieldInfo) => fieldInfo.key);
-    } else {
-      return [];
-    }
-  }
-
-  getFieldArrangementMap(metadata) {
-    const { fieldArrangement, fieldInfoProvider } = this.props;
-
-    const fieldArrangementMap = {};
-    if (fieldArrangement) {
-      fieldArrangement.forEach((fieldInfo) => {
-        if (typeof(fieldInfo) === 'string') {
-          fieldInfo = { name: fieldInfo };
-        }
-        fieldArrangementMap[fieldInfo.name] = fieldInfo;
-      });
-    } else if (metadata) {
-      metadata.forEach((fieldInfo) => {
-        if (!fieldInfo.read_only) {
-          const fieldName = fieldInfo.key;
-          if (fieldInfoProvider) {
-            fieldArrangementMap[fieldName] = fieldInfoProvider(fieldInfo);
-          } else {
-            fieldArrangementMap[fieldName] = { name: fieldName };
-          }
-        }
-      });
-    }
-    return fieldArrangementMap;
-  }
-
-  getFieldInfoMap(metadata) {
-    if (!metadata) {
-      return null;
-    }
-
-    return arrayToObject(metadata, 'key');
-  }
-
   initialData(metadata, referenceObject) {
-    const fieldInfoMap = this.getFieldInfoMap(metadata);
     const data = {};
 
-    const fieldNames = this.getFieldNames(metadata);
+    const fieldNames = getFieldNames(metadata, this.props.fieldArrangement);
+    const fieldInfoMap = getFieldInfoMap(metadata);
+
     fieldNames.forEach((fieldName) => {
       const fieldInfo = fieldInfoMap[fieldName];
       data[fieldName] = fromRepresentation(referenceObject[fieldName], fieldInfo);
@@ -167,7 +148,7 @@ class Form extends React.PureComponent {
   coerceRequestData(data) {
     const coercedData = { ...data };
 
-    const fieldInfoMap = this.getFieldInfoMap(this.state.metadata);
+    const fieldInfoMap = getFieldInfoMap(this.state.metadata);
     if (fieldInfoMap) {
       Object.keys(data).forEach((fieldName) => {
         const fieldInfo = fieldInfoMap[fieldName];
@@ -252,7 +233,7 @@ class Form extends React.PureComponent {
     });
 
     if (onLoad) {
-      onLoad(referenceObject, this.getFieldInfoMap(metadata));
+      onLoad(referenceObject, getFieldInfoMap(metadata));
     }
   };
 
@@ -390,11 +371,10 @@ class Form extends React.PureComponent {
         <Grid container>
           <this.props.FieldSetComponent
             errors={this.state.errors}
-            fieldArrangementMap={this.getFieldArrangementMap(this.state.metadata)}
-            fieldInfoMap={this.getFieldInfoMap(this.state.metadata)}
-            fieldNames={this.getFieldNames(this.state.metadata)}
+            fieldArrangement={this.props.fieldArrangement}
             form={this}
             onFieldChange={this.handleFormFieldChange}
+            metadata={this.state.metadata}
             representedObject={this.state.referenceObject}
           />
           {this.props.children}

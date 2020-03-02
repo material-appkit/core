@@ -4,20 +4,54 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 
 import FormField from './FormField';
+import { getFieldInfoMap, getFieldNames } from './Form';
+
+
+const getFieldArrangementMap = (metadata, fieldArrangement, fieldInfoProvider) => {
+
+  const fieldArrangementMap = {};
+  if (fieldArrangement) {
+    fieldArrangement.forEach((fieldInfo) => {
+      if (typeof(fieldInfo) === 'string') {
+        fieldInfo = { name: fieldInfo };
+      }
+      fieldArrangementMap[fieldInfo.name] = fieldInfo;
+    });
+  } else if (metadata) {
+    metadata.forEach((fieldInfo) => {
+      if (!fieldInfo.read_only) {
+        const fieldName = fieldInfo.key;
+        if (fieldInfoProvider) {
+          fieldArrangementMap[fieldName] = fieldInfoProvider(fieldInfo);
+        } else {
+          fieldArrangementMap[fieldName] = { name: fieldName };
+        }
+      }
+    });
+  }
+  return fieldArrangementMap;
+};
+
 
 function FormFieldSet(props) {
   const {
     errors,
-    fieldArrangementMap,
-    fieldInfoMap,
-    fieldNames,
+    fieldArrangement,
+    fieldInfoProvider,
     form,
     onFieldChange,
+    metadata,
   } = props;
+
+  const fieldInfoMap = getFieldInfoMap(metadata);
+  const fieldNames = getFieldNames(metadata, fieldArrangement);
+  const fieldArrangementMap = getFieldArrangementMap(metadata, fieldArrangement, fieldInfoProvider);
+
 
   const handleFormFieldChange = (value, fieldInfo) => {
     onFieldChange(value, fieldInfo);
   };
+
 
   const fields = [];
   let fieldCount = 0;
@@ -32,6 +66,7 @@ function FormFieldSet(props) {
       }
       fields.push(
         <Grid
+          container
           item
           key={fieldName}
           xs={12}
@@ -56,10 +91,10 @@ function FormFieldSet(props) {
 FormFieldSet.propTypes = {
   errors: PropTypes.object,
   form: PropTypes.object.isRequired,
-  fieldArrangementMap: PropTypes.object,
-  fieldInfoMap: PropTypes.object,
-  fieldNames: PropTypes.array,
+  fieldArrangement: PropTypes.array,
+  fieldInfoProvider: PropTypes.func,
   onFieldChange: PropTypes.func.isRequired,
+  metadata: PropTypes.array,
 };
 
 export default FormFieldSet;
