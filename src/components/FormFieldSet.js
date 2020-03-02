@@ -64,7 +64,7 @@ function FormFieldSet(props) {
           item
           key={fieldArrangementIndexPath.join(':')}
           xs={12}
-          style={{ padding: 8 }}
+          style={{ paddingLeft: 8, paddingRight: 8 }}
           {...childProps}
         >
           <FormField
