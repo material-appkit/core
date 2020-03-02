@@ -29,7 +29,10 @@ export const getFieldNames = (metadata, fieldArrangement) => {
       } else {
         const fieldInfoType = typeof(fieldInfo);
         if (fieldInfoType === 'string') {
-          fieldNames.push(fieldInfo);
+          // Exclude anything to do with form layout
+          if (fieldInfo !== '---') {
+            fieldNames.push(fieldInfo);
+          }
         } else if (fieldInfoType === 'object') {
           fieldNames.push(fieldInfo.name)
         }
@@ -45,7 +48,7 @@ export const getFieldNames = (metadata, fieldArrangement) => {
     .map((fieldInfo) => fieldInfo.key);
 };
 
-export const getFieldInfoMap = (metadata) => {
+export const getFieldMetadataMap = (metadata) => {
   if (!metadata) {
     return null;
   }
@@ -135,10 +138,10 @@ class Form extends React.PureComponent {
     const data = {};
 
     const fieldNames = getFieldNames(metadata, this.props.fieldArrangement);
-    const fieldInfoMap = getFieldInfoMap(metadata);
+    const fieldMetadata = getFieldMetadataMap(metadata);
 
     fieldNames.forEach((fieldName) => {
-      const fieldInfo = fieldInfoMap[fieldName];
+      const fieldInfo = fieldMetadata[fieldName];
       data[fieldName] = fromRepresentation(referenceObject[fieldName], fieldInfo);
     });
 
@@ -149,13 +152,13 @@ class Form extends React.PureComponent {
   coerceRequestData(data) {
     const coercedData = { ...data };
 
-    const fieldInfoMap = getFieldInfoMap(this.state.metadata);
-    if (fieldInfoMap) {
+    const fieldMetadataMap = getFieldMetadataMap(this.state.metadata);
+    if (fieldMetadataMap) {
       Object.keys(data).forEach((fieldName) => {
-        const fieldInfo = fieldInfoMap[fieldName];
+        const fieldMetadata = fieldMetadataMap[fieldName];
         const value = data[fieldName];
-        if (fieldInfo) {
-          coercedData[fieldName] = toRepresentation(value, fieldInfo, this);
+        if (fieldMetadata) {
+          coercedData[fieldName] = toRepresentation(value, fieldMetadata, this);
         }
       });
     }
@@ -234,7 +237,7 @@ class Form extends React.PureComponent {
     });
 
     if (onLoad) {
-      onLoad(referenceObject, getFieldInfoMap(metadata));
+      onLoad(referenceObject, getFieldMetadataMap(metadata));
     }
   };
 

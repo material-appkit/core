@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 
 import FormField from './FormField';
-import { getFieldInfoMap, getFieldNames } from './Form';
-
+import { getFieldMetadataMap, getFieldNames } from './Form';
 
 function FormFieldSet(props) {
   const {
@@ -16,7 +16,8 @@ function FormFieldSet(props) {
     metadata,
   } = props;
 
-  const fieldInfoMap = getFieldInfoMap(metadata);
+
+  const fieldMetadataMap = getFieldMetadataMap(metadata);
   const fieldNames = getFieldNames(metadata, fieldArrangement);
 
   let fieldArrangement = props.fieldArrangement;
@@ -42,38 +43,48 @@ function FormFieldSet(props) {
   };
 
   const renderFieldGroup = (fieldGroup, indexPath, childProps) => (
-    fieldGroup.map((fieldArrangementInfo, fieldIndex) => {
+    fieldGroup.map((fieldInfo, fieldIndex) => {
       const fieldArrangementIndexPath = [...indexPath, fieldIndex];
+      const fieldKey = fieldArrangementIndexPath.join(':');
 
-      if (Array.isArray(fieldArrangementInfo)) {
-        return renderFieldGroup(fieldArrangementInfo, fieldArrangementIndexPath, {
+      if (Array.isArray(fieldInfo)) {
+        return renderFieldGroup(fieldInfo, fieldArrangementIndexPath, {
           xs: 12,
-          md: Math.floor(12 / fieldArrangementInfo.length),
+          md: Math.floor(12 / fieldInfo.length),
         });
       }
 
-      if (typeof(fieldArrangementInfo) === 'string') {
-        fieldArrangementInfo = {name: fieldArrangementInfo};
+      if (typeof(fieldInfo) === 'string') {
+        fieldInfo = { name: fieldInfo };
       }
 
-      const fieldName = fieldArrangementInfo.name;
+      const fieldName = fieldInfo.name;
 
       return (
         <Grid
           container
           item
-          key={fieldArrangementIndexPath.join(':')}
+          key={fieldKey}
           xs={12}
           style={{ paddingLeft: 8, paddingRight: 8 }}
           {...childProps}
         >
-          <FormField
-            errorText={errors[fieldName]}
-            form={form}
-            fieldInfo={fieldInfoMap[fieldName]}
-            fieldArrangementInfo={fieldArrangementInfo}
-            onChange={handleFormFieldChange}
-          />
+          {fieldName === '---' ? (
+            <Divider
+              style={{
+                margin: `${24}px 0`,
+                width: '100%',
+              }}
+            />
+          ) : (
+            <FormField
+              errorText={errors[fieldName]}
+              form={form}
+              fieldInfo={fieldMetadataMap[fieldName]}
+              fieldArrangementInfo={fieldInfo}
+              onChange={handleFormFieldChange}
+            />
+          )}
         </Grid>
       );
     })
