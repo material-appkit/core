@@ -27,7 +27,9 @@ function CheckboxGroupWidget(props) {
 
   const classes = styles();
 
-  const [selection, setSelection] = useState(new Set());
+  const [selection, setSelection] = useState(
+    new Set(props.value || [])
+  );
 
   const handleCheckboxClick = (choiceInfo) => {
     const newSelection = new Set(selection);
@@ -41,6 +43,13 @@ function CheckboxGroupWidget(props) {
     onChange(Array.from(newSelection));
   };
 
+  let formGroupProps = {};
+  const { widget } = fieldInfo.ui;
+  if (typeof(widget) === 'object') {
+    const { type, ...extra } = widget;
+    formGroupProps = extra;
+  }
+
   return (
     <FormControl fullWidth margin="dense">
       <fieldset className={classes.fieldset}>
@@ -50,9 +59,7 @@ function CheckboxGroupWidget(props) {
           </legend>
         }
 
-        <FormGroup
-          row={fieldInfo.direction === 'row'}
-        >
+        <FormGroup {...formGroupProps}>
           {fieldInfo.choices.map((choiceInfo) => (
             <FormControlLabel
               key={choiceInfo.value}
