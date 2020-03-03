@@ -24,6 +24,16 @@ const getWidgetType = (fieldInfo) => {
   return widget.type;
 };
 
+const getWidgetLabel = (fieldInfo) => {
+  const { label, widget } = fieldInfo.ui;
+
+  if (widget && typeof(widget) === 'object' && widget.label) {
+    return widget.label;
+  }
+
+  return label;
+};
+
 //------------------------------------------------------------------------------
 export const fromRepresentation = (value, fieldInfo) => {
   const widgetType = getWidgetType(fieldInfo);
@@ -159,7 +169,9 @@ function renderTextField(props, fieldInfo, onChange) {
         <Fragment>
           <option />
           {fieldInfo.choices.map((choice) => (
-            <option key={choice.value} value={choice.value}>{choice.label}</option>
+            <option key={choice.value} value={choice.value}>
+              {choice.label}
+            </option>
           ))}
         </Fragment>
       }
@@ -178,8 +190,9 @@ function FormField(props) {
   } = props;
 
   const widgetType = getWidgetType(fieldInfo);
+  const widgetLabel = getWidgetLabel(fieldInfo);
 
-  const { autoFocus, help, label } = fieldInfo.ui;
+  const { autoFocus, help } = fieldInfo.ui;
   const fieldName = fieldInfo.key;
 
   const { formData } = form.state;
@@ -197,7 +210,7 @@ function FormField(props) {
     autoFocus,
     error: errorText ? true : false,
     helperText: errorText || help,
-    label,
+    label: widgetLabel,
   });
 
   //----------------------------------------------------------------------------

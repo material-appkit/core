@@ -19,11 +19,7 @@ const styles = makeStyles((theme) => ({
 }));
 
 function CheckboxGroupWidget(props) {
-  const {
-    fieldInfo,
-    label,
-    onChange,
-  } = props;
+  const { fieldInfo, label } = props;
 
   const classes = styles();
 
@@ -40,14 +36,16 @@ function CheckboxGroupWidget(props) {
     }
     setSelection(newSelection);
 
-    onChange(Array.from(newSelection));
+    props.onChange(Array.from(newSelection));
   };
 
   let formGroupProps = {};
   const { widget } = fieldInfo.ui;
   if (typeof(widget) === 'object') {
-    const { type, ...extra } = widget;
-    formGroupProps = extra;
+    const { type, extra } = widget;
+    if (extra) {
+      formGroupProps = extra;
+    }
   }
 
   return (
