@@ -6,7 +6,7 @@
 
 import classNames from 'classnames';
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import Checkbox from '@material-ui/core/Checkbox';
@@ -32,8 +32,8 @@ const styles = makeStyles((theme) => ({
 function CheckboxGroupWidget(props) {
   const { fieldInfo, label } = props;
 
-  const initialSelection = props.value || [];
-  const [selection, setSelection] = useState(new Set(initialSelection));
+  const selection = new Set(props.value || []);
+
   const choiceValueMapRef = useRef(arrayToObject(fieldInfo.choices, 'value'));
   const choiceLabelMapRef = useRef(arrayToObject(fieldInfo.choices, 'label'));
 
@@ -44,6 +44,7 @@ function CheckboxGroupWidget(props) {
   const exclusionMap = widgetInfo.exclusionMap || {};
   const implicitSelectionMap = widgetInfo.implicitSelectionMap || {};
 
+  //----------------------------------------------------------------------------
   /**
    * Helper function to determine if an item's selection should be implied
    * by the selection of a related item
@@ -97,9 +98,10 @@ function CheckboxGroupWidget(props) {
       newSelection.delete(choice.value);
     }
 
-    setSelection(newSelection);
+    props.onChange(Array.from(newSelection));
   };
 
+  //----------------------------------------------------------------------------
   const classes = styles();
 
   const fieldsetClasses = [];
