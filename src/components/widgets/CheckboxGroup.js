@@ -17,6 +17,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { arrayToObject } from '../../util/array';
+
 const styles = makeStyles((theme) => ({
   defaultFieldset: theme.form.customControl.fieldset,
   legend: theme.form.customControl.legend,
@@ -30,32 +32,39 @@ const styles = makeStyles((theme) => ({
 function CheckboxGroupWidget(props) {
   const { fieldInfo, label } = props;
 
-  const [selection, setSelection] = useState(new Set(props.value || []));
-  const itemValueMapRef = useRef(null);
-  const itemNameMapRef = useRef(null);
+  const initialSelection = props.value || [];
+  const [selection, setSelection] = useState(new Set(initialSelection));
+  const choiceValueMapRef = useRef(arrayToObject(fieldInfo.choices, 'value'));
+  const choiceLabelMapRef = useRef(arrayToObject(fieldInfo.choices, 'label'));
+
+  let widgetInfo = {};
+  if (fieldInfo.ui && typeof(fieldInfo.ui.widget) === 'object') {
+    widgetInfo = fieldInfo.ui.widget;
+  }
+  const implicitSelectionMap = widgetInfo.implicitSelectionMap || {};
 
   /**
    * Helper function to determine if an item's selection should be implied
    * by the selection of a related item
-   * @param item
+   * @param choice
    * @returns {boolean}
    */
-  // const isSelectionImplied = (item) => {
-  //   for (const itemName of Object.keys(props.implicitSelectionMap)) {
-  //     const itemId = itemNameMapRef.current[itemName].id;
-  //     if (selectedItemIds.has(itemId)) {
-  //       for (const implicitItemLabel of props.implicitSelectionMap[itemName]) {
-  //         const implicitItem = itemNameMapRef.current[implicitItemLabel];
-  //         if (item.id === implicitItem.id) {
-  //           return true;
-  //         }
-  //       }
-  //     }
-  //   }
-  //
-  //   return false;
-  // };
-  //
+  const isSelectionImplied = (choice) => {
+    for (const itemLabel of Object.keys(implicitSelectionMap)) {
+      const itemValue = choiceLabelMapRef.current[itemLabel].value;
+      if (selection.has(itemValue)) {
+        for (const implicitItemLabel of implicitSelectionMap[itemLabel]) {
+          const implicitChoice = choiceLabelMapRef.current[implicitItemLabel];
+          if (choice.value === implicitChoice.value) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  };
+
   const handleCheckboxClick = (choiceInfo) => {
     const newSelection = new Set(selection);
     if (newSelection.has(choiceInfo.value)) {
@@ -68,11 +77,6 @@ function CheckboxGroupWidget(props) {
     props.onChange(Array.from(newSelection));
   };
 
-
-  let widgetInfo = {};
-  if (fieldInfo.ui && typeof(fieldInfo.ui.widget) === 'object') {
-    widgetInfo = fieldInfo.ui.widget;
-  }
 
   const classes = styles();
 
@@ -93,37 +97,39 @@ function CheckboxGroupWidget(props) {
         }
 
         <FormGroup {...(widgetInfo.formGroupProps || {})}>
-          {fieldInfo.choices.map((choiceInfo) => {
+          {fieldInfo.choices.map((choice) => {
             const formControlLabelStyle = {};
             if (widgetInfo.minLabelWidth) {
               formControlLabelStyle.minWidth = widgetInfo.minLabelWidth;
             }
 
-            const formControlLabel = (
+            let formControlLabel = (
               <Typography style={formControlLabelStyle}>
-                {choiceInfo.label}
+                {choice.label}
               </Typography>
             );
+            if (choice.tooltip) {
+              formControlLabel = (
+                <Tooltip title={choice.tooltip}>
+                  {formControlLabel}
+                </Tooltip>
+              );
+            }
 
             return (
               <FormControlLabel
-                key={choiceInfo.value}
+                key={choice.value}
                 control={(
                   <Checkbox
-                    checked={selection.has(choiceInfo.value)}
+                    disabled={isSelectionImplied(choice)}
+                    checked={selection.has(choice.value)}
                     onClick={() => {
-                      handleCheckboxClick(choiceInfo);
+                      handleCheckboxClick(choice);
                     }}
-                    value={choiceInfo.value}
+                    value={choice.value}
                   />
                 )}
-                label={choiceInfo.tooltip ? (
-                  <Tooltip title={choiceInfo.tooltip}>
-                    {formControlLabel}
-                  </Tooltip>
-                ) : (
-                  formControlLabel
-                )}
+                label={formControlLabel}
               />
             );
           })}
