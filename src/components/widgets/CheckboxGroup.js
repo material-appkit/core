@@ -41,6 +41,7 @@ function CheckboxGroupWidget(props) {
   if (fieldInfo.ui && typeof(fieldInfo.ui.widget) === 'object') {
     widgetInfo = fieldInfo.ui.widget;
   }
+  const exclusionMap = widgetInfo.exclusionMap || {};
   const implicitSelectionMap = widgetInfo.implicitSelectionMap || {};
 
   /**
@@ -65,18 +66,39 @@ function CheckboxGroupWidget(props) {
     return false;
   };
 
-  const handleCheckboxClick = (choiceInfo) => {
+  const handleCheckboxChange = (choice) => (event) => {
     const newSelection = new Set(selection);
-    if (newSelection.has(choiceInfo.value)) {
-      newSelection.delete(choiceInfo.value);
+    if (event.target.checked) {
+      newSelection.add(choice.value);
+
+      const selectedChoiceLabel = choice.label;
+
+      // Deselect tags that can not be combined with the selected tag
+      const choiceLabelsToExclude = exclusionMap[selectedChoiceLabel];
+      if (choiceLabelsToExclude) {
+        Array.from(newSelection).forEach((value) => {
+          const selectedChoice = choiceValueMapRef.current[value];
+          if (choiceLabelsToExclude.indexOf(selectedChoice.label) !== -1) {
+            newSelection.delete(value);
+          }
+        });
+      }
+
+      // Auto-select tags that are implied by the selected tag
+      // Deselect tags that can not be combined with the selected tag
+      const choiceLabelsToInclude = implicitSelectionMap[selectedChoiceLabel];
+      if (choiceLabelsToInclude) {
+        choiceLabelsToInclude.forEach((label) => {
+          const choice = choiceLabelMapRef.current[label];
+          newSelection.add(choice.value);
+        });
+      }
     } else {
-      newSelection.add(choiceInfo.value);
+      newSelection.delete(choice.value);
     }
+
     setSelection(newSelection);
-
-    props.onChange(Array.from(newSelection));
   };
-
 
   const classes = styles();
 
@@ -123,9 +145,7 @@ function CheckboxGroupWidget(props) {
                   <Checkbox
                     disabled={isSelectionImplied(choice)}
                     checked={selection.has(choice.value)}
-                    onClick={() => {
-                      handleCheckboxClick(choice);
-                    }}
+                    onChange={handleCheckboxChange(choice)}
                     value={choice.value}
                   />
                 )}
