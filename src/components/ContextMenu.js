@@ -7,6 +7,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme) => ({
@@ -46,6 +47,8 @@ function ContextMenu(props) {
     <Menu {...menuProps}>
       {menuItemArrangement.map((menuItemInfo) => {
         const menuItemProps = {
+          dense: true,
+          disabled: menuItemInfo.disabled,
           onClick: (e) => { handleMenuItemClick(e, menuItemInfo); }
         };
 
@@ -61,9 +64,8 @@ function ContextMenu(props) {
           menuItemProps.component = RouterLink;
         }
 
-        return (
+        let menuItem = (
           <MenuItem
-            dense={dense}
             key={menuItemInfo.key}
             {...menuItemProps}
           >
@@ -75,6 +77,18 @@ function ContextMenu(props) {
             {menuItemInfo.title}
           </MenuItem>
         );
+
+        if (menuItemInfo.tooltip) {
+          menuItem = (
+            <Tooltip key={menuItemInfo.key} title={menuItemInfo.tooltip}>
+              <div>
+                {menuItem}
+              </div>
+            </Tooltip>
+          );
+        }
+
+        return menuItem;
       })}
     </Menu>
   );
