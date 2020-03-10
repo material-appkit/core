@@ -61,11 +61,11 @@ function EditDialog(props) {
     setSaving(true);
   };
 
-  const handleFormSave = (representedObject) => {
+  const handleFormSave = (representedObject, response) => {
     setSaving(false);
 
     if (props.onSave) {
-      props.onSave(representedObject);
+      props.onSave(representedObject, response);
     }
 
     dismiss();
@@ -76,7 +76,7 @@ function EditDialog(props) {
 
     let errorMessage = props.labels.SAVE_FAIL_NOTIFICATION;
 
-    const errors = err.response.body;
+    const errors = err.response ? err.response.body : {};
     Object.keys(errors).forEach((errorKey) => {
       const errorValue = errors[errorKey];
       if (props.labels[errorValue]) {
@@ -85,6 +85,10 @@ function EditDialog(props) {
     });
 
     SnackbarManager.error(errorMessage);
+
+    if (props.onError) {
+      props.onError(err);
+    }
   };
 
 
@@ -115,11 +119,7 @@ function EditDialog(props) {
   };
 
 
-  const {
-    onSave,
-    FormProps,
-    ...rest
-  } = props;
+  const { onSave, FormProps, ...rest } = props;
 
   const classes = styles();
 
@@ -182,6 +182,7 @@ EditDialog.propTypes = {
   labels: PropTypes.object,
   persistedObject: PropTypes.object,
   onDelete: PropTypes.func,
+  onError: PropTypes.func,
   onLoad: PropTypes.func,
   onSave: PropTypes.func,
   onClose: PropTypes.func.isRequired,
