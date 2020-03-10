@@ -642,6 +642,11 @@ function PagedListView(props) {
    * Instruct the list to reload using the currently set filterParams
    */
   const reload = async() => {
+    if (props.items) {
+      setItems(props.items);
+      return;
+    }
+
     if (!(props.src && filterParams)) {
       return;
     }
@@ -841,9 +846,7 @@ function PagedListView(props) {
   //----------------------------------------------------------------------------
   // Putting it all together...time to render the main view
   //----------------------------------------------------------------------------
-  const renderedItems = props.items || items;
-
-  if (!renderedItems || loading) {
+  if (!items || loading) {
     return (
       <PlaceholderView border={false}>
         <CircularProgress />
@@ -851,7 +854,7 @@ function PagedListView(props) {
     );
   }
 
-  if (!renderedItems.length) {
+  if (!items.length) {
     return (
       <PlaceholderView padding={2}>
         <Typography variant="body2">
@@ -867,7 +870,7 @@ function PagedListView(props) {
     if (props.windowed) {
       view = measuring ? (
         <List disablePadding style={{ visibility: 'hidden' }}>
-          {renderedItems.map(
+          {items.map(
             (item, itemIndex) => renderListItem(item, itemIndex)
           )}
         </List>
@@ -877,7 +880,7 @@ function PagedListView(props) {
             <VariableSizeList
               height={height}
               innerElementType={List}
-              itemData={{ items: renderedItems }}
+              itemData={{ items }}
               itemCount={items.length}
               itemSize={(index) => itemHeights.current[index]}
               width={width}
@@ -892,7 +895,7 @@ function PagedListView(props) {
     } else {
       view = (
         <List disablePadding>
-          {renderedItems.map(
+          {items.map(
             (item, itemIndex) => renderListItem(item, itemIndex)
           )}
         </List>
