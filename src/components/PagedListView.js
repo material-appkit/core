@@ -265,6 +265,7 @@ function PagedListView(props) {
    */
   const itemProps = (item) => {
     const {
+      itemContextMenuArrangement,
       itemContextProvider,
       listItemProps,
       selectionMode,
@@ -275,6 +276,7 @@ function PagedListView(props) {
     let selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
 
     return {
+      contextMenuItemArrangement: itemContextMenuArrangement,
       item: item,
       onSelectionChange: handleSelectionControlClick,
       selected,
@@ -965,6 +967,7 @@ PagedListView.propTypes = {
   filterParamTransformer: PropTypes.func,
 
   items: PropTypes.array,
+  itemContextMenuArrangement: PropTypes.func,
   itemContextProvider: PropTypes.func,
   itemIdKey: PropTypes.oneOfType([
     PropTypes.string,

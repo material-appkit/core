@@ -11,7 +11,10 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Radio from '@material-ui/core/Radio';
+
+import ContextMenuButton from './ContextMenuButton';
 
 import { useInit } from '../util/hooks';
 
@@ -39,6 +42,7 @@ export const commonPropTypes = {
 function VirtualizedListItem(props) {
   const {
     commitOnSelect,
+    contextMenuItemArrangement,
     item,
     onItemClick,
     onMount,
@@ -111,6 +115,19 @@ function VirtualizedListItem(props) {
     }
   }
 
+  let secondaryListItemAction = null;
+  if (contextMenuItemArrangement) {
+    secondaryListItemAction = (
+      <ListItemSecondaryAction>
+        <ContextMenuButton
+          buttonProps={{ edge: 'end' }}
+          representedObject={item}
+          menuItemArrangement={contextMenuItemArrangement(item)}
+        />
+      </ListItemSecondaryAction>
+    );
+  }
+
   return (
     <ListItem {...listItemProps}>
       {SelectionComponent !== null &&
@@ -123,12 +140,15 @@ function VirtualizedListItem(props) {
         />
       }
       {props.children}
+
+      {secondaryListItemAction}
     </ListItem>
   );
 }
 
 VirtualizedListItem.propTypes = {
   children: PropTypes.node,
+  contextMenuItemArrangement: PropTypes.func,
   item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
