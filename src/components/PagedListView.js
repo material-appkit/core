@@ -631,7 +631,7 @@ function PagedListView(props) {
             setPaginationInfo(responseInfo.meta.pagination);
           }
 
-          resolve(loadedItems);
+          resolve({ items: loadedItems, response });
         })
         .catch((err) => {
           setFetchRequestContext(null);
@@ -686,7 +686,8 @@ function PagedListView(props) {
       props.onLoad(requestParams);
     }
 
-    let updatedItems = await fetchItems(props.src, requestParams);
+    const fetchItemsResult = await fetchItems(props.src, requestParams);
+    let updatedItems = fetchItemsResult.items;
 
     // If a transformer has been supplied, apply it to the
     // newly assigned records.
@@ -699,7 +700,7 @@ function PagedListView(props) {
     setItems(updatedItems);
 
     if (props.onComplete) {
-      props.onComplete(updatedItems);
+      props.onComplete(updatedItems, fetchItemsResult.response);
     }
   };
 
