@@ -9,10 +9,12 @@ import React, { Fragment } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -35,10 +37,22 @@ const itemListItemStyles = makeStyles((theme) => ({
   itemText: theme.itemList.itemText,
 
   removeIconRoot: {
-    cursor: 'pointer',
-    marginRight: theme.spacing(0.5),
+    marginRight: theme.spacing(1),
     minWidth: 'unset',
+
+    '&:hover': {
+      color: theme.palette.primary.main,
+      cursor: 'pointer',
+    },
   },
+
+  editIconButton: {
+    padding: theme.spacing(0.25),
+    '&:hover': {
+      color: theme.palette.primary.main,
+    },
+  },
+
 
   listItemIconRoot: {
     alignSelf: 'start',
@@ -54,7 +68,7 @@ const itemListItemStyles = makeStyles((theme) => ({
 }));
 
 function ItemListItem(props) {
-  const { item, onClick, onChange } = props;
+  const { item, onChange } = props;
   const classes = itemListItemStyles();
 
   let component = null;
@@ -62,7 +76,7 @@ function ItemListItem(props) {
     // If a component class was explicitly provided, use it
     component = (
       <props.component
-        item={props.item}
+        item={item}
         onChange={onChange}
         {...props.componentProps}
       />
@@ -71,7 +85,7 @@ function ItemListItem(props) {
     let ComponentClass = null;
     let componentProps = {
       ...props.componentProps,
-      onClick: () => { onClick(item) },
+      onClick: () => { props.onClick(item) },
       onChange,
     };
 
@@ -79,6 +93,7 @@ function ItemListItem(props) {
       ComponentClass = Link;
       componentProps.component = RouterLink;
       componentProps.to = item.path;
+      componentProps.target = '_blank';
     } else if (item.media_url) {
       ComponentClass = Link;
       componentProps.href = item.media_url;
@@ -114,6 +129,7 @@ function ItemListItem(props) {
           <props.icon className={classes.listItemIcon} />
         </ListItemIcon>
       }
+
       {(props.onRemove && props.mode === 'edit') &&
         <ListItemIcon
           aria-label="Delete"
@@ -123,17 +139,21 @@ function ItemListItem(props) {
           <DeleteIcon />
         </ListItemIcon>
       }
-      {(props.mode === 'edit' && props.clickAction === 'edit') &&
-        <ListItemIcon
-          aria-label="Edit"
-          classes={{ root: classes.removeIconRoot }}
-          onClick={() => { onClick(item); }}
-        >
-          <EditIcon />
-        </ListItemIcon>
-      }
 
       {component}
+
+      {(props.mode === 'edit' && props.clickAction === 'edit') &&
+        <ListItemSecondaryAction>
+          <IconButton
+            aria-label="Edit"
+            className={classes.editIconButton}
+            edge="end"
+            onClick={() => { props.onEdit(item); }}
+          >
+            <EditIcon />
+          </IconButton>
+        </ListItemSecondaryAction>
+      }
     </ListItem>
   );
 }
@@ -148,6 +168,7 @@ ItemListItem.propTypes = {
   mode: PropTypes.oneOf(['view', 'edit']),
   onClick: PropTypes.func.isRequired,
   onChange: PropTypes.func,
+  onEdit: PropTypes.func,
   onRemove: PropTypes.func,
   titleKey: PropTypes.any,
 };
@@ -248,6 +269,14 @@ class ItemList extends React.PureComponent {
     }
   };
 
+
+  handleEditButtonClick = (item) => {
+    if (this.props.mode === 'edit' && this.props.clickAction === 'edit') {
+      this.setState({ editDialogOpen: true, editingObject: item });
+    }
+  };
+
+
   handleAddButtonClick = () => {
     if (this.props.apiListUrl) {
       this.setState({ listDialogOpen: true });
@@ -265,10 +294,6 @@ class ItemList extends React.PureComponent {
   };
 
   handleItemClick = (item) => {
-    if (this.props.mode === 'edit' && this.props.clickAction === 'edit') {
-      this.setState({ editDialogOpen: true, editingObject: item });
-    }
-
     if (this.props.onItemClick) {
       this.props.onItemClick(item);
     }
@@ -311,6 +336,7 @@ class ItemList extends React.PureComponent {
               mode={mode}
               onChange={this.handleItemChange}
               onClick={this.handleItemClick}
+              onEdit={this.handleEditButtonClick}
               onRemove={this.handleRemoveButtonClick}
               titleKey={this.props.titleKey}
             />
