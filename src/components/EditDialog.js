@@ -29,7 +29,7 @@ function EditDialog(props) {
   const [saving, setSaving] = useState(false);
 
   let title = props.entityType;
-  if (props.persistedObject) {
+  if (props.persistedObject || props.apiDetailUrl) {
     title = `${props.labels.UPDATE} ${title}`;
   } else {
     title = `${props.labels.ADD} ${title}`;
