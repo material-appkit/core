@@ -79,7 +79,7 @@ export const toRepresentation = (value, fieldInfo, form) => {
 
   const WidgetClass = form.constructor.widgetClassForType(widgetType);
   if (WidgetClass && WidgetClass.hasOwnProperty('toRepresentation')) {
-    return WidgetClass.toRepresentation(value);
+    return WidgetClass.toRepresentation(value, fieldInfo);
   }
 
   let coercedValue = value;
@@ -90,9 +90,9 @@ export const toRepresentation = (value, fieldInfo, form) => {
   switch (fieldInfo.type) {
     case 'date':
     case 'datetime':
-      return (coercedValue === '') ? null : coercedValue;
+      return isValue(coercedValue) ? coercedValue : '';
     case 'number':
-      return (coercedValue === '') ? null : parseFloat(coercedValue);
+      return isValue(coercedValue) ? parseFloat(coercedValue) : null;
     default:
       return coercedValue;
   }
