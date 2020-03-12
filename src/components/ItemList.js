@@ -4,6 +4,8 @@
 *
 */
 
+import classNames from 'classnames';
+
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -32,9 +34,22 @@ import PagedListViewDialog from './PagedListViewDialog';
 
 
 const itemListItemStyles = makeStyles((theme) => ({
-  root: theme.itemList.item,
-  itemButton: theme.itemList.itemButton,
-  itemText: theme.itemList.itemText,
+  listItem: {
+    ...theme.itemList.item
+  },
+
+  listItemEditable: {
+    display: 'inline-grid',
+    gridColumnGap: 8,
+    gridTemplateColumns: '24px 1fr min-content',
+  },
+
+  listItemText: {
+    margin: 0,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
 
   removeIconRoot: {
     marginRight: theme.spacing(1),
@@ -47,6 +62,7 @@ const itemListItemStyles = makeStyles((theme) => ({
   },
 
   editIconButton: {
+    marginRight: theme.spacing(0.5),
     padding: theme.spacing(0.25),
     '&:hover': {
       color: theme.palette.primary.main,
@@ -82,7 +98,7 @@ function ItemListItem(props) {
       />
     );
   } else {
-    let ComponentClass = null;
+    let ComponentClass = Typography;
     let componentProps = {
       ...props.componentProps,
       onClick: () => { props.onClick(item) },
@@ -94,13 +110,12 @@ function ItemListItem(props) {
       componentProps.component = RouterLink;
       componentProps.to = item.path;
       componentProps.target = '_blank';
+      componentProps.noWrap = true;
     } else if (item.media_url) {
       ComponentClass = Link;
       componentProps.href = item.media_url;
       componentProps.rel = 'noopener';
       componentProps.target = '_blank';
-    } else {
-      ComponentClass = Typography;
     }
 
     let linkTitle = null;
@@ -112,7 +127,7 @@ function ItemListItem(props) {
 
     component = (
       <ListItemText
-        classes={{ root: classes.itemText }}
+        className={classes.listItemText}
         primary={(
           <ComponentClass {...componentProps}>
             {linkTitle}
@@ -122,8 +137,16 @@ function ItemListItem(props) {
     );
   }
 
+  const listItemClasses = [classes.listItem];
+  if (props.mode === 'edit') {
+    listItemClasses.push(classes.listItemEditable);
+  }
+
   return (
-    <ListItem classes={{ root: classes.root }} {...props.listItemProps}>
+    <ListItem
+      className={classNames(listItemClasses)}
+      {...props.listItemProps}
+    >
       {(props.mode === 'view' && props.icon) &&
         <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
           <props.icon className={classes.listItemIcon} />
@@ -143,7 +166,7 @@ function ItemListItem(props) {
       {component}
 
       {(props.mode === 'edit' && props.clickAction === 'edit') &&
-        <ListItemSecondaryAction>
+        <div>
           <IconButton
             aria-label="Edit"
             className={classes.editIconButton}
@@ -152,7 +175,7 @@ function ItemListItem(props) {
           >
             <EditIcon />
           </IconButton>
-        </ListItemSecondaryAction>
+        </div>
       }
     </ListItem>
   );
@@ -322,7 +345,7 @@ class ItemList extends React.PureComponent {
 
     return (
       <Fragment>
-        <List classes={{ root: classes.root }}>
+        <List disablePadding>
           {this.items.map((item) => (
             <ItemListItem
               clickAction={clickAction}
@@ -396,7 +419,6 @@ ItemList.propTypes = {
   apiAttachSuffix: PropTypes.string,
   apiDetachSuffix: PropTypes.string,
   canDelete: PropTypes.bool,
-  classes: PropTypes.object,
   clickAction: PropTypes.oneOf(['link', 'edit']),
   EditDialogComponent: PropTypes.func,
   editDialogProps: PropTypes.object,
@@ -436,7 +458,4 @@ ItemList.defaultProps = {
   warnOnDelete: true,
 };
 
-export default withStyles((theme) => ({
-  root: theme.itemList.root,
-  addButtonIcon: theme.itemList.addButtonIcon,
-}))(ItemList);
+export default ItemList;
