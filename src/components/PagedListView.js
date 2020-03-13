@@ -858,6 +858,9 @@ function PagedListView(props) {
   }
 
   if (!items.length) {
+    if (props.emptyListPlaceholder !== undefined) {
+      return props.emptyListPlaceholder;
+    }
     return (
       <PlaceholderView padding={2}>
         <Typography variant="body2">
@@ -963,6 +966,8 @@ PagedListView.propTypes = {
   defaultFilterParams: PropTypes.object,
   defaultOrdering: PropTypes.string,
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
+
+  emptyListPlaceholder: PropTypes.element,
 
   filterMetadata: PropTypes.object,
   filterParamTransformer: PropTypes.func,
