@@ -70,12 +70,7 @@ function FormFieldSet(props) {
           {...childProps}
         >
           {fieldName === '---' ? (
-            <Divider
-              style={{
-                margin: `${24}px 0`,
-                width: '100%',
-              }}
-            />
+            <Divider style={{ margin: '32px 0 24px 0', flexGrow: 1 }} />
           ) : (
             <FormField
               errorText={errors[fieldName]}
