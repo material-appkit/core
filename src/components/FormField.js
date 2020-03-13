@@ -121,13 +121,13 @@ const textFieldStyles = makeStyles((theme) => {
   return theme.form;
 });
 
-function renderTextField(props, fieldInfo, onChange) {
+function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
   const widgetType = getWidgetType(fieldInfo);
 
   const classes = textFieldStyles();
 
   const textFieldProps = {
-    ...props,
+    ...commonFieldProps,
     fullWidth: true,
     InputLabelProps: { classes: { root: classes.inputLabel } },
     margin: "normal",
@@ -135,6 +135,10 @@ function renderTextField(props, fieldInfo, onChange) {
     type: fieldInfo.type,
     variant: "outlined",
   };
+
+  if (fieldIndex === 0) {
+    textFieldProps.autoFocus = true;
+  }
 
   if (fieldInfo.choices) {
     textFieldProps.select = true;
@@ -184,6 +188,7 @@ function FormField(props) {
   const {
     errorText,
     fieldArrangementInfo,
+    fieldIndex,
     fieldInfo,
     form,
     onChange,
@@ -192,7 +197,6 @@ function FormField(props) {
   const widgetType = getWidgetType(fieldInfo);
   const widgetLabel = getWidgetLabel(fieldInfo);
 
-  const { autoFocus, help } = fieldInfo.ui;
   const fieldName = fieldInfo.key;
 
   const { formData } = form.state;
@@ -207,9 +211,8 @@ function FormField(props) {
   }
 
   Object.assign(commonFieldProps, {
-    autoFocus,
     error: errorText ? true : false,
-    helperText: errorText || help,
+    helperText: errorText || fieldInfo.ui.help,
     label: widgetLabel,
   });
 
@@ -241,7 +244,7 @@ function FormField(props) {
     default:
     // If no special widget has been designated for this form field,
     // render it as a TextField
-    return renderTextField(commonFieldProps, fieldInfo, handleFieldChange);
+    return renderTextField(commonFieldProps, fieldInfo, fieldIndex, handleFieldChange);
   }
 }
 
@@ -249,6 +252,7 @@ FormField.propTypes = {
   errorText: PropTypes.any,
   fieldArrangementInfo: PropTypes.object.isRequired,
   fieldInfo: PropTypes.object.isRequired,
+  fieldIndex: PropTypes.number.isRequired,
   form: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired,
 };

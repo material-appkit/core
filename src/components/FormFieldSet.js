@@ -75,6 +75,7 @@ function FormFieldSet(props) {
             <FormField
               errorText={errors[fieldName]}
               form={form}
+              fieldIndex={fieldIndex}
               fieldInfo={fieldMetadataMap[fieldName]}
               fieldArrangementInfo={fieldInfo}
               onChange={handleFormFieldChange}
