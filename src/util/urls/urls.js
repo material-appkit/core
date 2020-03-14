@@ -1,8 +1,8 @@
-import pathToRegexp from 'path-to-regexp';
+import { pathToRegexp, compile } from 'path-to-regexp';
 import { matchPath } from 'react-router-dom';
 
 export function reverse(path, params) {
-  const toPath = pathToRegexp.compile(path);
+  const toPath = compile(path);
   return toPath(params);
 }
 
