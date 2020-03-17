@@ -98,6 +98,11 @@ function PropertyListItem(props) {
     primaryComponentProps.to = value.path;
   }
 
+  if (fieldInfo.type === 'href') {
+    PrimaryComponent = Link;
+    primaryComponentProps.href = value;
+  }
+
   return (
     <ListItem classes={{ root: classes.listItemRoot }}>
       {labelComponent}
