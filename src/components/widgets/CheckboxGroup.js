@@ -27,6 +27,10 @@ const styles = makeStyles((theme) => ({
     border: 'none',
     padding: 0,
   },
+
+  checkbox: {
+    padding: theme.spacing(0.5),
+  },
 }));
 
 function CheckboxGroupWidget(props) {
@@ -146,6 +150,7 @@ function CheckboxGroupWidget(props) {
                 control={(
                   <Checkbox
                     disabled={isSelectionImplied(choice)}
+                    className={classes.checkbox}
                     checked={selection.has(choice.value)}
                     onChange={handleCheckboxChange(choice)}
                     value={choice.value}
