@@ -6,7 +6,7 @@
 
 import classNames from 'classnames';
 
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Checkbox from '@material-ui/core/Checkbox';
@@ -38,8 +38,8 @@ function CheckboxGroupWidget(props) {
 
   const selection = new Set(props.value || []);
 
-  const choiceValueMapRef = useRef(arrayToObject(fieldInfo.choices, 'value'));
-  const choiceLabelMapRef = useRef(arrayToObject(fieldInfo.choices, 'label'));
+  const choiceValueMap = arrayToObject(fieldInfo.choices, 'value');
+  const choiceLabelMap = arrayToObject(fieldInfo.choices, 'label');
 
   let widgetInfo = {};
   if (fieldInfo.ui && typeof(fieldInfo.ui.widget) === 'object') {
@@ -57,10 +57,10 @@ function CheckboxGroupWidget(props) {
    */
   const isSelectionImplied = (choice) => {
     for (const itemLabel of Object.keys(implicitSelectionMap)) {
-      const itemValue = choiceLabelMapRef.current[itemLabel].value;
+      const itemValue = choiceLabelMap[itemLabel].value;
       if (selection.has(itemValue)) {
         for (const implicitItemLabel of implicitSelectionMap[itemLabel]) {
-          const implicitChoice = choiceLabelMapRef.current[implicitItemLabel];
+          const implicitChoice = choiceLabelMap[implicitItemLabel];
           if (choice.value === implicitChoice.value) {
             return true;
           }
@@ -82,7 +82,7 @@ function CheckboxGroupWidget(props) {
       const choiceLabelsToExclude = exclusionMap[selectedChoiceLabel];
       if (choiceLabelsToExclude) {
         Array.from(newSelection).forEach((value) => {
-          const selectedChoice = choiceValueMapRef.current[value];
+          const selectedChoice = choiceValueMap[value];
           if (choiceLabelsToExclude.indexOf(selectedChoice.label) !== -1) {
             newSelection.delete(value);
           }
@@ -94,7 +94,7 @@ function CheckboxGroupWidget(props) {
       const choiceLabelsToInclude = implicitSelectionMap[selectedChoiceLabel];
       if (choiceLabelsToInclude) {
         choiceLabelsToInclude.forEach((label) => {
-          const choice = choiceLabelMapRef.current[label];
+          const choice = choiceLabelMap[label];
           newSelection.add(choice.value);
         });
       }
