@@ -37,8 +37,6 @@ const itemListItemStyles = makeStyles((theme) => ({
   },
 
   listItemEditable: {
-    display: 'inline-grid',
-    gridColumnGap: 8,
     gridTemplateColumns: '24px 1fr min-content',
   },
 
@@ -50,7 +48,6 @@ const itemListItemStyles = makeStyles((theme) => ({
   },
 
   removeIconRoot: {
-    marginRight: theme.spacing(1),
     minWidth: 'unset',
 
     '&:hover': {
@@ -76,8 +73,7 @@ const itemListItemStyles = makeStyles((theme) => ({
   },
 
   listItemIcon: {
-    height: '18px !important',
-    width: '18px !important',
+    padding: 2,
   },
 }));
 
@@ -136,7 +132,7 @@ function ItemListItem(props) {
   }
 
   const listItemClasses = [classes.listItem];
-  if (props.mode === 'edit') {
+  if (props.mode === 'edit' && props.clickAction === 'edit') {
     listItemClasses.push(classes.listItemEditable);
   }
 
