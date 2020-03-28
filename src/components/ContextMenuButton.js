@@ -44,7 +44,6 @@ ContextMenuButton.propTypes = {
   buttonProps: PropTypes.object,
   dense: PropTypes.bool,
   menuItemArrangement: PropTypes.array.isRequired,
-  representedObject: PropTypes.object.isRequired,
 };
 
 ContextMenuButton.defaultProps = {
