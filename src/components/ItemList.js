@@ -33,18 +33,19 @@ import PagedListViewDialog from './PagedListViewDialog';
 
 const itemListItemStyles = makeStyles((theme) => ({
   listItem: {
-    display: 'inline-grid',
-    gridTemplateColumns: '1fr',
-    gridColumnGap: 4,
     paddingTop: 0,
     paddingBottom: 0,
   },
 
   listItemWithIcon: {
+    display: 'inline-grid',
+    gridColumnGap: 4,
     gridTemplateColumns: '24px 1fr',
   },
 
   listItemEditable: {
+    display: 'inline-grid',
+    gridColumnGap: 4,
     gridTemplateColumns: '24px 1fr min-content',
   },
 
