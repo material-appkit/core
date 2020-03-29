@@ -33,7 +33,15 @@ import PagedListViewDialog from './PagedListViewDialog';
 
 const itemListItemStyles = makeStyles((theme) => ({
   listItem: {
-    ...theme.itemList.item
+    display: 'inline-grid',
+    gridTemplateColumns: '1fr',
+    gridColumnGap: 4,
+    paddingTop: 0,
+    paddingBottom: 0,
+  },
+
+  listItemWithIcon: {
+    gridTemplateColumns: '24px 1fr',
   },
 
   listItemEditable: {
@@ -116,7 +124,7 @@ function ItemListItem(props) {
     if (typeof(props.titleKey) === 'function') {
       linkTitle = props.titleKey(item);
     } else {
-      linkTitle = item[props.titleKey];
+      linkTitle = valueForKeyPath(item, props.titleKey);
     }
 
     component = (
@@ -132,6 +140,10 @@ function ItemListItem(props) {
   }
 
   const listItemClasses = [classes.listItem];
+  if (props.icon) {
+    listItemClasses.push(classes.listItemWithIcon);
+  }
+
   if (props.mode === 'edit' && props.clickAction === 'edit') {
     listItemClasses.push(classes.listItemEditable);
   }
