@@ -241,12 +241,10 @@ function FormField(props) {
   switch (widgetType) {
     case 'switch':
       return renderSwitchField(commonFieldProps, fieldInfo, handleFieldChange);
-    case 'textfield':
+    default:
       // If no special widget has been designated for this form field,
       // render it as a TextField
       return renderTextField(commonFieldProps, fieldInfo, fieldIndex, handleFieldChange);
-    default:
-      throw new Error(`Unsupported widget type for field ${fieldInfo.key}: ${widgetType}`);
   }
 }
 
