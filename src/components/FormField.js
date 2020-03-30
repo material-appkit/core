@@ -16,7 +16,7 @@ import { isValue } from '../util/value';
 const getWidgetType = (fieldInfo) => {
   const { widget } = fieldInfo.ui;
   if (!widget) {
-    return 'text';
+    return 'textfield';
   }
   if (typeof(widget) === 'string') {
     return widget;
@@ -241,10 +241,12 @@ function FormField(props) {
   switch (widgetType) {
     case 'switch':
       return renderSwitchField(commonFieldProps, fieldInfo, handleFieldChange);
+    case 'textfield':
+      // If no special widget has been designated for this form field,
+      // render it as a TextField
+      return renderTextField(commonFieldProps, fieldInfo, fieldIndex, handleFieldChange);
     default:
-    // If no special widget has been designated for this form field,
-    // render it as a TextField
-    return renderTextField(commonFieldProps, fieldInfo, fieldIndex, handleFieldChange);
+      throw new Error(`Unsupported widget type for field ${fieldInfo.key}: ${widgetType}`);
   }
 }
 
