@@ -17,6 +17,14 @@ import { makeStyles } from '@material-ui/core/styles';
 const styles = makeStyles((theme) => ({
   fieldset: theme.form.customControl.fieldset,
   legend: theme.form.customControl.legend,
+
+  radioGroup: {
+    padding: `0 ${theme.spacing(1)}px`,
+  },
+
+  radio: {
+    padding: theme.spacing(0.5),
+  },
 }));
 
 function RadioGroupWidget(props) {
@@ -49,6 +57,7 @@ function RadioGroupWidget(props) {
         }
 
         <RadioGroup
+          className={classes.radioGroup}
           row={fieldInfo.ui.direction === 'row'}
           value={selectedValue}
         >
@@ -57,6 +66,7 @@ function RadioGroupWidget(props) {
               control={(
                 <Radio
                   onClick={() => { handleRadioButtonClick(choice); }}
+                  className={classes.radio}
                 />
               )}
               key={choice.value}
