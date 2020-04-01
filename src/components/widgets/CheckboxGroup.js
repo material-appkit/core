@@ -28,6 +28,10 @@ const styles = makeStyles((theme) => ({
     padding: 0,
   },
 
+  formGroup: {
+    padding: `0 ${theme.spacing(0.5)}px`,
+  },
+
   checkbox: {
     padding: theme.spacing(0.5),
   },
@@ -115,6 +119,9 @@ function CheckboxGroupWidget(props) {
     fieldsetClasses.push(classes.defaultFieldset);
   }
 
+  const formGroupProps = {...(widgetInfo.formGroupProps || {})};
+  formGroupProps.className = classes.formGroup;
+
   return (
     <FormControl fullWidth margin="dense">
       <fieldset className={classNames(fieldsetClasses)}>
@@ -124,7 +131,7 @@ function CheckboxGroupWidget(props) {
           </legend>
         }
 
-        <FormGroup {...(widgetInfo.formGroupProps || {})}>
+        <FormGroup {...formGroupProps}>
           {fieldInfo.choices.map((choice) => {
             const formControlLabelStyle = {};
             if (widgetInfo.minLabelWidth) {
