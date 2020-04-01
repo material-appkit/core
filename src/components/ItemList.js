@@ -73,12 +73,8 @@ const itemListItemStyles = makeStyles((theme) => ({
     },
   },
 
-
   listItemIconRoot: {
-    alignSelf: 'start',
-    marginRight: theme.spacing(0.5),
-    marginTop: 2,
-    minWidth: 'unset',
+    alignSelf: 'baseline',
   },
 
   listItemIcon: {
