@@ -182,7 +182,7 @@ function CheckboxGroupWidget(props) {
   formGroupProps.className = classes.formGroup;
 
   return (
-    <FormControl fullWidth margin="dense">
+    <FormControl fullWidth margin="none">
       <fieldset className={classNames(fieldsetClasses)}>
         {label &&
           <legend className={classes.legend}>

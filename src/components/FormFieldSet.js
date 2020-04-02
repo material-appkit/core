@@ -5,7 +5,7 @@ import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 
 import FormField from './FormField';
-import { getFieldMetadataMap, getFieldNames } from './Form';
+import { getFieldMetadataMap } from './Form';
 
 function FormFieldSet(props) {
   const {
@@ -18,7 +18,6 @@ function FormFieldSet(props) {
 
 
   const fieldMetadataMap = getFieldMetadataMap(metadata);
-  const fieldNames = getFieldNames(metadata, fieldArrangement);
 
   let fieldArrangement = props.fieldArrangement;
   if (!fieldArrangement) {
@@ -66,11 +65,11 @@ function FormFieldSet(props) {
           item
           key={fieldKey}
           xs={12}
-          style={{ paddingLeft: 8, paddingRight: 8 }}
+          style={{ padding: 8 }}
           {...childProps}
         >
           {fieldName === '---' ? (
-            <Divider style={{ margin: '32px 0 24px 0', flexGrow: 1 }} />
+            <Divider style={{ margin: '16px 0 16px 0', flexGrow: 1 }} />
           ) : (
             <FormField
               errorText={errors[fieldName]}

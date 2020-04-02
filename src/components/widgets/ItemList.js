@@ -90,7 +90,7 @@ class ItemListWidget extends React.PureComponent {
     const { classes, label } = this.props;
 
     return (
-      <FormControl fullWidth margin="dense">
+      <FormControl fullWidth margin="none">
         <fieldset className={classes.fieldset}>
           {label &&
             <legend className={classes.legend}>{label}</legend>

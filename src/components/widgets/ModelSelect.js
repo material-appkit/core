@@ -84,7 +84,7 @@ class ModelSelectWidget extends React.PureComponent {
     const apiListUrl = `${fieldInfo.related_endpoint.singular}/`;
 
     return (
-      <FormControl fullWidth margin="dense">
+      <FormControl fullWidth margin="none">
         <fieldset className={classes.fieldset}>
           {label &&
             <legend className={classes.legend}>{label}</legend>

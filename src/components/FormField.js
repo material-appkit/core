@@ -130,7 +130,7 @@ function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
     ...commonFieldProps,
     fullWidth: true,
     InputLabelProps: { classes: { root: classes.inputLabel } },
-    margin: "normal",
+    margin: "none",
     onChange: (e) => { onChange(e.target.value); },
     type: fieldInfo.type,
     variant: "outlined",
