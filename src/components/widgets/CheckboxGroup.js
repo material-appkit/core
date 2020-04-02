@@ -6,9 +6,10 @@
 
 import classNames from 'classnames';
 
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
@@ -18,7 +19,9 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
 
+import EditDialog from '../EditDialog';
 import ServiceAgent from '../../util/ServiceAgent';
 import { arrayToObject } from '../../util/array';
 import { useInit } from '../../util/hooks';
@@ -46,10 +49,25 @@ const styles = makeStyles((theme) => ({
   }
 }));
 
+function createChoice(item, field_map) {
+  const choice = {...item};
+  if (!field_map) {
+    return choice;
+  }
+
+  Object.keys(field_map).forEach((key) => {
+    choice[field_map[key]] = item[key];
+  });
+  return choice;
+
+
+}
 function CheckboxGroupWidget(props) {
   const { fieldInfo, label } = props;
 
   const [choices, setChoices] = useState(fieldInfo.choices || null);
+  const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
+
   const choiceLabelMap = choices ? arrayToObject(choices, 'label') : {};
   const choiceValueMap = choices ? arrayToObject(choices, 'value') : {};
 
@@ -62,25 +80,20 @@ function CheckboxGroupWidget(props) {
 
   const selection = new Set(props.value || []);
 
+  let apiListUrl = widgetInfo.list_endpoint;
+  if (!apiListUrl && fieldInfo.related_endpoint) {
+    apiListUrl = `${fieldInfo.related_endpoint.singular}/`;
+  }
 
   useInit(async() => {
     if (fieldInfo.choices) {
       setChoices(fieldInfo.choices);
-    } else if (fieldInfo.related_endpoint) {
-      const apiListUrl = `${fieldInfo.related_endpoint.singular}/`;
+    } else if (apiListUrl) {
       const filterParams = widgetInfo.filter_params || {};
       const res = await ServiceAgent.get(apiListUrl, filterParams);
-      let currentChoices = res.body;
-      if (widgetInfo.choice_map) {
-        currentChoices = currentChoices.map((item) => {
-          const choice = {};
-          Object.keys(widgetInfo.choice_map).forEach((key) => {
-            choice[widgetInfo.choice_map[key]] = item[key];
-          });
-          return choice;
-        });
-      }
-      setChoices(currentChoices);
+      setChoices(res.body.map(
+        (item) => createChoice(item, widgetInfo.choice_map)
+      ));
     } else {
       throw new Error('"choices" or "related_endpoint" must be present in fieldInfo');
     }
@@ -144,6 +157,18 @@ function CheckboxGroupWidget(props) {
   };
 
   //----------------------------------------------------------------------------
+  const handleEditDialogClose = () => {
+    setAddDialogIsOpen(false);
+  };
+
+  const handleEditDialogSave = (record) => {
+    const newChoice = createChoice(record, widgetInfo.choice_map);
+    setChoices([...choices, newChoice]);
+
+    handleEditDialogClose();
+  };
+  
+  //----------------------------------------------------------------------------
   const classes = styles();
 
   const fieldsetClasses = [];
@@ -166,43 +191,68 @@ function CheckboxGroupWidget(props) {
         }
 
         {choices ? (
-          <FormGroup {...formGroupProps}>
-            {choices.map((choice) => {
-              const formControlLabelStyle = {};
-              if (widgetInfo.minLabelWidth) {
-                formControlLabelStyle.minWidth = widgetInfo.minLabelWidth;
-              }
+          <Fragment>
+            <FormGroup {...formGroupProps}>
+              {choices.map((choice) => {
+                const formControlLabelStyle = {};
+                if (widgetInfo.minLabelWidth) {
+                  formControlLabelStyle.minWidth = widgetInfo.minLabelWidth;
+                }
 
-              let formControlLabel = (
-                <Typography style={formControlLabelStyle}>
-                  {choice.label}
-                </Typography>
-              );
-              if (choice.tooltip) {
-                formControlLabel = (
-                  <Tooltip title={choice.tooltip}>
-                    {formControlLabel}
-                  </Tooltip>
+                let formControlLabel = (
+                  <Typography style={formControlLabelStyle}>
+                    {choice.label}
+                  </Typography>
                 );
-              }
+                if (choice.tooltip) {
+                  formControlLabel = (
+                    <Tooltip title={choice.tooltip}>
+                      {formControlLabel}
+                    </Tooltip>
+                  );
+                }
 
-              return (
-                <FormControlLabel
-                  key={choice.value}
-                  control={(
-                    <Checkbox
-                      disabled={isSelectionImplied(choice)}
-                      className={classes.checkbox}
-                      checked={selection.has(choice.value)}
-                      onChange={handleCheckboxChange(choice)}
-                      value={choice.value}
-                    />
-                  )}
-                  label={formControlLabel}
-                />
-              );
-            })}
-          </FormGroup>
+                return (
+                  <FormControlLabel
+                    key={choice.value}
+                    control={(
+                      <Checkbox
+                        disabled={isSelectionImplied(choice)}
+                        className={classes.checkbox}
+                        checked={selection.has(choice.value)}
+                        onChange={handleCheckboxChange(choice)}
+                        value={choice.value}
+                      />
+                    )}
+                    label={formControlLabel}
+                  />
+                );
+              })}
+            </FormGroup>
+
+            {(apiListUrl && widgetInfo.create_endpoint) &&
+              <Fragment>
+                <Button
+                  color="primary"
+                  onClick={() => { setAddDialogIsOpen(true); }}
+                  size="small"
+                  startIcon={<AddIcon />}
+                >
+                  Add {widgetInfo.entity_type}...
+                </Button>
+
+                {addDialogIsOpen &&
+                  <EditDialog
+                    apiCreateUrl={widgetInfo.create_endpoint}
+                    defaultValues={widgetInfo.filter_params}
+                    entityType={widgetInfo.entity_type}
+                    onClose={handleEditDialogClose}
+                    onSave={handleEditDialogSave}
+                  />
+                }
+              </Fragment>
+            }
+          </Fragment>
         ) : (
           <Box display="flex" alignItems="center" height={30}>
             <LinearProgress className={classes.linearProgress} />
