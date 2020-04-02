@@ -6,18 +6,23 @@
 
 import classNames from 'classnames';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
+import ServiceAgent from '../../util/ServiceAgent';
 import { arrayToObject } from '../../util/array';
+import { useInit } from '../../util/hooks';
+
 
 const styles = makeStyles((theme) => ({
   defaultFieldset: theme.form.customControl.fieldset,
@@ -35,15 +40,18 @@ const styles = makeStyles((theme) => ({
   checkbox: {
     padding: theme.spacing(0.5),
   },
+
+  linearProgress: {
+    flex: 1,
+  }
 }));
 
 function CheckboxGroupWidget(props) {
   const { fieldInfo, label } = props;
 
-  const selection = new Set(props.value || []);
-
-  const choiceValueMap = arrayToObject(fieldInfo.choices, 'value');
-  const choiceLabelMap = arrayToObject(fieldInfo.choices, 'label');
+  const [choices, setChoices] = useState(fieldInfo.choices || null);
+  const choiceLabelMap = choices ? arrayToObject(choices, 'label') : {};
+  const choiceValueMap = choices ? arrayToObject(choices, 'value') : {};
 
   let widgetInfo = {};
   if (fieldInfo.ui && typeof(fieldInfo.ui.widget) === 'object') {
@@ -51,6 +59,32 @@ function CheckboxGroupWidget(props) {
   }
   const exclusionMap = widgetInfo.exclusionMap || {};
   const implicitSelectionMap = widgetInfo.implicitSelectionMap || {};
+
+  const selection = new Set(props.value || []);
+
+
+  useInit(async() => {
+    if (fieldInfo.choices) {
+      setChoices(fieldInfo.choices);
+    } else if (fieldInfo.related_endpoint) {
+      const apiListUrl = `${fieldInfo.related_endpoint.singular}/`;
+      const filterParams = widgetInfo.filter_params || {};
+      const res = await ServiceAgent.get(apiListUrl, filterParams);
+      let currentChoices = res.body;
+      if (widgetInfo.choice_map) {
+        currentChoices = currentChoices.map((item) => {
+          const choice = {};
+          Object.keys(widgetInfo.choice_map).forEach((key) => {
+            choice[widgetInfo.choice_map[key]] = item[key];
+          });
+          return choice;
+        });
+      }
+      setChoices(currentChoices);
+    } else {
+      throw new Error('"choices" or "related_endpoint" must be present in fieldInfo');
+    }
+  });
 
   //----------------------------------------------------------------------------
   /**
@@ -131,43 +165,49 @@ function CheckboxGroupWidget(props) {
           </legend>
         }
 
-        <FormGroup {...formGroupProps}>
-          {fieldInfo.choices.map((choice) => {
-            const formControlLabelStyle = {};
-            if (widgetInfo.minLabelWidth) {
-              formControlLabelStyle.minWidth = widgetInfo.minLabelWidth;
-            }
+        {choices ? (
+          <FormGroup {...formGroupProps}>
+            {choices.map((choice) => {
+              const formControlLabelStyle = {};
+              if (widgetInfo.minLabelWidth) {
+                formControlLabelStyle.minWidth = widgetInfo.minLabelWidth;
+              }
 
-            let formControlLabel = (
-              <Typography style={formControlLabelStyle}>
-                {choice.label}
-              </Typography>
-            );
-            if (choice.tooltip) {
-              formControlLabel = (
-                <Tooltip title={choice.tooltip}>
-                  {formControlLabel}
-                </Tooltip>
+              let formControlLabel = (
+                <Typography style={formControlLabelStyle}>
+                  {choice.label}
+                </Typography>
               );
-            }
+              if (choice.tooltip) {
+                formControlLabel = (
+                  <Tooltip title={choice.tooltip}>
+                    {formControlLabel}
+                  </Tooltip>
+                );
+              }
 
-            return (
-              <FormControlLabel
-                key={choice.value}
-                control={(
-                  <Checkbox
-                    disabled={isSelectionImplied(choice)}
-                    className={classes.checkbox}
-                    checked={selection.has(choice.value)}
-                    onChange={handleCheckboxChange(choice)}
-                    value={choice.value}
-                  />
-                )}
-                label={formControlLabel}
-              />
-            );
-          })}
-        </FormGroup>
+              return (
+                <FormControlLabel
+                  key={choice.value}
+                  control={(
+                    <Checkbox
+                      disabled={isSelectionImplied(choice)}
+                      className={classes.checkbox}
+                      checked={selection.has(choice.value)}
+                      onChange={handleCheckboxChange(choice)}
+                      value={choice.value}
+                    />
+                  )}
+                  label={formControlLabel}
+                />
+              );
+            })}
+          </FormGroup>
+        ) : (
+          <Box display="flex" alignItems="center" height={30}>
+            <LinearProgress className={classes.linearProgress} />
+          </Box>
+        )}
       </fieldset>
     </FormControl>
   );
