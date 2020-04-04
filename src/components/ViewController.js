@@ -54,7 +54,7 @@ ViewController.propTypes = {
   children: PropTypes.any,
   location: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
-  mountPath: PropTypes.string.isRequired,
+  mountPath: PropTypes.string,
   onMount: PropTypes.func,
   onUpdate: PropTypes.func,
   onAppear: PropTypes.func,
