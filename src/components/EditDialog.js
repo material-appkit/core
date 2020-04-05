@@ -18,6 +18,7 @@ import Spacer from './Spacer';
 
 const styles = makeStyles((theme) => ({
   paper: theme.editDialog.paper,
+  dialogContent: theme.editDialog.dialogContent,
 
   deleteButton: {
     color: theme.palette.error.main,
@@ -134,7 +135,7 @@ function EditDialog(props) {
         {title}
       </DialogTitle>
 
-      <DialogContent>
+      <DialogContent className={classes.dialogContent}>
         <Form
           ref={formRef}
           onLoad={handleFormLoad}
