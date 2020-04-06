@@ -12,9 +12,7 @@ const styles = makeStyles((theme) => ({
     height: '100%',
     position: 'relative',
 
-    content: {
-      "-webkitOverflowScrolling": 'touch',
-    },
+    "-webkitOverflowScrolling": 'touch',
   }
 }));
 
