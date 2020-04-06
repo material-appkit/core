@@ -1,10 +1,22 @@
+import classNames from 'classnames';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 
-const styles = makeStyles((theme) => (theme.splitView));
+const styles = makeStyles((theme) => ({
+  splitView: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+
+    content: {
+      "-webkitOverflowScrolling": 'touch',
+    },
+  }
+}));
 
 function SplitView(props) {
   const {
@@ -17,15 +29,8 @@ function SplitView(props) {
 
   const classes = styles();
 
-
-  const splitViewStyles = {
-    width: '100%',
-    height: '100%',
-    position: 'relative',
-  };
-
-  const barStyles = { ...props.barStyles };
-  const contentStyles = { ...props.contentStyles };
+  const barStyles = {};
+  const contentStyles = {};
 
   if (scrollContent) {
     contentStyles.overflow = 'auto';
@@ -98,11 +103,11 @@ function SplitView(props) {
   }
 
   return (
-    <Box className={classes.container} style={splitViewStyles}>
-      <Box className={classes.bar} style={barStyles}>
+    <Box className={classes.splitView}>
+      <Box className={classNames(classes.bar, props.barClassName)} style={barStyles}>
         {bar}
       </Box>
-      <Box className={classes.content} style={contentStyles}>
+      <Box className={classNames(classes.content, props.contentClassName)} style={contentStyles}>
         {children}
       </Box>
     </Box>
@@ -112,17 +117,15 @@ function SplitView(props) {
 SplitView.propTypes = {
   bar: PropTypes.object.isRequired,
   barSize: PropTypes.number.isRequired,
-  barStyles: PropTypes.object,
+  barClassName: PropTypes.string,
   children: PropTypes.object,
   classes: PropTypes.object,
-  contentStyles: PropTypes.object,
+  contentClassName: PropTypes.string,
   placement: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
   scrollContent: PropTypes.bool,
 };
 
 SplitView.defaultProps = {
-  barStyles: {},
-  contentStyles: {},
   scrollContent: false,
 };
 
