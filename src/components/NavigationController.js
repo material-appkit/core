@@ -94,7 +94,7 @@ function NavigationController(props) {
         </Link>
       );
     } else {
-      if (topbarConfig && topbarConfig.contextMenuItems) {
+      if (topbarConfig && topbarConfig.contextMenuItems && topbarConfig.contextMenuItems.length) {
         tabComponent = (
           <Fragment>
             <Button
