@@ -88,23 +88,6 @@ class Form extends React.PureComponent {
 
     this.autoSaveTimer = null;
     this.formRef = React.createRef();
-
-    let representedObjectId = props.representedObjectId;
-    if (!representedObjectId && props.persistedObject) {
-      representedObjectId = props.persistedObject.id;
-    }
-
-    let detailUrl = null;
-    if (props.apiDetailUrl) {
-      detailUrl = props.apiDetailUrl;
-    } else if (props.persistedObject && props.persistedObject.url) {
-      detailUrl = props.persistedObject.url;
-    } else if (this.props.apiDetailUrlPath && representedObjectId) {
-      detailUrl = reverse(this.props.apiDetailUrlPath, {pk: representedObjectId});
-    }
-    this.detailUrl = detailUrl;
-
-    this.requestUrl = this.detailUrl || this.props.apiCreateUrl;
   }
 
   componentDidMount() {
@@ -133,6 +116,35 @@ class Form extends React.PureComponent {
       });
     }
   }
+
+  get detailUrl() {
+    const {
+      apiDetailUrl,
+      apiDetailUrlPath,
+      persistedObject,
+    } = this.props;
+
+    let representedObjectId = this.props.representedObjectId;
+    if (!representedObjectId && persistedObject) {
+      representedObjectId = persistedObject.id;
+    }
+
+    let detailUrl = null;
+    if (apiDetailUrl) {
+      detailUrl = apiDetailUrl;
+    } else if (persistedObject && persistedObject.url) {
+      detailUrl = persistedObject.url;
+    } else if (apiDetailUrlPath && representedObjectId) {
+      detailUrl = reverse(apiDetailUrlPath, {pk: representedObjectId});
+    }
+    return detailUrl;
+  }
+
+
+  get requestUrl() {
+    return this.detailUrl || this.props.apiCreateUrl;
+  }
+
 
   initialData(metadata, referenceObject) {
     const data = {};
