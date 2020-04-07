@@ -231,7 +231,7 @@ function FormField(props) {
     return (
       <WidgetComponent
         fieldInfo={fieldInfo}
-        onChange={(value) => { handleFieldChange(value); }}
+        onChange={handleFieldChange}
         {...commonFieldProps}
         {...fieldArrangementInfo}
       />
