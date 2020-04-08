@@ -12,15 +12,24 @@ export function arrayToObject(array, key) {
   }, {});
 }
 
-export function removeObject(originalArray, fieldName, value) {
-  const array = originalArray.slice();
-  for (let i = array.length - 1; i >= 0; --i) {
-    if (array[i][fieldName] === value) {
-      array.splice(i, 1);
+export function removeObject(array, fieldName, value) {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i >= 0; --i) {
+    if (newArray[i][fieldName] === value) {
+      newArray.splice(i, 1);
     }
   }
-  return array;
+  return newArray;
 }
+
+/**
+ * Given an array of objects, return the first one where
+ * obj[fieldName] === value
+ */
+export function findObject(array, fieldName, value) {
+  return array.find((item) => item[fieldName] === value);
+}
+
 
 export function makeChoices(choiceInfoList, valueKey, labelKey) {
   return choiceInfoList.map((choiceInfo) => ({

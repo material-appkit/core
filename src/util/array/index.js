@@ -9,10 +9,10 @@ Object.defineProperty(exports, "arrayToObject", {
   },
 });
 
-Object.defineProperty(exports, "removeObject", {
+Object.defineProperty(exports, "findObject", {
   enumerable: true,
   get: function get() {
-    return _array.removeObject;
+    return _array.findObject;
   },
 });
 
@@ -20,6 +20,13 @@ Object.defineProperty(exports, "makeChoices", {
   enumerable: true,
   get: function get() {
     return _array.makeChoices;
+  },
+});
+
+Object.defineProperty(exports, "removeObject", {
+  enumerable: true,
+  get: function get() {
+    return _array.removeObject;
   },
 });
 
