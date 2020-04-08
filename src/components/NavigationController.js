@@ -5,7 +5,6 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Route } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
@@ -51,33 +50,42 @@ const styles = makeStyles((theme) => {
 
 function NavigationController(props) {
   const { matches } = props;
+  
   const theme = useTheme();
   const classes = styles();
 
   const [contextMenuButtonEl, setContextMenuButtonEl] = useState(null);
-
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const [topbarConfigMap, setTopbarConfigMap] = useState({});
+  const [activeTopBarConfig, setActiveTopBarConfig] = useState({});
 
-  let activeTopBarConfig = {};
-  if (matches.length) {
-    const activeMatch = matches[matches.length - 1];
-    activeTopBarConfig = topbarConfigMap[activeMatch.path] || {};
-  }
-
-  const rightBarItem = activeTopBarConfig.rightBarItem;
-  const toolbarItems = activeTopBarConfig.toolbarItems;
+  const viewControllerMapRef = useRef({});
 
 
-  let contextToolbar = null;
-  if (toolbarItems) {
-    contextToolbar = (
-      <Toolbar className={classes.toolBar} disableGutters variant="dense">
-        {toolbarItems}
-      </Toolbar>
-    );
-  }
+  useEffect(() => {
+    setSelectedIndex(matches.length - 1);
+  }, [matches]);
 
 
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      const currentPath = matches[selectedIndex].path;
+      const viewController = viewControllerMapRef.current[currentPath];
+      if (viewController) {
+        viewDidAppear(viewController, currentPath);
+      }
+    }
+  }, [selectedIndex]);
+
+
+  useEffect(() => {
+    if (selectedIndex !== null && selectedIndex < matches.length) {
+      const activeMatch = matches[selectedIndex];
+      setActiveTopBarConfig(topbarConfigMap[activeMatch.path] || {});
+    }
+  }, [selectedIndex, topbarConfigMap]);
+
+  
   const updateTopbarConfig = (viewControllerProps, path) => {
     const topbarConfig = topbarConfigMap[path];
 
@@ -96,7 +104,20 @@ function NavigationController(props) {
   };
 
 
+  const viewDidAppear = (viewController, path) => {
+    if (viewController.props.onViewDidAppear) {
+      viewController.props.onViewDidAppear(path);
+    }
+
+    if (props.onViewDidAppear) {
+      props.onViewDidAppear(viewController, path);
+    }
+  };
+
+
   const viewDidMount = (viewController, path) => {
+    viewControllerMapRef.current[path] = viewController;
+
     updateTopbarConfig(viewController.props, path);
 
     if (viewController.props.onViewDidMount) {
@@ -106,16 +127,9 @@ function NavigationController(props) {
     if (props.onViewDidMount) {
       props.onViewDidMount(viewController, path);
     }
-  };
 
-
-  const viewDidAppear = (viewController, path) => {
-    if (viewController.props.onViewDidAppear) {
-      viewController.props.onViewDidAppear(path);
-    }
-
-    if (props.onViewDidAppear) {
-      props.onViewDidAppear(viewController, path);
+    if (matches[selectedIndex].path === path) {
+        viewDidAppear(viewController, path);
     }
   };
 
@@ -133,6 +147,8 @@ function NavigationController(props) {
   };
 
   const viewWillUnmount = (viewController, path) => {
+    delete viewControllerMapRef.current[path];
+
     const newTopbarConfigMap = { ...topbarConfigMap };
     delete newTopbarConfigMap[path];
     setTopbarConfigMap(newTopbarConfigMap);
@@ -147,10 +163,15 @@ function NavigationController(props) {
   };
 
 
-  const selectedIndex = matches.length - 1;
-
   let appBarHeight = theme.sizes.navigationController.navbarHeight;
-  if (contextToolbar) {
+
+  let contextToolbar = null;
+  if (activeTopBarConfig.toolbarItems) {
+    contextToolbar = (
+      <Toolbar className={classes.toolBar} disableGutters variant="dense">
+        {activeTopBarConfig.toolbarItems}
+      </Toolbar>
+    );
     appBarHeight += theme.sizes.navigationController.toolbarHeight;
   }
 
@@ -209,18 +230,18 @@ function NavigationController(props) {
             />
           }
 
-          {rightBarItem}
+          {activeTopBarConfig.rightBarItem}
         </Toolbar>
 
         {contextToolbar}
       </AppBar>
 
-      <Box style={tabPanelContainerStyle}>
+      <div style={tabPanelContainerStyle}>
         {matches.map((routeInfo, i) => {
           const componentProps = routeInfo.componentProps || {};
 
           return (
-            <Box
+            <div
               key={routeInfo.path}
               className={classes.tabPanel}
               style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
@@ -239,10 +260,10 @@ function NavigationController(props) {
                   />
                 )}
               />
-            </Box>
+            </div>
           );
         })}
-      </Box>
+      </div>
     </Fragment>
   );
 }
