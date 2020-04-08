@@ -104,18 +104,7 @@ function NavigationController(props) {
   };
 
 
-  const viewDidAppear = (viewController, path) => {
-    if (viewController.props.onViewDidAppear) {
-      viewController.props.onViewDidAppear(path);
-    }
-
-    if (props.onViewDidAppear) {
-      props.onViewDidAppear(viewController, path);
-    }
-  };
-
-
-  const viewDidMount = (viewController, path) => {
+   const viewDidMount = (viewController, path) => {
     viewControllerMapRef.current[path] = viewController;
 
     updateTopbarConfig(viewController.props, path);
@@ -130,6 +119,17 @@ function NavigationController(props) {
 
     if (matches[selectedIndex].path === path) {
         viewDidAppear(viewController, path);
+    }
+  };
+
+
+  const viewDidAppear = (viewController, path) => {
+    if (viewController.props.onViewDidAppear) {
+      viewController.props.onViewDidAppear(path);
+    }
+
+    if (props.onViewDidAppear) {
+      props.onViewDidAppear(viewController, path);
     }
   };
 
