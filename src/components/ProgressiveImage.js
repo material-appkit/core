@@ -86,6 +86,7 @@ const Img = React.forwardRef((props, ref) => {
     alt,
     src,
     style,
+    objectFit,
     onLoad,
     onError,
     loading,
@@ -107,7 +108,7 @@ const Img = React.forwardRef((props, ref) => {
         left: 0,
         width: `100%`,
         height: `100%`,
-        objectFit: `cover`,
+        objectFit,
         objectPosition: `center`,
         ...style,
       }}
@@ -118,12 +119,12 @@ const Img = React.forwardRef((props, ref) => {
 Img.propTypes = {
   alt: PropTypes.string,
   loading: PropTypes.string,
+  objectFit: PropTypes.string,
   onError: PropTypes.func,
   onLoad: PropTypes.func,
   src: PropTypes.string,
   style: PropTypes.object,
 };
-
 
 //------------------------------------------------------------------------------
 // Earlier versions of gatsby-image during the 2.x cycle did not wrap
@@ -268,6 +269,7 @@ class Image extends React.Component {
 
     const imagePlaceholderStyle = {
       opacity: this.state.imgLoaded ? 0 : 1,
+      objectFit: this.props.objectFit,
       ...(shouldFadeIn && delayHideStyle),
       ...imgStyle,
       ...placeholderStyle,
@@ -337,6 +339,7 @@ class Image extends React.Component {
               crossOrigin={this.props.crossOrigin}
               style={imageStyle}
               ref={this.imageRef}
+              objectFit={this.props.objectFit}
               onLoad={this.handleImageLoaded}
               onError={this.props.onError}
               itemProp={itemProp}
@@ -364,6 +367,7 @@ Image.propTypes = {
   placeholderStyle: PropTypes.object,
   placeholderClassName: PropTypes.string,
   backgroundColor: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  objectFit: PropTypes.string,
   onLoad: PropTypes.func,
   onError: PropTypes.func,
   onStartLoad: PropTypes.func,
@@ -383,6 +387,7 @@ Image.defaultProps = {
   // We set it to `lazy` by default because it's best to default to a performant
   // setting and let the user "opt out" to `eager`
   loading: `lazy`,
+  objectFit: 'cover',
   Tag: `div`,
 };
 
