@@ -49,7 +49,8 @@ function ContextMenu(props) {
         const menuItemProps = {
           dense: true,
           disabled: menuItemInfo.disabled,
-          onClick: (e) => { handleMenuItemClick(e, menuItemInfo); }
+          onClick: (e) => { handleMenuItemClick(e, menuItemInfo); },
+          ref: menuItemInfo.ref,
         };
 
         if (menuItemInfo.href) {
