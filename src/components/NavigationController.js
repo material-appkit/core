@@ -1,22 +1,15 @@
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
-import React, { Fragment, useRef, useState } from 'react';
-import { Route, Link as RouterLink } from 'react-router-dom';
-
-import { Tabs, TabPanel } from 'react-tabs';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { Route } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Link from '@material-ui/core/Link';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import ContextMenu from '@material-appkit/core/components/ContextMenu';
-import NavigationControllerTab from './NavigationControllerTab';
 import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
 
 const styles = makeStyles((theme) => {
@@ -29,12 +22,6 @@ const styles = makeStyles((theme) => {
       display: 'grid',
       gridAutoFlow: 'column',
       gridAutoColumns: 'minmax(20px, max-content)',
-    },
-
-    breadcrumbButton: {
-      minWidth: 'initial',
-      maxWidth: '100%',
-      padding: '6px 4px',
     },
 
     navBar: {
@@ -70,59 +57,6 @@ function NavigationController(props) {
   const [contextMenuButtonEl, setContextMenuButtonEl] = useState(null);
 
   const [topbarConfigMap, setTopbarConfigMap] = useState({});
-
-
-  const breadcrumbs = matches.map((match, i) => {
-    let title = '';
-    const topbarConfig = topbarConfigMap[match.path];
-    if (topbarConfig && topbarConfig.title) {
-      title = topbarConfig.title;
-    }
-
-    let tabComponent = null;
-
-    const breadcrumbLabel = (
-      <Typography noWrap variant="button">
-        {title}
-      </Typography>
-    );
-
-    if (i < matches.length - 1) {
-      tabComponent = (
-        <Link color="textPrimary" component={RouterLink} to={match.url}>
-          <Typography noWrap>{breadcrumbLabel}</Typography>
-        </Link>
-      );
-    } else {
-      if (topbarConfig && topbarConfig.contextMenuItems && topbarConfig.contextMenuItems.length) {
-        tabComponent = (
-          <Fragment>
-            <Button
-              aria-controls="context-menu"
-              aria-haspopup="true"
-              className={classes.breadcrumbButton}
-              endIcon={<ExpandMoreIcon />}
-              onClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
-            >
-              <Typography noWrap>{breadcrumbLabel}</Typography>
-            </Button>
-          </Fragment>
-        );
-      } else {
-        tabComponent = (
-          <Typography noWrap>{breadcrumbLabel}</Typography>
-        );
-      }
-    }
-
-    return (
-      <NavigationControllerTab key={match.path}>
-        {tabComponent}
-      </NavigationControllerTab>
-    );
-  });
-
-
 
   let activeTopBarConfig = {};
   if (matches.length) {
@@ -237,11 +171,7 @@ function NavigationController(props) {
   };
 
   return (
-    <Tabs
-      forceRenderTabPanel={true}
-      selectedIndex={selectedIndex}
-      onSelect={() => {}}
-    >
+    <Fragment>
       <AppBar
         style={appBarStyle}
         color="default"
@@ -254,10 +184,11 @@ function NavigationController(props) {
               root: classes.navBarBreadcrumbsRoot,
               ol: classes.navBarBreadcrumbsList,
             }}
+            matches={props.matches}
+            onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
             separator="›"
-          >
-            {breadcrumbs}
-          </NavigationControllerBreadcrumbs>
+            topbarConfigMap={topbarConfigMap}
+          />
 
           {activeTopBarConfig.contextMenuItems &&
             <ContextMenu
@@ -289,7 +220,7 @@ function NavigationController(props) {
           const componentProps = routeInfo.componentProps || {};
 
           return (
-            <TabPanel
+            <Box
               key={routeInfo.path}
               className={classes.tabPanel}
               style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
@@ -297,25 +228,22 @@ function NavigationController(props) {
               <Route
                 key={routeInfo.path}
                 path={routeInfo.path}
-                render={(props) => {
-                  return (
-                    <routeInfo.component
-                      {...props}
-                      {...componentProps}
-                      onAppear={viewDidAppear}
-                      onMount={viewDidMount}
-                      onUnmount={viewWillUnmount}
-                      onUpdate={viewDidUpdate}
-                      mountPath={routeInfo.path}
-                    />
-                  );
-                }}
+                render={(props) => (
+                  <routeInfo.component
+                    {...props}
+                    {...componentProps}
+                    onMount={viewDidMount}
+                    onUnmount={viewWillUnmount}
+                    onUpdate={viewDidUpdate}
+                    mountPath={routeInfo.path}
+                  />
+                )}
               />
-            </TabPanel>
+            </Box>
           );
         })}
       </Box>
-    </Tabs>
+    </Fragment>
   );
 }
 

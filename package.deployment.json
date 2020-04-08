@@ -21,7 +21,6 @@
     "mobx-react-router": "^4.0.7",
     "path-to-regexp": "^6.1.0",
     "query-string": "^6.11.0",
-    "react-tabs": "^3.1.0",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5",
     "superagent": "^5.2.2"
