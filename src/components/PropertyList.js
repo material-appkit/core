@@ -43,11 +43,7 @@ const propertyListItemStyles = makeStyles(
 );
 
 function PropertyListItem(props) {
-  const {
-    fieldInfo,
-    LinkComponent,
-    representedObject
-  } = props;
+  const { fieldInfo, representedObject } = props;
   const classes = propertyListItemStyles();
 
   //----------------------------------------------------------------------------
@@ -76,8 +72,12 @@ function PropertyListItem(props) {
   let labelComponent = null;
   if (LabelContent) {
     if (typeof(LabelContent) === 'string') {
+      console.log(props);
       labelComponent = (
-        <Typography variant="body2" className={classes.label}>
+        <Typography
+          className={classes.label}
+          style={{ minWidth: props.minLabelWidth }}
+        >
           {LabelContent}
         </Typography>
       );
@@ -92,9 +92,9 @@ function PropertyListItem(props) {
 
   let PrimaryComponent = Box;
   const primaryComponentProps = {};
-  if (fieldInfo.type === 'link' && value.path && LinkComponent) {
+  if (fieldInfo.type === 'link' && value.path && props.LinkComponent) {
     PrimaryComponent = Link;
-    primaryComponentProps.component = LinkComponent;
+    primaryComponentProps.component = props.LinkComponent;
     primaryComponentProps.to = value.path;
   }
 
@@ -137,6 +137,7 @@ function PropertyListItem(props) {
 
 PropertyListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
+  minLabelWidth: PropTypes.number,
   nullValue: PropTypes.string,
   LinkComponent: PropTypes.func,
   representedObject: PropTypes.object.isRequired,
@@ -150,15 +151,9 @@ const metadataStyles = makeStyles(
 function PropertyList(props) {
   const classes = metadataStyles();
 
-  const {
-    arrangement,
-    LinkComponent,
-    representedObject
-  } = props;
-
   return (
     <List className={classes.root}>
-      {arrangement.map((fieldInfo) => {
+      {props.arrangement.map((fieldInfo) => {
         let key = fieldInfo.name;
         if (fieldInfo.keyPath) {
           key = `${key}-${fieldInfo.keyPath}`;
@@ -168,8 +163,9 @@ function PropertyList(props) {
           <PropertyListItem
             key={key}
             fieldInfo={fieldInfo}
-            LinkComponent={LinkComponent}
-            representedObject={representedObject}
+            minLabelWidth={props.minLabelWidth}
+            LinkComponent={props.LinkComponent}
+            representedObject={props.representedObject}
           />
         );
       })}
@@ -179,6 +175,7 @@ function PropertyList(props) {
 
 PropertyList.propTypes = {
   arrangement: PropTypes.array.isRequired,
+  minLabelWidth: PropTypes.number,
   LinkComponent: PropTypes.func,
   representedObject: PropTypes.object.isRequired,
 };
