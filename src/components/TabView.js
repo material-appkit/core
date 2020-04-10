@@ -12,6 +12,8 @@ const styles = makeStyles((theme) => ({
   tabs: {
     backgroundColor: theme.palette.grey[50],
     borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+    position: 'relative',
+    zIndex: theme.zIndex.appBar,
   },
 }));
 
@@ -77,7 +79,6 @@ function TabView(props) {
       });
     }
   };
-
 
   const classes = styles();
 
