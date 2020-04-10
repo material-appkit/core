@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { valueForKeyPath } from '../util/object';
+import { isValue } from '../util/value';
 import { titleCase } from '../util/string';
 
 //----------------------------------------------------------------------------
@@ -54,7 +55,7 @@ function PropertyListItem(props) {
     value = representedObject[fieldInfo.name];
   }
 
-  if (value === undefined || value === null || (Array.isArray(value) && !value.length)) {
+  if ((Array.isArray(value) && !value.length) || !isValue(value)) {
     if (!fieldInfo.nullValue) {
       // If no value exists for the given field and nothing has been specified
       // to display for null values, returning null skips rendering of the list item.
