@@ -72,7 +72,6 @@ function PropertyListItem(props) {
   let labelComponent = null;
   if (LabelContent) {
     if (typeof(LabelContent) === 'string') {
-      console.log(props);
       labelComponent = (
         <Typography
           className={classes.label}

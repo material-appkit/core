@@ -18,6 +18,7 @@ const styles = makeStyles((theme) => ({
 
 function TabView(props) {
   const {
+    location,
     onTabConfig,
     onTabMount,
     onTabUnmount,
@@ -32,7 +33,7 @@ function TabView(props) {
 
   useEffect(() => {
     if (tabArrangement) {
-      const currentLocationPath = props.location.pathname;
+      const currentLocationPath = location.pathname;
       tabArrangement.forEach((tabConfig, tabIndex) => {
         if (currentLocationPath === tabConfig.path) {
           setSelectedTabIndex(tabIndex);
