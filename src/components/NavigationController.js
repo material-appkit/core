@@ -117,8 +117,11 @@ function NavigationController(props) {
       props.onViewDidMount(viewController, path);
     }
 
-    if (matches[selectedIndex].path === path) {
+    if (selectedIndex !== null && selectedIndex < matches.length) {
+      const match = matches[selectedIndex];
+      if (match.path === path) {
         viewDidAppear(viewController, path);
+      }
     }
   };
 
