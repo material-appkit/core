@@ -29,11 +29,16 @@ function EditDialog(props) {
   const formRef = useRef(null);
   const [saving, setSaving] = useState(false);
 
-  let title = props.entityType;
-  if (props.persistedObject || props.apiDetailUrl) {
-    title = `${props.labels.UPDATE} ${title}`;
+  let title = null;
+  if (props.title) {
+    title = props.title;
   } else {
-    title = `${props.labels.ADD} ${title}`;
+    title = props.entityType;
+    if (props.persistedObject || props.apiDetailUrl) {
+      title = `${props.labels.UPDATE} ${title}`;
+    } else {
+      title = `${props.labels.ADD} ${title}`;
+    }
   }
 
   const deleteRepresentedObject = async() => {
@@ -120,7 +125,11 @@ function EditDialog(props) {
   };
 
 
-  const { onSave, FormProps, ...rest } = props;
+  const {
+    FormProps,
+    onSave,
+    ...rest
+  } = props;
 
   const classes = styles();
 
@@ -178,15 +187,16 @@ function EditDialog(props) {
 EditDialog.propTypes = {
   apiDetailUrl: PropTypes.string,
   canDelete: PropTypes.bool,
-  entityType: PropTypes.string.isRequired,
+  entityType: PropTypes.string,
   FormProps: PropTypes.object,
   labels: PropTypes.object,
-  persistedObject: PropTypes.object,
   onDelete: PropTypes.func,
   onError: PropTypes.func,
   onLoad: PropTypes.func,
   onSave: PropTypes.func,
   onClose: PropTypes.func.isRequired,
+  persistedObject: PropTypes.object,
+  title: PropTypes.string,
 };
 
 EditDialog.defaultProps = {
