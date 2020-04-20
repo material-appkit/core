@@ -31,6 +31,17 @@ export function findObject(array, fieldName, value) {
 }
 
 
+export function replaceObject(array, fieldName, value) {
+  const imageIndex = array.findIndex(
+    (obj) => obj[fieldName] === value[fieldName]
+  );
+  
+  if (imageIndex !== -1) {
+    array[imageIndex] = value;
+  }
+}
+
+
 export function makeChoices(choiceInfoList, valueKey, labelKey) {
   return choiceInfoList.map((choiceInfo) => ({
     [valueKey || 'value']: choiceInfo[0],

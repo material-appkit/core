@@ -9,12 +9,29 @@ Object.defineProperty(exports, "arrayToObject", {
   },
 });
 
+Object.defineProperty(exports, "removeObject", {
+  enumerable: true,
+  get: function get() {
+    return _array.removeObject;
+  },
+});
+
+
 Object.defineProperty(exports, "findObject", {
   enumerable: true,
   get: function get() {
     return _array.findObject;
   },
 });
+
+
+Object.defineProperty(exports, "replaceObject", {
+  enumerable: true,
+  get: function get() {
+    return _array.replaceObject;
+  },
+});
+
 
 Object.defineProperty(exports, "makeChoices", {
   enumerable: true,
@@ -23,12 +40,6 @@ Object.defineProperty(exports, "makeChoices", {
   },
 });
 
-Object.defineProperty(exports, "removeObject", {
-  enumerable: true,
-  get: function get() {
-    return _array.removeObject;
-  },
-});
 
 Object.defineProperty(exports, "shuffle", {
   enumerable: true,
@@ -37,11 +48,13 @@ Object.defineProperty(exports, "shuffle", {
   },
 });
 
+
 Object.defineProperty(exports, "valueForKeyPath", {
   enumerable: true,
   get: function get() {
     return _array.valueForKeyPath;
   },
 });
+
 
 const _array = _interopRequireDefault(require("./array"));
