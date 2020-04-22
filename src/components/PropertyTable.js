@@ -17,7 +17,12 @@ import TableRow from '@material-ui/core/TableRow';
 import { makeStyles } from '@material-ui/core/styles';
 
 const renderValue = (value) => {
-  switch (value) {
+  let renderedValue = value;
+  if (typeof(renderedValue) === 'object') {
+    renderedValue = renderedValue.value;
+  }
+
+  switch (renderedValue) {
     case null:
       return 'null';
     case true:
@@ -25,7 +30,7 @@ const renderValue = (value) => {
     case false:
       return 'False';
     default:
-      return value;
+      return renderedValue;
   }
 };
 
@@ -35,16 +40,26 @@ const styles = makeStyles(
 
 
 function PropertyTable(props) {
-  const classes = styles();
-
   const {
     inspectedObject,
     labelCellStyle,
     onRowClick,
+    onSelectionClick,
     selection,
     striped,
   } = props;
   const keys = Object.keys(inspectedObject).sort();
+
+
+  const handleCheckboxClick = (key) => (e) => {
+    e.stopPropagation();
+
+    if (onSelectionClick) {
+      onSelectionClick(key, e.target.checked);
+    }
+  };
+
+  const classes = styles();
 
   return (
     <Table>
@@ -68,7 +83,11 @@ function PropertyTable(props) {
             >
               {selection &&
                 <TableCell className={classNames(classes.cell, classes.selectionCell)}>
-                  <Checkbox size="small" />
+                  <Checkbox
+                    checked={selection.has(key)}
+                    onClick={handleCheckboxClick(key)}
+                    size="small"
+                  />
                 </TableCell>
               }
 
@@ -97,6 +116,7 @@ PropertyTable.propTypes = {
   ]).isRequired,
   labelCellStyle: PropTypes.object,
   onRowClick: PropTypes.func,
+  onSelectionClick: PropTypes.func,
   selection: PropTypes.object,
   striped: PropTypes.bool,
 };
