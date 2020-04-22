@@ -16,6 +16,10 @@ const styles = makeStyles((theme) => {
       maxWidth: '100%',
       padding: '6px 4px',
     },
+
+    breadCrumbButtonEndIcon: {
+      marginLeft: theme.spacing(0.5),
+    },
   };
 
   if (theme.navigationController) {
@@ -71,7 +75,10 @@ function NavigationControllerBreadcrumbs(props) {
             <Button
               aria-controls="context-menu"
               aria-haspopup="true"
-              className={classes.breadcrumbButton}
+              classes={{
+                root: classes.breadcrumbButton,
+                endIcon: classes.breadCrumbButtonEndIcon,
+              }}
               endIcon={<ExpandMoreIcon />}
               key={key}
               onClick={onContextMenuButtonClick}
