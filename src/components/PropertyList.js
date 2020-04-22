@@ -76,7 +76,10 @@ function PropertyListItem(props) {
       labelComponent = (
         <Typography
           className={classes.label}
-          style={{ minWidth: props.minLabelWidth }}
+          style={{
+            minWidth: props.minLabelWidth,
+            maxWidth: props.maxLabelWidth,
+          }}
         >
           {LabelContent}
         </Typography>
@@ -138,6 +141,7 @@ function PropertyListItem(props) {
 PropertyListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
   minLabelWidth: PropTypes.number,
+  maxLabelWidth: PropTypes.number,
   nullValue: PropTypes.string,
   LinkComponent: PropTypes.func,
   representedObject: PropTypes.object.isRequired,
@@ -169,6 +173,7 @@ function PropertyList(props) {
             key={key}
             fieldInfo={fieldInfo}
             minLabelWidth={props.minLabelWidth}
+            maxLabelWidth={props.maxLabelWidth}
             LinkComponent={props.LinkComponent}
             representedObject={props.representedObject}
           />
@@ -181,6 +186,7 @@ function PropertyList(props) {
 PropertyList.propTypes = {
   arrangement: PropTypes.array.isRequired,
   minLabelWidth: PropTypes.number,
+  maxLabelWidth: PropTypes.number,
   LinkComponent: PropTypes.func,
   representedObject: PropTypes.object.isRequired,
 };
