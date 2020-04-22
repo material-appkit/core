@@ -42,6 +42,7 @@ function PropertyTable(props) {
   const {
     inspectedObject,
     labelCellStyle,
+    onRowClick,
     selection,
     striped,
   } = props;
@@ -51,13 +52,22 @@ function PropertyTable(props) {
     <Table>
       <TableBody>
         {keys.map((key, index) => {
-          let rowClasses = [];
+          const rowClasses = [];
           if (striped && index % 2) {
             rowClasses.push(classes.rowOdd);
           }
 
+          const rowProps = { key };
+          if (onRowClick) {
+            rowProps.onClick = () => { onRowClick(key); };
+            rowClasses.push(classes.rowInteractive);
+          }
+
           return (
-            <TableRow key={key} className={classNames(rowClasses)}>
+            <TableRow
+              className={classNames(rowClasses)}
+              {...rowProps}
+            >
               {selection &&
                 <TableCell className={classNames(classes.cell, classes.selectionCell)}>
                   <Checkbox size="small" />
@@ -88,6 +98,7 @@ PropertyTable.propTypes = {
     PropTypes.object,
   ]).isRequired,
   labelCellStyle: PropTypes.object,
+  onRowClick: PropTypes.func,
   selection: PropTypes.object,
   striped: PropTypes.bool,
 };
