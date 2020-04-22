@@ -16,8 +16,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { titleCase } from '../util/string';
-
 const renderValue = (value) => {
   switch (value) {
     case null:
@@ -78,7 +76,7 @@ function PropertyTable(props) {
                 className={classNames(classes.cell, classes.labelCell)}
                 style={labelCellStyle}
               >
-                {titleCase(key)}
+                {key}
               </TableCell>
 
               <TableCell className={classes.cell}>
