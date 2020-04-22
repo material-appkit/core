@@ -153,7 +153,12 @@ function PropertyList(props) {
 
   return (
     <List className={classes.root}>
-      {props.arrangement.map((fieldInfo) => {
+      {props.arrangement.map((arrangementItem) => {
+        let fieldInfo = arrangementItem;
+        if (typeof(fieldInfo) === 'string') {
+          fieldInfo = { name: fieldInfo };
+        }
+
         let key = fieldInfo.name;
         if (fieldInfo.keyPath) {
           key = `${key}-${fieldInfo.keyPath}`;
