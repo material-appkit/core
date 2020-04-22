@@ -5,6 +5,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Route } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
+import Box from '@material-ui/core/Box';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
@@ -50,7 +51,7 @@ const styles = makeStyles((theme) => {
 
 function NavigationController(props) {
   const { matches } = props;
-  
+
   const theme = useTheme();
   const classes = styles();
 
@@ -85,7 +86,7 @@ function NavigationController(props) {
     }
   }, [selectedIndex, topbarConfigMap]);
 
-  
+
   const updateTopbarConfig = (viewControllerProps, path) => {
     const topbarConfig = topbarConfigMap[path];
 
@@ -178,26 +179,14 @@ function NavigationController(props) {
     appBarHeight += theme.sizes.navigationController.toolbarHeight;
   }
 
-  const appBarStyle = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: appBarHeight,
-  };
-
   const tabPanelContainerStyle = {
-    position: 'absolute',
-    top: appBarHeight,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    flex: 1
   };
 
   return (
-    <Fragment>
+    <Box width="100%" height="100%" display="flex" flexDirection="column">
       <AppBar
-        style={appBarStyle}
+        style={{ height: appBarHeight }}
         color="default"
         elevation={0}
         position="static"
@@ -239,15 +228,15 @@ function NavigationController(props) {
         {contextToolbar}
       </AppBar>
 
-      <div style={tabPanelContainerStyle}>
+      <Box flex={1}>
         {matches.map((routeInfo, i) => {
           const componentProps = routeInfo.componentProps || {};
 
           return (
-            <div
-              key={routeInfo.path}
+            <Box
               className={classes.tabPanel}
-              style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
+              display={(i === selectedIndex) ? 'block' : 'none' }
+              key={routeInfo.path}
             >
               <Route
                 key={routeInfo.path}
@@ -263,11 +252,11 @@ function NavigationController(props) {
                   />
                 )}
               />
-            </div>
+            </Box>
           );
         })}
-      </div>
-    </Fragment>
+      </Box>
+    </Box>
   );
 }
 

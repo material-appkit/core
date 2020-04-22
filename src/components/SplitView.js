@@ -8,9 +8,9 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme) => ({
   splitView: {
-    width: '100%',
+    display: 'flex',
     height: '100%',
-    position: 'relative',
+    width: '100%',
 
     "-webkitOverflowScrolling": 'touch',
   }
@@ -27,8 +27,9 @@ function SplitView(props) {
 
   const classes = styles();
 
+  let flexDirection = null;
   const barStyles = {};
-  const contentStyles = {};
+  const contentStyles = { flex: 1 };
 
   if (scrollContent) {
     contentStyles.overflow = 'auto';
@@ -36,72 +37,48 @@ function SplitView(props) {
 
   switch (placement) {
     case 'top':
+      flexDirection = 'column';
+
       Object.assign(barStyles, {
-        top: 0,
-        right: 0,
-        left: 0,
         height: barSize,
-        position: 'absolute',
-      });
-      Object.assign(contentStyles, {
-        top: barSize,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        position: 'absolute',
       });
       break;
+
     case 'bottom':
+      flexDirection = 'column';
+
       Object.assign(barStyles, {
-        bottom: 0,
-        right: 0,
-        left: 0,
         height: barSize,
-        position: 'absolute',
+        order: 1,
       });
       Object.assign(contentStyles, {
-        top: 0,
-        right: 0,
-        left: 0,
-        position: 'absolute',
+        order: 0,
       });
       break;
+
     case 'left':
+      flexDirection = 'row';
+
       Object.assign(barStyles, {
-        top: 0,
-        left: 0,
-        bottom: 0,
         width: barSize,
-        position: 'absolute',
-      });
-      Object.assign(contentStyles, {
-        top: 0,
-        right: 0,
-        left: barSize,
-        bottom: 0,
-        position: 'absolute',
       });
       break;
+
     case 'right':
+      flexDirection = 'row';
+
       Object.assign(barStyles, {
-        position: 'absolute',
-        top: 0,
         width: barSize,
-        bottom: 0,
-        right: 0,
+        order: 1,
       });
       Object.assign(contentStyles, {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: barSize,
-        bottom: 0,
+        order: 0,
       });
       break;
   }
 
   return (
-    <Box className={classes.splitView}>
+    <Box width="100%" height="100%" display="flex" flexDirection={flexDirection}>
       <Box className={classNames(classes.bar, props.barClassName)} style={barStyles}>
         {bar}
       </Box>
