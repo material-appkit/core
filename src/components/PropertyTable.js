@@ -48,7 +48,10 @@ function PropertyTable(props) {
     selection,
     striped,
   } = props;
-  const keys = Object.keys(inspectedObject).sort();
+
+  const keys = Object.keys(inspectedObject).sort(
+    (a, b) => a.toLowerCase().localeCompare(b.toLowerCase())
+  );
 
 
   const handleCheckboxClick = (key) => (e) => {
