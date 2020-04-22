@@ -32,7 +32,6 @@ const styles = makeStyles((theme) => {
 
     tabPanel: {
       height: '100%',
-      overflow: 'auto',
     },
 
     toolBar: {
@@ -179,12 +178,9 @@ function NavigationController(props) {
     appBarHeight += theme.sizes.navigationController.toolbarHeight;
   }
 
-  const tabPanelContainerStyle = {
-    flex: 1
-  };
 
   return (
-    <Box width="100%" height="100%" display="flex" flexDirection="column">
+    <Box width="100%" height="100%">
       <AppBar
         style={{ height: appBarHeight }}
         color="default"
@@ -228,7 +224,7 @@ function NavigationController(props) {
         {contextToolbar}
       </AppBar>
 
-      <Box flex={1}>
+      <Box style={{ height: `calc(100% - ${appBarHeight}px)`}}>
         {matches.map((routeInfo, i) => {
           const componentProps = routeInfo.componentProps || {};
 

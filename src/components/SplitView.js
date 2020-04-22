@@ -1,18 +1,16 @@
 import classNames from 'classnames';
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment } from 'react';
 
-import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme) => ({
   splitView: {
-    display: 'flex',
     height: '100%',
     width: '100%',
 
-    "-webkitOverflowScrolling": 'touch',
+    // "-webkitOverflowScrolling": 'touch',
   }
 }));
 
@@ -27,9 +25,9 @@ function SplitView(props) {
 
   const classes = styles();
 
-  let flexDirection = null;
+  const splitViewStyles = {};
   const barStyles = {};
-  const contentStyles = { flex: 1 };
+  const contentStyles = { };
 
   if (scrollContent) {
     contentStyles.overflow = 'auto';
@@ -37,55 +35,45 @@ function SplitView(props) {
 
   switch (placement) {
     case 'top':
-      flexDirection = 'column';
-
-      Object.assign(barStyles, {
-        height: barSize,
-      });
-      break;
-
     case 'bottom':
-      flexDirection = 'column';
-
-      Object.assign(barStyles, {
-        height: barSize,
-        order: 1,
-      });
-      Object.assign(contentStyles, {
-        order: 0,
-      });
+      barStyles.height = barSize;
+      contentStyles.height = `calc(100% - ${barSize}px)`;
       break;
 
     case 'left':
-      flexDirection = 'row';
-
-      Object.assign(barStyles, {
-        width: barSize,
-      });
-      break;
-
     case 'right':
-      flexDirection = 'row';
-
-      Object.assign(barStyles, {
-        width: barSize,
-        order: 1,
-      });
-      Object.assign(contentStyles, {
-        order: 0,
-      });
+      splitViewStyles.display = 'flex';
+      barStyles.width = barSize;
+      contentStyles.flex = 1;
       break;
   }
 
+  const barView = (
+    <div className={classNames(classes.bar, props.barClassName)} style={barStyles}>
+      {bar}
+    </div>
+  );
+
+  const contentView = (
+    <div className={classNames(classes.content, props.contentClassName)} style={contentStyles}>
+      {children}
+    </div>
+  );
+
   return (
-    <Box width="100%" height="100%" display="flex" flexDirection={flexDirection}>
-      <Box className={classNames(classes.bar, props.barClassName)} style={barStyles}>
-        {bar}
-      </Box>
-      <Box className={classNames(classes.content, props.contentClassName)} style={contentStyles}>
-        {children}
-      </Box>
-    </Box>
+    <div className={classes.splitView} style={splitViewStyles}>
+      {(placement === 'bottom' || placement === 'right') ? (
+        <Fragment>
+          {contentView}
+          {barView}
+        </Fragment>
+      ) : (
+        <Fragment>
+          {barView}
+          {contentView}
+        </Fragment>
+      )}
+    </div>
   );
 }
 
