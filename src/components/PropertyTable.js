@@ -9,6 +9,7 @@ import classNames from 'classnames';
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import Checkbox from '@material-ui/core/Checkbox';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -17,7 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { titleCase } from '../util/string';
 
-const transformModelValue = (value) => {
+const renderValue = (value) => {
   switch (value) {
     case null:
       return 'null';
@@ -30,25 +31,20 @@ const transformModelValue = (value) => {
   }
 };
 
-const styles = makeStyles((theme) => ({
-  cell: {
-    fontSize: theme.typography.pxToRem(13),
-    padding: `${theme.spacing(0.5)}px ${theme.spacing(1)}px`,
-  },
+const styles = makeStyles(
+  (theme) => theme.propertyTable
+);
 
-  labelCell: {
-    fontWeight: 500,
-  },
-
-  rowOdd: {
-    backgroundColor: theme.palette.grey[100],
-  }
-}));
 
 function PropertyTable(props) {
   const classes = styles();
 
-  const { inspectedObject, striped } = props;
+  const {
+    inspectedObject,
+    labelCellStyle,
+    selection,
+    striped,
+  } = props;
   const keys = Object.keys(inspectedObject).sort();
 
   return (
@@ -62,11 +58,21 @@ function PropertyTable(props) {
 
           return (
             <TableRow key={key} className={classNames(rowClasses)}>
-              <TableCell className={classNames(classes.cell, classes.labelCell)}>
+              {selection &&
+                <TableCell className={classNames(classes.cell, classes.selectionCell)}>
+                  <Checkbox size="small" />
+                </TableCell>
+              }
+
+              <TableCell
+                className={classNames(classes.cell, classes.labelCell)}
+                style={labelCellStyle}
+              >
                 {titleCase(key)}
               </TableCell>
+
               <TableCell className={classes.cell}>
-                {transformModelValue(inspectedObject[key])}
+                {renderValue(inspectedObject[key])}
               </TableCell>
             </TableRow>
           );
@@ -77,11 +83,13 @@ function PropertyTable(props) {
 }
 
 PropertyTable.propTypes = {
-  striped: PropTypes.bool,
   inspectedObject: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object,
   ]).isRequired,
+  labelCellStyle: PropTypes.object,
+  selection: PropTypes.object,
+  striped: PropTypes.bool,
 };
 
 PropertyTable.defaultProps = {
