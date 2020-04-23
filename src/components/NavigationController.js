@@ -28,6 +28,7 @@ const styles = makeStyles((theme) => {
       borderBottom: `1px solid ${theme.palette.grey[400]}`,
       height: theme.sizes.navigationController.navbarHeight,
       paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(1),
     },
 
     tabPanel: {
