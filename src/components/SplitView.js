@@ -3,17 +3,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-
-const styles = makeStyles((theme) => ({
-  splitView: {
-    height: '100%',
-    width: '100%',
-
-    // "-webkitOverflowScrolling": 'touch',
-  }
-}));
-
 function SplitView(props) {
   const {
     bar,
@@ -23,9 +12,10 @@ function SplitView(props) {
     scrollContent,
   } = props;
 
-  const classes = styles();
-
-  const splitViewStyles = {};
+  const splitViewStyles = {
+    width: '100%',
+    height: '100%',
+  };
   const barStyles = {};
   const contentStyles = { };
 
@@ -49,19 +39,19 @@ function SplitView(props) {
   }
 
   const barView = (
-    <div className={classNames(classes.bar, props.barClassName)} style={barStyles}>
+    <div className={props.barClassName} style={barStyles}>
       {bar}
     </div>
   );
 
   const contentView = (
-    <div className={classNames(classes.content, props.contentClassName)} style={contentStyles}>
+    <div className={props.contentClassName} style={contentStyles}>
       {children}
     </div>
   );
 
   return (
-    <div className={classes.splitView} style={splitViewStyles}>
+    <div style={splitViewStyles}>
       {(placement === 'bottom' || placement === 'right') ? (
         <Fragment>
           {contentView}
