@@ -27,6 +27,7 @@ const styles = makeStyles((theme) => {
     navBar: {
       borderBottom: `1px solid ${theme.palette.grey[400]}`,
       height: theme.sizes.navigationController.navbarHeight,
+      padding: `0 ${theme.spacing(2)}px`,
     },
 
     tabPanel: {
@@ -186,7 +187,7 @@ function NavigationController(props) {
         elevation={0}
         position="static"
       >
-        <Toolbar className={classes.navBar}>
+        <Toolbar className={classes.navBar} disableGutters>
           <NavigationControllerBreadcrumbs
             classes={{
               root: classes.navBarBreadcrumbsRoot,
