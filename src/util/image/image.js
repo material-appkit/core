@@ -6,7 +6,6 @@
 export function resize(sourceImage, options) {
   return new Promise((resolve, reject) => {
     const resizedImage = new Image();
-    resizedImage.src = sourceImage;
     resizedImage.onload = () => {
       const sourceWidth = resizedImage.width;
       const sourceHeight = resizedImage.height;
@@ -32,9 +31,9 @@ export function resize(sourceImage, options) {
       const ctx = elem.getContext('2d');
       ctx.drawImage(resizedImage, 0, 0, targetWidth, targetHeight);
 
-      const format = options.format || 'data';
-      const mimetype = options.mimetype || 'image/png';
-      const quality = options.quality || 1;
+      const format = options.format || 'blob';
+      const mimetype = options.mimetype || 'image/jpeg';
+      const quality = options.quality || 0.92;
 
       switch (format) {
         case 'data':
@@ -50,5 +49,6 @@ export function resize(sourceImage, options) {
           throw new Error(`Unsupported output format: ${format}`);
       }
     };
+    resizedImage.src = sourceImage;
   });
 }
