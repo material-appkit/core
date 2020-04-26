@@ -47,7 +47,7 @@ function ContextMenu(props) {
     <Menu {...menuProps}>
       {menuItemArrangement.map((menuItemInfo) => {
         const menuItemProps = {
-          dense: true,
+          dense,
           disabled: menuItemInfo.disabled,
           onClick: (e) => { handleMenuItemClick(e, menuItemInfo); },
           ref: menuItemInfo.ref,
