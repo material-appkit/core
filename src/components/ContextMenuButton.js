@@ -26,7 +26,7 @@ function ContextMenuButton(props) {
         ref={menuAnchorRef}
         {...props.buttonProps}
       >
-        <MoreVertIcon />
+        <props.icon className={props.iconClassName} />
       </IconButton>
       <ContextMenu
         anchorEl={menuAnchorRef.current}
@@ -43,12 +43,15 @@ function ContextMenuButton(props) {
 ContextMenuButton.propTypes = {
   buttonProps: PropTypes.object,
   dense: PropTypes.bool,
+  icon: PropTypes.elementType,
+  iconClassName: PropTypes.string,
   menuItemArrangement: PropTypes.array.isRequired,
 };
 
 ContextMenuButton.defaultProps = {
   buttonProps: {},
   dense: false,
+  icon: MoreVertIcon,
 };
 
 export default ContextMenuButton;
