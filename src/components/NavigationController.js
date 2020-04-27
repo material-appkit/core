@@ -30,6 +30,10 @@ const styles = makeStyles((theme) => {
       padding: `0 ${theme.spacing(2)}px`,
     },
 
+    tabPanelContainer: {
+      overflowY: 'auto',
+    },
+
     tabPanel: {
       height: '100%',
     },
@@ -224,7 +228,10 @@ function NavigationController(props) {
         {contextToolbar}
       </AppBar>
 
-      <Box style={{ height: `calc(100% - ${appBarHeight}px)`}}>
+      <Box
+        className={classes.tabPanelContainer}
+        height={`calc(100% - ${appBarHeight}px)`}
+      >
         {matches.map((routeInfo, i) => {
           const componentProps = routeInfo.componentProps || {};
 
