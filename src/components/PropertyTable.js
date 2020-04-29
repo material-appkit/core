@@ -87,7 +87,7 @@ function PropertyTable(props) {
               {selection &&
                 <TableCell className={classNames(classes.cell, classes.selectionCell)}>
                   <Checkbox
-                    checked={selection.has(key)}
+                    checked={!!selection[key]}
                     onClick={handleCheckboxClick(key)}
                     size="small"
                   />
