@@ -605,7 +605,7 @@ function PagedListView(props) {
   };
 
   // ---------------------------------------------------------------------------
-  const fetchItems = async(requestUrl, requestParams) => {
+  const fetchItems = (requestUrl, requestParams) => {
     return new Promise((resolve, reject) => {
       if (fetchRequestContext) {
         const inFlightRequest = fetchRequestContext.request;
@@ -641,7 +641,7 @@ function PagedListView(props) {
   /**
    * Instruct the list to reload using the currently set filterParams
    */
-  const reload = async() => {
+  const reload = () => {
     if (props.items) {
       setItems(props.items);
       return;
