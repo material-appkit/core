@@ -34,7 +34,6 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import SortIcon from '@material-ui/icons/Sort';
 
-import NavManager from '../managers/NavManager';
 import ServiceAgent from '../util/ServiceAgent';
 import { makeChoices } from '../util/array';
 import { filterExcludeKeys } from '../util/object'
@@ -177,7 +176,7 @@ SelectionControl.propTypes = {
 
 //------------------------------------------------------------------------------
 function PagedListView(props) {
-  const qsParams = NavManager.qsParams;
+  const { qsParams } = props;
   const qsPageParam = qsParams[props.pageParamName] ? parseInt(qsParams[props.pageParamName]) : 1;
   const qsPageSizeParam = qsParams[props.pageSizeParamName] ? parseInt(qsParams[props.pageSizeParamName]) : null;
 
@@ -395,8 +394,9 @@ function PagedListView(props) {
     }
 
     let initialOrdering = props.defaultOrdering;
-    if (NavManager.qsParams[props.orderParamName]) {
-      initialOrdering = NavManager.qsParams[props.orderParamName];
+
+    if (qsParams[props.orderParamName]) {
+      initialOrdering = qsParams[props.orderParamName];
     } else if (props.filterMetadata) {
       initialOrdering = props.filterMetadata.primary_ordering;
     }
@@ -418,7 +418,7 @@ function PagedListView(props) {
     if (props.subsetFilterArrangement) {
       let initialSubsetArrangementIndex = -1;
 
-      const initialSubsetLabel = NavManager.qsParams[props.subsetParamName];
+      const initialSubsetLabel = qsParams[props.subsetParamName];
       if (initialSubsetLabel) {
         initialSubsetArrangementIndex = props.subsetFilterArrangement.findIndex(
           (arrangementInfo) => arrangementInfo.label === initialSubsetLabel
@@ -465,7 +465,7 @@ function PagedListView(props) {
         }
 
         if (Object.keys(updatedQueryParams).length) {
-          NavManager.updateUrlParams(updatedQueryParams, true);
+          props.urlUpdateFunc(updatedQueryParams, true);
         }
       }
 
@@ -477,7 +477,7 @@ function PagedListView(props) {
       Object.assign(params, subsetInfo.params);
 
       if (props.location && qsParams[props.subsetParamName] !== subsetInfo.label) {
-        NavManager.updateUrlParam(props.subsetParamName, subsetInfo.label);
+        props.urlUpdateFunc({ [props.subsetParamName]: subsetInfo.label });
       }
     }
 
@@ -581,7 +581,7 @@ function PagedListView(props) {
 
     if (choice) {
       setOrdering(choice.value);
-      NavManager.updateUrlParam(props.orderParamName, choice.value);
+      props.urlUpdateFunc({ [props.orderParamName]: choice.value });
     }
   };
 
@@ -1001,6 +1001,8 @@ PagedListView.propTypes = {
   pageSizeParamName: PropTypes.string,
   paginated: PropTypes.bool,
 
+  qsParams: PropTypes.object.isRequired,
+
   selectionDisabled: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionMenu: PropTypes.bool,
@@ -1013,6 +1015,9 @@ PagedListView.propTypes = {
 
   tileItemComponent: PropTypes.func,
   tileListProps: PropTypes.object,
+
+  urlUpdateFunc: PropTypes.func.isRequired,
+
   windowed: PropTypes.bool,
 };
 
