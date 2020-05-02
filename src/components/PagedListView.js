@@ -21,6 +21,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -684,8 +685,8 @@ function PagedListView(props) {
       props.onLoad(requestParams);
     }
 
-    fetchItems(props.src, requestParams).then((res) => {
-      let updatedItems = res.items;
+    fetchItems(props.src, requestParams).then((fetchItemsResult) => {
+      let updatedItems = fetchItemsResult.items;
 
       // If a transformer has been supplied, apply it to the newly assigned records.
       if (props.itemTransformer) {
@@ -848,11 +849,20 @@ function PagedListView(props) {
   // Putting it all together...time to render the main view
   //----------------------------------------------------------------------------
   if (!items || loading) {
-    return (
-      <PlaceholderView border={false}>
-        <CircularProgress />
-      </PlaceholderView>
-    );
+    switch (props.loadingVariant) {
+      case 'circular':
+        return (
+          <PlaceholderView border={false}>
+            <CircularProgress />
+          </PlaceholderView>
+        );
+      case 'linear':
+        return (
+          <LinearProgress />
+        );
+      default:
+        return null;
+    }
   }
 
   if (!items.length) {
@@ -986,6 +996,8 @@ PagedListView.propTypes = {
   listItemProps: PropTypes.object,
   listItemComponent: PropTypes.func,
 
+  loadingVariant: PropTypes.oneOf(['linear', 'circular']),
+
   location: PropTypes.object,
 
   onComplete: PropTypes.func,
@@ -1022,6 +1034,7 @@ PagedListView.propTypes = {
 PagedListView.defaultProps = {
   defaultFilterParams: {},
   itemIdKey: 'id',
+  loadingVariant: 'circular',
   orderParamName: 'order',
   pageParamName: 'page',
   pageSizeParamName: 'page_size',
