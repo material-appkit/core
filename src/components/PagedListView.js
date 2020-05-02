@@ -386,11 +386,9 @@ function PagedListView(props) {
    */
   useEffect(() => {
     if (props.src && props.onOptionsLoad) {
-      const fetchOptions = async(requestUrl) => {
-        const res = await ServiceAgent.options(requestUrl);
+      ServiceAgent.options(props.src).then((res) => {
         props.onOptionsLoad(res.body);
-      };
-      fetchOptions(props.src);
+      });
     }
 
     let initialOrdering = props.defaultOrdering;
@@ -686,22 +684,22 @@ function PagedListView(props) {
       props.onLoad(requestParams);
     }
 
-    const fetchItemsResult = await fetchItems(props.src, requestParams);
-    let updatedItems = fetchItemsResult.items;
+    fetchItems(props.src, requestParams).then((res) => {
+      let updatedItems = res.items;
 
-    // If a transformer has been supplied, apply it to the
-    // newly assigned records.
-    if (props.itemTransformer) {
-      updatedItems = updatedItems.map(props.itemTransformer);
-    }
+      // If a transformer has been supplied, apply it to the newly assigned records.
+      if (props.itemTransformer) {
+        updatedItems = updatedItems.map(props.itemTransformer);
+      }
 
-    itemHeights.current = new Array(updatedItems.length).fill(0);
+      itemHeights.current = new Array(updatedItems.length).fill(0);
 
-    setItems(updatedItems);
+      setItems(updatedItems);
 
-    if (props.onComplete) {
-      props.onComplete(updatedItems, fetchItemsResult.response);
-    }
+      if (props.onComplete) {
+        props.onComplete(updatedItems, fetchItemsResult.response);
+      }
+    });
   };
 
   // ---------------------------------------------------------------------------
