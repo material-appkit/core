@@ -367,7 +367,7 @@ Image.propTypes = {
   placeholderStyle: PropTypes.object,
   placeholderClassName: PropTypes.string,
   backgroundColor: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  objectFit: PropTypes.string,
+  objectFit: PropTypes.oneOf(['fill', 'contain', 'cover', 'scale-down', 'none']),
   onLoad: PropTypes.func,
   onError: PropTypes.func,
   onStartLoad: PropTypes.func,
