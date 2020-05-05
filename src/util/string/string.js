@@ -5,7 +5,7 @@
 export function slugify(str) {
   const a = 'àáäâãåèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;';
   const b = 'aaaaaaeeeeiiiioooouuuuncsyoarsnpwgnmuxzh------';
-  const p = new RegExp(a.split('').join('|'), 'g')
+  const p = new RegExp(a.split('').join('|'), 'g');
 
   return str.toString().toLowerCase()
     .replace(/\s+/g, '-') // Replace spaces with -
@@ -36,6 +36,10 @@ export function rstrip(string, value) {
  * @returns {string}
  */
 export function titleCase(str) {
+  if (typeof(str) !== 'string') {
+    return null;
+  }
+
   str = str.toLowerCase().split('_');
   for (let i = 0, n = str.length; i < n; i++) {
     str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
