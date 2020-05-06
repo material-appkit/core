@@ -240,7 +240,7 @@ function NavigationController(props) {
           return (
             <div
               className={classes.tabPanel}
-              display={(i === selectedIndex) ? 'block' : 'none' }
+              style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
               key={routeInfo.path}
             >
               <Route
