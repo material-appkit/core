@@ -144,7 +144,7 @@ SplitView.propTypes = {
 };
 
 SplitView.defaultProps = {
-  layout: 'position',
+  layout: 'grid',
   scrollContent: false,
 };
 

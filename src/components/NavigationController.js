@@ -232,6 +232,7 @@ function NavigationController(props) {
       )}
       barSize={appBarHeight}
       placement="top"
+      {...props.splitViewProps}
     >
       <div className={classes.tabPanelContainer}>
         {matches.map((routeInfo, i) => {
@@ -271,10 +272,12 @@ NavigationController.propTypes = {
   onViewDidMount: PropTypes.func,
   onViewDidUpdate: PropTypes.func,
   onViewWillUnmount: PropTypes.func,
+  splitViewProps: PropTypes.object,
 };
 
 NavigationController.defaultProps = {
   matches: [],
+  splitViewProps: {},
 };
 
 export default NavigationController;
