@@ -5,15 +5,23 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Route } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import ContextMenu from '@material-appkit/core/components/ContextMenu';
+import ContextMenu from './ContextMenu';
+import SplitView from './SplitView';
 import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
 
 const styles = makeStyles((theme) => {
   const defaultNavigationControllerTheme = {
+    tabPanelContainer: {
+      height: '100%',
+    },
+
+    tabPanel: {
+      height: '100%',
+    },
+
     navBarBreadcrumbsRoot: {
       flex: 1,
     },
@@ -30,13 +38,6 @@ const styles = makeStyles((theme) => {
       padding: `0 ${theme.spacing(2)}px`,
     },
 
-    tabPanelContainer: {
-      overflowY: 'auto',
-    },
-
-    tabPanel: {
-      height: '100%',
-    },
 
     toolBar: {
       borderBottom: `1px solid ${theme.palette.grey[400]}`,
@@ -184,59 +185,60 @@ function NavigationController(props) {
 
 
   return (
-    <Box width="100%" height="100%">
-      <AppBar
-        style={{ height: appBarHeight }}
-        color="default"
-        elevation={0}
-        position="static"
-      >
-        <Toolbar className={classes.navBar} disableGutters>
-          <NavigationControllerBreadcrumbs
-            classes={{
-              root: classes.navBarBreadcrumbsRoot,
-              ol: classes.navBarBreadcrumbsList,
-            }}
-            matches={props.matches}
-            onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
-            separator="›"
-            topbarConfigMap={topbarConfigMap}
-          />
-
-          {activeTopBarConfig.contextMenuItems &&
-            <ContextMenu
-              anchorEl={contextMenuButtonEl}
-              id="context-menu"
-              getContentAnchorEl={null}
-              open={Boolean(contextMenuButtonEl)}
-              onClose={() => { setContextMenuButtonEl(null); }}
-              menuItemArrangement={activeTopBarConfig.contextMenuItems}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
+    <SplitView
+      bar={(
+        <AppBar
+          style={{ height: appBarHeight }}
+          color="default"
+          elevation={0}
+          position="static"
+        >
+          <Toolbar className={classes.navBar} disableGutters>
+            <NavigationControllerBreadcrumbs
+              classes={{
+                root: classes.navBarBreadcrumbsRoot,
+                ol: classes.navBarBreadcrumbsList,
               }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
+              matches={props.matches}
+              onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
+              separator="›"
+              topbarConfigMap={topbarConfigMap}
             />
-          }
 
-          {activeTopBarConfig.rightBarItem}
-        </Toolbar>
+            {activeTopBarConfig.contextMenuItems &&
+              <ContextMenu
+                anchorEl={contextMenuButtonEl}
+                id="context-menu"
+                getContentAnchorEl={null}
+                open={Boolean(contextMenuButtonEl)}
+                onClose={() => { setContextMenuButtonEl(null); }}
+                menuItemArrangement={activeTopBarConfig.contextMenuItems}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+              />
+            }
 
-        {contextToolbar}
-      </AppBar>
+            {activeTopBarConfig.rightBarItem}
+          </Toolbar>
 
-      <Box
-        className={classes.tabPanelContainer}
-        height={`calc(100% - ${appBarHeight}px)`}
-      >
+          {contextToolbar}
+        </AppBar>
+      )}
+      barSize={appBarHeight}
+      placement="top"
+    >
+      <div className={classes.tabPanelContainer}>
         {matches.map((routeInfo, i) => {
           const componentProps = routeInfo.componentProps || {};
 
           return (
-            <Box
+            <div
               className={classes.tabPanel}
               display={(i === selectedIndex) ? 'block' : 'none' }
               key={routeInfo.path}
@@ -255,11 +257,11 @@ function NavigationController(props) {
                   />
                 )}
               />
-            </Box>
+            </div>
           );
         })}
-      </Box>
-    </Box>
+      </div>
+    </SplitView>
   );
 }
 

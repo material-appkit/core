@@ -10,58 +10,48 @@ function SplitView(props) {
     scrollContent,
   } = props;
 
-  const splitViewStyles = {
-    width: '100%',
+  const splitViewStyle = {
+    display: 'grid',
     height: '100%',
-    flex: 1,
   };
+
+
   const barStyles = {};
-  const contentStyles = { };
+  const contentStyles = {};
+
+  switch (placement) {
+      case 'top':
+        splitViewStyle.gridTemplateRows = `${barSize}px auto`;
+        break;
+      case 'bottom':
+        splitViewStyle.gridTemplateRows = `auto ${barSize}px`;
+        contentStyles.order = 0;
+        barStyles.order = 1;
+        break;
+      case 'left':
+        splitViewStyle.gridTemplateColumns = `${barSize}px auto`;
+        break;
+      case 'right':
+        splitViewStyle.gridTemplateColumns = `auto ${barSize}px`;
+        contentStyles.order = 0;
+        barStyles.order = 1;
+        break;
+  }
 
   if (scrollContent) {
     contentStyles.overflow = 'auto';
   }
 
-  switch (placement) {
-    case 'top':
-    case 'bottom':
-      barStyles.height = barSize;
-      contentStyles.height = `calc(100% - ${barSize}px)`;
-      break;
-
-    case 'left':
-    case 'right':
-      splitViewStyles.display = 'flex';
-      barStyles.width = barSize;
-      contentStyles.flex = 1;
-      break;
-  }
-
-  const barView = (
-    <div className={props.barClassName} style={barStyles}>
-      {bar}
-    </div>
-  );
-
-  const contentView = (
-    <div className={props.contentClassName} style={contentStyles}>
-      {children}
-    </div>
-  );
 
   return (
-    <div style={splitViewStyles}>
-      {(placement === 'bottom' || placement === 'right') ? (
-        <Fragment>
-          {contentView}
-          {barView}
-        </Fragment>
-      ) : (
-        <Fragment>
-          {barView}
-          {contentView}
-        </Fragment>
-      )}
+    <div style={splitViewStyle}>
+      <div className={props.barClassName} style={barStyles}>
+        {bar}
+      </div>
+
+      <div className={props.contentClassName} style={contentStyles}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -78,7 +68,7 @@ SplitView.propTypes = {
 };
 
 SplitView.defaultProps = {
-  scrollContent: false,
+  scrollContent: true,
 };
 
 export default SplitView;
