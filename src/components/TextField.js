@@ -1,8 +1,7 @@
-// @inheritedComponent FormControl
-
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
+import { refType } from '@material-ui/utils';
 
 import Input from '@material-ui/core/Input';
 import FilledInput from '@material-ui/core/FilledInput';
@@ -11,11 +10,25 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Select from '@material-ui/core/Select';
+import withStyles from '@material-ui/core/styles/withStyles';
 
 const variantComponent = {
   standard: Input,
   filled: FilledInput,
   outlined: OutlinedInput,
+};
+
+export const styles = {
+  /* Styles applied to the root element. */
+  root: {},
+
+  containedInputLabelShrink: {
+    transform: 'translate(14px, 8px) scale(0.75) !important',
+  },
+
+  containedInputInput: {
+    padding: `24px 14px 12px 14px`,
+  },
 };
 
 /**
@@ -26,12 +39,15 @@ const variantComponent = {
  *
  * It's important to understand that the text field is a simple abstraction
  * on top of the following components:
+ *
  * - [FormControl](/api/form-control/)
  * - [InputLabel](/api/input-label/)
+ * - [FilledInput](/api/filled-input/)
+ * - [OutlinedInput](/api/outlined-input/)
  * - [Input](/api/input/)
  * - [FormHelperText](/api/form-helper-text/)
  *
- * If you wish to alter the properties applied to the native input, you can do so as follows:
+ * If you wish to alter the props applied to the `input` element, you can do so as follows:
  *
  * ```jsx
  * const inputProps = {
@@ -43,187 +59,183 @@ const variantComponent = {
  *
  * For advanced cases, please look at the source of TextField by clicking on the
  * "Edit this page" button above. Consider either:
+ *
  * - using the upper case props for passing values directly to the components
  * - using the underlying components directly as shown in the demos
  */
-class TextField extends React.Component {
-  constructor(props) {
-    super(props);
+const TextField = React.forwardRef(function TextField(props, ref) {
+  const {
+    autoComplete,
+    autoFocus = false,
+    children,
+    classes,
+    className,
+    color = 'primary',
+    defaultValue,
+    disabled = false,
+    error = false,
+    FormHelperTextProps,
+    fullWidth = false,
+    helperText,
+    hiddenLabel,
+    id,
+    InputLabelProps,
+    inputProps,
+    InputProps,
+    inputRef,
+    label,
+    labelContained,
+    multiline = false,
+    name,
+    onBlur,
+    onChange,
+    onFocus,
+    placeholder,
+    required = false,
+    rows,
+    rowsMax,
+    select = false,
+    SelectProps,
+    type,
+    value,
+    variant = 'standard',
+    ...other
+  } = props;
 
-    this.labelRef = React.createRef();
-    this.delayedChangeTimer = null;
-  }
-
-  componentDidMount() {
-    if (this.props.variant === 'outlined') {
-      this.labelNode = ReactDOM.findDOMNode(this.labelRef.current);
-      this.forceUpdate();
+  if (process.env.NODE_ENV !== 'production') {
+    if (select && !children) {
+      console.error(
+        'Material-UI: `children` must be passed when using the `TextField` component with `select`.',
+      );
     }
   }
 
-  handleOnChange = (e) => {
-    const {
-      name,
-      onChange,
-      onTimeout,
-      owner,
-      timeoutDelay
-    } = this.props;
+  const InputMore = {};
+  const FinalInputProps = {...InputProps};
+  const FinalInputLabelProps = {...InputLabelProps};
 
-    const value = e.target.value;
-
-    if (name && owner && owner.setState) {
-      owner.setState({ [name]: value });
+  if (variant === 'outlined') {
+    if (InputLabelProps && typeof InputLabelProps.shrink !== 'undefined') {
+      InputMore.notched = InputLabelProps.shrink;
+    }
+    if (label) {
+      const displayRequired = InputLabelProps ? InputLabelProps.required : required;
+      InputMore.label = (
+        <React.Fragment>
+          {label}
+          {displayRequired && '\u00a0*'}
+        </React.Fragment>
+      );
     }
 
-    if (onChange) {
-      onChange(e);
-    }
+    if (labelContained) {
+      InputMore.notched = false;
 
-    if (!onTimeout) {
-      // If there's no change handler there's no need for action.
-      return;
-    }
-
-    if (timeoutDelay) {
-      if (this.delayedChangeTimer) {
-        clearTimeout(this.delayedChangeTimer);
+      if (FinalInputProps.classes) {
+        FinalInputProps.classes.input = classes.containedInputInput
+      } else {
+        FinalInputProps.classes = { input: classes.containedInputInput };
       }
 
-      this.delayedChangeTimer = setTimeout(() => {
-        onTimeout(value);
-      }, timeoutDelay);
-    } else {
-      // If this TextField has no change delay, simply pass the event on to its listener
-      onTimeout(value);
-    }
-  };
-
-  render() {
-    const {
-      autoComplete,
-      autoFocus,
-      children,
-      className,
-      defaultValue,
-      error,
-      FormHelperTextProps,
-      fullWidth,
-      helperText,
-      id,
-      InputLabelProps,
-      inputProps,
-      InputProps,
-      inputRef,
-      label,
-      multiline,
-      name,
-      onBlur,
-      onChange,
-      onFocus,
-      onTimeout,
-      owner,
-      placeholder,
-      required,
-      rows,
-      rowsMax,
-      select,
-      SelectProps,
-      timeoutDelay,
-      type,
-      variant,
-      ...other
-    } = this.props;
-
-
-    const InputMore = {};
-
-    if (variant === 'outlined') {
-      if (InputLabelProps && typeof InputLabelProps.shrink !== 'undefined') {
-        InputMore.notched = InputLabelProps.shrink;
+      if (FinalInputLabelProps.classes) {
+        FinalInputLabelProps.classes.shrink = classes.containedInputLabelShrink
+      } else {
+        FinalInputLabelProps.classes = { shrink: classes.containedInputLabelShrink };
       }
-
-      InputMore.labelWidth = (this.labelNode && this.labelNode.offsetWidth) || 0;
     }
-
-    let value = this.props.value;
-    if (!value && name && owner && owner.state) {
-      value = owner.state[name];
-    }
-
-    const helperTextId = helperText && id ? `${id}-helper-text` : undefined;
-    const InputComponent = variantComponent[variant];
-    const InputElement = (
-      <InputComponent
-        aria-describedby={helperTextId}
-        autoComplete={autoComplete}
-        autoFocus={autoFocus}
-        defaultValue={defaultValue}
-        fullWidth={fullWidth}
-        multiline={multiline}
-        name={name}
-        rows={rows}
-        rowsMax={rowsMax}
-        type={type}
-        value={value}
-        id={id}
-        inputRef={inputRef}
-        onBlur={onBlur}
-        onChange={this.handleOnChange}
-        onFocus={onFocus}
-        placeholder={placeholder}
-        inputProps={inputProps}
-        {...InputMore}
-        {...InputProps}
-      />
-    );
-
-    return (
-      <FormControl
-        className={className}
-        error={error}
-        fullWidth={fullWidth}
-        required={required}
-        variant={variant}
-        {...other}
-      >
-        {label && (
-          <InputLabel htmlFor={id} ref={this.labelRef} {...InputLabelProps}>
-            {label}
-          </InputLabel>
-        )}
-        {select ? (
-          <Select
-            aria-describedby={helperTextId}
-            value={value}
-            input={InputElement}
-            {...SelectProps}
-          >
-            {children}
-          </Select>
-        ) : (
-          InputElement
-        )}
-        {helperText && (
-          <FormHelperText id={helperTextId} {...FormHelperTextProps}>
-            {helperText}
-          </FormHelperText>
-        )}
-      </FormControl>
-    );
   }
-}
+  if (select) {
+    // unset defaults from textbox inputs
+    if (!SelectProps || !SelectProps.native) {
+      InputMore.id = undefined;
+    }
+    InputMore['aria-describedby'] = undefined;
+  }
+
+  const helperTextId = helperText && id ? `${id}-helper-text` : undefined;
+  const inputLabelId = label && id ? `${id}-label` : undefined;
+  const InputComponent = variantComponent[variant];
+  const InputElement = (
+    <InputComponent
+      aria-describedby={helperTextId}
+      autoComplete={autoComplete}
+      autoFocus={autoFocus}
+      defaultValue={defaultValue}
+      fullWidth={fullWidth}
+      multiline={multiline}
+      name={name}
+      rows={rows}
+      rowsMax={rowsMax}
+      type={type}
+      value={value}
+      id={id}
+      inputRef={inputRef}
+      onBlur={onBlur}
+      onChange={onChange}
+      onFocus={onFocus}
+      placeholder={placeholder}
+      inputProps={inputProps}
+      {...InputMore}
+      {...FinalInputProps}
+    />
+  );
+
+  return (
+    <FormControl
+      className={clsx(classes.root, className)}
+      disabled={disabled}
+      error={error}
+      fullWidth={fullWidth}
+      hiddenLabel={hiddenLabel}
+      ref={ref}
+      required={required}
+      color={color}
+      variant={variant}
+      {...other}
+    >
+      {label && (
+        <InputLabel htmlFor={id} id={inputLabelId} {...FinalInputLabelProps}>
+          {label}
+        </InputLabel>
+      )}
+
+      {select ? (
+        <Select
+          aria-describedby={helperTextId}
+          id={id}
+          labelId={inputLabelId}
+          value={value}
+          input={InputElement}
+          {...SelectProps}
+        >
+          {children}
+        </Select>
+      ) : (
+        InputElement
+      )}
+
+      {helperText && (
+        <FormHelperText id={helperTextId} {...FormHelperTextProps}>
+          {helperText}
+        </FormHelperText>
+      )}
+    </FormControl>
+  );
+});
 
 TextField.propTypes = {
+  // ----------------------------- Warning --------------------------------
+  // | These PropTypes are generated from the TypeScript type definitions |
+  // |     To update them edit the d.ts file and run "yarn proptypes"     |
+  // ----------------------------------------------------------------------
   /**
-   * This property helps users to fill forms faster, especially on mobile devices.
+   * This prop helps users to fill forms faster, especially on mobile devices.
    * The name can be confusing, as it's more like an autofill.
-   * You can learn more about it here:
-   * https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill
+   * You can learn more about it [following the specification](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofill).
    */
   autoComplete: PropTypes.string,
   /**
-   * If `true`, the input will be focused during the first mount.
+   * If `true`, the `input` element will be focused during the first mount.
    */
   autoFocus: PropTypes.bool,
   /**
@@ -231,15 +243,24 @@ TextField.propTypes = {
    */
   children: PropTypes.node,
   /**
+   * Override or extend the styles applied to the component.
+   * See [CSS API](#css) below for more details.
+   */
+  classes: PropTypes.object,
+  /**
    * @ignore
    */
   className: PropTypes.string,
   /**
-   * The default value of the `Input` element.
+   * The color of the component. It supports those theme colors that make sense for this component.
    */
-  defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  color: PropTypes.oneOf(['primary', 'secondary']),
   /**
-   * If `true`, the input will be disabled.
+   * The default value of the `input` element.
+   */
+  defaultValue: PropTypes.any,
+  /**
+   * If `true`, the `input` element will be disabled.
    */
   disabled: PropTypes.bool,
   /**
@@ -247,7 +268,7 @@ TextField.propTypes = {
    */
   error: PropTypes.bool,
   /**
-   * Properties applied to the [`FormHelperText`](/api/form-helper-text/) element.
+   * Props applied to the [`FormHelperText`](/api/form-helper-text/) element.
    */
   FormHelperTextProps: PropTypes.object,
   /**
@@ -259,34 +280,46 @@ TextField.propTypes = {
    */
   helperText: PropTypes.node,
   /**
+   * @ignore
+   */
+  hiddenLabel: PropTypes.bool,
+  /**
    * The id of the `input` element.
-   * Use this property to make `label` and `helperText` accessible for screen readers.
+   * Use this prop to make `label` and `helperText` accessible for screen readers.
    */
   id: PropTypes.string,
   /**
-   * Properties applied to the [`InputLabel`](/api/input-label/) element.
+   * Props applied to the [`InputLabel`](/api/input-label/) element.
    */
   InputLabelProps: PropTypes.object,
   /**
-   * Properties applied to the `Input` element.
-   */
-  InputProps: PropTypes.object,
-  /**
-   * Attributes applied to the native `input` element.
+   * [Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes) applied to the `input` element.
    */
   inputProps: PropTypes.object,
   /**
-   * Use this property to pass a ref callback to the native input component.
+   * Props applied to the Input element.
+   * It will be a [`FilledInput`](/api/filled-input/),
+   * [`OutlinedInput`](/api/outlined-input/) or [`Input`](/api/input/)
+   * component depending on the `variant` prop value.
    */
-  inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  InputProps: PropTypes.object,
+  /**
+   * Pass a ref to the `input` element.
+   */
+  inputRef: refType,
   /**
    * The label content.
    */
   label: PropTypes.node,
+
+  /**
+   * If `true`, let the transformed label appear within the bounds of the form control
+   */
+  labelContained: PropTypes.bool,
   /**
    * If `dense` or `normal`, will adjust vertical spacing of this and contained components.
    */
-  margin: PropTypes.oneOf(['none', 'dense', 'normal']),
+  margin: PropTypes.oneOf(['dense', 'none', 'normal']),
   /**
    * If `true`, a textarea element will be rendered instead of an input.
    */
@@ -303,7 +336,7 @@ TextField.propTypes = {
    * Callback fired when the value is changed.
    *
    * @param {object} event The event source of the callback.
-   * You can pull out the new value by accessing `event.target.value`.
+   * You can pull out the new value by accessing `event.target.value` (string).
    */
   onChange: PropTypes.func,
   /**
@@ -311,73 +344,46 @@ TextField.propTypes = {
    */
   onFocus: PropTypes.func,
   /**
-   * Callback fired when the timeout timer elapses.
-   */
-  onTimeout: PropTypes.func,
-  /**
-   * Component to which this field is bound
-   */
-  owner: PropTypes.object,
-  /**
    * The short hint displayed in the input before the user enters a value.
    */
   placeholder: PropTypes.string,
   /**
-   * If `true`, the label is displayed as required and the input will be required.
+   * If `true`, the label is displayed as required and the `input` element` will be required.
    */
   required: PropTypes.bool,
   /**
    * Number of rows to display when multiline option is set to true.
    */
-  rows: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  rows: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   /**
    * Maximum number of rows to display when multiline option is set to true.
    */
-  rowsMax: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  rowsMax: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   /**
-   * Render a `Select` element while passing the `Input` element to `Select` as `input` parameter.
+   * Render a [`Select`](/api/select/) element while passing the Input element to `Select` as `input` parameter.
    * If this option is set you must pass the options of the select as children.
    */
   select: PropTypes.bool,
   /**
-   * Properties applied to the [`Select`](/api/select/) element.
+   * Props applied to the [`Select`](/api/select/) element.
    */
   SelectProps: PropTypes.object,
   /**
-   * Number of seconds to wait before firing the onTimeout event
+   * The size of the text field.
    */
+  size: PropTypes.oneOf(['medium', 'small']),
   /**
-   * State property to which this field is bound
-   */
-  stateKey: PropTypes.string,
-  /**
-   * Number of milliseconds of inactivity before the onTimeout callback is invoked.
-   */
-  timeoutDelay: PropTypes.number,
-  /**
-   * Type attribute of the `Input` element. It should be a valid HTML5 input type.
+   * Type of the `input` element. It should be [a valid HTML5 input type](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Form_%3Cinput%3E_types).
    */
   type: PropTypes.string,
   /**
-   * The value of the `Input` element, required for a controlled component.
+   * The value of the `input` element, required for a controlled component.
    */
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-    PropTypes.bool,
-    PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool])),
-  ]),
+  value: PropTypes.any,
   /**
    * The variant to use.
    */
-  variant: PropTypes.oneOf(['standard', 'outlined', 'filled']),
+  variant: PropTypes.oneOf(['filled', 'outlined', 'standard']),
 };
 
-TextField.defaultProps = {
-  required: false,
-  select: false,
-  timeoutDelay: 0,
-  variant: 'standard',
-};
-
-export default TextField;
+export default withStyles(styles, { name: 'MuiTextField' })(TextField);
