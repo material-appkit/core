@@ -29,7 +29,7 @@ function renderValue(value, fieldInfo) {
   const valueType = typeof(renderedValue);
   if (valueType === 'string' || valueType === 'number') {
     renderedValue = (
-      <Typography variant="body2">
+      <Typography variant="inherit">
         {renderedValue}
       </Typography>
     );
@@ -80,6 +80,7 @@ function PropertyListItem(props) {
             minWidth: props.minLabelWidth,
             maxWidth: props.maxLabelWidth,
           }}
+          variant="inherit"
         >
           {LabelContent}
         </Typography>
@@ -106,8 +107,20 @@ function PropertyListItem(props) {
     primaryComponentProps.href = value;
   }
 
+  const listItemProps = {
+    classes: { root: classes.listItemRoot },
+    style: {},
+  };
+
+  if (isValue(props.listItemPadding)) {
+    listItemProps.style.padding = `${props.listItemPadding}px 0`;
+  }
+  if (props.fontSize) {
+    listItemProps.style.fontSize = `${props.fontSize}px`;
+  }
+
   return (
-    <ListItem classes={{ root: classes.listItemRoot }}>
+    <ListItem {...listItemProps}>
       {labelComponent}
 
       <ListItemText
@@ -140,6 +153,8 @@ function PropertyListItem(props) {
 
 PropertyListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
+  fontSize: PropTypes.number,
+  listItemPadding: PropTypes.number,
   minLabelWidth: PropTypes.number,
   maxLabelWidth: PropTypes.number,
   nullValue: PropTypes.string,
@@ -155,9 +170,14 @@ const metadataStyles = makeStyles(
 function PropertyList(props) {
   const classes = metadataStyles();
 
+  const {
+    arrangement,
+    ...propertyListItemProps
+  } = props;
+
   return (
     <List className={classes.root}>
-      {props.arrangement.map((arrangementItem) => {
+      {arrangement.map((arrangementItem) => {
         let fieldInfo = arrangementItem;
         if (typeof(fieldInfo) === 'string') {
           fieldInfo = { name: fieldInfo };
@@ -170,12 +190,9 @@ function PropertyList(props) {
 
         return (
           <PropertyListItem
-            key={key}
             fieldInfo={fieldInfo}
-            minLabelWidth={props.minLabelWidth}
-            maxLabelWidth={props.maxLabelWidth}
-            LinkComponent={props.LinkComponent}
-            representedObject={props.representedObject}
+            key={key}
+            {...propertyListItemProps}
           />
         );
       })}
@@ -185,6 +202,8 @@ function PropertyList(props) {
 
 PropertyList.propTypes = {
   arrangement: PropTypes.array.isRequired,
+  fontSize: PropTypes.number,
+  listItemPadding: PropTypes.number,
   minLabelWidth: PropTypes.number,
   maxLabelWidth: PropTypes.number,
   LinkComponent: PropTypes.func,
