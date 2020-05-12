@@ -14,11 +14,11 @@ import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
 
 const styles = makeStyles((theme) => {
   const defaultNavigationControllerTheme = {
-    tabPanelContainer: {
+    navigationControllerViewContainer: {
       height: '100%',
     },
 
-    tabPanel: {
+    viewControllerContainer: {
       height: '100%',
     },
 
@@ -234,13 +234,13 @@ function NavigationController(props) {
       placement="top"
       {...props.splitViewProps}
     >
-      <div className={classes.tabPanelContainer}>
+      <div className={classes.navigationControllerViewContainer}>
         {matches.map((routeInfo, i) => {
           const componentProps = routeInfo.componentProps || {};
 
           return (
             <div
-              className={classes.tabPanel}
+              className={classes.viewControllerContainer}
               style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
               key={routeInfo.path}
             >

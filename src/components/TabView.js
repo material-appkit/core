@@ -2,11 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-
-import SplitView from './SplitView';
 
 const styles = makeStyles((theme) => ({
   tabs: {
@@ -81,49 +80,43 @@ function TabView(props) {
   };
 
   const classes = styles();
-
+  
   return (
-    <SplitView
-      bar={(
-        <Fragment>
-          {tabArrangement &&
-            <Tabs
-              value={selectedTabIndex}
-              className={classes.tabs}
-              indicatorColor="primary"
-              onChange={handleTabChange}
-              scrollButtons="auto"
-              textColor="primary"
-              variant="scrollable"
-              {...rest}
-            >
-              {tabArrangement.map((tabConfig) => (
-                <Tab
-                  key={tabConfig.path}
-                  component={Link}
-                  to={tabConfig.path}
-                  label={tabConfig.label}
-                />
-              ))}
-            </Tabs>
-          }
-        </Fragment>
-      )}
-      barSize={48}
-      placement="top"
-      scrollContent
-    >
-      {activeTabConfig &&
-        <activeTabConfig.component
-          onConfig={handleTabConfig}
-          onMount={handleTabMount}
-          onUpdate={onUpdate}
-          mountPath={activeTabConfig.path}
-          {...(activeTabConfig.componentProps || {})}
-          {...rest}
-        />
+    <Box display="flex" flexDirection="column" height="100%">
+      {tabArrangement &&
+        <Tabs
+          value={selectedTabIndex}
+          className={classes.tabs}
+          indicatorColor="primary"
+          onChange={handleTabChange}
+          scrollButtons="auto"
+          textColor="primary"
+          variant="scrollable"
+        >
+          {tabArrangement.map((tabConfig) => (
+            <Tab
+              key={tabConfig.path}
+              component={Link}
+              to={tabConfig.path}
+              label={tabConfig.label}
+            />
+          ))}
+        </Tabs>
       }
-    </SplitView>
+
+      <Box flex={1} overflow="auto">
+        {activeTabConfig &&
+          <activeTabConfig.component
+            onConfig={handleTabConfig}
+            onMount={handleTabMount}
+            onUpdate={onUpdate}
+            mountPath={activeTabConfig.path}
+            {...(activeTabConfig.componentProps || {})}
+            {...rest}
+          />
+        }
+      </Box>
+    </Box>
   );
 
 }
