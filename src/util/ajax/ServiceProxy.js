@@ -104,34 +104,16 @@ export default class ServiceProxy {
     if (typeof params === 'function') {
       params = params();
     }
-    const requestParams = params || {};
 
-    let req = null;
-    switch (method) {
-      case 'GET':
-        req = request.get(requestURL).query(requestParams);
-        break;
-      case 'POST':
-        req = request.post(requestURL).send(requestParams);
-        break;
-      case 'PUT':
-        req = request.put(requestURL).send(requestParams);
-        break;
-      case 'PATCH':
-        req = request.patch(requestURL).send(requestParams);
-        break;
-      case 'DELETE':
-        req = request.del(requestURL).send(requestParams);
-        break;
-      case 'OPTIONS':
-        req = request.options(requestURL).send(requestParams);
-        break;
-      case 'HEAD':
-        req = request.head(requestURL).send(requestParams);
-        break;
-      default:
-        throw new Error(`Unsupported request method: ${method}`);
+    let req = request(method, requestURL);
+    if (params) {
+      if (method === 'GET') {
+        req = req.query(params);
+      } else {
+        req = req.send(params);
+      }
     }
+
     req.set(this.getRequestHeaders(headers));
 
     if (context) {
@@ -181,23 +163,18 @@ export default class ServiceProxy {
       throw new Error('Expecting "files" to be an array');
     }
 
-    const requestURL = this.constructor.buildRequestUrl(endpoint);
-    const req = request.post(requestURL);
-
-    req.set(this.getRequestHeaders(headers));
-
-    for (const fileInfo of filesInfoList) {
-      req.attach(fileInfo.name, fileInfo.file);
-    }
+    const requestContext = context || {};
+    const req = this.post(endpoint, null, requestContext, headers);
 
     const fields = params || {};
     Object.keys(fields).forEach((fieldName) => {
       req.field(fieldName, fields[fieldName])
     });
 
-    if (context) {
-      context.request = req;
+    for (const fileInfo of filesInfoList) {
+      requestContext.request.attach(fileInfo.name, fileInfo.file);
     }
+
 
     return req;
   }
