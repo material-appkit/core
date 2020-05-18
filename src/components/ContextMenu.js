@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { Link as RouterLink } from 'react-router-dom';
-
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
@@ -58,11 +56,6 @@ function ContextMenu(props) {
           menuItemProps.href = menuItemInfo.href;
           menuItemProps.target= '_blank';
           menuItemProps.rel = 'noopener noreferrer';
-        }
-
-        if (menuItemInfo.link) {
-          menuItemProps.to = menuItemInfo.link;
-          menuItemProps.component = RouterLink;
         }
 
         let menuItem = (
