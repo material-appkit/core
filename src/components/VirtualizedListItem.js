@@ -7,8 +7,6 @@
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
 
-import { Link as RouterLink } from 'react-router-dom';
-
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -51,7 +49,6 @@ function VirtualizedListItem(props) {
     selectionMode,
     selectionDisabled,
     selectOnClick,
-    to,
     ...rest
   } = props;
 
@@ -70,10 +67,8 @@ function VirtualizedListItem(props) {
 
   const listItemProps = { ref: listItemRef, ...rest };
 
-  if (to) {
+  if (props.to) {
     listItemProps.button = true;
-    listItemProps.component = RouterLink;
-    listItemProps.to = to;
   }
 
   if (selectOnClick) {
@@ -110,7 +105,8 @@ function VirtualizedListItem(props) {
   if (!(selectionDisabled || commitOnSelect)) {
     if (selectionMode === 'multiple') {
       SelectionComponent = Checkbox;
-    } else if (selectionMode === 'single') {
+    }
+    if (selectionMode === 'single') {
       SelectionComponent = Radio;
     }
   }
