@@ -37,8 +37,11 @@ function PaginationControl(props) {
   } = props;
 
   const offset = page * pageSize;
-  const pageCount = Math.floor(count / pageSize);
 
+  let hasMore = false;
+  if ((offset + pageSize) < count) {
+    hasMore = true;
+  }
 
   const handlePageSizeButtonClick = (e) => {
     setPageSizeAnchorEl(e.currentTarget);
@@ -125,7 +128,7 @@ function PaginationControl(props) {
 
       <IconButton
         className={classes.paginationButton}
-        disabled={page >= pageCount}
+        disabled={!hasMore}
         onClick={() => { onPageChange(page + 1); }}
       >
         <ChevronRightIcon />
@@ -142,6 +145,7 @@ PaginationControl.propTypes = {
   pageSizeChoices: PropTypes.array,
   onPageChange: PropTypes.func,
   onPageSizeChange: PropTypes.func,
+  totalPages: PropTypes.number,
   typographyProps: PropTypes.object,
 };
 
