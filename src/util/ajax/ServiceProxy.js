@@ -163,18 +163,23 @@ export default class ServiceProxy {
       throw new Error('Expecting "files" to be an array');
     }
 
-    const requestContext = context || {};
-    const req = this.post(endpoint, null, requestContext, headers);
+    const requestURL = this.constructor.buildRequestUrl(endpoint);
+    const req = request.post(requestURL);
+
+    req.set(this.getRequestHeaders(headers));
+
+    for (const fileInfo of filesInfoList) {
+      req.attach(fileInfo.name, fileInfo.file);
+    }
 
     const fields = params || {};
     Object.keys(fields).forEach((fieldName) => {
       req.field(fieldName, fields[fieldName])
     });
 
-    for (const fileInfo of filesInfoList) {
-      requestContext.request.attach(fileInfo.name, fileInfo.file);
+    if (context) {
+      context.request = req;
     }
-
 
     return req;
   }
