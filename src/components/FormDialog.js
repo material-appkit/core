@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import ServiceAgent from '../util/ServiceAgent';
 import { formToObject } from '../util/form';
+import { titleCase } from '../util/string';
 
 const styles = makeStyles((theme) => ({
   activityIndicatorContainer: {
@@ -30,20 +31,28 @@ const styles = makeStyles((theme) => ({
 
 function FormDialog(props) {
   const classes = styles();
+  const { representedObject } = props;
+
   const [loading, setLoading] = useState(false);
 
-  const handleFormSubmit = async(e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
 
     setLoading(true);
-    try {
-      const formData = formToObject(e.target);
-      const res = await ServiceAgent.post(props.action, formData);
-      props.onDismiss(res.body);
-    } catch (err) {
-      setLoading(false);
-      props.onError(err);
-    }
+
+    const formData = formToObject(e.target);
+    const requestMethod = representedObject ? 'PATCH' : 'POST';
+    ServiceAgent.request(requestMethod, props.endpoint, formData)
+      .then((res) => {
+        props.onDismiss(res.body);
+      })
+      .catch((err) => {
+        setLoading(false);
+
+        if (props.onError) {
+          props.onError(err);
+        }
+      })
   };
 
   return (
@@ -68,28 +77,41 @@ function FormDialog(props) {
           {props.contentText}
         </DialogContentText>
 
-        {props.fieldArrangement.map((fieldInfo) => (
-          <TextField
-            key={fieldInfo.name}
-            margin="dense"
-            label={fieldInfo.label}
-            name={fieldInfo.name}
-            type={fieldInfo.type || 'text'}
-            fullWidth
-          />
-        ))}
+        {props.fieldArrangement.map((fieldInfo) => {
+          let textFieldProps = fieldInfo;
+          if (typeof(fieldInfo) === 'string') {
+            textFieldProps = {
+              name: fieldInfo,
+              type: 'text',
+              label: titleCase(fieldInfo),
+            }
+          }
 
+          const fieldName = textFieldProps.name;
+
+          if (representedObject) {
+            textFieldProps.defaultValue = representedObject[fieldName];
+          }
+
+          return (
+            <TextField
+              key={fieldName}
+              fullWidth
+              {...textFieldProps}
+            />
+          );
+        })}
       </DialogContent>
+
       <DialogActions>
         {loading &&
-          <div className={classes.activityIndicatorContainer}>
-            <CircularProgress size={20} />
-            <Typography className={classes.activityLabel} variant="subtitle2">
-              {props.activityLabel}
-            </Typography>
-          </div>
+        <div className={classes.activityIndicatorContainer}>
+          <CircularProgress size={20} />
+          <Typography className={classes.activityLabel} variant="subtitle2">
+            {props.activityLabel}
+          </Typography>
+        </div>
         }
-
 
         <Button onClick={() => { props.onDismiss(null); }}>
           {props.cancelButtonTitle}
@@ -110,10 +132,13 @@ function FormDialog(props) {
 FormDialog.propTypes = {
   activityLabel: PropTypes.string,
   cancelButtonTitle: PropTypes.string,
+  commitButtonTitle: PropTypes.string,
   contentText: PropTypes.string,
   fieldArrangement: PropTypes.array.isRequired,
-  action: PropTypes.string.isRequired,
+  endpoint: PropTypes.string.isRequired,
   onDismiss: PropTypes.func.isRequired,
+  onError: PropTypes.func,
+  representedObject: PropTypes.object,
   title: PropTypes.string,
 };
 
