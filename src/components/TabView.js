@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Box from '@material-ui/core/Box';
@@ -31,6 +31,7 @@ function TabView(props) {
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(0);
   const [activeTabConfig, setActiveTabConfig] = useState(null);
+  const activeTabViewRef = useRef(null);
 
   useEffect(() => {
     if (tabArrangement) {
@@ -59,7 +60,6 @@ function TabView(props) {
     setSelectedTabIndex(index);
   };
 
-
   const handleTabMount = (tabContext) => {
     if (onTabMount) {
       onTabMount({
@@ -68,7 +68,6 @@ function TabView(props) {
       });
     }
   };
-
 
   const handleTabConfig = (tabContext) => {
     if (onTabConfig) {
@@ -80,7 +79,7 @@ function TabView(props) {
   };
 
   const classes = styles();
-  
+
   return (
     <Box display="flex" flexDirection="column" height="100%">
       {tabArrangement &&
@@ -104,13 +103,14 @@ function TabView(props) {
         </Tabs>
       }
 
-      <Box flex={1} overflow="auto">
+      <Box flex={1} overflow="auto" ref={activeTabViewRef}>
         {activeTabConfig &&
           <activeTabConfig.component
             onConfig={handleTabConfig}
             onMount={handleTabMount}
             onUpdate={onUpdate}
             mountPath={activeTabConfig.path}
+            containerRef={activeTabViewRef}
             {...(activeTabConfig.componentProps || {})}
             {...rest}
           />
