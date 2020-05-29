@@ -37,4 +37,11 @@ Object.defineProperty(exports, "valueForKeyPath", {
   },
 });
 
+Object.defineProperty(exports, "setValueForKeyPath", {
+  enumerable: true,
+  get: function get() {
+    return _object.setValueForKeyPath;
+  },
+});
+
 const _object = _interopRequireDefault(require("./object"));

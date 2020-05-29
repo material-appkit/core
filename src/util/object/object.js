@@ -75,3 +75,22 @@ export function valueForKeyPath(object, keyPath) {
 
   return value;
 }
+
+
+export function setValueForKeyPath(obj, keyPath, value) {
+  let targetObj = obj;
+
+  const pathComponents = keyPath.split('.');
+  let currentPathElement = undefined;
+  while((currentPathElement = pathComponents.shift()) !== undefined) {
+    if (!targetObj[currentPathElement]) {
+      targetObj[currentPathElement] = {};
+    }
+
+    if (pathComponents.length) {
+      targetObj = targetObj[currentPathElement];
+    } else {
+      targetObj[currentPathElement] = value;
+    }
+  }
+}
