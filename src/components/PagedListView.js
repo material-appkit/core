@@ -177,7 +177,7 @@ SelectionControl.propTypes = {
 
 //------------------------------------------------------------------------------
 function PagedListView(props) {
-  const { qsParams } = props;
+  const qsParams = props.qsParams || {};
   const qsPageParam = qsParams[props.pageParamName] ? parseInt(qsParams[props.pageParamName]) : 1;
   const qsPageSizeParam = qsParams[props.pageSizeParamName] ? parseInt(qsParams[props.pageSizeParamName]) : null;
 
@@ -463,7 +463,7 @@ function PagedListView(props) {
           updatedQueryParams[props.pageSizeParamName] = pageSize;
         }
 
-        if (Object.keys(updatedQueryParams).length) {
+        if (props.urlUpdateFunc && Object.keys(updatedQueryParams).length) {
           props.urlUpdateFunc(updatedQueryParams, true);
         }
       }
@@ -475,7 +475,7 @@ function PagedListView(props) {
       const subsetInfo = props.subsetFilterArrangement[selectedSubsetArrangementIndex];
       Object.assign(params, subsetInfo.params);
 
-      if (props.location && qsParams[props.subsetParamName] !== subsetInfo.label) {
+      if (props.urlUpdateFunc && qsParams[props.subsetParamName] !== subsetInfo.label) {
         props.urlUpdateFunc({ [props.subsetParamName]: subsetInfo.label });
       }
     }
@@ -973,6 +973,8 @@ function PagedListView(props) {
 PagedListView.propTypes = {
   defaultFilterParams: PropTypes.object,
   defaultOrdering: PropTypes.string,
+  defaultSelection: PropTypes.object,
+
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
 
   emptyListPlaceholder: PropTypes.element,
@@ -1011,8 +1013,9 @@ PagedListView.propTypes = {
   pageSizeParamName: PropTypes.string,
   paginated: PropTypes.bool,
 
-  qsParams: PropTypes.object.isRequired,
+  qsParams: PropTypes.object,
 
+  selection: PropTypes.object,
   selectionDisabled: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionMenu: PropTypes.bool,
@@ -1026,7 +1029,7 @@ PagedListView.propTypes = {
   tileItemComponent: PropTypes.func,
   tileListProps: PropTypes.object,
 
-  urlUpdateFunc: PropTypes.func.isRequired,
+  urlUpdateFunc: PropTypes.func,
 
   windowed: PropTypes.bool,
 };
