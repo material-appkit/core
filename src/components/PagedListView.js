@@ -178,20 +178,20 @@ SelectionControl.propTypes = {
 //------------------------------------------------------------------------------
 function PagedListView(props) {
   const qsParams = props.qsParams || {};
+
   const qsPageParam = qsParams[props.pageParamName] ? parseInt(qsParams[props.pageParamName]) : 1;
   const qsPageSizeParam = qsParams[props.pageSizeParamName] ? parseInt(qsParams[props.pageSizeParamName]) : null;
 
   const [filterParams, setFilterParams] = useState(null);
 
   const [items, setItems] = useState(null);
-  const itemHeights = useRef(null);
 
   const [ordering, setOrdering] = useState(null);
   const [page, setPage] = useState(qsPageParam);
   const [pageSize, setPageSize] = useState(qsPageSizeParam);
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selectedSubsetArrangementIndex, setSelectedSubsetArrangementIndex] = useState(null);
-  const [selection, setSelection] = useState(new Set());
+  const [uncontrolledSelection, setUncontrolledSelection] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(props.selectionDisabled);
   const [sortControlEl, setSortControlEl] = useState(null);
   const [toolbarItems, setToolbarItems] = useState({});
@@ -200,24 +200,53 @@ function PagedListView(props) {
   // if this component is unmounted while it is in flight.
   const [fetchRequestContext, setFetchRequestContext] = useState(null);
 
-  // The view is assumed to be 'loading' whenever a fetchRequestContext is set.
-  const loading = !!fetchRequestContext;
-
+  const [measuring, setMeasuring] = useState(false);
   const [viewWidth, setViewWidth] = useState(0);
   const [viewHeight, setViewHeight] = useState(0);
 
-  const [measuring, setMeasuring] = useState(false);
+  const itemHeights = useRef(null);
+
+  // Derived properties
+
+  // The view is assumed to be 'loading' whenever a fetchRequestContext is set.
+  const loading = !!fetchRequestContext;
+
+  // ---------------------------------------------------------------------------
+  // Selection Management
+  // ---------------------------------------------------------------------------
+  const selection = props.selection || uncontrolledSelection;
+
+  const setSelection = (updatedSelection) => {
+    setUncontrolledSelection(updatedSelection);
+
+    if (props.onSelectionChange) {
+      props.onSelectionChange(updatedSelection);
+    }
+  };
 
 
-  /**
-   * Sort the items using the given sorting function
-   * Exported: yes
-   */
-  const sort = useCallback((sortFunc) => {
-    const sortedItems = [...items];
-    sortedItems.sort(sortFunc);
-    setItems(sortedItems);
-  }, [items]);
+  const updateSelection = (item) => {
+    const itemId = keyForItem(item);
+    const selectedItem = setFind(selection, (i) => keyForItem(i) === itemId);
+
+    let newSelection = null;
+
+    if (props.selectionMode === 'single') {
+      newSelection = new Set();
+      if (!selectedItem) {
+        newSelection.add(item);
+      }
+    } else {
+      newSelection = new Set(selection);
+      if (selectedItem) {
+        newSelection.delete(selectedItem);
+      } else {
+        newSelection.add(item);
+      }
+    }
+
+    setSelection(newSelection);
+  };
 
 
   /**
@@ -233,6 +262,18 @@ function PagedListView(props) {
     updateSelection(item);
 
   }, [selection, items]);
+
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Sort the items using the given sorting function
+   * Exported: yes
+   */
+  const sort = useCallback((sortFunc) => {
+    const sortedItems = [...items];
+    sortedItems.sort(sortFunc);
+    setItems(sortedItems);
+  }, [items]);
 
 
   /**
@@ -494,34 +535,6 @@ function PagedListView(props) {
     pageSize,
     selectedSubsetArrangementIndex
   ]);
-
-
-  const updateSelection = (item) => {
-    const itemId = keyForItem(item);
-    const selectedItem = setFind(selection, (i) => keyForItem(i) === itemId);
-
-    let newSelection = null;
-
-    if (props.selectionMode === 'single') {
-      newSelection = new Set();
-      if (!selectedItem) {
-        newSelection.add(item);
-      }
-    } else {
-      newSelection = new Set(selection);
-      if (selectedItem) {
-        newSelection.delete(selectedItem);
-      } else {
-        newSelection.add(item);
-      }
-    }
-
-    setSelection(newSelection);
-
-    if (props.onSelectionChange) {
-      props.onSelectionChange(newSelection);
-    }
-  };
 
   // ---------------------------------------------------------------------------
   /**
