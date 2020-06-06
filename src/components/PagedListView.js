@@ -311,7 +311,7 @@ function PagedListView(props) {
       listItemProps,
       selectionMode,
     } = props;
-    let context = itemContextProvider ? itemContextProvider(item) : {};
+    const context = itemContextProvider ? itemContextProvider(item) : {};
 
     const itemKey = keyForItem(item);
     let selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
