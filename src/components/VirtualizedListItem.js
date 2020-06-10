@@ -90,6 +90,11 @@ function VirtualizedListItem(props) {
         onItemClick(item);
       }
     }
+  } else if (onItemClick) {
+    listItemProps.button = true;
+    listItemProps.onClick = () => {
+      onItemClick(item);
+    }
   }
 
   const handleSelectionControlClick = (e) => {
