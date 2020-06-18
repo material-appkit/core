@@ -31,28 +31,31 @@ const styles = makeStyles((theme) => ({
 
 function FormDialog(props) {
   const classes = styles();
-  const { representedObject } = props;
+  const { endpoint, representedObject } = props;
 
   const [loading, setLoading] = useState(false);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-
-    setLoading(true);
-
     const formData = formToObject(e.target);
-    const requestMethod = representedObject ? 'PATCH' : 'POST';
-    ServiceAgent.request(requestMethod, props.endpoint, formData)
-      .then((res) => {
-        props.onDismiss(res.body);
-      })
-      .catch((err) => {
-        setLoading(false);
 
-        if (props.onError) {
-          props.onError(err);
-        }
-      })
+    if (endpoint) {
+      setLoading(true);
+      const requestMethod = representedObject ? 'PATCH' : 'POST';
+      ServiceAgent.request(requestMethod, endpoint, formData)
+        .then((res) => {
+          props.onDismiss(res.body);
+        })
+        .catch((err) => {
+          setLoading(false);
+
+          if (props.onError) {
+            props.onError(err);
+          }
+        });
+    } else {
+      props.onDismiss(formData);
+    }
   };
 
   return (
@@ -60,7 +63,7 @@ function FormDialog(props) {
       disableBackdropClick
       disableEscapeKeyDown
       fullWidth
-      maxWidth="sm"
+      maxWidth={props.maxWidth}
       PaperProps={{
         component: 'form',
         onSubmit: handleFormSubmit,
@@ -135,9 +138,10 @@ FormDialog.propTypes = {
   commitButtonTitle: PropTypes.string,
   contentText: PropTypes.string,
   fieldArrangement: PropTypes.array.isRequired,
-  endpoint: PropTypes.string.isRequired,
+  endpoint: PropTypes.string,
   onDismiss: PropTypes.func.isRequired,
   onError: PropTypes.func,
+  maxWidth: PropTypes.string,
   representedObject: PropTypes.object,
   title: PropTypes.string,
 };
@@ -146,6 +150,7 @@ FormDialog.defaultProps = {
   activityLabel: 'Working...',
   cancelButtonTitle: 'Cancel',
   commitButtonTitle: 'Done',
+  maxWidth: 'sm',
 };
 
 export default FormDialog;
