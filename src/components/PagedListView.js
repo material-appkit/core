@@ -619,6 +619,10 @@ function PagedListView(props) {
     setPageSize(value);
   };
 
+  const handlePaginationListControlChange = (e, value) => {
+    setPage(value);
+  };
+
   // ---------------------------------------------------------------------------
   const fetchItems = (requestUrl, requestParams) => {
     return new Promise((resolve, reject) => {
@@ -756,7 +760,6 @@ function PagedListView(props) {
       newToolbarItems.paginationControl = (
         <PaginationControl
           count={paginationInfo.total}
-          key="paginationControl"
           page={(paginationInfo.current_page) - 1}
           pageLabel={pageLabel}
           pageSize={paginationInfo.per_page}
@@ -766,7 +769,12 @@ function PagedListView(props) {
       );
 
       newToolbarItems.paginationListControl = (
-        <Pagination count={3} variant="outlined" shape="rounded" />
+        <Pagination
+          count={paginationInfo.total_pages}
+          page={paginationInfo.current_page}
+          onChange={handlePaginationListControlChange}
+          {...props.paginationListControlProps}
+        />
       );
     }
 
@@ -1029,6 +1037,7 @@ PagedListView.propTypes = {
   pageParamName: PropTypes.string,
   pageSizeParamName: PropTypes.string,
   paginated: PropTypes.bool,
+  paginationListControlProps: PropTypes.object,
 
   qsParams: PropTypes.object,
 
@@ -1059,6 +1068,10 @@ PagedListView.defaultProps = {
   pageParamName: 'page',
   pageSizeParamName: 'page_size',
   paginated: false,
+  paginationListControlProps: {
+    shape: 'rounded',
+    variant: 'outlined',
+  },
   selectionDisabled: true,
   selectionMenu: false,
   selectOnClick: false,
