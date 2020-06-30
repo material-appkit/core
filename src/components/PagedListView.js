@@ -26,6 +26,7 @@ import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Pagination from '@material-ui/lab/Pagination';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -671,7 +672,6 @@ function PagedListView(props) {
     // After all items have been measured the hidden container is replaced
     // with a VariableSizedList / VariableSizedGrid
     itemHeights.current = null;
-    setItems(null);
     if (props.windowed) {
       setMeasuring(true);
     }
@@ -763,6 +763,10 @@ function PagedListView(props) {
           onPageChange={handleTablePaginationPageChange}
           onPageSizeChange={handleTablePaginationPageSizeChange}
         />
+      );
+
+      newToolbarItems.paginationListControl = (
+        <Pagination count={3} variant="outlined" shape="rounded" />
       );
     }
 
@@ -861,12 +865,12 @@ function PagedListView(props) {
   //----------------------------------------------------------------------------
   // Putting it all together...time to render the main view
   //----------------------------------------------------------------------------
-  if (!items || loading) {
+  if (!items) {
     switch (props.loadingVariant) {
       case 'circular':
         return (
           <PlaceholderView border={false}>
-            <CircularProgress />
+            <CircularProgress disableShrink />
           </PlaceholderView>
         );
       case 'linear':
