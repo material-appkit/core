@@ -714,8 +714,8 @@ function PagedListView(props) {
 
       setItems(updatedItems);
 
-      if (props.onComplete) {
-        props.onComplete(updatedItems, fetchItemsResult.response);
+      if (props.onLoadComplete) {
+        props.onLoadComplete(updatedItems, fetchItemsResult.response);
       }
     });
   };
@@ -1027,10 +1027,10 @@ PagedListView.propTypes = {
 
   location: PropTypes.object,
 
-  onComplete: PropTypes.func,
   onConfig: PropTypes.func,
   onOptionsLoad: PropTypes.func,
   onLoad: PropTypes.func,
+  onLoadComplete: PropTypes.func,
   onSelectionChange: PropTypes.func,
 
   orderParamName: PropTypes.string,
