@@ -101,42 +101,46 @@ function ChoiceList(props) {
   const { choices, value } = props;
   const [expanded, setExpanded] = useState(false);
   const [fieldValueLabel, setFieldValueLabel] = useState('Any');
+  const [selection, setSelection] = useState(new Set());
 
-  let selectedChoiceValues = [];
-  if (value) {
-    selectedChoiceValues = value.split(',').filter(v => Boolean(v));
-  }
 
   useInit(() => {
-    if (selectedChoiceValues.length) {
+    if (value && value.length) {
       setExpanded(true);
     }
   });
 
   useEffect(() => {
     let valueLabel = 'Any';
+    let newSelection = new Set();
 
     if (value) {
+      if (value === 'null') {
+        newSelection = new Set(null);
+      } else {
+        newSelection = new Set(value.split(',').filter(v => Boolean(v)));
+      }
+
       const valueChoiceMap = arrayToObject(choices, 'value');
-      const selectedChoiceLabels = selectedChoiceValues.map((v) =>
+      const selectedChoiceLabels = [...newSelection].map((v) =>
         valueChoiceMap[v] ? valueChoiceMap[v].label : '???'
       );
 
-      const selectedChoiceCount = selectedChoiceLabels.length;
-      if (selectedChoiceCount < 3) {
+      if (newSelection.size < 3) {
         valueLabel = selectedChoiceLabels.sort().join(', ');
       } else {
-        valueLabel = `${selectedChoiceCount} Selected`;
+        valueLabel = `${newSelection.size} Selected`;
       }
     }
     setFieldValueLabel(valueLabel);
+    setSelection(newSelection);
 
-  }, [choices, selectedChoiceValues, value]);
+  }, [choices, value]);
 
 
   const toggleSelected = (option) => {
     const optionValue = option.value;
-    const updatedSelection = new Set(selectedChoiceValues);
+    const updatedSelection = new Set(selection);
     if (updatedSelection.has(optionValue)) {
       updatedSelection.delete(optionValue);
     } else {
@@ -179,7 +183,7 @@ function ChoiceList(props) {
               choice={choice}
               key={choice.value}
               onClick={() => { toggleSelected(choice); }}
-              selected={selectedChoiceValues.indexOf(choice.value) !== -1}
+              selected={selection.has(choice.value)}
             />
           ))}
         </List>
