@@ -184,9 +184,8 @@ function PagedListView(props) {
   const qsPageSizeParam = qsParams[props.pageSizeParamName] ? parseInt(qsParams[props.pageSizeParamName]) : null;
 
   const [filterParams, setFilterParams] = useState(null);
-
   const [items, setItems] = useState(null);
-
+  const [loadError, setLoadError] = useState(null);
   const [ordering, setOrdering] = useState(null);
   const [page, setPage] = useState(qsPageParam);
   const [pageSize, setPageSize] = useState(qsPageSizeParam);
@@ -652,6 +651,7 @@ function PagedListView(props) {
         })
         .catch((err) => {
           setFetchRequestContext(null);
+          setPaginationInfo(null);
           reject(err);
         });
     });
@@ -702,22 +702,32 @@ function PagedListView(props) {
       props.onLoad(requestParams);
     }
 
-    fetchItems(props.src, requestParams).then((fetchItemsResult) => {
-      let updatedItems = fetchItemsResult.items;
+    fetchItems(props.src, requestParams)
+      .then((fetchItemsResult) => {
+        let updatedItems = fetchItemsResult.items;
+  
+        // If a transformer has been supplied, apply it to the newly assigned records.
+        if (props.itemTransformer) {
+          updatedItems = updatedItems.map(props.itemTransformer);
+        }
+  
+        itemHeights.current = new Array(updatedItems.length).fill(0);
+  
+        setItems(updatedItems);
+        setLoadError(null);
+  
+        if (props.onLoadComplete) {
+          props.onLoadComplete(updatedItems, fetchItemsResult.response);
+        }
+      })
+      .catch((err) => {
+        setLoadError(err);
+        setItems(null);
 
-      // If a transformer has been supplied, apply it to the newly assigned records.
-      if (props.itemTransformer) {
-        updatedItems = updatedItems.map(props.itemTransformer);
-      }
-
-      itemHeights.current = new Array(updatedItems.length).fill(0);
-
-      setItems(updatedItems);
-
-      if (props.onLoadComplete) {
-        props.onLoadComplete(updatedItems, fetchItemsResult.response);
-      }
-    });
+        if (props.onLoadError) {
+          props.onLoadError(err);
+        }
+      });
   };
 
   // ---------------------------------------------------------------------------
@@ -834,6 +844,7 @@ function PagedListView(props) {
       props.onConfig({
         extendSelection,
         loading,
+        loadError,
         onItemUpdate: handleItemUpdate,
         selection,
         selectionDisabled,
@@ -844,6 +855,7 @@ function PagedListView(props) {
     }
   }, [
     extendSelection,
+    loadError,
     paginationInfo,
     selection,
     selectionDisabled,
@@ -873,6 +885,16 @@ function PagedListView(props) {
   //----------------------------------------------------------------------------
   // Putting it all together...time to render the main view
   //----------------------------------------------------------------------------
+  if (loadError) {
+    return (
+      <PlaceholderView padding={2}>
+        <Typography>
+          Failed to load data.
+        </Typography>
+      </PlaceholderView>
+    );
+  }
+
   if (!items) {
     switch (props.loadingVariant) {
       case 'circular':
@@ -1031,6 +1053,7 @@ PagedListView.propTypes = {
   onOptionsLoad: PropTypes.func,
   onLoad: PropTypes.func,
   onLoadComplete: PropTypes.func,
+  onLoadError: PropTypes.func,
   onSelectionChange: PropTypes.func,
 
   orderParamName: PropTypes.string,
