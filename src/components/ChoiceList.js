@@ -138,9 +138,23 @@ function ChoiceList(props) {
   }, [choices, value]);
 
 
-  const toggleSelected = (option) => {
+  const handleNullListItemClick = () => {
+    let updatedSelection = null;
+
+    if (selection.has(null)) {
+      updatedSelection = new Set();
+    } else {
+      updatedSelection = new Set(null);
+    }
+    setSelection(updatedSelection);
+    props.onSelectionChange(updatedSelection);
+  };
+
+  const handleValueListItemClick = (option) => () => {
     const optionValue = option.value;
     const updatedSelection = new Set(selection);
+    updatedSelection.delete(null);
+
     if (updatedSelection.has(optionValue)) {
       updatedSelection.delete(optionValue);
     } else {
@@ -178,11 +192,18 @@ function ChoiceList(props) {
 
       {expanded &&
         <List disablePadding>
+          {props.nullLabel &&
+            <ChoiceListItem
+              choice={{ value: null, label: props.nullLabel }}
+              onClick={handleNullListItemClick}
+              selected={selection.has(null)}
+            />
+          }
           {choices.map((choice) => (
             <ChoiceListItem
               choice={choice}
               key={choice.value}
-              onClick={() => { toggleSelected(choice); }}
+              onClick={handleValueListItemClick(choice)}
               selected={selection.has(choice.value)}
             />
           ))}
@@ -195,6 +216,7 @@ function ChoiceList(props) {
 ChoiceList.propTypes = {
   choices: PropTypes.array.isRequired,
   label: PropTypes.string,
+  nullLabel: PropTypes.string,
   onSelectionChange: PropTypes.func.isRequired,
   value: PropTypes.string,
   variant: PropTypes.oneOf(['single', 'multiple']),
