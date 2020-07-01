@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Box from '@material-ui/core/Box';
@@ -40,11 +40,7 @@ const listItemStyles = makeStyles((theme) => ({
 
 function ChoiceListItem(props) {
   const classes = listItemStyles();
-  const {
-    choice,
-    selected,
-    ...listItemProps
-  } = props;
+  const { choice, selected, ...listItemProps } = props;
 
   const IconComponent = selected ? CheckBoxIcon : CheckBoxOutlinedBlankIcon;
   const iconClassName = selected ? classes.listItemIconSelected : null;
@@ -62,9 +58,7 @@ function ChoiceListItem(props) {
         />
       </ListItemIcon>
       <ListItemText
-        classes={{
-          primary: classes.listItemTextPrimary,
-        }}
+        classes={{ primary: classes.listItemTextPrimary }}
         primary={choice.label}
       />
     </ListItem>
@@ -108,8 +102,6 @@ function ChoiceList(props) {
   const [expanded, setExpanded] = useState(false);
   const [fieldValueLabel, setFieldValueLabel] = useState('Any');
 
-  const valueLabelMapRef =  useRef(arrayToObject(choices, 'value'));
-
   let selectedChoiceValues = [];
   if (value) {
     selectedChoiceValues = value.split(',').filter(v => Boolean(v));
@@ -125,8 +117,9 @@ function ChoiceList(props) {
     let valueLabel = 'Any';
 
     if (value) {
-      const selectedChoiceLabels = selectedChoiceValues.map(
-        (value) => valueLabelMapRef.current[value].label
+      const valueChoiceMap = arrayToObject(choices, 'value');
+      const selectedChoiceLabels = selectedChoiceValues.map((v) =>
+        valueChoiceMap[v] ? valueChoiceMap[v].label : '???'
       );
 
       const selectedChoiceCount = selectedChoiceLabels.length;
@@ -139,6 +132,7 @@ function ChoiceList(props) {
     setFieldValueLabel(valueLabel);
 
   }, [choices, selectedChoiceValues, value]);
+
 
   const toggleSelected = (option) => {
     const optionValue = option.value;
