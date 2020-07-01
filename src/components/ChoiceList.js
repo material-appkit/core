@@ -10,13 +10,16 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlinedBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import CheckBoxOutlinedBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
 import { arrayToObject } from '../util/array';
 import { useInit } from '../util/hooks';
 
+const variantPropType = PropTypes.oneOf(['single', 'multiple']).isRequired;
 
 const listItemStyles = makeStyles((theme) => ({
   listItem: {
@@ -40,10 +43,17 @@ const listItemStyles = makeStyles((theme) => ({
 
 function ChoiceListItem(props) {
   const classes = listItemStyles();
-  const { choice, selected, ...listItemProps } = props;
+  const { choice, selected, variant, ...listItemProps } = props;
 
-  const IconComponent = selected ? CheckBoxIcon : CheckBoxOutlinedBlankIcon;
-  const iconClassName = selected ? classes.listItemIconSelected : null;
+  let IconComponent = null;
+  let iconClassName = null;
+  if (selected) {
+    IconComponent = variant === 'multiple' ? CheckBoxIcon : RadioButtonCheckedIcon;
+    iconClassName = classes.listItemIconSelected;
+  } else {
+    IconComponent = variant === 'multiple' ? CheckBoxOutlinedBlankIcon : RadioButtonUncheckedIcon;
+    iconClassName = null;
+  }
 
   return (
     <ListItem
@@ -52,10 +62,7 @@ function ChoiceListItem(props) {
       {...listItemProps}
     >
       <ListItemIcon className={classes.listItemIcon}>
-        <IconComponent
-          className={iconClassName}
-          fontSize="small"
-        />
+        <IconComponent className={iconClassName} fontSize="small" />
       </ListItemIcon>
       <ListItemText
         classes={{ primary: classes.listItemTextPrimary }}
@@ -69,6 +76,7 @@ ChoiceListItem.propTypes = {
   choice: PropTypes.object.isRequired,
   onClick: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired,
+  variant: variantPropType,
 };
 
 
@@ -98,14 +106,13 @@ const styles = makeStyles((theme) => ({
 function ChoiceList(props) {
   const classes = styles();
 
-  const { choices, value } = props;
+  const { choices, value, variant } = props;
   const [expanded, setExpanded] = useState(false);
   const [fieldValueLabel, setFieldValueLabel] = useState('Any');
   const [selection, setSelection] = useState(new Set());
 
-
   useInit(() => {
-    if (value && value.length) {
+    if (value === null || (value && value.length)) {
       setExpanded(true);
     }
   });
@@ -114,12 +121,11 @@ function ChoiceList(props) {
     let valueLabel = 'Any';
     let newSelection = new Set();
 
-    if (value) {
-      if (value === 'null') {
-        newSelection = new Set(null);
-      } else {
-        newSelection = new Set(value.split(',').filter(v => Boolean(v)));
-      }
+    if (value === null) {
+      newSelection = null;
+      valueLabel = props.nullLabel;
+    } else if (value && value.length) {
+      newSelection = new Set(value.split(',').filter(v => Boolean(v)));
 
       const valueChoiceMap = arrayToObject(choices, 'value');
       const selectedChoiceLabels = [...newSelection].map((v) =>
@@ -132,33 +138,39 @@ function ChoiceList(props) {
         valueLabel = `${newSelection.size} Selected`;
       }
     }
+
     setFieldValueLabel(valueLabel);
     setSelection(newSelection);
-
   }, [choices, value]);
 
 
   const handleNullListItemClick = () => {
     let updatedSelection = null;
 
-    if (selection.has(null)) {
+    if (selection === null) {
       updatedSelection = new Set();
     } else {
-      updatedSelection = new Set(null);
+      updatedSelection = null;
     }
     setSelection(updatedSelection);
     props.onSelectionChange(updatedSelection);
   };
 
+
   const handleValueListItemClick = (option) => () => {
     const optionValue = option.value;
-    const updatedSelection = new Set(selection);
-    updatedSelection.delete(null);
+
+    let updatedSelection = new Set(selection);
 
     if (updatedSelection.has(optionValue)) {
       updatedSelection.delete(optionValue);
     } else {
-      updatedSelection.add(optionValue);
+      if (variant === 'single') {
+        updatedSelection = new Set([optionValue]);
+      } else {
+        updatedSelection.add(optionValue);
+
+      }
     }
 
     props.onSelectionChange(updatedSelection);
@@ -196,7 +208,8 @@ function ChoiceList(props) {
             <ChoiceListItem
               choice={{ value: null, label: props.nullLabel }}
               onClick={handleNullListItemClick}
-              selected={selection.has(null)}
+              selected={selection === null}
+              variant={variant}
             />
           }
           {choices.map((choice) => (
@@ -204,7 +217,8 @@ function ChoiceList(props) {
               choice={choice}
               key={choice.value}
               onClick={handleValueListItemClick(choice)}
-              selected={selection.has(choice.value)}
+              selected={selection && selection.has(choice.value)}
+              variant={variant}
             />
           ))}
         </List>
@@ -219,7 +233,7 @@ ChoiceList.propTypes = {
   nullLabel: PropTypes.string,
   onSelectionChange: PropTypes.func.isRequired,
   value: PropTypes.string,
-  variant: PropTypes.oneOf(['single', 'multiple']),
+  variant: variantPropType,
 };
 
 ChoiceList.defaultProps = {
