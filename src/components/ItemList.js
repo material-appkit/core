@@ -238,6 +238,15 @@ class ItemList extends React.PureComponent {
     return items.map((item) => valueForKeyPath(item, itemKeyPath));
   }
 
+  /**
+   * @param item
+   * @returns {*} Unique identifier of given item
+   */
+  keyForItem = (item) => {
+    const { itemIdKey } = this.props;
+    return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
+  };
+
   attachRecords = async(records) => {
     if (!records.length) {
       return;
@@ -348,13 +357,13 @@ class ItemList extends React.PureComponent {
 
     return (
       <Fragment>
-        <List disablePadding>
+        <List disablePadding className={this.props.className}>
           {this.items.map((item) => (
             <ItemListItem
               clickAction={clickAction}
               component={this.props.itemComponent}
               componentProps={this.props.itemComponentProps}
-              key={item.id}
+              key={this.keyForItem(item)}
               icon={this.props.itemIcon}
               item={item}
               itemKeyPath={this.props.itemKeyPath}
@@ -422,6 +431,7 @@ ItemList.propTypes = {
   apiAttachSuffix: PropTypes.string,
   apiDetachSuffix: PropTypes.string,
   canDelete: PropTypes.bool,
+  className: PropTypes.string,
   clickAction: PropTypes.oneOf(['link', 'edit']),
   EditDialogComponent: PropTypes.func,
   editDialogProps: PropTypes.object,
@@ -432,6 +442,10 @@ ItemList.propTypes = {
   itemListItemProps: PropTypes.object,
   itemIcon: PropTypes.object,
   items: PropTypes.array.isRequired,
+  itemIdKey: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+  ]),
   itemKeyPath: PropTypes.string,
   listDialogProps: PropTypes.object,
   listItemComponent: PropTypes.func,
@@ -453,6 +467,7 @@ ItemList.defaultProps = {
   EditDialogComponent: EditDialog,
   editDialogProps: {},
   filterParams: {},
+  itemIdKey: 'id',
   itemComponentProps: {},
   itemListItemProps: { disableGutters: true },
   listItemProps: {},
