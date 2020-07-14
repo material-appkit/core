@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme) => ({
   input: {
+    backgroundColor: 'transparent',
     border: 'none',
     color: theme.palette.primary.main,
     cursor: 'pointer',
