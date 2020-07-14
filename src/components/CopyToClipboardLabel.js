@@ -10,6 +10,7 @@ const styles = makeStyles((theme) => ({
     color: theme.palette.primary.main,
     cursor: 'pointer',
     fontSize: '100%',
+    lineHeight: 0,
     padding: 0,
 
     '&:hover': {
