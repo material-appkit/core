@@ -1,31 +1,58 @@
-import request from 'superagent';
+import qs from 'query-string';
 
 import AbstractServiceProxy from './AbstractServiceProxy';
 
 export default class NativeServiceProxy extends AbstractServiceProxy {
   request(method, endpoint, params, context, headers) {
-    const requestURL = this.constructor.buildRequestUrl(endpoint);
-    console.log(requestURL);
+    return new Promise((resolve, reject) => {
+      let requestURL = this.constructor.buildRequestUrl(endpoint);
+      const fetchOptions = {
+        method,
+        mode: 'cors',
+        credentials: 'same-origin',
+        headers: this.getRequestHeaders(headers),
+      };
 
-    if (typeof params === 'function') {
-      params = params();
-    }
+      if (params) {
+        let requestParams = params || {};
+        if (typeof requestParams === 'function') {
+          requestParams = requestParams();
+        }
 
-    let req = request(method, requestURL);
-    if (params) {
-      if (method === 'GET') {
-        req = req.query(params);
-      } else {
-        req = req.send(params);
+        if (method === 'GET') {
+          requestURL = `${requestURL}?${qs.stringify(params)}`;
+        } else {
+          fetchOptions.body = JSON.stringify(params);
+        }
       }
-    }
 
-    req.set(this.getRequestHeaders(headers));
+      const request = new Request(requestURL, fetchOptions);
+      if (context) {
+        context.request = request;
+      }
 
-    if (context) {
-      context.request = req;
-    }
-    return req;
+      fetch(request)
+        .then((response) => {
+          response.request = request;
+          response.json().then((responseData) => {
+            response.jsonData = responseData;
+
+            if (!response.ok) {
+              const error = new Error('Network response was not ok');
+              error.response = response;
+              reject(error);
+            } else {
+              resolve(response);
+            }
+          }).catch((jsonDecodeError) => {
+            jsonDecodeError.response = response;
+            reject(jsonDecodeError);
+          });
+        })
+        .catch((fetchError) => {
+          reject(fetchError);
+        });
+    });
   }
 
 /*

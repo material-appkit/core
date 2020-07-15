@@ -82,7 +82,7 @@ function EditDialog(props) {
 
     let errorMessage = props.labels.SAVE_FAIL_NOTIFICATION;
 
-    const errors = err.response ? err.response.body : {};
+    const errors = err.response ? err.response.jsonData : {};
     Object.keys(errors).forEach((errorKey) => {
       const errorValue = errors[errorKey];
       if (props.labels[errorValue]) {

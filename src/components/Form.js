@@ -229,10 +229,10 @@ class Form extends React.PureComponent {
     let responses = await(Promise.all(requests));
 
     responses.forEach((response) => {
-      if (response.req.method === 'OPTIONS') {
-        metadata = response.body;
+      if (response.request.method === 'OPTIONS') {
+        metadata = response.jsonData;
       } else {
-        referenceObject = response.body;
+        referenceObject = response.jsonData;
       }
     });
 
@@ -295,7 +295,7 @@ class Form extends React.PureComponent {
       }
 
       const response = await ServiceAgent.request(requestMethod, this.requestUrl, requestData);
-      const persistedObject = response.body;
+      const persistedObject = response.jsonData;
 
       this.setState({
         saving: false,
@@ -310,7 +310,7 @@ class Form extends React.PureComponent {
     } catch (err) {
       this.setState({
         saving: false,
-        errors: err.response ? err.response.body : {},
+        errors: err.response ? err.response.jsonData : {},
       });
 
       if (this.props.onError) {

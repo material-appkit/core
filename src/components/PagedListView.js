@@ -429,7 +429,7 @@ function PagedListView(props) {
   useEffect(() => {
     if (props.src && props.onOptionsLoad) {
       ServiceAgent.options(props.src).then((res) => {
-        props.onOptionsLoad(res.body);
+        props.onOptionsLoad(res.jsonData);
       });
     }
 
@@ -640,7 +640,7 @@ function PagedListView(props) {
             return;
           }
 
-          const responseInfo = response.body;
+          const responseInfo = response.jsonData;
           const loadedItems = responseInfo.data ? responseInfo.data : responseInfo;
 
           if (responseInfo.meta && responseInfo.meta.pagination) {
@@ -721,6 +721,8 @@ function PagedListView(props) {
         }
       })
       .catch((err) => {
+        console.log(err);
+
         setLoadError(err);
         setItems(null);
 

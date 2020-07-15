@@ -257,7 +257,7 @@ class ItemList extends React.PureComponent {
       const record_ids = records.map((r) => r.id);
       const item_id = record_ids.length === 1 ? record_ids[0]  : record_ids;
       const res = await ServiceAgent.post(this.attachUrl, { item_id });
-      const result = res.body;
+      const result = res.jsonData;
       if (this.props.onAdd) {
         this.props.onAdd(result);
       }
@@ -277,7 +277,7 @@ class ItemList extends React.PureComponent {
     const detachUrl = this.detachUrl;
     if (detachUrl) {
       const res = await ServiceAgent.delete(this.detachUrl, { item_id: record.id });
-      record = res.body;
+      record = res.jsonData;
     } else if (canDelete && record.url) {
       await ServiceAgent.delete(record.url);
     }

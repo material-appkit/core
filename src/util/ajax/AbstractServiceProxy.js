@@ -78,7 +78,10 @@ export default class SAServiceProxy {
 
 
   getRequestHeaders(extra) {
-    const headers = { 'Accept': 'application/json' };
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
 
     if (extra) {
       Object.assign(headers, extra);

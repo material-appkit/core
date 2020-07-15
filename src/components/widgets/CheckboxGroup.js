@@ -91,7 +91,7 @@ function CheckboxGroupWidget(props) {
     } else if (apiListUrl) {
       const filterParams = widgetInfo.filter_params || {};
       const res = await ServiceAgent.get(apiListUrl, filterParams);
-      setChoices(res.body.map(
+      setChoices(res.jsonData.map(
         (item) => createChoice(item, widgetInfo.choice_map)
       ));
     } else {

@@ -44,7 +44,7 @@ function FormDialog(props) {
       const requestMethod = representedObject ? 'PATCH' : 'POST';
       ServiceAgent.request(requestMethod, endpoint, formData)
         .then((res) => {
-          props.onDismiss(res.body);
+          props.onDismiss(res.jsonData);
         })
         .catch((err) => {
           setLoading(false);

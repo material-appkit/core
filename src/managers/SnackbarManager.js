@@ -116,11 +116,6 @@ class SnackbarManager extends React.PureComponent {
     let message = defaultMessage;
     if (typeof(err) === 'string') {
       message = err;
-    } else {
-      // // TODO: Construct an error from the response body
-      // if (err.response && err.response.body) {
-      //   console.log(err.response.body);
-      // }
     }
     this.addMessage({ message, variant: 'error' });
   }

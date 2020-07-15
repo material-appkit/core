@@ -177,7 +177,7 @@ class RemoteStore extends DataStore {
         return null;
       }
 
-      const responseData = res.body;
+      const responseData = res.jsonData;
 
       // Notify listeners
       this._notificationCenter.postNotification(LOAD_DID_COMPLETE_NOTIFICATION_NAME, this, { res });
