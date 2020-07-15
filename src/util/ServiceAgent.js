@@ -1,11 +1,20 @@
-import ServiceProxy from './ajax/ServiceProxy';
+import NativeServiceProxy from './ajax/NativeServiceProxy';
+import SAServiceProxy from './ajax/SAServiceProxy';
 
 class ServiceAgent {
-  static ServiceProxyClass = ServiceProxy;
+  static ServiceProxyClass = null;
 
   static initialize(options) {
     if (options.ServiceProxyClass) {
       this.ServiceProxyClass = options.ServiceProxyClass;
+    } else {
+      switch (options.serviceProxyType) {
+        case 'superagent':
+          this.ServiceProxyClass = SAServiceProxy;
+          break;
+        default:
+          this.ServiceProxyClass = NativeServiceProxy;
+      }
     }
   }
 
