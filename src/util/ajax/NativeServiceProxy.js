@@ -140,7 +140,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       const controller = new AbortController();
       const extraFetchOptions = { signal: controller.signal };
 
-      const request = this.buildRequest(method, endpoint, params, requestHeaders, extraFetchOptions);
+      const request = this.buildRequest('POST', endpoint, formData, requestHeaders, extraFetchOptions);
       if (context) {
         context.request = request;
         context.controller = controller;
