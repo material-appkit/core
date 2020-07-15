@@ -5,6 +5,7 @@ import AbstractServiceProxy from './AbstractServiceProxy';
 export default class NativeServiceProxy extends AbstractServiceProxy {
   request(method, endpoint, params, context, headers) {
     const requestURL = this.constructor.buildRequestUrl(endpoint);
+    console.log(requestURL);
 
     if (typeof params === 'function') {
       params = params();
@@ -27,35 +28,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     return req;
   }
 
-
-  get(endpoint, params, context, headers) {
-    return this.request('GET', endpoint, params, context, headers);
-  }
-
-  post(endpoint, params, context, headers) {
-    return this.request('POST', endpoint, params, context, headers);
-  }
-
-  put(endpoint, params, context, headers) {
-    return this.request('PUT', endpoint, params, context, headers);
-  }
-
-  patch(endpoint, params, context, headers) {
-    return this.request('PATCH', endpoint, params, context, headers);
-  }
-
-  delete(endpoint, params, context, headers) {
-    return this.request('DELETE', endpoint, params, context, headers);
-  }
-
-  options(endpoint, params, context, headers) {
-    return this.request('OPTIONS', endpoint, params, context, headers);
-  }
-
-  head(endpoint, params, context, headers) {
-    return this.request('HEAD', endpoint, params, context, headers);
-  }
-
+/*
   download(endpoint, params, context, headers) {
     const requestContext = context || {};
     const req = this.get(endpoint, params, requestContext, headers);
@@ -88,4 +61,5 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
 
     return req;
   }
+  */
 }
