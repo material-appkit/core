@@ -6,6 +6,10 @@ const DEFAULT_FETCH_OPTIONS = {
   credentials: 'same-origin',
 };
 
+const DEFAULT_REQUEST_HEADERS = {
+  'Accept': 'application/json',
+};
+
 export default class SAServiceProxy {
   static getAccessTokenCookieName() {
     const cookieName = (
@@ -57,6 +61,28 @@ export default class SAServiceProxy {
     }
   }
 
+
+  static getRequestHeaders(extra) {
+    const headers = { ...DEFAULT_REQUEST_HEADERS };
+
+    if (extra) {
+      Object.assign(headers, extra);
+    }
+
+    const accessToken = this.getAccessToken();
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    const csrfToken = cookie.get('csrftoken');
+    if (csrfToken) {
+      headers['X-CSRFToken'] = csrfToken;
+    }
+
+    return headers;
+  }
+
+
   static buildRequestUrl(endpoint) {
     let endpointInfo = endpoint;
 
@@ -89,49 +115,31 @@ export default class SAServiceProxy {
     const fetchOptions = {
       ...DEFAULT_FETCH_OPTIONS,
       method,
-      headers: this.getRequestHeaders(headers),
+      headers,
     };
 
+
     if (params) {
-      let requestParams = params || {};
-      if (typeof requestParams === 'function') {
+      let requestParams = params;
+      
+      const paramType = typeof requestParams;
+      if (paramType === 'function') {
         requestParams = requestParams();
       }
 
       if (method === 'GET') {
-        requestURL = `${requestURL}?${qs.stringify(requestParams)}`;
+        requestURL = `${requestURL}?${qs.stringify(params)}`;
       } else {
-        fetchOptions.body = JSON.stringify(requestParams);
+        if (requestParams instanceof FormData) {
+          fetchOptions.body = requestParams;
+        } else {
+          fetchOptions.body = JSON.stringify(requestParams);
+        }
       }
     }
 
     return new Request(requestURL, fetchOptions);
   }
-
-
-  static getRequestHeaders(extra) {
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    };
-
-    if (extra) {
-      Object.assign(headers, extra);
-    }
-
-    const accessToken = this.getAccessToken();
-    if (accessToken) {
-      headers.Authorization = `Bearer ${accessToken}`;
-    }
-
-    const csrfToken = cookie.get('csrftoken');
-    if (csrfToken) {
-      headers['X-CSRFToken'] = csrfToken;
-    }
-
-    return headers;
-  }
-
 
   request(method, endpoint, params, context, headers) {
     throw new Error('Subclass Responsibility');

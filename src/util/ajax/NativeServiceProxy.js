@@ -36,26 +36,33 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     });
   }
 
+  invokeRequest(request, resolve, reject) {
+    fetch(request).then((response) => {
+      response.request = request;
+
+      const contentType = response.headers.get('content-type');
+      if (contentType === 'application/json') {
+        this.handleJsonResponse(response, resolve, reject);
+      } else {
+        this.handleBlobResponse(response, resolve, reject);
+      }
+    }).catch((fetchError) => {
+      reject(fetchError);
+    });
+  }
+
 
   request(method, endpoint, params, context, headers) {
     return new Promise((resolve, reject) => {
-      const request = this.constructor.buildRequest(method, endpoint, params, headers);
+      let requestHeaders = headers || {};
+      requestHeaders['Content-Type'] = 'application/json';
+      requestHeaders = this.constructor.getRequestHeaders(requestHeaders);
+
+      const request = this.constructor.buildRequest(method, endpoint, params, requestHeaders);
       if (context) {
         context.request = request;
       }
-
-      fetch(request).then((response) => {
-        response.request = request;
-
-        const contentType = response.headers.get('content-type');
-        if (contentType === 'application/json') {
-          this.handleJsonResponse(response, resolve, reject);
-        } else {
-          this.handleBlobResponse(response, resolve, reject);
-        }
-      }).catch((fetchError) => {
-        reject(fetchError);
-      });
+      this.invokeRequest(request, resolve, reject);
     });
   }
 
@@ -63,33 +70,35 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   download(endpoint, params, context, headers) {
     return this.get(endpoint, params, context, headers);
   }
-  
 
-  /*
+
   upload(endpoint, filesInfoList, params, context, headers) {
-    if (!Array.isArray(filesInfoList)) {
-      throw new Error('Expecting "files" to be an array');
-    }
+    return new Promise((resolve, reject) => {
+      if (!Array.isArray(filesInfoList)) {
+        reject(new Error('Expecting "files" to be an array'));
+      }
 
-    const requestURL = this.constructor.buildRequestUrl(endpoint);
-    const req = request.post(requestURL);
+      const formData = new FormData();
 
-    req.set(this.getRequestHeaders(headers));
+      if (params) {
+        Object.keys(params).forEach((paramName) => {
+          formData.append(paramName, params[paramName]);
+        })
+      }
 
-    for (const fileInfo of filesInfoList) {
-      req.attach(fileInfo.name, fileInfo.file);
-    }
+      for (const fileInfo of filesInfoList) {
+        formData.append(fileInfo.name, fileInfo.file);
+      }
 
-    const fields = params || {};
-    Object.keys(fields).forEach((fieldName) => {
-      req.field(fieldName, fields[fieldName])
+      let requestHeaders = headers || {};
+      requestHeaders = this.constructor.getRequestHeaders(requestHeaders);
+
+      const request = this.constructor.buildRequest('POST', endpoint, formData, requestHeaders);
+      if (context) {
+        context.request = request;
+      }
+
+      this.invokeRequest(request, resolve, reject);
     });
-
-    if (context) {
-      context.request = req;
-    }
-
-    return req;
   }
-  */
 }
