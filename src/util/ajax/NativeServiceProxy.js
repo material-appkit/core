@@ -1,4 +1,11 @@
+import qs from 'query-string';
+
 import AbstractServiceProxy from './AbstractServiceProxy';
+
+const DEFAULT_FETCH_OPTIONS = {
+  mode: 'cors',
+  credentials: 'same-origin',
+};
 
 export default class NativeServiceProxy extends AbstractServiceProxy {
   handleJsonResponse(response, resolve, reject) {
@@ -36,6 +43,38 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     });
   }
 
+  buildRequest(method, endpoint, params, headers, extraFetchOptions) {
+    let requestURL = this.constructor.buildRequestUrl(endpoint);
+
+    const fetchOptions = {
+      ...DEFAULT_FETCH_OPTIONS,
+      ...extraFetchOptions,
+      method,
+      headers,
+    };
+
+    if (params) {
+      let requestParams = params;
+
+      const paramType = typeof requestParams;
+      if (paramType === 'function') {
+        requestParams = requestParams();
+      }
+
+      if (method === 'GET') {
+        requestURL = `${requestURL}?${qs.stringify(params)}`;
+      } else {
+        if (requestParams instanceof FormData) {
+          fetchOptions.body = requestParams;
+        } else {
+          fetchOptions.body = JSON.stringify(requestParams);
+        }
+      }
+    }
+
+    return new Request(requestURL, fetchOptions);
+  }
+
   invokeRequest(request, resolve, reject) {
     fetch(request).then((response) => {
       response.request = request;
@@ -58,10 +97,15 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       requestHeaders['Content-Type'] = 'application/json';
       requestHeaders = this.constructor.getRequestHeaders(requestHeaders);
 
-      const request = this.constructor.buildRequest(method, endpoint, params, requestHeaders);
+      const controller = new AbortController();
+      const extraFetchOptions = { signal: controller.signal };
+
+      const request = this.buildRequest(method, endpoint, params, requestHeaders, extraFetchOptions);
       if (context) {
         context.request = request;
+        context.controller = controller;
       }
+
       this.invokeRequest(request, resolve, reject);
     });
   }
@@ -93,9 +137,13 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       let requestHeaders = headers || {};
       requestHeaders = this.constructor.getRequestHeaders(requestHeaders);
 
-      const request = this.constructor.buildRequest('POST', endpoint, formData, requestHeaders);
+      const controller = new AbortController();
+      const extraFetchOptions = { signal: controller.signal };
+
+      const request = this.buildRequest(method, endpoint, params, requestHeaders, extraFetchOptions);
       if (context) {
         context.request = request;
+        context.controller = controller;
       }
 
       this.invokeRequest(request, resolve, reject);

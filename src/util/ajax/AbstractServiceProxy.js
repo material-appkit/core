@@ -1,10 +1,4 @@
 import cookie from 'js-cookie';
-import qs from 'query-string';
-
-const DEFAULT_FETCH_OPTIONS = {
-  mode: 'cors',
-  credentials: 'same-origin',
-};
 
 const DEFAULT_REQUEST_HEADERS = {
   'Accept': 'application/json',
@@ -108,38 +102,6 @@ export default class SAServiceProxy {
     return requestURL;
   }
 
-
-  static buildRequest(method, endpoint, params, headers) {
-    let requestURL = this.buildRequestUrl(endpoint);
-
-    const fetchOptions = {
-      ...DEFAULT_FETCH_OPTIONS,
-      method,
-      headers,
-    };
-
-
-    if (params) {
-      let requestParams = params;
-      
-      const paramType = typeof requestParams;
-      if (paramType === 'function') {
-        requestParams = requestParams();
-      }
-
-      if (method === 'GET') {
-        requestURL = `${requestURL}?${qs.stringify(params)}`;
-      } else {
-        if (requestParams instanceof FormData) {
-          fetchOptions.body = requestParams;
-        } else {
-          fetchOptions.body = JSON.stringify(requestParams);
-        }
-      }
-    }
-
-    return new Request(requestURL, fetchOptions);
-  }
 
   request(method, endpoint, params, context, headers) {
     throw new Error('Subclass Responsibility');
