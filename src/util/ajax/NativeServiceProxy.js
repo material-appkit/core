@@ -43,6 +43,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     });
   }
 
+
   buildRequest(method, endpoint, params, headers, extraFetchOptions) {
     let requestURL = this.constructor.buildRequestUrl(endpoint);
 
@@ -74,6 +75,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
 
     return new Request(requestURL, fetchOptions);
   }
+
 
   invokeRequest(request, resolve, reject) {
     fetch(request).then((response) => {
