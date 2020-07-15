@@ -1,4 +1,10 @@
 import cookie from 'js-cookie';
+import qs from 'query-string';
+
+const DEFAULT_FETCH_OPTIONS = {
+  mode: 'cors',
+  credentials: 'same-origin',
+};
 
 export default class SAServiceProxy {
   static getAccessTokenCookieName() {
@@ -77,7 +83,33 @@ export default class SAServiceProxy {
   }
 
 
-  getRequestHeaders(extra) {
+  static buildRequest(method, endpoint, params, headers) {
+    let requestURL = this.buildRequestUrl(endpoint);
+
+    const fetchOptions = {
+      ...DEFAULT_FETCH_OPTIONS,
+      method,
+      headers: this.getRequestHeaders(headers),
+    };
+
+    if (params) {
+      let requestParams = params || {};
+      if (typeof requestParams === 'function') {
+        requestParams = requestParams();
+      }
+
+      if (method === 'GET') {
+        requestURL = `${requestURL}?${qs.stringify(requestParams)}`;
+      } else {
+        fetchOptions.body = JSON.stringify(requestParams);
+      }
+    }
+
+    return new Request(requestURL, fetchOptions);
+  }
+
+
+  static getRequestHeaders(extra) {
     const headers = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -87,7 +119,7 @@ export default class SAServiceProxy {
       Object.assign(headers, extra);
     }
 
-    const accessToken = this.constructor.getAccessToken();
+    const accessToken = this.getAccessToken();
     if (accessToken) {
       headers.Authorization = `Bearer ${accessToken}`;
     }
