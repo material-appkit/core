@@ -31,38 +31,61 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
         context.request = request;
       }
 
-      fetch(request)
-        .then((response) => {
-          response.request = request;
-          response.json().then((responseData) => {
-            response.jsonData = responseData;
+      function handleJsonResponse(response) {
+        response.json().then((jsonData) => {
+          response.jsonData = jsonData;
 
-            if (!response.ok) {
-              const error = new Error('Network response was not ok');
-              error.response = response;
-              reject(error);
-            } else {
-              resolve(response);
-            }
-          }).catch((jsonDecodeError) => {
-            jsonDecodeError.response = response;
-            reject(jsonDecodeError);
-          });
-        })
-        .catch((fetchError) => {
-          reject(fetchError);
+          if (!response.ok) {
+            const error = new Error('Network response was not ok');
+            error.response = response;
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        }).catch((jsonDecodeError) => {
+          jsonDecodeError.response = response;
+          reject(jsonDecodeError);
         });
+      }
+
+      function handleBlobResponse(response) {
+        response.blob().then((blobData) => {
+          response.blobData = blobData;
+
+          if (!response.ok) {
+            const error = new Error('Network response was not ok');
+            error.response = response;
+            reject(error);
+          } else {
+            resolve(response);
+          }
+        }).catch((blobDecodeError) => {
+          blobDecodeError.response = response;
+          reject(blobDecodeError);
+        });
+      }
+
+      fetch(request).then((response) => {
+        response.request = request;
+
+        const contentType = response.headers.get('content-type');
+        if (contentType === 'application/json') {
+          handleJsonResponse(response);
+        } else {
+          handleBlobResponse(response);
+        }
+      }) .catch((fetchError) => {
+        reject(fetchError);
+      });
     });
   }
 
-/*
-  download(endpoint, params, context, headers) {
-    const requestContext = context || {};
-    const req = this.get(endpoint, params, requestContext, headers);
-    requestContext.request.responseType('blob');
-    return req;
-  }
 
+  download(endpoint, params, context, headers) {
+    return this.get(endpoint, params, context, headers);
+  }
+  
+  /*
   upload(endpoint, filesInfoList, params, context, headers) {
     if (!Array.isArray(filesInfoList)) {
       throw new Error('Expecting "files" to be an array');
