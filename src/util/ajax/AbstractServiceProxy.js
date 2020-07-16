@@ -56,24 +56,28 @@ export default class SAServiceProxy {
   }
 
 
-  static getRequestHeaders(extra) {
-    const headers = { ...DEFAULT_REQUEST_HEADERS };
+  static getRequestHeaders(headers, params) {
+    const requestHeaders = { ...DEFAULT_REQUEST_HEADERS };
 
-    if (extra) {
-      Object.assign(headers, extra);
+    if (params && !(params instanceof FormData)) {
+      requestHeaders['Content-Type'] = 'application/json';
+    }
+
+    if (headers) {
+      Object.assign(requestHeaders, headers);
     }
 
     const accessToken = this.getAccessToken();
     if (accessToken) {
-      headers.Authorization = `Bearer ${accessToken}`;
+      requestHeaders.Authorization = `Bearer ${accessToken}`;
     }
 
     const csrfToken = cookie.get('csrftoken');
     if (csrfToken) {
-      headers['X-CSRFToken'] = csrfToken;
+      requestHeaders['X-CSRFToken'] = csrfToken;
     }
 
-    return headers;
+    return requestHeaders;
   }
 
 

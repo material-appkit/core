@@ -89,10 +89,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
 
   request(method, endpoint, params, context, headers) {
     return new Promise((resolve, reject) => {
-      const requestHeaders = this.constructor.getRequestHeaders(headers);
-      if (!(params instanceof FormData)) {
-        requestHeaders['Content-Type'] = 'application/json';
-      }
+      const requestHeaders = this.constructor.getRequestHeaders(headers, params);
 
       const requestInfo = this.requestInfo(method, endpoint, params, requestHeaders);
       const { abortController, options, url } = requestInfo;
