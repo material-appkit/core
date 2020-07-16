@@ -1,5 +1,4 @@
 import NativeServiceProxy from './ajax/NativeServiceProxy';
-import SAServiceProxy from './ajax/SAServiceProxy';
 
 class ServiceAgent {
   static ServiceProxyClass = null;
@@ -8,13 +7,7 @@ class ServiceAgent {
     if (options.ServiceProxyClass) {
       this.ServiceProxyClass = options.ServiceProxyClass;
     } else {
-      switch (options.serviceProxyType) {
-        case 'superagent':
-          this.ServiceProxyClass = SAServiceProxy;
-          break;
-        default:
-          this.ServiceProxyClass = NativeServiceProxy;
-      }
+      this.ServiceProxyClass = NativeServiceProxy;
     }
   }
 
