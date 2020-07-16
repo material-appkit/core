@@ -43,6 +43,15 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     });
   }
 
+  handleResponse(response, resolve, reject) {
+    const contentType = response.headers.get('content-type');
+    if (contentType === 'application/json') {
+      this.handleJsonResponse(response, resolve, reject);
+    } else {
+      this.handleBlobResponse(response, resolve, reject);
+    }
+  }
+
 
   buildRequest(method, endpoint, params, headers, extraFetchOptions) {
     let requestURL = this.constructor.buildRequestUrl(endpoint);
@@ -89,13 +98,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   performRequest(request, resolve, reject) {
     fetch(request).then((response) => {
       response.request = request;
-
-      const contentType = response.headers.get('content-type');
-      if (contentType === 'application/json') {
-        this.handleJsonResponse(response, resolve, reject);
-      } else {
-        this.handleBlobResponse(response, resolve, reject);
-      }
+      this.handleResponse(response, resolve, reject);
     }).catch((fetchError) => {
       reject(fetchError);
     });
@@ -115,11 +118,6 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
         context.abortController = abortController;
       }
 
-      if (context) {
-        context.request = request;
-        context.abortController = abortController;
-      }
-
       this.performRequest(request, resolve, reject);
     });
   }
@@ -131,11 +129,11 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
 
 
   upload(endpoint, filesInfoList, params, context, headers) {
-    return new Promise((resolve, reject) => {
-      if (!Array.isArray(filesInfoList)) {
-        reject(new Error('Expecting "files" to be an array'));
-      }
+    if (!Array.isArray(filesInfoList)) {
+      throw new Error('Expecting "files" to be an array');
+    }
 
+    return new Promise((resolve, reject) => {
       const formData = new FormData();
 
       if (params) {
