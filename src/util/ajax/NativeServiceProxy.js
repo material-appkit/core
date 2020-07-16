@@ -11,14 +11,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   handleJsonResponse(response, resolve, reject) {
     response.json().then((jsonData) => {
       response.jsonData = jsonData;
-
-      if (!response.ok) {
-        const error = new Error('Network response was not ok');
-        error.response = response;
-        reject(error);
-      } else {
-        resolve(response);
-      }
+      resolve(response);
     }).catch((jsonDecodeError) => {
       jsonDecodeError.response = response;
       reject(jsonDecodeError);
@@ -29,14 +22,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   handleBlobResponse(response, resolve, reject) {
     response.blob().then((blobData) => {
       response.blobData = blobData;
-
-      if (!response.ok) {
-        const error = new Error('Network response was not ok');
-        error.response = response;
-        reject(error);
-      } else {
-        resolve(response);
-      }
+      resolve(response);
     }).catch((blobDecodeError) => {
       blobDecodeError.response = response;
       reject(blobDecodeError);
@@ -44,11 +30,17 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   }
 
   handleResponse(response, resolve, reject) {
-    const contentType = response.headers.get('content-type');
-    if (contentType === 'application/json') {
-      this.handleJsonResponse(response, resolve, reject);
+    if (!response.ok) {
+      const error = new Error('Network response was not ok');
+      error.response = response;
+      reject(error);
     } else {
-      this.handleBlobResponse(response, resolve, reject);
+      const contentType = response.headers.get('content-type');
+      if (contentType === 'application/json') {
+        this.handleJsonResponse(response, resolve, reject);
+      } else {
+        this.handleBlobResponse(response, resolve, reject);
+      }
     }
   }
 
