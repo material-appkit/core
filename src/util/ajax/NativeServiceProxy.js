@@ -54,6 +54,12 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       headers,
     };
 
+    let abortController = null;
+    if (window.AbortController) {
+      abortController = new AbortController();
+      fetchOptions.signal = abortController.signal;
+    }
+
     if (params) {
       let requestParams = params;
 
@@ -73,11 +79,14 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       }
     }
 
-    return new Request(requestURL, fetchOptions);
+    return {
+      request: new Request(requestURL, fetchOptions),
+      abortController
+    };
   }
 
 
-  invokeRequest(request, resolve, reject) {
+  performRequest(request, resolve, reject) {
     fetch(request).then((response) => {
       response.request = request;
 
@@ -99,16 +108,19 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       requestHeaders['Content-Type'] = 'application/json';
       requestHeaders = this.constructor.getRequestHeaders(requestHeaders);
 
-      const controller = new AbortController();
-      const extraFetchOptions = { signal: controller.signal };
-
-      const request = this.buildRequest(method, endpoint, params, requestHeaders, extraFetchOptions);
+      const requestInfo = this.buildRequest(method, endpoint, params, requestHeaders);
+      const { abortController, request } = requestInfo;
       if (context) {
         context.request = request;
-        context.controller = controller;
+        context.abortController = abortController;
       }
 
-      this.invokeRequest(request, resolve, reject);
+      if (context) {
+        context.request = request;
+        context.abortController = abortController;
+      }
+
+      this.performRequest(request, resolve, reject);
     });
   }
 
@@ -139,16 +151,14 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       let requestHeaders = headers || {};
       requestHeaders = this.constructor.getRequestHeaders(requestHeaders);
 
-      const controller = new AbortController();
-      const extraFetchOptions = { signal: controller.signal };
-
-      const request = this.buildRequest('POST', endpoint, formData, requestHeaders, extraFetchOptions);
+      const requestInfo = this.buildRequest('POST', endpoint, formData, requestHeaders);
+      const { abortController, request } = requestInfo;
       if (context) {
         context.request = request;
-        context.controller = controller;
+        context.abortController = abortController;
       }
 
-      this.invokeRequest(request, resolve, reject);
+      this.performRequest(request, resolve, reject);
     });
   }
 }
