@@ -45,16 +45,15 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   }
 
 
-  buildRequest(method, endpoint, params, headers, extraFetchOptions) {
+  requestInfo(method, endpoint, params, headers) {
     let requestURL = this.constructor.buildRequestUrl(endpoint);
 
     const fetchOptions = {
       ...DEFAULT_FETCH_OPTIONS,
-      ...extraFetchOptions,
       method,
       headers,
     };
-
+    
     let abortController = null;
     if (window.AbortController) {
       abortController = new AbortController();
@@ -81,36 +80,32 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     }
 
     return {
-      request: new Request(requestURL, fetchOptions),
-      abortController
+      abortController,
+      url: requestURL,
+      options: fetchOptions,
     };
-  }
-
-
-  performRequest(request, resolve, reject) {
-    fetch(request).then((response) => {
-      response.request = request;
-      this.handleResponse(response, resolve, reject);
-    }).catch((fetchError) => {
-      reject(fetchError);
-    });
   }
 
 
   request(method, endpoint, params, context, headers) {
     return new Promise((resolve, reject) => {
-      let requestHeaders = headers || {};
-      requestHeaders['Content-Type'] = 'application/json';
-      requestHeaders = this.constructor.getRequestHeaders(requestHeaders);
+      const requestHeaders = this.constructor.getRequestHeaders(headers);
+      if (!(params instanceof FormData)) {
+        requestHeaders['Content-Type'] = 'application/json';
+      }
 
-      const requestInfo = this.buildRequest(method, endpoint, params, requestHeaders);
-      const { abortController, request } = requestInfo;
+      const requestInfo = this.requestInfo(method, endpoint, params, requestHeaders);
+      const { abortController, options, url } = requestInfo;
+
       if (context) {
-        context.request = request;
         context.abortController = abortController;
       }
 
-      this.performRequest(request, resolve, reject);
+      fetch(url, options).then((response) => {
+        this.handleResponse(response, resolve, reject);
+      }).catch((fetchError) => {
+        reject(fetchError);
+      });
     });
   }
 
@@ -125,30 +120,18 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       throw new Error('Expecting "files" to be an array');
     }
 
-    return new Promise((resolve, reject) => {
-      const formData = new FormData();
+    const formData = new FormData();
 
-      if (params) {
-        Object.keys(params).forEach((paramName) => {
-          formData.append(paramName, params[paramName]);
-        })
-      }
+    if (params) {
+      Object.keys(params).forEach((paramName) => {
+        formData.append(paramName, params[paramName]);
+      })
+    }
 
-      for (const fileInfo of filesInfoList) {
-        formData.append(fileInfo.name, fileInfo.file);
-      }
+    for (const fileInfo of filesInfoList) {
+      formData.append(fileInfo.name, fileInfo.file);
+    }
 
-      let requestHeaders = headers || {};
-      requestHeaders = this.constructor.getRequestHeaders(requestHeaders);
-
-      const requestInfo = this.buildRequest('POST', endpoint, formData, requestHeaders);
-      const { abortController, request } = requestInfo;
-      if (context) {
-        context.request = request;
-        context.abortController = abortController;
-      }
-
-      this.performRequest(request, resolve, reject);
-    });
+    return this.request('POST', endpoint, formData, context, headers);
   }
 }
