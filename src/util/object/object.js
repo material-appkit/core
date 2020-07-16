@@ -59,7 +59,7 @@ export function valueForKeyPath(object, keyPath) {
     const key = keys.shift();
 
     // If the encoutnered property doesn't exist, bail out.
-    if (value === null || value.hasOwnProperty(key) === false) {
+    if (value === null || value === undefined || value.hasOwnProperty(key) === false) {
       return null;
     }
 
