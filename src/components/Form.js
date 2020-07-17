@@ -204,8 +204,8 @@ class Form extends React.PureComponent {
     let metadata = null;
     const requests = [];
 
-    // If the fields have not been explicitly provided, issue an OPTIONS request for
-    // metadata about the represented object so the fields can be generated dynamically.
+    // Issue an OPTIONS request for metadata about the represented object
+    // so the fields can be generated dynamically.
     requests.push(ServiceAgent.options(this.requestUrl, {
       ...optionsRequestParams,
       action: this.detailUrl ? 'update' : 'create'
@@ -226,15 +226,12 @@ class Form extends React.PureComponent {
       }
     }
 
-    let responses = await(Promise.all(requests));
+    const responses = await(Promise.all(requests));
 
-    responses.forEach((response) => {
-      if (response.request.method === 'OPTIONS') {
-        metadata = response.jsonData;
-      } else {
-        referenceObject = response.jsonData;
-      }
-    });
+    metadata = responses[0].jsonData;
+    if (responses.length > 1) {
+      referenceObject = responses[1].jsonData;
+    }
 
     const initialData = this.initialData(metadata, referenceObject);
     if (!initialData) {
