@@ -107,20 +107,24 @@ function PropertyListItem(props) {
     primaryComponentProps.href = value;
   }
 
-  const listItemProps = {
-    classes: { root: classes.listItemRoot },
-    style: {},
-  };
+
+  const listItemStyle = {};
 
   if (isValue(props.listItemPadding)) {
-    listItemProps.style.padding = `${props.listItemPadding}px 0`;
+    listItemStyle.padding = `${props.listItemPadding}px 0`;
   }
   if (props.fontSize) {
-    listItemProps.style.fontSize = `${props.fontSize}px`;
+    listItemStyle.fontSize = `${props.fontSize}px`;
+  }
+  if (props.listItemAlignment) {
+    listItemStyle.alignItems = props.listItemAlignment;
   }
 
   return (
-    <ListItem {...listItemProps}>
+    <ListItem
+      classes={{ root: classes.listItemRoot }}
+      style={listItemStyle}
+    >
       {labelComponent}
 
       <ListItemText
@@ -154,6 +158,7 @@ function PropertyListItem(props) {
 PropertyListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
   fontSize: PropTypes.number,
+  listItemAlignment: PropTypes.string,
   listItemPadding: PropTypes.number,
   minLabelWidth: PropTypes.number,
   maxLabelWidth: PropTypes.number,
