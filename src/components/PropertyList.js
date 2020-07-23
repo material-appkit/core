@@ -56,13 +56,7 @@ function PropertyListItem(props) {
   }
 
   if ((Array.isArray(value) && !value.length) || !isValue(value)) {
-    if (!fieldInfo.nullValue) {
-      // If no value exists for the given field and nothing has been specified
-      // to display for null values, returning null skips rendering of the list item.
-      return null;
-    } else {
-      value = fieldInfo.nullValue;
-    }
+    value = fieldInfo.nullValue || null;
   }
 
   let LabelContent = fieldInfo.label;
@@ -94,20 +88,6 @@ function PropertyListItem(props) {
     }
   }
 
-  let PrimaryComponent = Box;
-  const primaryComponentProps = {};
-  if (fieldInfo.type === 'link' && value.path && props.LinkComponent) {
-    PrimaryComponent = Link;
-    primaryComponentProps.component = props.LinkComponent;
-    primaryComponentProps.to = value.path;
-  }
-
-  if (fieldInfo.type === 'href') {
-    PrimaryComponent = Link;
-    primaryComponentProps.href = value;
-  }
-
-
   const listItemStyle = {};
 
   if (isValue(props.listItemPadding)) {
@@ -120,6 +100,52 @@ function PropertyListItem(props) {
     listItemStyle.alignItems = props.listItemAlignment;
   }
 
+  let listItemTextPrimary = null;
+  if (Array.isArray(value)) {
+    listItemTextPrimary = (
+      <List
+        disablePadding
+        className={fieldInfo.inline ? classes.inlineNestedList : classes.nestedList}
+      >
+        {renderValue(value, fieldInfo).map((nestedValue, i) => (
+          <ListItem
+            className={classes.nestedListItem}
+            disableGutters
+            key={i}
+          >
+            {nestedValue}
+          </ListItem>
+        ))}
+      </List>
+    )
+  } else {
+    const renderedValue = renderValue(value, fieldInfo);
+    if (renderedValue) {
+      let PrimaryComponent = Box;
+      const primaryComponentProps = {};
+      if (fieldInfo.type === 'link' && value.path && props.LinkComponent) {
+        PrimaryComponent = Link;
+        primaryComponentProps.component = props.LinkComponent;
+        primaryComponentProps.to = value.path;
+      }
+
+      if (fieldInfo.type === 'href') {
+        PrimaryComponent = Link;
+        primaryComponentProps.href = value;
+      }
+
+      listItemTextPrimary = (
+        <PrimaryComponent {...primaryComponentProps}>
+          {renderValue(value, fieldInfo)}
+        </PrimaryComponent>
+      );
+    }
+  }
+
+  if (!listItemTextPrimary) {
+    return null;
+  }
+
   return (
     <ListItem
       classes={{ root: classes.listItemRoot }}
@@ -130,29 +156,11 @@ function PropertyListItem(props) {
       <ListItemText
         classes={{ root: classes.listItemTextRoot }}
         disableTypography
-        primary={Array.isArray(value) ? (
-          <List
-            disablePadding
-            className={fieldInfo.inline ? classes.inlineNestedList : classes.nestedList}
-          >
-            {renderValue(value, fieldInfo).map((nestedValue, i) => (
-              <ListItem
-                className={classes.nestedListItem}
-                disableGutters
-                key={i}
-              >
-                {nestedValue}
-              </ListItem>
-            ))}
-          </List>
-        ) : (
-          <PrimaryComponent {...primaryComponentProps}>
-            {renderValue(value, fieldInfo)}
-          </PrimaryComponent>
-        )}
+        primary={listItemTextPrimary}
       />
     </ListItem>
   );
+
 }
 
 PropertyListItem.propTypes = {
