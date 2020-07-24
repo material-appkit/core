@@ -7,6 +7,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import AlertManager from '../managers/AlertManager';
@@ -17,8 +18,23 @@ import Form from './Form';
 import Spacer from './Spacer';
 
 const styles = makeStyles((theme) => ({
-  paper: theme.editDialog.paper,
-  dialogContent: theme.editDialog.dialogContent,
+  paper: {
+    minWidth: 320,
+    width: 480,
+    overflow: 'visible',
+  },
+
+  dialogTitle: {
+    margin: 0,
+  },
+
+  dialogTitleHeading: {
+    fontSize: theme.typography.pxToRem(18),
+  },
+
+  dialogContent: {
+    overflow: 'visible',
+  },
 
   deleteButton: {
     color: theme.palette.error.main,
@@ -126,6 +142,7 @@ function EditDialog(props) {
 
 
   const {
+    commitOnEnter,
     FormProps,
     onSave,
     ...rest
@@ -137,14 +154,16 @@ function EditDialog(props) {
     <Dialog
       classes={{ paper: classes.paper }}
       onClose={() => { dismiss(); }}
-      onKeyDown={handleKeyDown}
+      onKeyDown={commitOnEnter ? handleKeyDown : null}
       open
     >
-      <DialogTitle>
-        {title}
+      <DialogTitle className={classes.dialogTitle} disableTypography>
+        <Typography className={classes.dialogTitleHeading}>
+          {title}
+        </Typography>
       </DialogTitle>
 
-      <DialogContent className={classes.dialogContent}>
+      <DialogContent className={classes.dialogContent} dividers>
         <Form
           ref={formRef}
           onLoad={handleFormLoad}
@@ -187,6 +206,7 @@ function EditDialog(props) {
 EditDialog.propTypes = {
   apiDetailUrl: PropTypes.string,
   canDelete: PropTypes.bool,
+  commitOnEnter: PropTypes.bool,
   entityType: PropTypes.string,
   FormProps: PropTypes.object,
   labels: PropTypes.object,
@@ -201,6 +221,7 @@ EditDialog.propTypes = {
 
 EditDialog.defaultProps = {
   canDelete: true,
+  commitOnEnter: true,
   FormProps: {},
   labels: {
     ADD: 'Add',
