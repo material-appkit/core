@@ -4,6 +4,8 @@
 *
 */
 
+import debounce from 'lodash.debounce';
+
 import PropTypes from 'prop-types';
 import React, {
   Fragment,
@@ -21,6 +23,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -29,7 +32,6 @@ import Spacer from '@material-appkit/core/components/Spacer';
 
 import EditDialog from './EditDialog';
 import PagedListView from './PagedListView';
-import TextField from './TextField';
 
 const styles = makeStyles((theme) => ({
   filterFieldContainer: {
@@ -80,28 +82,35 @@ function PagedListViewDialog(props) {
     ...pagedListViewProps
   } = props;
 
-  const [listViewInfo, setListViewInfo] = useState(null);
+  const [listViewConfig, setListViewConfig] = useState(null);
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
   const [filterTerm, setFilterTerm] = useState('');
   const [dialogTitle, setDialogTitle] = useState(null);
 
   const dialogRef = useRef(null);
+  const searchFieldRef = useRef(null);
+
+  const onChangeHandlerRef = useRef(
+    debounce(() => {
+      setFilterTerm(searchFieldRef.current.value);
+    }, 500, { leading: false, trailing: true })
+  );
 
   useEffect(() => {
-    if (listViewInfo) {
+    if (listViewConfig) {
       let title = typeof(props.title) === 'function' ? props.title() : props.title;
       setDialogTitle(title);
     } else {
       setDialogTitle('Loading...');
     }
 
-  }, [listViewInfo]);
+  }, [listViewConfig]);
 
 
   //----------------------------------------------------------------------------
   const commit = () => {
-    const selection = Array.from(listViewInfo.selection);
+    const selection = Array.from(listViewConfig.selection);
     onDismiss(selection);
   };
 
@@ -129,7 +138,7 @@ function PagedListViewDialog(props) {
 
   const handleEditDialogSave = (record) => {
     // Add the newly saved item to the list's selection
-    listViewInfo.extendSelection(record);
+    listViewConfig.extendSelection(record);
   };
 
   //----------------------------------------------------------------------------
@@ -156,9 +165,9 @@ function PagedListViewDialog(props) {
                 {dialogTitle}
               </Typography>
 
-              {(props.selectionMode === 'multiple' && listViewInfo) &&
+              {(props.selectionMode === 'multiple' && listViewConfig) &&
                 <Typography variant="subtitle2" color="textSecondary">
-                  {`${listViewInfo.selection.size} selected`}
+                  {`${listViewConfig.selection.size} selected`}
                 </Typography>
               }
             </Box>
@@ -179,18 +188,18 @@ function PagedListViewDialog(props) {
               <TextField
                 autoFocus
                 fullWidth
+                inputRef={searchFieldRef}
                 margin="dense"
-                onTimeout={(value) => { setFilterTerm(value); }}
-                timeoutDelay={500}
+                onChange={onChangeHandlerRef.current}
                 placeholder="Filter by search term..."
                 variant="outlined"
               />
             </Box>
           }
 
-          {(listViewInfo && listViewInfo.toolbarItems.tabsControl) &&
+          {(listViewConfig && listViewConfig.toolbarItems.tabsControl) &&
             <Box className={classes.tabsControlContainer}>
-              {listViewInfo.toolbarItems.tabsControl}
+              {listViewConfig.toolbarItems.tabsControl}
             </Box>
           }
         </DialogTitle>
@@ -203,7 +212,7 @@ function PagedListViewDialog(props) {
               ...(listItemProps || {}),
               commitOnSelect: props.commitOnSelect,
             }}
-            onConfig={(config) => { setListViewInfo(config); }}
+            onConfig={(config) => { setListViewConfig(config); }}
             onSelectionChange={handleSelectionChange}
             paginated={props.paginated}
             selectionDisabled={false}
@@ -219,8 +228,8 @@ function PagedListViewDialog(props) {
             </Button>
           }
 
-          {(listViewInfo && listViewInfo.toolbarItems.paginationControl) ? (
-            listViewInfo.toolbarItems.paginationControl
+          {(listViewConfig && listViewConfig.toolbarItems.paginationControl) ? (
+            listViewConfig.toolbarItems.paginationControl
           ) : (
             <Spacer />
           )}
@@ -228,7 +237,7 @@ function PagedListViewDialog(props) {
           {!commitOnSelect &&
             <Button
               color="primary"
-              disabled={!(listViewInfo && listViewInfo.selection.size)}
+              disabled={!(listViewConfig && listViewConfig.selection.size)}
               key="commitButton"
               onClick={() => { commit(); }}
             >
@@ -247,10 +256,7 @@ function PagedListViewDialog(props) {
           {...props.editDialogProps}
         />
       }
-
     </Fragment>
-
-
   );
 }
 
