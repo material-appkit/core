@@ -22,20 +22,10 @@ const styles = makeStyles((theme) => {
       height: '100%',
     },
 
-    navBarBreadcrumbsRoot: {
-      flex: 1,
-    },
-
-    navBarBreadcrumbsList: {
-      display: 'grid',
-      gridAutoFlow: 'column',
-      gridAutoColumns: 'minmax(20px, max-content)',
-    },
-
     navBar: {
       borderBottom: `1px solid ${theme.palette.grey[400]}`,
       height: theme.sizes.navigationController.navbarHeight,
-      padding: `0 ${theme.spacing(2)}px`,
+      padding: theme.spacing(0, 2),
     },
 
 
@@ -195,10 +185,6 @@ function NavigationController(props) {
         >
           <Toolbar className={classes.navBar} disableGutters>
             <NavigationControllerBreadcrumbs
-              classes={{
-                root: classes.navBarBreadcrumbsRoot,
-                ol: classes.navBarBreadcrumbsList,
-              }}
               matches={props.matches}
               onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
               separator="›"

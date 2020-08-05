@@ -11,6 +11,16 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = makeStyles((theme) => {
   const defaultNavigationControllerTheme = {
+    navBarBreadcrumbsRoot: {
+      flex: 1,
+    },
+
+    navBarBreadcrumbsList: {
+      display: 'grid',
+      gridAutoFlow: 'column',
+      gridAutoColumns: 'minmax(20px, max-content)',
+    },
+
     breadcrumbButton: {
       minWidth: 'initial',
       maxWidth: '100%',
@@ -41,7 +51,14 @@ function NavigationControllerBreadcrumbs(props) {
   const classes = styles();
 
   return (
-    <Breadcrumbs {...attributes} role="tablist">
+    <Breadcrumbs
+      {...attributes}
+      classes={{
+        root: classes.navBarBreadcrumbsRoot,
+        ol: classes.navBarBreadcrumbsList,
+      }}
+      role="tablist"
+    >
       {matches.map((match, i) => {
         const key = match.path;
 
