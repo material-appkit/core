@@ -44,7 +44,7 @@ const styles = makeStyles((theme) => {
 
 
 function NavigationController(props) {
-  const { matches } = props;
+  const { location, matches } = props;
 
   const theme = useTheme();
   const classes = styles();
@@ -144,6 +144,7 @@ function NavigationController(props) {
     }
   };
 
+
   const viewWillUnmount = (viewController, path) => {
     delete viewControllerMapRef.current[path];
 
@@ -185,6 +186,7 @@ function NavigationController(props) {
         >
           <Toolbar className={classes.navBar} disableGutters>
             <NavigationControllerBreadcrumbs
+              location={location}
               matches={props.matches}
               onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
               separator="›"
@@ -253,6 +255,7 @@ function NavigationController(props) {
 }
 
 NavigationController.propTypes = {
+  location: PropTypes.object.isRequired,
   matches: PropTypes.array.isRequired,
   onViewDidAppear: PropTypes.func,
   onViewDidMount: PropTypes.func,
