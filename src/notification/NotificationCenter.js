@@ -1,5 +1,5 @@
 /**
- * Plagerized verbatim from Cocoa's NSNotificationCenter:
+ * Copied verbatim from Cocoa's NSNotificationCenter:
  *
  * The NotificationCenter class provides a way to send notifications to objects in the same application.
  * It takes Notification objects and broadcasts them to any objects in the same task that have registered

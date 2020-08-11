@@ -1,5 +1,5 @@
 /**
-  * Plagerized verbatim from Cocoa's NSNotification:
+  * Copied verbatim from Cocoa's NSNotification:
   *
  * NSNotification objects encapsulate information so that it can be broadcast to other objects by an NSNotificationCenter object.
  * An NSNotification object (referred to as a notification) contains a name, an object, and an optional dictionary.
