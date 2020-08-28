@@ -22,20 +22,10 @@ const styles = makeStyles((theme) => {
       height: '100%',
     },
 
-    navBarBreadcrumbsRoot: {
-      flex: 1,
-    },
-
-    navBarBreadcrumbsList: {
-      display: 'grid',
-      gridAutoFlow: 'column',
-      gridAutoColumns: 'minmax(20px, max-content)',
-    },
-
     navBar: {
       borderBottom: `1px solid ${theme.palette.grey[400]}`,
       height: theme.sizes.navigationController.navbarHeight,
-      padding: `0 ${theme.spacing(2)}px`,
+      padding: theme.spacing(0, 2),
     },
 
 
@@ -54,7 +44,7 @@ const styles = makeStyles((theme) => {
 
 
 function NavigationController(props) {
-  const { matches } = props;
+  const { location, matches } = props;
 
   const theme = useTheme();
   const classes = styles();
@@ -154,6 +144,7 @@ function NavigationController(props) {
     }
   };
 
+
   const viewWillUnmount = (viewController, path) => {
     delete viewControllerMapRef.current[path];
 
@@ -195,10 +186,7 @@ function NavigationController(props) {
         >
           <Toolbar className={classes.navBar} disableGutters>
             <NavigationControllerBreadcrumbs
-              classes={{
-                root: classes.navBarBreadcrumbsRoot,
-                ol: classes.navBarBreadcrumbsList,
-              }}
+              location={location}
               matches={props.matches}
               onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
               separator="›"
@@ -267,6 +255,7 @@ function NavigationController(props) {
 }
 
 NavigationController.propTypes = {
+  location: PropTypes.object.isRequired,
   matches: PropTypes.array.isRequired,
   onViewDidAppear: PropTypes.func,
   onViewDidMount: PropTypes.func,
