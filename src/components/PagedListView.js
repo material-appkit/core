@@ -633,6 +633,7 @@ function PagedListView(props) {
 
       ServiceAgent.get(requestUrl, requestParams, requestContext)
         .then((response) => {
+          setFetchRequestContext(null);
           if (response === null) {
             return;
           }
@@ -647,11 +648,10 @@ function PagedListView(props) {
           resolve({ items: loadedItems, response });
         })
         .catch((err) => {
+          setFetchRequestContext(null);
           setPaginationInfo(null);
           reject(err);
-        }).finally(() => {
-          setFetchRequestContext(null);
-      });
+        });
     });
   };
 
