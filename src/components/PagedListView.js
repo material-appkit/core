@@ -445,9 +445,8 @@ function PagedListView(props) {
     return (() => {
       // When the component is being unmounted,
       // abort the current fetch request if it is in flight.
-      if (fetchRequestContext) {
-        const inFlightRequest = fetchRequestContext.request;
-        inFlightRequest.abort();
+      if (fetchRequestContext && fetchRequestContext.abortController) {
+        fetchRequestContext.abortController.abort();
       }
     });
   }, []);
@@ -625,9 +624,8 @@ function PagedListView(props) {
   // ---------------------------------------------------------------------------
   const fetchItems = (requestUrl, requestParams) => {
     return new Promise((resolve, reject) => {
-      if (fetchRequestContext) {
-        const inFlightRequest = fetchRequestContext.request;
-        inFlightRequest.abort();
+      if (fetchRequestContext && fetchRequestContext.abortController) {
+        fetchRequestContext.abortController.abort();
       }
 
       const requestContext = {};
@@ -635,7 +633,6 @@ function PagedListView(props) {
 
       ServiceAgent.get(requestUrl, requestParams, requestContext)
         .then((response) => {
-          setFetchRequestContext(null);
           if (response === null) {
             return;
           }
@@ -650,10 +647,11 @@ function PagedListView(props) {
           resolve({ items: loadedItems, response });
         })
         .catch((err) => {
-          setFetchRequestContext(null);
           setPaginationInfo(null);
           reject(err);
-        });
+        }).finally(() => {
+          setFetchRequestContext(null);
+      });
     });
   };
 
