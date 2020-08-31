@@ -147,17 +147,18 @@ class Form extends React.PureComponent {
 
 
   initialData(metadata, referenceObject) {
-    const data = {};
+    const initialData = {};
 
     const fieldNames = getFieldNames(metadata, this.props.fieldArrangement);
-    const fieldMetadata = getFieldMetadataMap(metadata);
+    const fieldMetadataMap = getFieldMetadataMap(metadata);
 
     fieldNames.forEach((fieldName) => {
-      const fieldInfo = fieldMetadata[fieldName];
-      data[fieldName] = fromRepresentation(referenceObject[fieldName], fieldInfo);
+      const fieldMetadata = fieldMetadataMap[fieldName];
+      const value = referenceObject[fieldName];
+      initialData[fieldName] = fromRepresentation(value, fieldMetadata, this);
     });
 
-    return cloneDeep(data);
+    return cloneDeep(initialData);
   }
 
 

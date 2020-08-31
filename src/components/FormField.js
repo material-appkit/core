@@ -35,8 +35,13 @@ const getWidgetLabel = (fieldInfo) => {
 };
 
 //------------------------------------------------------------------------------
-export const fromRepresentation = (value, fieldInfo) => {
+export const fromRepresentation = (value, fieldInfo, form) => {
   const widgetType = getWidgetType(fieldInfo);
+
+  const WidgetClass = form.constructor.widgetClassForType(widgetType);
+  if (WidgetClass && WidgetClass.hasOwnProperty('fromRepresentation')) {
+    return WidgetClass.fromRepresentation(value, fieldInfo);
+  }
 
   switch (widgetType) {
     case 'itemlist':
