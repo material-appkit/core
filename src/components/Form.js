@@ -49,11 +49,7 @@ export const getFieldNames = (metadata, fieldArrangement) => {
 };
 
 export const getFieldMetadataMap = (metadata) => {
-  if (!metadata) {
-    return null;
-  }
-
-  return arrayToObject(metadata, 'key');
+  return metadata ? arrayToObject(metadata, 'key') : null;
 };
 
 //------------------------------------------------------------------------------
@@ -65,13 +61,16 @@ class Form extends React.PureComponent {
     'radiogroup': RadioGroupWidget,
   };
 
+
   static registerWidgetClass(widgetType, WidgetClass) {
     this.widgetClassMap[widgetType] = WidgetClass;
   }
 
+
   static widgetClassForType(widgetType) {
     return widgetType ? this.widgetClassMap[widgetType] : null;
   }
+
 
   constructor(props) {
     super(props);
@@ -90,6 +89,7 @@ class Form extends React.PureComponent {
     this.formRef = React.createRef();
   }
 
+
   componentDidMount() {
     this.load();
 
@@ -97,6 +97,7 @@ class Form extends React.PureComponent {
       this.props.onMount(this);
     }
   }
+
 
   componentWillUnmount() {
     if (this.props.onUnmount) {
@@ -116,6 +117,7 @@ class Form extends React.PureComponent {
       });
     }
   }
+
 
   get detailUrl() {
     const {
@@ -182,14 +184,17 @@ class Form extends React.PureComponent {
     return coercedData;
   }
 
+
   setValues = (values) => {
-    const formData = {...this.state.formData, ...values };
-    this.setState({ formData });
+    const updatedFormData = {...this.state.formData, ...values };
+    this.setState({ formData: updatedFormData });
   };
+
 
   setValue = (fieldName, value) => {
     this.setValues({ [fieldName]: value });
   };
+
 
   load = async() => {
     this.setState({ loading: true });
@@ -202,7 +207,6 @@ class Form extends React.PureComponent {
     } = this.props;
 
     let referenceObject = persistedObject;
-    let metadata = null;
     const requests = [];
 
     // Issue an OPTIONS request for metadata about the represented object
@@ -229,7 +233,7 @@ class Form extends React.PureComponent {
 
     const responses = await(Promise.all(requests));
 
-    metadata = responses[0].jsonData;
+    const metadata = responses[0].jsonData;
     if (responses.length > 1) {
       referenceObject = responses[1].jsonData;
     }
@@ -250,6 +254,7 @@ class Form extends React.PureComponent {
       onLoad(referenceObject, getFieldMetadataMap(metadata));
     }
   };
+
 
   save = async() => {
     const { updateMethod } = this.props;
@@ -293,18 +298,18 @@ class Form extends React.PureComponent {
       }
 
       const response = await ServiceAgent.request(requestMethod, this.requestUrl, requestData);
-      const persistedObject = response.jsonData;
+      const updatedObject = response.jsonData;
 
       this.setState({
         saving: false,
-        referenceObject: persistedObject,
+        referenceObject: updatedObject,
       });
 
       if (this.props.onSave) {
-        this.props.onSave(persistedObject, response);
+        this.props.onSave(updatedObject, response);
       }
 
-      return persistedObject;
+      return updatedObject;
     } catch (err) {
       this.setState({
         saving: false,
@@ -316,6 +321,7 @@ class Form extends React.PureComponent {
       }
     }
   };
+
 
   handleFormSubmit = (e) => {
     e.preventDefault();
@@ -330,6 +336,7 @@ class Form extends React.PureComponent {
 
     this.save();
   };
+
 
   /**
    * Whenever a value in the form changes, if the form has been configured to
@@ -353,6 +360,7 @@ class Form extends React.PureComponent {
     }
   };
 
+
   /**
    * Callback fired when a form field's value changes.
    * For the moment its only effect is to clear the respective field error.
@@ -361,7 +369,12 @@ class Form extends React.PureComponent {
     const updatedErrors = { ...this.state.errors };
     delete updatedErrors[fieldInfo.key];
     this.setState({ errors: updatedErrors });
+
+    if (this.props.onFieldChange) {
+      this.props.onFieldChange(value, fieldInfo);
+    }
   };
+
 
   render() {
     if (this.state.loading || !this.state.referenceObject) {
@@ -400,6 +413,7 @@ Form.propTypes = {
   FieldSetComponent: PropTypes.func,
   fieldArrangement: PropTypes.array,
   fieldInfoProvider: PropTypes.func,
+  onFieldChange: PropTypes.func,
   onConfig: PropTypes.func,
   onError: PropTypes.func,
   onLoad: PropTypes.func,
