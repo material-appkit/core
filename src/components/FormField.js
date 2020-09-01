@@ -141,10 +141,6 @@ function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
     variant: "outlined",
   };
 
-  if (fieldIndex === 0) {
-    textFieldProps.autoFocus = true;
-  }
-
   if (fieldInfo.choices) {
     textFieldProps.select = true;
     textFieldProps.SelectProps = { native: true };
