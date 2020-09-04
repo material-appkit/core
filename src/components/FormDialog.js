@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
@@ -12,21 +13,20 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
+import Spacer from './Spacer';
+
 import ServiceAgent from '../util/ServiceAgent';
 import { formToObject } from '../util/form';
 import { titleCase } from '../util/string';
 
 const styles = makeStyles((theme) => ({
-  activityIndicatorContainer: {
-    alignItems: 'center',
-    display: 'flex',
-    marginLeft: theme.spacing(2),
-    marginRight: 'auto',
-  },
-
   activityLabel: {
     marginLeft: 8,
-  }
+  },
+
+  deleteButton: {
+    color: theme.palette.error.main,
+  },
 }));
 
 function FormDialog(props) {
@@ -58,6 +58,40 @@ function FormDialog(props) {
     }
   };
 
+  const handleDeleteButtonClick = async() => {
+    setLoading(true);
+    props.onDelete().then(() => {
+      props.onDismiss(null);
+    }).catch((err) => {
+      setLoading(false);
+
+      if (props.onError) {
+        props.onError(err);
+      }
+    });
+  };
+
+  let leftActionControl  = null;
+  if (loading) {
+    leftActionControl = (
+      <Box display="flex" alignItems="center" paddingLeft={1}>
+        <CircularProgress size={20} />
+        <Typography className={classes.activityLabel} variant="subtitle2">
+          {props.activityLabel}
+        </Typography>
+      </Box>
+    );
+  } else if (props.onDelete) {
+    leftActionControl = (
+      <Button
+        className={classes.deleteButton}
+        onClick={handleDeleteButtonClick}
+      >
+        {props.deleteButtonTitle}
+      </Button>
+    )
+  }
+
   return (
     <Dialog
       disableBackdropClick
@@ -76,17 +110,19 @@ function FormDialog(props) {
       </DialogTitle>
 
       <DialogContent dividers>
-        <DialogContentText>
-          {props.contentText}
-        </DialogContentText>
+        {props.contentText &&
+          <DialogContentText>
+            {props.contentText}
+          </DialogContentText>
+        }
 
         {props.fieldArrangement.map((fieldInfo) => {
           let textFieldProps = fieldInfo;
           if (typeof(fieldInfo) === 'string') {
             textFieldProps = {
+              label: titleCase(fieldInfo),
               name: fieldInfo,
               type: 'text',
-              label: titleCase(fieldInfo),
             }
           }
 
@@ -98,8 +134,9 @@ function FormDialog(props) {
 
           return (
             <TextField
-              key={fieldName}
               fullWidth
+              key={fieldName}
+              margin="dense"
               {...textFieldProps}
             />
           );
@@ -107,16 +144,11 @@ function FormDialog(props) {
       </DialogContent>
 
       <DialogActions>
-        {loading &&
-        <div className={classes.activityIndicatorContainer}>
-          <CircularProgress size={20} />
-          <Typography className={classes.activityLabel} variant="subtitle2">
-            {props.activityLabel}
-          </Typography>
-        </div>
-        }
+        {leftActionControl}
 
-        <Button onClick={() => { props.onDismiss(null); }}>
+        <Spacer />
+
+        <Button onClick={() => props.onDismiss(null)}>
           {props.cancelButtonTitle}
         </Button>
 
@@ -137,6 +169,7 @@ FormDialog.propTypes = {
   cancelButtonTitle: PropTypes.string,
   commitButtonTitle: PropTypes.string,
   contentText: PropTypes.string,
+  onDelete: PropTypes.func,
   fieldArrangement: PropTypes.array.isRequired,
   endpoint: PropTypes.string,
   onDismiss: PropTypes.func.isRequired,
@@ -149,7 +182,8 @@ FormDialog.propTypes = {
 FormDialog.defaultProps = {
   activityLabel: 'Working...',
   cancelButtonTitle: 'Cancel',
-  commitButtonTitle: 'Done',
+  commitButtonTitle: 'Save',
+  deleteButtonTitle: 'Delete',
   maxWidth: 'sm',
 };
 
