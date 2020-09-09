@@ -4,6 +4,8 @@
 *
 */
 
+import classNames from 'classnames';
+
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
 
@@ -11,10 +13,32 @@ import Checkbox from '@material-ui/core/Checkbox';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Radio from '@material-ui/core/Radio';
+import { makeStyles } from '@material-ui/core/styles';
 
 import ContextMenuButton from './ContextMenuButton';
 
 import { useInit } from '../util/hooks';
+
+
+const styles = makeStyles((theme) => ({
+  selectionControl: {
+    marginRight: theme.spacing(0.5),
+    padding: theme.spacing(1),
+  },
+
+  secondaryAction: {
+    paddingRight: 36,
+  },
+
+  listItemSecondaryAction: {
+    right: 6,
+  },
+
+  listItemSecondaryActionTop: {
+    top: 0,
+    transform: 'translateY(50%)',
+  },
+}));
 
 // -----------------------------------------------------------------------------
 export const listItemProps = (props) => {
@@ -38,8 +62,12 @@ export const commonPropTypes = {
 
 // -----------------------------------------------------------------------------
 function VirtualizedListItem(props) {
+  const classes = styles();
+
   const {
+    className,
     commitOnSelect,
+    secondaryActionPlacement,
     contextMenuItemArrangement,
     item,
     onItemClick,
@@ -49,6 +77,7 @@ function VirtualizedListItem(props) {
     selectionMode,
     selectionDisabled,
     selectOnClick,
+    secondaryActionControl,
     ...rest
   } = props;
 
@@ -65,7 +94,14 @@ function VirtualizedListItem(props) {
   });
 
 
-  const listItemProps = { ref: listItemRef, ...rest };
+  const listItemProps = {
+    classes: {
+      root: className,
+      secondaryAction: classes.secondaryAction,
+    },
+    ref: listItemRef,
+    ...rest
+  };
 
   if (props.to) {
     listItemProps.button = true;
@@ -117,14 +153,27 @@ function VirtualizedListItem(props) {
   }
 
   let secondaryListItemAction = null;
-  if (contextMenuItemArrangement) {
-    secondaryListItemAction = (
-      <ListItemSecondaryAction>
+  if (secondaryActionControl || contextMenuItemArrangement) {
+    let secondaryListItemActionContent = null;
+    const secondaryListItemClasses = [classes.listItemSecondaryAction];
+    if (secondaryActionPlacement === 'top') {
+      secondaryListItemClasses.push(classes.listItemSecondaryActionTop);
+    }
+
+    if (secondaryActionControl) {
+      secondaryListItemActionContent = secondaryActionControl;
+    } else {
+      secondaryListItemActionContent = (
         <ContextMenuButton
-          buttonProps={{ edge: 'end' }}
+          buttonProps={{ size: 'small' }}
           representedObject={item}
           menuItemArrangement={contextMenuItemArrangement(item)}
         />
+      );
+    }
+    secondaryListItemAction = (
+      <ListItemSecondaryAction className={classNames(secondaryListItemClasses)}>
+        {secondaryListItemActionContent}
       </ListItemSecondaryAction>
     );
   }
@@ -134,10 +183,10 @@ function VirtualizedListItem(props) {
       {SelectionComponent !== null &&
         <SelectionComponent
           checked={props.selected}
+          className={classes.selectionControl}
           disableRipple
           edge="start"
           onClick={handleSelectionControlClick}
-          style={{ padding: 8, marginRight: 8 }}
         />
       }
       {props.children}
@@ -149,6 +198,8 @@ function VirtualizedListItem(props) {
 
 VirtualizedListItem.propTypes = {
   children: PropTypes.node,
+  secondaryActionControl: PropTypes.element,
+  secondaryActionPlacement: PropTypes.string,
   contextMenuItemArrangement: PropTypes.func,
   item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
   onItemClick: PropTypes.func,
