@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import ListItemText from '@material-ui/core/ListItemText';
+import { valueForKeyPath } from '../util/object';
 
 import VirtualizedListItem, {
   listItemProps,
@@ -11,23 +12,31 @@ import VirtualizedListItem, {
 
 // -----------------------------------------------------------------------------
 function SimpleListItem(props) {
-  const { labelField, ...rest } = props;
+  const { primaryField, secondaryField, ...rest } = props;
 
   let primary = null;
-  if (typeof(labelField) === 'function') {
-    primary = labelField(props.item);
+  if (typeof(primaryField) === 'function') {
+    primary = primaryField(props.item);
   } else {
-    primary = props.item[labelField];
+    primary = valueForKeyPath(props.item, primaryField);
+  }
+
+  let secondary = null;
+  if (typeof(secondaryField) === 'function') {
+    secondary = secondaryField(props.item);
+  } else {
+    secondary = valueForKeyPath(props.item, secondaryField);
   }
 
   return (
     <VirtualizedListItem {...listItemProps(rest)}>
-      <ListItemText primary={primary} />
+      <ListItemText primary={primary} secondary={secondary} />
     </VirtualizedListItem>
   );
 }
 SimpleListItem.propTypes = {
-  labelField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+  primaryField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+  secondaryField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   ...commonPropTypes,
 };
 
