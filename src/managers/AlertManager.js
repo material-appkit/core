@@ -91,7 +91,10 @@ class AlertManager extends React.Component {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">{alertInfo.title}</DialogTitle>
+          <DialogTitle id="alert-dialog-title">
+            {alertInfo.title}
+          </DialogTitle>
+
           <DialogContent>
             {alertInfo.description &&
               <DialogContentText id="alert-dialog-description">

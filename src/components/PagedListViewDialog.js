@@ -161,7 +161,7 @@ function PagedListViewDialog(props) {
         <DialogTitle className={classes.dialogTitle} disableTypography>
           <Box className={classes.dialogTitleContent}>
             <Box flex="1">
-              <Typography component="h2" variant="h6">
+              <Typography variant="h4">
                 {dialogTitle}
               </Typography>
 
@@ -172,7 +172,7 @@ function PagedListViewDialog(props) {
               }
             </Box>
 
-            <IconButton onClick={() => { onDismiss(null); }} edge="end">
+            <IconButton onClick={() => onDismiss(null)} edge="end">
               <CloseIcon />
             </IconButton>
           </Box>
