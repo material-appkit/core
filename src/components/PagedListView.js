@@ -385,6 +385,14 @@ function PagedListView(props) {
    */
   const removeItem = (item) => {
     const sourceItemIndex = findItemIndex(item);
+
+    if (selection.has(item)) {
+      // Remove the item from selection if present
+      const newSelection = new Set(selection);
+      newSelection.delete(item);
+      setSelection(newSelection);
+    }
+
     if (sourceItemIndex === -1) {
       // This situation is most likely to occur when a record has been updated
       // that is not within the loaded page
@@ -599,7 +607,6 @@ function PagedListView(props) {
 
   const handleItemUpdate = (change) => {
     if (change.old && change.new === null) {
-      console.log('TODO: Remove items from selection if they were removed from the list');
       removeItem(change.old);
     } else if (change.old === null && change.new) {
       addItem(change.new);
