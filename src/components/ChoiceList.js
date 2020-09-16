@@ -79,7 +79,7 @@ ChoiceListItem.propTypes = {
 // -----------------------------------------------------------------------------
 function ChoiceList(props) {
   const { choices, value, variant } = props;
-  const [fieldValueLabel, setFieldValueLabel] = useState('Any');
+  const [fieldValueLabel, setFieldValueLabel] = useState(null);
   const [selection, setSelection] = useState(new Set());
 
   useEffect(() => {

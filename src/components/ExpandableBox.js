@@ -84,7 +84,7 @@ ExpandableBox.propTypes = {
 };
 
 ExpandableBox.defaultProps = {
-  defaultExpanded: true,
+  defaultExpanded: false,
 };
 
 export default ExpandableBox;
