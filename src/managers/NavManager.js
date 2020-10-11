@@ -4,7 +4,6 @@ import { createBrowserHistory } from 'history';
 import { isSet } from '../util/value';
 
 class NavManager {
-  static routerStore = null;
   static history = null;
 
   static initialize(options) {
