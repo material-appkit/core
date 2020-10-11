@@ -1,6 +1,5 @@
 import qs from 'query-string';
 import { createBrowserHistory } from 'history';
-import { RouterStore, syncHistoryWithStore } from 'mobx-react-router';
 
 import { isSet } from '../util/value';
 
@@ -9,23 +8,22 @@ class NavManager {
   static history = null;
 
   static initialize(options) {
-    this.routerStore = new RouterStore();
-    this.history = syncHistoryWithStore(
-      createBrowserHistory({ basename: options.basename || process.env.REACT_APP_URL_BASENAME }),
-      this.routerStore
-    );
+    const historyBaseName = options.basename || process.env.REACT_APP_URL_BASENAME;
+    this.history = createBrowserHistory({ basename: historyBaseName });
   }
+
+  static get currentLocation() {
+    return this.history.location;
+  }
+
 
   /**
    * Return an object representation of the current query string
    */
   static get qsParams() {
-    return qs.parse(this.routerStore.location.search);
+    return qs.parse(this.currentLocation.search);
   }
 
-  static get currentLocation() {
-    return this.routerStore.location;
-  }
 
   static reloadWindow() {
     window.location.reload();
@@ -38,7 +36,8 @@ class NavManager {
    * @param replace If set, replace the topmost URL in the history stack. Else push a new one.
    */
   static setUrlParams(params, pathname, replace, state) {
-    const qsParams = params || qs.parse(this.routerStore.location.search);
+    const currentLocation = this.currentLocation;
+    const qsParams = params || qs.parse(currentLocation.search);
 
     // Filter out any null/undefined parameters
     const filteredParams = {};
@@ -49,14 +48,14 @@ class NavManager {
       }
     });
 
-    const currentPathname = this.routerStore.location.pathname;
+    const currentPathname = currentLocation.pathname;
     const querystring = qs.stringify(filteredParams);
     const url = `${pathname || currentPathname}?${querystring}`;
 
     if (replace) {
-      this.routerStore.history.replace(url, state);
+      this.history.replace(url, state);
     } else {
-      this.routerStore.history.push(url, state);
+      this.history.push(url, state);
     }
   }
 
@@ -95,7 +94,7 @@ class NavManager {
   }
 
   static goBack() {
-    this.routerStore.history.goBack();
+    this.history.goBack();
   }
 }
 
