@@ -1,13 +1,7 @@
-/**
-*
-* AlertManager
-*
-*/
+import classNames from 'classnames';
 
+import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
-
-import { observable } from 'mobx';
-import { observer } from 'mobx-react';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -15,115 +9,193 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import ErrorIcon from '@material-ui/icons/Error';
+import HelpIcon from '@material-ui/icons/Help';
+import InfoIcon from '@material-ui/icons/Info';
+import WarningIcon from '@material-ui/icons/Warning';
 
-class AlertManager extends React.Component {
-  static queue = observable.map();
+const TITLE_ICON_MAP = {
+  'confirm': HelpIcon,
+  'error': ErrorIcon,
+  'info': InfoIcon,
+  'warn': WarningIcon,
+};
 
-  static alert(alertInfo, type) {
-    alertInfo.ALERT_TYPE = type;
-    const key = new Date().getTime();
-    this.queue.set(key, alertInfo);
+const alertStyles = makeStyles((theme) => ({
+  dialogContent: {
+    display: 'flex',
+    padding: theme.spacing(1, 2),
+  },
+
+  dialogTitleHeading: {
+    fontSize: theme.typography.pxToRem(18),
+  },
+
+  dialogContentText: {
+    fontSize: theme.typography.pxToRem(16),
+    marginTop: theme.spacing(1),
+  },
+
+  titleIcon: {
+    fontSize: theme.typography.pxToRem(40),
+    marginRight: theme.spacing(1),
+
+    '&.info': theme.mixins.status.infoColor,
+    '&.warn': theme.mixins.status.warningColor,
+    '&.error': theme.mixins.status.errorColor,
+  },
+}));
+
+function AlertDialog({ alertInfo, onDismiss }) {
+  const classes = alertStyles();
+
+  const cancel = () => {
+    onDismiss(false, alertInfo);
+  };
+
+  const commit = () => {
+    onDismiss(true, alertInfo);
+  };
+
+  const handleEscapeKeyDown = () => {
+    if (alertInfo.type === 'confirm') {
+      cancel();
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      commit();
+    }
+  };
+
+  const TitleIcon = TITLE_ICON_MAP[alertInfo.type];
+
+  return (
+    <Dialog
+      disableBackdropClick
+      fullWidth={true}
+      maxWidth='sm'
+      open
+      onKeyPress={handleKeyPress}
+      onEscapeKeyDown={handleEscapeKeyDown}
+    >
+      {alertInfo.title &&
+        <DialogTitle disableTypography>
+          <Typography component="h2" className={classes.dialogTitleHeading}>
+            {alertInfo.title}
+          </Typography>
+        </DialogTitle>
+      }
+
+      <DialogContent className={classes.dialogContent}>
+        <TitleIcon className={classNames([classes.titleIcon, alertInfo.type])} />
+
+        {alertInfo.description &&
+          <DialogContentText className={classes.dialogContentText}>
+            {alertInfo.description}
+          </DialogContentText>
+        }
+      </DialogContent>
+
+      <DialogActions>
+        {alertInfo.type === 'confirm' &&
+          <Button
+            onClick={() => cancel()}
+          >
+            {alertInfo.cancelButtonTitle || 'Cancel'}
+          </Button>
+        }
+
+        <Button
+          color="primary"
+          onClick={() => commit()}
+        >
+          {alertInfo.confirmButtonTitle || 'OK'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
+AlertDialog.propTypes = {
+  alertInfo: PropTypes.object.isRequired,
+  onDismiss: PropTypes.func.isRequired,
+};
+
+// -----------------------------------------------------------------------------
+
+class AlertManager extends React.PureComponent {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      queue: new Map()
+    };
+
+    AlertManager.__instance = this;
+  }
+
+  static enqueueAlert(alertInfo, type) {
+    AlertManager.__instance.__enqueueAlert({
+      ...alertInfo,
+      type,
+      key:new Date().getTime()
+    });
   }
 
   static info(alertInfo) {
-    this.alert(alertInfo, 'info');
+    this.enqueueAlert(alertInfo, 'info');
+  }
+
+  static warn(alertInfo) {
+    this.enqueueAlert(alertInfo, 'warn');
+  }
+
+  static error(alertInfo) {
+    this.enqueueAlert(alertInfo, 'error');
   }
 
   static confirm(alertInfo) {
-    this.alert(alertInfo, 'confirm');
+    this.enqueueAlert(alertInfo, 'confirm');
   }
 
-  static prompt(alertInfo) {
-    this.alert(alertInfo, 'prompt');
-  }
+  // ---------------------------------------------------------------------------
 
-  static async dismiss(key, value) {
-    const alertInfo = this.queue.get(key);
-    if (alertInfo.onDismiss) {
-      let returnValue = value;
-      if (typeof(returnValue) === 'function') {
-        returnValue = returnValue();
-      }
-      await alertInfo.onDismiss(returnValue);
+  __enqueueAlert = (alertInfo) => {
+    const updatedQueue = new Map(this.state.queue);
+    updatedQueue.set(alertInfo.key, alertInfo);
+    this.setState({ queue: updatedQueue });
+  };
+
+
+  handleAlertDialogDismiss = (value, alertInfo) => {
+    if (typeof(alertInfo.onDismiss) === 'function') {
+      alertInfo.onDismiss(value);
     }
-    this.queue.delete(key);
-  }
+
+    const updatedQueue = new Map(this.state.queue);
+    updatedQueue.delete(alertInfo.key);
+    this.setState({ queue: updatedQueue });
+  };
 
 
   render() {
     const dialogs = [];
-
-    AlertManager.queue.forEach((alertInfo, key) => {
-      const alertType = alertInfo.ALERT_TYPE;
-      let commitValue = true;
-
-      let promptField = null;
-      if (alertType === 'prompt') {
-        const promptFieldRef = React.createRef();
-        promptField = (
-          <TextField
-            autoFocus
-            inputRef={promptFieldRef}
-            margin="dense"
-            label={alertInfo.label}
-            fullWidth
-          />
-        );
-        commitValue = () => {
-          return promptFieldRef.current.value;
-        };
-      }
-
-      const handleKeyPress = (e) => {
-        if (e.key === 'Enter') {
-          AlertManager.dismiss(key, commitValue);
-        }
-      };
-
-      dialogs.push((
-        <Dialog
-          key={key}
-          fullWidth={true}
-          maxWidth='sm'
-          open
-          onKeyPress={handleKeyPress}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {alertInfo.title}
-          </DialogTitle>
-
-          <DialogContent>
-            {alertInfo.description &&
-              <DialogContentText id="alert-dialog-description">
-                {alertInfo.description}
-              </DialogContentText>
-            }
-            {promptField}
-          </DialogContent>
-
-          <DialogActions>
-            {alertInfo.ALERT_TYPE !== 'info' &&
-              <Button onClick={() => { AlertManager.dismiss(key, false); }}>
-                {alertInfo.cancelButtonTitle || 'Cancel'}
-              </Button>
-            }
-
-            <Button
-              color="primary"
-              onClick={() => { AlertManager.dismiss(key, commitValue); }}
-            >
-              {alertInfo.confirmButtonTitle || 'OK'}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      ));
+    this.state.queue.forEach((alertInfo) => {
+      dialogs.push(
+        <AlertDialog
+          alertInfo={alertInfo}
+          key={alertInfo.key}
+          onDismiss={this.handleAlertDialogDismiss}
+        />
+      );
     });
 
     return dialogs;
   }
 }
 
-export default observer(AlertManager);
+export default AlertManager;
