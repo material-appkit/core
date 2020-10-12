@@ -53,6 +53,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "mobx": "^5.15.4",
     "mobx-react": "^6.3.0",
+    "notistack": "^1.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
