@@ -1,10 +1,17 @@
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, {
+  Fragment,
+  Suspense,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import { Route } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
@@ -28,10 +35,13 @@ const styles = makeStyles((theme) => {
       padding: theme.spacing(0, 2),
     },
 
-
     toolBar: {
       borderBottom: `1px solid ${theme.palette.grey[400]}`,
       height: theme.sizes.navigationController.toolbarHeight,
+    },
+
+    loadingProgressBar: {
+      height: 2,
     },
   };
 
@@ -232,20 +242,24 @@ function NavigationController(props) {
               style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
               key={routeInfo.path}
             >
-              <Route
-                key={routeInfo.path}
-                path={routeInfo.path}
-                render={(props) => (
-                  <routeInfo.component
-                    {...props}
-                    {...componentProps}
-                    onMount={viewDidMount}
-                    onUnmount={viewWillUnmount}
-                    onUpdate={viewDidUpdate}
-                    mountPath={routeInfo.path}
-                  />
-                )}
-              />
+              <Suspense
+                fallback={<LinearProgress className={classes.loadingProgressBar} />}
+              >
+                <Route
+                  key={routeInfo.path}
+                  path={routeInfo.path}
+                  render={(props) => (
+                    <routeInfo.component
+                      {...props}
+                      {...componentProps}
+                      onMount={viewDidMount}
+                      onUnmount={viewWillUnmount}
+                      onUpdate={viewDidUpdate}
+                      mountPath={routeInfo.path}
+                    />
+                  )}
+                />
+              </Suspense>
             </div>
           );
         })}
