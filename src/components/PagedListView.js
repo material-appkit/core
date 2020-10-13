@@ -710,17 +710,17 @@ function PagedListView(props) {
     fetchItems(props.src, requestParams)
       .then((fetchItemsResult) => {
         let updatedItems = fetchItemsResult.items;
-  
+
         // If a transformer has been supplied, apply it to the newly assigned records.
         if (props.itemTransformer) {
           updatedItems = updatedItems.map(props.itemTransformer);
         }
-  
+
         itemHeights.current = new Array(updatedItems.length).fill(0);
-  
+
         setItems(updatedItems);
         setLoadError(null);
-  
+
         if (props.onLoadComplete) {
           props.onLoadComplete(updatedItems, fetchItemsResult.response);
         }

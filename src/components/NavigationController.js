@@ -27,6 +27,7 @@ const styles = makeStyles((theme) => {
 
     viewControllerContainer: {
       height: '100%',
+      overflow: 'auto',
     },
 
     navBar: {
