@@ -68,7 +68,11 @@ function NavigationController(props) {
 
 
   useEffect(() => {
-    setSelectedIndex(matches.length - 1);
+    if (matches.length) {
+      setSelectedIndex(matches.length - 1);
+    } else {
+      setSelectedIndex(null);
+    }
   }, [matches]);
 
 
