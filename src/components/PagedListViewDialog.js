@@ -49,11 +49,16 @@ const styles = makeStyles((theme) => ({
     padding: 0,
   },
 
-  dialogTitleContent: {
+  dialogTitleContentContainer: {
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
-    padding: `${theme.spacing(0.5)}px ${theme.spacing(2)}px`,
+    padding: theme.spacing(0.5, 2),
+  },
+
+  dialogTitleContent: {
+    fontSize: theme.typography.pxToRem(20),
+    fontWeight: 500,
   },
 
   dialogContent: {
@@ -159,9 +164,9 @@ function PagedListViewDialog(props) {
         {...dialogProps}
       >
         <DialogTitle className={classes.dialogTitle} disableTypography>
-          <Box className={classes.dialogTitleContent}>
+          <Box className={classes.dialogTitleContentContainer}>
             <Box flex="1">
-              <Typography variant="h4">
+              <Typography component="h3" className={classes.dialogTitleContent}>
                 {dialogTitle}
               </Typography>
 
