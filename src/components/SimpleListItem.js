@@ -15,17 +15,21 @@ function SimpleListItem(props) {
   const { primaryField, secondaryField, ...rest } = props;
 
   let primary = null;
-  if (typeof(primaryField) === 'function') {
-    primary = primaryField(props.item);
-  } else {
-    primary = valueForKeyPath(props.item, primaryField);
+  if (primaryField) {
+    if (typeof(primaryField) === 'function') {
+      primary = primaryField(props.item);
+    } else {
+      primary = valueForKeyPath(props.item, primaryField);
+    }
   }
 
   let secondary = null;
-  if (typeof(secondaryField) === 'function') {
-    secondary = secondaryField(props.item);
-  } else {
-    secondary = valueForKeyPath(props.item, secondaryField);
+  if (secondaryField) {
+    if (typeof(secondaryField) === 'function') {
+      secondary = secondaryField(props.item);
+    } else {
+      secondary = valueForKeyPath(props.item, secondaryField);
+    }
   }
 
   return (
