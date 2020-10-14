@@ -179,9 +179,14 @@ SelectionControl.propTypes = {
 //------------------------------------------------------------------------------
 function PagedListView(props) {
   const qsParams = props.qsParams || {};
+  const {
+    pageParamName,
+    pageSizeParamName,
+    windowed,
+  } = props;
 
-  const qsPageParam = qsParams[props.pageParamName] ? parseInt(qsParams[props.pageParamName]) : 1;
-  const qsPageSizeParam = qsParams[props.pageSizeParamName] ? parseInt(qsParams[props.pageSizeParamName]) : null;
+  const qsPageParam = qsParams[pageParamName] ? parseInt(qsParams[pageParamName]) : 1;
+  const qsPageSizeParam = qsParams[pageSizeParamName] ? parseInt(qsParams[pageSizeParamName]) : null;
 
   const [filterParams, setFilterParams] = useState(null);
   const [items, setItems] = useState(null);
@@ -201,9 +206,6 @@ function PagedListView(props) {
   const [fetchRequestContext, setFetchRequestContext] = useState(null);
 
   const [measuring, setMeasuring] = useState(false);
-  const [viewWidth, setViewWidth] = useState(0);
-  const [viewHeight, setViewHeight] = useState(0);
-
   const itemHeights = useRef(null);
 
   // Derived properties
@@ -492,7 +494,7 @@ function PagedListView(props) {
 
       // When the default filter params change, reset to page 1
       if (filterParams) {
-        const keysToExclude = [props.pageParamName, props.pageSizeParamName, props.orderParamName];
+        const keysToExclude = [pageParamName, pageSizeParamName, props.orderParamName];
         const currentDefaultFilterParams = filterExcludeKeys(filterParams, keysToExclude);
         if (!isEqual(params, currentDefaultFilterParams)) {
           pageIndex = 1;
@@ -502,13 +504,13 @@ function PagedListView(props) {
       if (props.location) {
         const updatedQueryParams = {};
         if (pageIndex !== qsPageParam) {
-          updatedQueryParams[props.pageParamName] = pageIndex;
+          updatedQueryParams[pageParamName] = pageIndex;
         }
         if (pageSize !== qsPageSizeParam) {
           // When the page size changes, reset to page 1
           pageIndex = 1;
-          updatedQueryParams[props.pageParamName] = pageIndex;
-          updatedQueryParams[props.pageSizeParamName] = pageSize;
+          updatedQueryParams[pageParamName] = pageIndex;
+          updatedQueryParams[pageSizeParamName] = pageSize;
         }
 
         if (props.urlUpdateFunc && Object.keys(updatedQueryParams).length) {
@@ -545,26 +547,14 @@ function PagedListView(props) {
 
   // ---------------------------------------------------------------------------
   /**
-   * Invoked whenever the list container dimensions change
-   * @param height
-   * @param width
-   */
-  const handleAutoSizerResize = ({ height, width }) => {
-    setViewHeight(height);
-    setViewWidth(width);
-  };
-
-  /**
    *
    */
   const handleListItemMount = (item, itemIndex, element) => {
-    if (itemHeights.current) {
-      const listItemRect = element.getBoundingClientRect();
-      itemHeights.current[itemIndex] = listItemRect.height;
+    const listItemRect = element.getBoundingClientRect();
+    itemHeights.current[itemIndex] = listItemRect.height;
 
-      if (itemIndex === items.length - 1) {
-        setMeasuring(false);
-      }
+    if (itemIndex === items.length - 1) {
+      setMeasuring(false);
     }
   };
 
@@ -675,21 +665,11 @@ function PagedListView(props) {
       return;
     }
 
-    // When in windowed mode, setting the 'measuring' flag causes the list
-    // items to be rendered into a hidden  container so their individual
-    // heights can be determined.
-    // After all items have been measured the hidden container is replaced
-    // with a VariableSizedList / VariableSizedGrid
-    itemHeights.current = null;
-    if (props.windowed) {
-      setMeasuring(true);
-    }
-
     let requestParams = {...filterParams};
 
     if (props.paginated) {
-      requestParams[props.pageParamName] = page;
-      requestParams[props.pageSizeParamName] = pageSize;
+      requestParams[pageParamName] = page;
+      requestParams[pageSizeParamName] = pageSize;
     }
 
     if (ordering) {
@@ -715,8 +695,6 @@ function PagedListView(props) {
         if (props.itemTransformer) {
           updatedItems = updatedItems.map(props.itemTransformer);
         }
-
-        itemHeights.current = new Array(updatedItems.length).fill(0);
 
         setItems(updatedItems);
         setLoadError(null);
@@ -745,6 +723,21 @@ function PagedListView(props) {
     reload();
   }, [props.src, props.items, filterParams, ordering, page, pageSize]);
 
+  useEffect(() => {
+    if (items) {
+      if (windowed) {
+        // When in windowed mode, setting the 'measuring' flag causes the list
+        // items to be rendered into a hidden container so their individual
+        // heights can be determined.
+        // After all items have been measured the hidden container is unmounted
+        // and a VariableSizedList / VariableSizedGrid is displayed
+        itemHeights.current = new Array(items.length).fill(50);
+        setMeasuring(true);
+      }
+    } else {
+      itemHeights.current = null;
+    }
+  }, [windowed, items]);
 
   /**
    * Update the list's configuration whenever the filterParams or ordering change.
@@ -882,7 +875,7 @@ function PagedListView(props) {
     <props.listItemComponent
       key={keyForItem(item)}
       to={pathForItem(item)}
-      onMount={(element) => { handleListItemMount(item, itemIndex, element); }}
+      onMount={onMount}
       selectOnClick={props.selectOnClick}
       style={style}
       {...itemProps(item)}
@@ -935,15 +928,17 @@ function PagedListView(props) {
   let view = null;
 
   if (props.displayMode === 'list') {
-    if (props.windowed) {
+    if (windowed) {
       view = measuring ? (
         <List disablePadding style={{ visibility: 'hidden' }}>
           {items.map(
-            (item, itemIndex) => renderListItem(item, itemIndex)
+            (item, itemIndex) => renderListItem(item, itemIndex, null, (element) => {
+              handleListItemMount(item, itemIndex, element)
+            })
           )}
         </List>
       ) : (
-        <AutoSizer onResize={handleAutoSizerResize}>
+        <AutoSizer>
           {({width, height}) => (
             <VariableSizeList
               height={height}
