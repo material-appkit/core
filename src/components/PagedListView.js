@@ -4,6 +4,8 @@
 *
 */
 
+import classNames from 'classnames';
+
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
@@ -180,6 +182,7 @@ SelectionControl.propTypes = {
 function PagedListView(props) {
   const qsParams = props.qsParams || {};
   const {
+    classes,
     pageParamName,
     pageSizeParamName,
     windowed,
@@ -932,6 +935,11 @@ function PagedListView(props) {
   let view = null;
 
   if (props.displayMode === 'list') {
+    const listViewClassNames = [classes.listView];
+    if (loading) {
+      listViewClassNames.push(classes.listViewLoading);
+    }
+
     if (windowed) {
       view = measuring ? (
         <List disablePadding style={{ visibility: 'hidden' }}>
@@ -945,6 +953,7 @@ function PagedListView(props) {
         <AutoSizer>
           {({width, height}) => (
             <VariableSizeList
+              className={classNames(listViewClassNames)}
               height={height}
               innerElementType={List}
               itemData={{ items }}
@@ -961,7 +970,10 @@ function PagedListView(props) {
       );
     } else {
       view = (
-        <List disablePadding>
+        <List
+          className={classNames(listViewClassNames)}
+          disablePadding
+        >
           {items.map(
             (item, itemIndex) => renderListItem(item, itemIndex)
           )}
@@ -969,7 +981,7 @@ function PagedListView(props) {
       );
     }
   } else {
-    if (props.windowed) {
+    if (windowed) {
       console.log('TODO: Implement windowed grid view!');
     } else {
       view = (
@@ -1024,6 +1036,8 @@ function PagedListView(props) {
 }
 
 PagedListView.propTypes = {
+  classes: PropTypes.object,
+
   defaultFilterParams: PropTypes.object,
   defaultOrdering: PropTypes.string,
   defaultSelection: PropTypes.object,
@@ -1090,6 +1104,7 @@ PagedListView.propTypes = {
 };
 
 PagedListView.defaultProps = {
+  classes: {},
   defaultFilterParams: {},
   itemIdKey: 'id',
   loadingVariant: 'circular',
