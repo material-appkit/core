@@ -59,6 +59,10 @@ function PropertyListItem(props) {
     value = fieldInfo.nullValue || null;
   }
 
+  if (value === null) {
+    return null;
+  }
+
   let LabelContent = fieldInfo.label;
   if (LabelContent === undefined) {
     LabelContent = titleCase(fieldInfo.name);
