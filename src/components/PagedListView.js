@@ -724,18 +724,22 @@ function PagedListView(props) {
   }, [props.src, props.items, filterParams, ordering, page, pageSize]);
 
   useEffect(() => {
-    if (items) {
-      if (windowed) {
-        // When in windowed mode, setting the 'measuring' flag causes the list
-        // items to be rendered into a hidden container so their individual
-        // heights can be determined.
-        // After all items have been measured the hidden container is unmounted
-        // and a VariableSizedList / VariableSizedGrid is displayed
-        itemHeights.current = new Array(items.length).fill(50);
-        setMeasuring(true);
-      }
-    } else {
+    if (!(windowed && items)) {
       itemHeights.current = null;
+      return;
+    }
+
+
+    // When in windowed mode, setting the 'measuring' flag causes the list
+    // items to be rendered into a hidden container so their individual
+    // heights can be determined.
+    // After all items have been measured the hidden container is unmounted
+    // and a VariableSizedList / VariableSizedGrid is displayed
+    if (items.length) {
+      itemHeights.current = new Array(items.length).fill(50);
+      setMeasuring(true);
+    } else {
+      itemHeights.current = [];
     }
   }, [windowed, items]);
 
