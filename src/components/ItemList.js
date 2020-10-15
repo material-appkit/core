@@ -33,8 +33,7 @@ import PagedListViewDialog from './PagedListViewDialog';
 
 const itemListItemStyles = makeStyles((theme) => ({
   listItem: {
-    paddingTop: 0,
-    paddingBottom: 0,
+    padding: theme.spacing(0.25, 0),
   },
 
   listItemWithIcon: {
@@ -75,10 +74,11 @@ const itemListItemStyles = makeStyles((theme) => ({
 
   listItemIconRoot: {
     alignSelf: 'baseline',
+    minWidth: 20,
   },
 
   listItemIcon: {
-    padding: 2,
+    fontSize: theme.typography.pxToRem(22),
   },
 }));
 
