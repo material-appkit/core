@@ -40,7 +40,7 @@ import SortIcon from '@material-ui/icons/Sort';
 
 import ServiceAgent from '../util/ServiceAgent';
 import { makeChoices } from '../util/array';
-import { filterExcludeKeys } from '../util/object'
+import { filterExcludeKeys, filterEmptyValues } from '../util/object';
 import { find as setFind } from '../util/set';
 
 import PaginationControl from './PaginationControl';
@@ -181,22 +181,38 @@ SelectionControl.propTypes = {
 //------------------------------------------------------------------------------
 function PagedListView(props) {
   const qsParams = props.qsParams || {};
+
   const {
     classes,
+    filterMetadata,
+    filterParams,
+    filterParamTransformer,
+    itemContextMenuArrangement,
+    itemContextProvider,
+    itemTransformer,
+    listItemProps,
+    onConfig,
+    onLoad,
+    onLoadComplete,
+    onLoadError,
+    onToolbarChange,
+    orderParamName,
     pageParamName,
     pageSizeParamName,
+    paginated,
+    selectionMenu,
+    src,
+    subsetFilterArrangement,
+    urlUpdateFunc,
     windowed,
+    selectionMode,
   } = props;
 
-  const qsPageParam = qsParams[pageParamName] ? parseInt(qsParams[pageParamName]) : 1;
-  const qsPageSizeParam = qsParams[pageSizeParamName] ? parseInt(qsParams[pageSizeParamName]) : null;
 
-  const [filterParams, setFilterParams] = useState(null);
+  const [extraRequestParams, setExtraRequestParams] = useState(null);
+  const [appliedFilterParams, setAppliedFilterParams] = useState(null);
   const [items, setItems] = useState(null);
   const [loadError, setLoadError] = useState(null);
-  const [ordering, setOrdering] = useState(null);
-  const [page, setPage] = useState(qsPageParam);
-  const [pageSize, setPageSize] = useState(qsPageSizeParam);
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [selectedSubsetArrangementIndex, setSelectedSubsetArrangementIndex] = useState(null);
   const [uncontrolledSelection, setUncontrolledSelection] = useState(new Set());
@@ -269,17 +285,24 @@ function PagedListView(props) {
   }, [selection, items]);
 
   // ---------------------------------------------------------------------------
+  // Pagination
+  // ---------------------------------------------------------------------------
+  const setPage = (value) => {
+    setExtraRequestParams({
+      ...extraRequestParams,
+      [pageParamName]: value
+    });
+  };
 
-  /**
-   * Sort the items using the given sorting function
-   * Exported: yes
-   */
-  const sort = useCallback((sortFunc) => {
-    const sortedItems = [...items];
-    sortedItems.sort(sortFunc);
-    setItems(sortedItems);
-  }, [items]);
+  const setPageSize = (value) => {
+    setExtraRequestParams({
+      ...extraRequestParams,
+      [pageParamName]: 1,
+      [pageSizeParamName]: value
+    });
+  };
 
+  // ---------------------------------------------------------------------------
 
   /**
    * @param item
@@ -310,25 +333,20 @@ function PagedListView(props) {
    * @returns Object containing properties to supply to the list item
    */
   const itemProps = (item) => {
-    const {
-      itemContextMenuArrangement,
-      itemContextProvider,
-      listItemProps,
-      selectionMode,
-    } = props;
-    const context = itemContextProvider ? itemContextProvider(item) : {};
-
     const itemKey = keyForItem(item);
+
+    const itemContext = itemContextProvider ? itemContextProvider(item) : {};
+
     let selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
 
     return {
       contextMenuItemArrangement: itemContextMenuArrangement,
-      item: item,
-      onSelectionChange: handleSelectionControlClick,
+      item,
+      onSelectionChange: (item) => updateSelection(item),
       selected,
       selectionMode,
       selectionDisabled,
-      ...context,
+      ...itemContext,
       ...listItemProps,
     };
   };
@@ -440,21 +458,27 @@ function PagedListView(props) {
    * Initialization
    */
   useEffect(() => {
-    if (props.src && props.onOptionsLoad) {
-      ServiceAgent.options(props.src).then((res) => {
-        props.onOptionsLoad(res.jsonData);
-      });
-    }
+    const initialExtraRequestParams = {};
 
-    let initialOrdering = props.defaultOrdering;
+     let initialOrdering = null;
+     if (qsParams[orderParamName]) {
+       initialOrdering = qsParams[orderParamName];
+     } else if (filterMetadata) {
+       initialOrdering = filterMetadata.primary_ordering;
+     }
+     if (initialOrdering) {
+       initialExtraRequestParams[orderParamName] = initialOrdering;
+     }
 
-    if (qsParams[props.orderParamName]) {
-      initialOrdering = qsParams[props.orderParamName];
-    } else if (props.filterMetadata) {
-      initialOrdering = props.filterMetadata.primary_ordering;
-    }
-    setOrdering(initialOrdering);
+     if (paginated) {
+       initialExtraRequestParams[pageParamName] = qsParams[pageParamName] ? parseInt(qsParams[pageParamName]) : 1;
 
+       const initialPageSize = qsParams[pageSizeParamName];
+       if (initialPageSize) {
+         initialExtraRequestParams[pageSizeParamName] = parseInt(qsParams[pageSizeParamName]);
+       }
+     }
+     setExtraRequestParams(initialExtraRequestParams);
     return (() => {
       // When the component is being unmounted,
       // abort the current fetch request if it is in flight.
@@ -465,21 +489,180 @@ function PagedListView(props) {
   }, []);
 
 
+  /**
+   * When the supplied filter params are changed, OR the pagnation/ordering
+   * paramters change, update the applied filter params
+   */
   useEffect(() => {
-    // Let the querystring params determine the initially selected tab
-    if (props.subsetFilterArrangement) {
-      let initialSubsetArrangementIndex = -1;
-
-      const initialSubsetLabel = qsParams[props.subsetParamName];
-      if (initialSubsetLabel) {
-        initialSubsetArrangementIndex = props.subsetFilterArrangement.findIndex(
-          (arrangementInfo) => arrangementInfo.label === initialSubsetLabel
-        );
-      }
-      initialSubsetArrangementIndex = Math.max(0, initialSubsetArrangementIndex);
-      setSelectedSubsetArrangementIndex(initialSubsetArrangementIndex);
+    if (!(filterParams && extraRequestParams)) {
+      return;
     }
-  }, [props.subsetFilterArrangement]);
+
+    let params = { ...filterParams, ...extraRequestParams };
+    // Enable the filter parameters be modified by the consumer prior
+    // to issuing the API request. An example use case would be to convert
+    // "param=null" to "param__isnull=true"
+    if (filterParamTransformer) {
+      params = filterParamTransformer(params);
+    }
+
+    params = filterEmptyValues(params);
+
+    setAppliedFilterParams(params);
+  }, [filterParams, extraRequestParams]);
+
+
+  useEffect(() => {
+    if (!appliedFilterParams) {
+      return;
+    }
+
+    if (onLoad) {
+      onLoad(appliedFilterParams);
+    }
+
+    fetchItems(src, appliedFilterParams).then((fetchItemsResult) => {
+      let updatedItems = fetchItemsResult.items;
+
+      // If a transformer has been supplied, apply it to the newly assigned records.
+      if (itemTransformer) {
+        updatedItems = updatedItems.map(itemTransformer);
+      }
+
+      setItems(updatedItems);
+      setLoadError(null);
+
+      if (onLoadComplete) {
+        onLoadComplete(updatedItems, fetchItemsResult.response);
+      }
+    }).catch((err) => {
+      setLoadError(err);
+      setItems(null);
+
+      if (onLoadError) {
+        onLoadError(err);
+      }
+    });
+  }, [appliedFilterParams]);
+
+
+  /**
+   * When the pagination info is updated, update the dependent toolbar items
+   */
+  useEffect(() => {
+    const newToolbarItems = { ...toolbarItems };
+
+    if (paginationInfo) {
+      let pageLabel = null;
+      if (!selectionDisabled && props.selectionMode === 'multiple') {
+        pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
+      }
+      newToolbarItems.paginationControl = (
+        <PaginationControl
+          count={paginationInfo.total}
+          page={(paginationInfo.current_page) - 1}
+          pageLabel={pageLabel}
+          pageSize={paginationInfo.per_page}
+          onPageChange={(value) => setPage(value + 1) }
+          onPageSizeChange={(value) => setPageSize(value) }
+        />
+      );
+
+      newToolbarItems.paginationListControl = (
+        <Pagination
+          count={paginationInfo.total_pages}
+          page={paginationInfo.current_page}
+          onChange={(value) => setPage(value)}
+          {...props.paginationListControlProps}
+        />
+      );
+    }
+    setToolbarItems(newToolbarItems);
+  }, [paginationInfo]);
+
+  /**
+   * Update the selectionControl toolbarItem when selection mode is enabled/disabled
+   */
+  useEffect(() => {
+    const newToolbarItems = { ...toolbarItems };
+
+    newToolbarItems.selectionControl = (
+      <SelectionControl
+        onClick={() => {
+          // When the selection control button is clicked, toggle selection mode.
+          setSelectionDisabled(!selectionDisabled);
+
+          // _Always_ clear current selection when selection mode is toggled
+          setSelection(new Set());
+        }}
+        onSelectionMenuItemClick={handleSelectionMenuItemClick}
+        selectionDisabled={selectionDisabled}
+        selectionMenu={selectionMenu}
+      />
+    );
+
+    setToolbarItems(newToolbarItems);
+  }, [selectionDisabled]);
+
+
+  useEffect(() => {
+    if (!(extraRequestParams && filterMetadata && filterMetadata.ordering_fields && filterMetadata.ordering_fields.length)) {
+      return;
+    }
+
+    const newToolbarItems = { ...toolbarItems };
+    newToolbarItems.sortControl = (
+      <SortControl
+        choices={filterMetadata.ordering_fields}
+        selectedOrdering={extraRequestParams[orderParamName]}
+        onClick={(e) => setSortControlEl(e.currentTarget)}
+      />
+    );
+
+    setToolbarItems(newToolbarItems);
+  }, [extraRequestParams]);
+
+
+  useEffect(() => {
+    if (!onToolbarChange) {
+      return;
+    }
+    onToolbarChange(toolbarItems);
+  }, [toolbarItems]);
+
+
+  useEffect(() => {
+    if (!onConfig) {
+      return;
+    }
+
+    onConfig( {
+      extendSelection,
+      updateItem: handleItemUpdate,
+      selection,
+      selectionDisabled,
+    })
+  }, [
+    items,
+    selection,
+    selectionDisabled,
+  ]);
+
+  // useEffect(() => {
+  //   // Let the querystring params determine the initially selected tab
+  //   if (subsetFilterArrangement) {
+  //     let initialSubsetArrangementIndex = -1;
+  //
+  //     const initialSubsetLabel = qsParams[props.subsetParamName];
+  //     if (initialSubsetLabel) {
+  //       initialSubsetArrangementIndex = subsetFilterArrangement.findIndex(
+  //         (arrangementInfo) => arrangementInfo.label === initialSubsetLabel
+  //       );
+  //     }
+  //     initialSubsetArrangementIndex = Math.max(0, initialSubsetArrangementIndex);
+  //     setSelectedSubsetArrangementIndex(initialSubsetArrangementIndex);
+  //   }
+  // }, [subsetFilterArrangement]);
 
 
   /**
@@ -489,68 +672,76 @@ function PagedListView(props) {
    * - Ordering is modified
    * - Selected subset arrangement is changed.
    */
-  useEffect(() => {
-    let params = { ...props.defaultFilterParams };
-
-    if (props.paginated) {
-      let pageIndex = page;
-
-      // When the default filter params change, reset to page 1
-      if (filterParams) {
-        const keysToExclude = [pageParamName, pageSizeParamName, props.orderParamName];
-        const currentDefaultFilterParams = filterExcludeKeys(filterParams, keysToExclude);
-        if (!isEqual(params, currentDefaultFilterParams)) {
-          pageIndex = 1;
-        }
-      }
-
-      if (props.location) {
-        const updatedQueryParams = {};
-        if (pageIndex !== qsPageParam) {
-          updatedQueryParams[pageParamName] = pageIndex;
-        }
-        if (pageSize !== qsPageSizeParam) {
-          // When the page size changes, reset to page 1
-          pageIndex = 1;
-          updatedQueryParams[pageParamName] = pageIndex;
-          updatedQueryParams[pageSizeParamName] = pageSize;
-        }
-
-        if (props.urlUpdateFunc && Object.keys(updatedQueryParams).length) {
-          props.urlUpdateFunc(updatedQueryParams, true);
-        }
-      }
-
-      setPage(pageIndex);
-    }
-
-    if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
-      const subsetInfo = props.subsetFilterArrangement[selectedSubsetArrangementIndex];
-      Object.assign(params, subsetInfo.params);
-
-      if (props.urlUpdateFunc && qsParams[props.subsetParamName] !== subsetInfo.label) {
-        props.urlUpdateFunc({ [props.subsetParamName]: subsetInfo.label });
-      }
-    }
-
-    // Let the filter params be transformed before they're committed
-    params = coerceFilterParams(params);
-
-    if (!isEqual(params, filterParams)) {
-      setFilterParams(params);
-    }
-
-  }, [
-    props.defaultFilterParams,
-    ordering,
-    page,
-    pageSize,
-    selectedSubsetArrangementIndex
-  ]);
+  // useEffect(() => {
+  //   let params = {
+  //     ...filterParams
+  //   };
+  //
+  //   if (ordering) {
+  //     params[orderParamName] = ordering;
+  //   }
+  //
+  //   if (props.paginated) {
+  //     let pageIndex = page;
+  //
+  //     // When the default filter params change, reset to page 1
+  //     if (appliedFilterParams) {
+  //       const keysToExclude = [pageParamName, pageSizeParamName, orderParamName];
+  //       const currentFilterParams = filterExcludeKeys(appliedFilterParams, keysToExclude);
+  //       if (!isEqual(params, currentFilterParams)) {
+  //         pageIndex = 1;
+  //       }
+  //     }
+  //
+  //     if (props.location) {
+  //       const updatedQueryParams = {};
+  //       if (pageIndex !== qsPageParam) {
+  //         updatedQueryParams[pageParamName] = pageIndex;
+  //       }
+  //       if (pageSize !== qsPageSizeParam) {
+  //         // When the page size changes, reset to page 1
+  //         pageIndex = 1;
+  //         updatedQueryParams[pageParamName] = pageIndex;
+  //         updatedQueryParams[pageSizeParamName] = pageSize;
+  //       }
+  //
+  //       if (props.urlUpdateFunc && Object.keys(updatedQueryParams).length) {
+  //         props.urlUpdateFunc(updatedQueryParams, true);
+  //       }
+  //     }
+  //
+  //     setPage(pageIndex);
+  //   }
+  //
+  //   if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
+  //     const subsetInfo = props.subsetFilterArrangement[selectedSubsetArrangementIndex];
+  //     Object.assign(params, subsetInfo.params);
+  //
+  //     if (props.urlUpdateFunc && qsParams[props.subsetParamName] !== subsetInfo.label) {
+  //       props.urlUpdateFunc({ [props.subsetParamName]: subsetInfo.label });
+  //     }
+  //   }
+  //
+  //   // Let the filter params be transformed before they're committed
+  //   params = coerceFilterParams(params);
+  //
+  //   if (!isEqual(params, appliedFilterParams)) {
+  //     setAppliedFilterParams(params);
+  //   }
+  //
+  // }, [
+  //   filterParams,
+  //   ordering,
+  //   page,
+  //   pageSize,
+  //   selectedSubsetArrangementIndex
+  // ]);
 
   // ---------------------------------------------------------------------------
   /**
-   *
+   * Callback invoked when a list item is first mounted.
+   * When in windowed mode, whereby a height must be specified for each list item,
+   * this routine is used to initially determine that height.
    */
   const handleListItemMount = (item, itemIndex, element) => {
     const listItemRect = element.getBoundingClientRect();
@@ -561,13 +752,6 @@ function PagedListView(props) {
     }
   };
 
-  /**
-   * Handle changes to the selection
-   * @param item Record whose selection control has been clicked
-   */
-  const handleSelectionControlClick = (item) => {
-    updateSelection(item);
-  };
 
   /**
    * Respond to selection menu by updating selection accordingly
@@ -591,9 +775,19 @@ function PagedListView(props) {
   const handleSortDialogDismiss = (choice) => {
     setSortControlEl(null);
 
-    if (choice) {
-      setOrdering(choice.value);
-      props.urlUpdateFunc({ [props.orderParamName]: choice.value });
+    const selectedOrdering = choice ? choice.value : null;
+
+    const newExtraRequestParams = { ...extraRequestParams };
+    if (selectedOrdering) {
+      newExtraRequestParams[orderParamName] = selectedOrdering;
+    } else {
+      delete newExtraRequestParams[orderParamName];
+    }
+
+    setExtraRequestParams(newExtraRequestParams);
+
+    if (urlUpdateFunc) {
+      urlUpdateFunc({ [orderParamName]: selectedOrdering });
     }
   };
 
@@ -606,19 +800,6 @@ function PagedListView(props) {
     } else {
       updateItem(change.old, change.new);
     }
-  };
-
-
-  const handleTablePaginationPageChange = (value) => {
-    setPage(value + 1);
-  };
-
-  const handleTablePaginationPageSizeChange = (value) => {
-    setPageSize(value);
-  };
-
-  const handlePaginationListControlChange = (e, value) => {
-    setPage(value);
   };
 
   // ---------------------------------------------------------------------------
@@ -655,89 +836,90 @@ function PagedListView(props) {
     });
   };
 
-  /**
-   * Instruct the list to reload using the currently set filterParams
-   */
-  const reload = () => {
-    if (props.items) {
-      setItems(props.items);
-      return;
-    }
-
-    if (!(props.src && filterParams)) {
-      return;
-    }
-
-    let requestParams = {...filterParams};
-
-    if (props.paginated) {
-      requestParams[pageParamName] = page;
-      requestParams[pageSizeParamName] = pageSize;
-    }
-
-    if (ordering) {
-      requestParams[props.orderParamName] = ordering;
-    }
-
-    // Enable the filter parameters be modified by the consumer prior
-    // to issuing the API request. An example use case would be to convert
-    // "param=null" to "param__isnull=true"
-    if (props.filterParamTransformer) {
-      requestParams = props.filterParamTransformer(requestParams);
-    }
-
-    if (props.onLoad) {
-      props.onLoad(requestParams);
-    }
-
-    fetchItems(props.src, requestParams)
-      .then((fetchItemsResult) => {
-        let updatedItems = fetchItemsResult.items;
-
-        // If a transformer has been supplied, apply it to the newly assigned records.
-        if (props.itemTransformer) {
-          updatedItems = updatedItems.map(props.itemTransformer);
-        }
-
-        setItems(updatedItems);
-        setLoadError(null);
-
-        if (props.onLoadComplete) {
-          props.onLoadComplete(updatedItems, fetchItemsResult.response);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-
-        setLoadError(err);
-        setItems(null);
-
-        if (props.onLoadError) {
-          props.onLoadError(err);
-        }
-      });
-  };
-
   // ---------------------------------------------------------------------------
   /**
    * Reload the list whenever the listed dependent properties are altered
    */
-  useEffect(() => {
-    reload();
-  }, [props.src, props.items, filterParams, ordering, page, pageSize]);
+  // useEffect(() => {
+  //   if (props.items) {
+  //     setItems(props.items);
+  //     return;
+  //   }
+  //
+  //   if (!(props.src && filterParams)) {
+  //     return;
+  //   }
+  //
+  //   let requestParams = {...filterParams};
+  //
+  //   if (props.paginated) {
+  //     requestParams[pageParamName] = page;
+  //     requestParams[pageSizeParamName] = pageSize;
+  //   }
+  //
+  //   if (ordering) {
+  //     requestParams[orderParamName] = ordering;
+  //   }
+  //
+  //   // Enable the filter parameters be modified by the consumer prior
+  //   // to issuing the API request. An example use case would be to convert
+  //   // "param=null" to "param__isnull=true"
+  //   if (props.filterParamTransformer) {
+  //     requestParams = props.filterParamTransformer(requestParams);
+  //   }
+  //
+  //   if (props.onLoad) {
+  //     props.onLoad(requestParams);
+  //   }
+  //
+  //   fetchItems(props.src, requestParams)
+  //     .then((fetchItemsResult) => {
+  //       let updatedItems = fetchItemsResult.items;
+  //
+  //       // If a transformer has been supplied, apply it to the newly assigned records.
+  //       if (props.itemTransformer) {
+  //         updatedItems = updatedItems.map(props.itemTransformer);
+  //       }
+  //
+  //       setItems(updatedItems);
+  //       setLoadError(null);
+  //
+  //       if (props.onLoadComplete) {
+  //         props.onLoadComplete(updatedItems, fetchItemsResult.response);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //
+  //       setLoadError(err);
+  //       setItems(null);
+  //
+  //       if (props.onLoadError) {
+  //         props.onLoadError(err);
+  //       }
+  //     });
+  // }, [
+  //   props.src,
+  //   props.items,
+  //   appliedFilterParams,
+  //   ordering,
+  //   page,
+  //   pageSize
+  // ]);
 
+  /**
+   * When in windowed mode, setting the 'measuring' flag causes the list
+   * items to be rendered into a hidden container so their individual
+   * heights can be determined.
+   * After all items have been measured the hidden container is unmounted
+   * and a VariableSizedList / VariableSizedGrid is displayed
+   */
   useEffect(() => {
     if (!(windowed && items)) {
       itemHeights.current = null;
       return;
     }
 
-
-    // When in windowed mode, setting the 'measuring' flag causes the list
-    // items to be rendered into a hidden container so their individual
-    // heights can be determined.
-    // After all items have been measured the hidden container is unmounted
-    // and a VariableSizedList / VariableSizedGrid is displayed
     if (items.length) {
       itemHeights.current = new Array(items.length).fill(50);
       setMeasuring(true);
@@ -750,125 +932,124 @@ function PagedListView(props) {
    * Update the list's configuration whenever the filterParams or ordering change.
    * In particular, update the paging control.
    */
-  useEffect(() => {
-    const newToolbarItems = {};
-
-    newToolbarItems.selectionControl = (
-      <SelectionControl
-        key="selectionControl"
-        onClick={() => {
-          // When the selection control button is clicked, toggle selection mode.
-          setSelectionDisabled(!selectionDisabled);
-
-          // _Always_ clear current selection when selection mode is toggled
-          setSelection(new Set());
-        }}
-        onSelectionMenuItemClick={handleSelectionMenuItemClick}
-        selectionDisabled={selectionDisabled}
-        selectionMenu={props.selectionMenu}
-      />
-    );
-
-    if (paginationInfo) {
-      let pageLabel = null;
-      if (!selectionDisabled && props.selectionMode === 'multiple') {
-        pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
-      }
-      newToolbarItems.paginationControl = (
-        <PaginationControl
-          count={paginationInfo.total}
-          page={(paginationInfo.current_page) - 1}
-          pageLabel={pageLabel}
-          pageSize={paginationInfo.per_page}
-          onPageChange={handleTablePaginationPageChange}
-          onPageSizeChange={handleTablePaginationPageSizeChange}
-        />
-      );
-
-      newToolbarItems.paginationListControl = (
-        <Pagination
-          count={paginationInfo.total_pages}
-          page={paginationInfo.current_page}
-          onChange={handlePaginationListControlChange}
-          {...props.paginationListControlProps}
-        />
-      );
-    }
-
-    if (props.filterMetadata && props.filterMetadata.ordering_fields && props.filterMetadata.ordering_fields.length) {
-      newToolbarItems.sortControl = (
-        <SortControl
-          choices={props.filterMetadata.ordering_fields}
-          selectedOrdering={ordering}
-          onClick={(e) => { setSortControlEl(e.currentTarget); }}
-        />
-      );
-    }
-
-    if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
-      newToolbarItems.tabsControl = (
-        <Tabs
-          style={{ flex: 1 }}
-          onChange={(e, tabIndex) => { setSelectedSubsetArrangementIndex(tabIndex); }}
-          scrollButtons="auto"
-          value={selectedSubsetArrangementIndex}
-          variant="scrollable"
-        >
-          {props.subsetFilterArrangement.map((subsetInfo) => (
-            <Tab key={subsetInfo.label} label={subsetInfo.label} />
-          ))}
-        </Tabs>
-      );
-    }
-
-    setToolbarItems(newToolbarItems);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    extendSelection,
-    filterParams,
-    ordering,
-    paginationInfo,
-    selection,
-    selectionDisabled,
-    selectedSubsetArrangementIndex,
-    sort,
-  ]);
+  // useEffect(() => {
+  //   const newToolbarItems = {};
+  //
+  //   newToolbarItems.selectionControl = (
+  //     <SelectionControl
+  //       key="selectionControl"
+  //       onClick={() => {
+  //         // When the selection control button is clicked, toggle selection mode.
+  //         setSelectionDisabled(!selectionDisabled);
+  //
+  //         // _Always_ clear current selection when selection mode is toggled
+  //         setSelection(new Set());
+  //       }}
+  //       onSelectionMenuItemClick={handleSelectionMenuItemClick}
+  //       selectionDisabled={selectionDisabled}
+  //       selectionMenu={props.selectionMenu}
+  //     />
+  //   );
+  //
+  //   if (paginationInfo) {
+  //     let pageLabel = null;
+  //     if (!selectionDisabled && props.selectionMode === 'multiple') {
+  //       pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
+  //     }
+  //     newToolbarItems.paginationControl = (
+  //       <PaginationControl
+  //         count={paginationInfo.total}
+  //         page={(paginationInfo.current_page) - 1}
+  //         pageLabel={pageLabel}
+  //         pageSize={paginationInfo.per_page}
+  //         onPageChange={(value) => setPage(value + 1) }
+  //         onPageSizeChange={(value) => setPageSize(value) }
+  //       />
+  //     );
+  //
+  //     newToolbarItems.paginationListControl = (
+  //       <Pagination
+  //         count={paginationInfo.total_pages}
+  //         page={paginationInfo.current_page}
+  //         onChange={(value) => setPage(value)}
+  //         {...props.paginationListControlProps}
+  //       />
+  //     );
+  //   }
+  //
+  //   if (filterMetadata && filterMetadata.ordering_fields && filterMetadata.ordering_fields.length) {
+  //     newToolbarItems.sortControl = (
+  //       <SortControl
+  //         choices={filterMetadata.ordering_fields}
+  //         selectedOrdering={ordering}
+  //         onClick={(e) => { setSortControlEl(e.currentTarget); }}
+  //       />
+  //     );
+  //   }
+  //
+  //   if (props.subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
+  //     newToolbarItems.tabsControl = (
+  //       <Tabs
+  //         style={{ flex: 1 }}
+  //         onChange={(e, tabIndex) => { setSelectedSubsetArrangementIndex(tabIndex); }}
+  //         scrollButtons="auto"
+  //         value={selectedSubsetArrangementIndex}
+  //         variant="scrollable"
+  //       >
+  //         {props.subsetFilterArrangement.map((subsetInfo) => (
+  //           <Tab key={subsetInfo.label} label={subsetInfo.label} />
+  //         ))}
+  //       </Tabs>
+  //     );
+  //   }
+  //
+  //   setToolbarItems(newToolbarItems);
+  //
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [
+  //   appliedFilterParams,
+  //   extendSelection,
+  //   ordering,
+  //   paginationInfo,
+  //   selection,
+  //   selectionDisabled,
+  //   selectedSubsetArrangementIndex,
+  //   sort,
+  // ]);
 
   /**
    * Invoke the onConfig callback when any exported state properties are affected
    */
-  useEffect(() => {
-    if (props.onConfig) {
-
-      let totalCount = null;
-      if (paginationInfo) {
-        totalCount = paginationInfo.total;
-      } else if (Array.isArray(items)) {
-        totalCount = items.length;
-      }
-
-      props.onConfig({
-        extendSelection,
-        loading,
-        loadError,
-        onItemUpdate: handleItemUpdate,
-        selection,
-        selectionDisabled,
-        sort,
-        toolbarItems,
-        totalCount,
-      });
-    }
-  }, [
-    extendSelection,
-    loadError,
-    paginationInfo,
-    selection,
-    selectionDisabled,
-    sort,
-    toolbarItems
-  ]);
+  // useEffect(() => {
+  //   if (props.onConfig) {
+  //     let totalCount = null;
+  //     if (paginationInfo) {
+  //       totalCount = paginationInfo.total;
+  //     } else if (Array.isArray(items)) {
+  //       totalCount = items.length;
+  //     }
+  //
+  //     props.onConfig({
+  //       extendSelection,
+  //       loading,
+  //       loadError,
+  //       onItemUpdate: handleItemUpdate,
+  //       selection,
+  //       selectionDisabled,
+  //       sort,
+  //       toolbarItems,
+  //       totalCount,
+  //     });
+  //   }
+  // }, [
+  //   extendSelection,
+  //   loadError,
+  //   paginationInfo,
+  //   selection,
+  //   selectionDisabled,
+  //   sort,
+  //   toolbarItems
+  // ]);
 
   //----------------------------------------------------------------------------
   /**
@@ -923,6 +1104,7 @@ function PagedListView(props) {
     if (props.emptyListPlaceholder !== undefined) {
       return props.emptyListPlaceholder;
     }
+
     return (
       <PlaceholderView padding={2}>
         <Typography variant="body2">
@@ -1010,7 +1192,7 @@ function PagedListView(props) {
           getContentAnchorEl={null}
           id="sort-menu"
           open={Boolean(sortControlEl)}
-          onClose={() => { handleSortDialogDismiss(null); }}
+          onClose={() => handleSortDialogDismiss(null)}
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'center',
@@ -1020,11 +1202,11 @@ function PagedListView(props) {
             horizontal: 'center',
           }}
         >
-          {makeChoices(props.filterMetadata.ordering_fields).map((sortChoice) => (
+          {makeChoices(filterMetadata.ordering_fields).map((sortChoice) => (
             <MenuItem
               key={sortChoice.value}
-              onClick={() => { handleSortDialogDismiss(sortChoice); }}
-              selected={sortChoice.value === ordering}
+              onClick={() => handleSortDialogDismiss(sortChoice)}
+              selected={sortChoice.value === extraRequestParams[orderParamName]}
             >
               {sortChoice.label}
             </MenuItem>
@@ -1038,8 +1220,7 @@ function PagedListView(props) {
 PagedListView.propTypes = {
   classes: PropTypes.object,
 
-  defaultFilterParams: PropTypes.object,
-  defaultOrdering: PropTypes.string,
+  filterParams: PropTypes.object,
   defaultSelection: PropTypes.object,
 
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
@@ -1070,11 +1251,11 @@ PagedListView.propTypes = {
   location: PropTypes.object,
 
   onConfig: PropTypes.func,
-  onOptionsLoad: PropTypes.func,
   onLoad: PropTypes.func,
   onLoadComplete: PropTypes.func,
   onLoadError: PropTypes.func,
   onSelectionChange: PropTypes.func,
+  onToolbarChange: PropTypes.func,
 
   orderParamName: PropTypes.string,
   pageParamName: PropTypes.string,
@@ -1105,7 +1286,7 @@ PagedListView.propTypes = {
 
 PagedListView.defaultProps = {
   classes: {},
-  defaultFilterParams: {},
+  filterParams: {},
   itemIdKey: 'id',
   loadingVariant: 'circular',
   orderParamName: 'order',
