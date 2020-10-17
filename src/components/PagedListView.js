@@ -200,12 +200,13 @@ function PagedListView(props) {
     pageParamName,
     pageSizeParamName,
     paginated,
+    paginationListControlProps,
     selectionMenu,
+    selectionMode,
     src,
     subsetFilterArrangement,
     urlUpdateFunc,
     windowed,
-    selectionMode,
   } = props;
 
 
@@ -252,7 +253,7 @@ function PagedListView(props) {
 
     let newSelection = null;
 
-    if (props.selectionMode === 'single') {
+    if (selectionMode === 'single') {
       newSelection = new Set();
       if (!selectedItem) {
         newSelection.add(item);
@@ -559,33 +560,21 @@ function PagedListView(props) {
    * When the pagination info is updated, update the dependent toolbar items
    */
   useEffect(() => {
+    if (!paginationInfo) {
+      return;
+    }
+
     const newToolbarItems = { ...toolbarItems };
 
-    if (paginationInfo) {
-      let pageLabel = null;
-      if (!selectionDisabled && props.selectionMode === 'multiple') {
-        pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
-      }
-      newToolbarItems.paginationControl = (
-        <PaginationControl
-          count={paginationInfo.total}
-          page={(paginationInfo.current_page) - 1}
-          pageLabel={pageLabel}
-          pageSize={paginationInfo.per_page}
-          onPageChange={(value) => setPage(value + 1) }
-          onPageSizeChange={(value) => setPageSize(value) }
-        />
-      );
+    newToolbarItems.paginationListControl = (
+      <Pagination
+        count={paginationInfo.total_pages}
+        page={paginationInfo.current_page}
+        onChange={(value) => setPage(value)}
+        {...paginationListControlProps}
+      />
+    );
 
-      newToolbarItems.paginationListControl = (
-        <Pagination
-          count={paginationInfo.total_pages}
-          page={paginationInfo.current_page}
-          onChange={(value) => setPage(value)}
-          {...props.paginationListControlProps}
-        />
-      );
-    }
     setToolbarItems(newToolbarItems);
   }, [paginationInfo]);
 
@@ -610,8 +599,26 @@ function PagedListView(props) {
       />
     );
 
+    if (paginationInfo) {
+      let pageLabel = null;
+      if (!selectionDisabled && selectionMode === 'multiple') {
+        pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
+        console.log(pageLabel);
+      }
+      newToolbarItems.paginationControl = (
+        <PaginationControl
+          count={paginationInfo.total}
+          page={(paginationInfo.current_page) - 1}
+          pageLabel={pageLabel}
+          pageSize={paginationInfo.per_page}
+          onPageChange={(value) => setPage(value + 1) }
+          onPageSizeChange={(value) => setPageSize(value) }
+        />
+      );
+    }
+
     setToolbarItems(newToolbarItems);
-  }, [selectionDisabled]);
+  }, [paginationInfo, selection, selectionDisabled]);
 
 
   useEffect(() => {
@@ -636,6 +643,7 @@ function PagedListView(props) {
     if (!onToolbarChange) {
       return;
     }
+
     onToolbarChange(toolbarItems);
   }, [toolbarItems]);
 
