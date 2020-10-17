@@ -292,14 +292,23 @@ function PagedListView(props) {
       ...extraRequestParams,
       [pageParamName]: value
     });
+
+    if (urlUpdateFunc) {
+      urlUpdateFunc({ [pageParamName]: value });
+    }
   };
 
   const setPageSize = (value) => {
-    setExtraRequestParams({
-      ...extraRequestParams,
+    const pagingParams = {
       [pageParamName]: 1,
       [pageSizeParamName]: value
-    });
+    };
+
+    setExtraRequestParams({ ...extraRequestParams, ...pagingParams });
+
+    if (urlUpdateFunc) {
+      urlUpdateFunc(pagingParams);
+    }
   };
 
   // ---------------------------------------------------------------------------
