@@ -88,6 +88,7 @@ function PagedListViewDialog(props) {
   } = props;
 
   const [listViewConfig, setListViewConfig] = useState(null);
+  const [listViewToolbarItems, setListViewToolbarItems] = useState(null);
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
   const [filterTerm, setFilterTerm] = useState('');
@@ -202,9 +203,9 @@ function PagedListViewDialog(props) {
             </Box>
           }
 
-          {(listViewConfig && listViewConfig.toolbarItems.tabsControl) &&
+          {(listViewToolbarItems && listViewToolbarItems.tabsControl) &&
             <Box className={classes.tabsControlContainer}>
-              {listViewConfig.toolbarItems.tabsControl}
+              {listViewToolbarItems.tabsControl}
             </Box>
           }
         </DialogTitle>
@@ -217,8 +218,9 @@ function PagedListViewDialog(props) {
               ...(listItemProps || {}),
               commitOnSelect: props.commitOnSelect,
             }}
-            onConfig={(config) => { setListViewConfig(config); }}
+            onConfig={(config) => setListViewConfig(config)}
             onSelectionChange={handleSelectionChange}
+            onToolbarChange={setListViewToolbarItems}
             paginated={props.paginated}
             selectionDisabled={false}
             selectionMode={commitOnSelect ? 'single' : props.selectionMode}
@@ -233,8 +235,8 @@ function PagedListViewDialog(props) {
             </Button>
           }
 
-          {(listViewConfig && listViewConfig.toolbarItems.paginationControl) ? (
-            listViewConfig.toolbarItems.paginationControl
+          {(listViewToolbarItems && listViewToolbarItems.paginationControl) ? (
+            listViewToolbarItems.paginationControl
           ) : (
             <Spacer />
           )}
@@ -244,7 +246,7 @@ function PagedListViewDialog(props) {
               color="primary"
               disabled={!(listViewConfig && listViewConfig.selection.size)}
               key="commitButton"
-              onClick={() => { commit(); }}
+              onClick={() => commit()}
             >
               Choose
             </Button>
