@@ -608,7 +608,6 @@ function PagedListView(props) {
       let pageLabel = null;
       if (!selectionDisabled && selectionMode === 'multiple') {
         pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
-        console.log(pageLabel);
       }
       newToolbarItems.paginationControl = (
         <PaginationControl
