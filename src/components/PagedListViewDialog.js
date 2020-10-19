@@ -100,13 +100,10 @@ function PagedListViewDialog(props) {
 
   const onChangeHandlerRef = useRef(
     debounce(() => {
-      const searchTerm = searchFieldRef.current.value;
-      if (searchTerm) {
-        setAppliedFilterParams({
-          ...appliedFilterParams,
-          [searchFilterParam]: searchTerm,
-        });
-      }
+      setAppliedFilterParams({
+        ...filterParams,
+        [searchFilterParam]: searchFieldRef.current.value,
+      });
     }, 500, { leading: false, trailing: true })
   );
 
