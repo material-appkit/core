@@ -142,7 +142,7 @@ PaginationControl.propTypes = {
   page: PropTypes.number,
   pageLabel: PropTypes.string,
   pageSize: PropTypes.number,
-  pageSizeChoices: PropTypes.array,
+  pageSizeChoices: PropTypes.array.isRequired,
   onPageChange: PropTypes.func,
   onPageSizeChange: PropTypes.func,
   totalPages: PropTypes.number,
@@ -151,7 +151,6 @@ PaginationControl.propTypes = {
 
 PaginationControl.defaultProps = {
   page: 0,
-  pageSizeChoices: [10, 20, 50, 100],
   typographyProps: {
     color: 'textSecondary',
     variant: 'subtitle2',

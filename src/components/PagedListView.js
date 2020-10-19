@@ -200,6 +200,7 @@ function PagedListView(props) {
     pageParamName,
     pageSizeParamName,
     paginated,
+    paginationControlProps,
     paginationListControlProps,
     selectionMenu,
     selectionMode,
@@ -617,6 +618,7 @@ function PagedListView(props) {
           pageSize={paginationInfo.per_page}
           onPageChange={(value) => setPage(value + 1) }
           onPageSizeChange={(value) => setPageSize(value) }
+          {...paginationControlProps}
         />
       );
     }
@@ -1072,6 +1074,9 @@ PagedListView.defaultProps = {
   pageParamName: 'page',
   pageSizeParamName: 'page_size',
   paginated: false,
+  paginationControlProps: {
+    pageSizeChoices: [10, 20, 50, 100],
+  },
   paginationListControlProps: {
     shape: 'rounded',
     variant: 'outlined',
