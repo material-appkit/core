@@ -79,11 +79,12 @@ const styles = makeStyles((theme) => ({
 function PagedListViewDialog(props) {
   const {
     commitOnSelect,
-    defaultFilterParams,
+    filterParams,
     dialogProps,
     fullHeight,
     onDismiss,
     listItemProps,
+    searchFilterParam,
     ...pagedListViewProps
   } = props;
 
@@ -91,7 +92,7 @@ function PagedListViewDialog(props) {
   const [listViewToolbarItems, setListViewToolbarItems] = useState(null);
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
-  const [filterTerm, setFilterTerm] = useState('');
+  const [appliedFilterParams, setAppliedFilterParams] = useState(filterParams);
   const [dialogTitle, setDialogTitle] = useState(null);
 
   const dialogRef = useRef(null);
@@ -99,7 +100,13 @@ function PagedListViewDialog(props) {
 
   const onChangeHandlerRef = useRef(
     debounce(() => {
-      setFilterTerm(searchFieldRef.current.value);
+      const searchTerm = searchFieldRef.current.value;
+      if (searchTerm) {
+        setAppliedFilterParams({
+          ...appliedFilterParams,
+          [searchFilterParam]: searchTerm,
+        });
+      }
     }, 500, { leading: false, trailing: true })
   );
 
@@ -149,11 +156,6 @@ function PagedListViewDialog(props) {
 
   //----------------------------------------------------------------------------
   const classes = styles();
-
-  const filterParams = { ...defaultFilterParams };
-  if (filterTerm) {
-    filterParams[props.searchFilterParam] = filterTerm;
-  }
 
   return (
     <Fragment>
@@ -213,12 +215,12 @@ function PagedListViewDialog(props) {
         <DialogContent className={classes.dialogContent}>
           <PagedListView
             {...pagedListViewProps}
-            defaultFilterParams={filterParams}
+            filterParams={appliedFilterParams}
             listItemProps={{
               ...(listItemProps || {}),
               commitOnSelect: props.commitOnSelect,
             }}
-            onConfig={(config) => setListViewConfig(config)}
+            onConfig={setListViewConfig}
             onSelectionChange={handleSelectionChange}
             onToolbarChange={setListViewToolbarItems}
             paginated={props.paginated}
