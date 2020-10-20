@@ -394,7 +394,7 @@ class ItemList extends React.PureComponent {
             {this.props.apiListUrl && this.state.listDialogOpen &&
               <PagedListViewDialog
                 apiCreateUrl={this.props.apiCreateUrl}
-                defaultFilterParams={this.props.filterParams}
+                filterParams={this.props.filterParams}
                 displayMode="list"
                 editDialogProps={this.props.editDialogProps}
                 entityType={this.props.entityType}
