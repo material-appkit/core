@@ -59,8 +59,8 @@ class NavManager {
   }
 
   /**
-   * Convenience method to add, change, or remove params from the query string
-   * @param change Object containing params to add, change, or remove
+   * Convenience method to add or change a set of querystring params
+   * @param change Object containing params to add or change
    * @param replace Flag indicating whether to add a new history entry or
    *                update the current history state
    */
@@ -76,6 +76,18 @@ class NavManager {
   static updateUrlParam(paramName, paramValue, replace) {
     this.updateUrlParams({ [paramName]: paramValue }, replace);
   }
+
+
+  /**
+   * Convenience method to set a single querystring param
+   */
+  static clearUrlParams(paramNames, replace) {
+    const params = { ...this.qsParams };
+    paramNames.forEach((paramName) => {
+      params[paramName] = null;
+    });
+    this.setUrlParams(params, null, replace);
+  };
 
   /**
    * Unlike the underlying setUrlParams method, this method will clear the
