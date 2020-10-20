@@ -61,18 +61,11 @@ class NavManager {
   /**
    * Convenience method to add, change, or remove params from the query string
    * @param change Object containing params to add, change, or remove
+   * @param replace Flag indicating whether to add a new history entry or
+   *                update the current history state
    */
   static updateUrlParams(change, replace) {
-    const params = this.qsParams;
-
-    Object.keys(change).forEach((key) => {
-      const paramValue = change[key];
-      if (paramValue) {
-        params[key] = paramValue;
-      } else {
-        delete params[key];
-      }
-    });
+    const params = { ...this.qsParams, ...change };
 
     this.setUrlParams(params, null, replace);
   }
