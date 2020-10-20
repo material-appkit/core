@@ -1,6 +1,6 @@
 {
   "name": "@material-appkit/core",
-  "version": "2.6.3",
+  "version": "2.6.4",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "keywords": [
     "React",
@@ -23,7 +23,7 @@
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "path-to-regexp": "^6.2.0",
-    "query-string": "^6.13.5",
+    "query-string": "^6.13.6",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5"
   },
@@ -33,7 +33,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "notistack": "^1.0.1",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0"
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0"
   }
 }
