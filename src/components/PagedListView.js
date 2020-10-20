@@ -180,8 +180,6 @@ SelectionControl.propTypes = {
 
 //------------------------------------------------------------------------------
 function PagedListView(props) {
-  const qsParams = props.qsParams || {};
-
   const {
     classes,
     filterMetadata,
@@ -195,10 +193,11 @@ function PagedListView(props) {
     onLoad,
     onLoadComplete,
     onLoadError,
+    onOrderingChange,
+    onPageChange,
+    onPageSizeChange,
     onToolbarChange,
-    orderParamName,
-    pageParamName,
-    pageSizeParamName,
+    orderingParamName,
     paginated,
     paginationControlProps,
     paginationListControlProps,
@@ -206,12 +205,9 @@ function PagedListView(props) {
     selectionMode,
     src,
     subsetFilterArrangement,
-    urlUpdateFunc,
     windowed,
   } = props;
 
-
-  const [extraRequestParams, setExtraRequestParams] = useState(null);
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
   const [items, setItems] = useState(null);
   const [loadError, setLoadError] = useState(null);
@@ -233,6 +229,8 @@ function PagedListView(props) {
 
   // The view is assumed to be 'loading' whenever a fetchRequestContext is set.
   const loading = !!fetchRequestContext;
+
+  const ordering = appliedFilterParams ? appliedFilterParams[orderingParamName] : null;
 
   // ---------------------------------------------------------------------------
   // Selection Management
@@ -286,30 +284,19 @@ function PagedListView(props) {
 
   }, [selection, items]);
 
+
   // ---------------------------------------------------------------------------
   // Pagination
   // ---------------------------------------------------------------------------
   const setPage = (value) => {
-    setExtraRequestParams({
-      ...extraRequestParams,
-      [pageParamName]: value
-    });
-
-    if (urlUpdateFunc) {
-      urlUpdateFunc({ [pageParamName]: value });
+    if (onPageChange) {
+      onPageChange(value);
     }
   };
 
   const setPageSize = (value) => {
-    const pagingParams = {
-      [pageParamName]: 1,
-      [pageSizeParamName]: value
-    };
-
-    setExtraRequestParams({ ...extraRequestParams, ...pagingParams });
-
-    if (urlUpdateFunc) {
-      urlUpdateFunc(pagingParams);
+    if (onPageSizeChange) {
+      onPageSizeChange(value);
     }
   };
 
@@ -468,27 +455,6 @@ function PagedListView(props) {
    * Initialization
    */
   useEffect(() => {
-    const initialExtraRequestParams = {};
-
-     let initialOrdering = null;
-     if (qsParams[orderParamName]) {
-       initialOrdering = qsParams[orderParamName];
-     } else if (filterMetadata) {
-       initialOrdering = filterMetadata.primary_ordering;
-     }
-     if (initialOrdering) {
-       initialExtraRequestParams[orderParamName] = initialOrdering;
-     }
-
-     if (paginated) {
-       initialExtraRequestParams[pageParamName] = qsParams[pageParamName] ? parseInt(qsParams[pageParamName]) : 1;
-
-       const initialPageSize = qsParams[pageSizeParamName];
-       if (initialPageSize) {
-         initialExtraRequestParams[pageSizeParamName] = parseInt(qsParams[pageSizeParamName]);
-       }
-     }
-     setExtraRequestParams(initialExtraRequestParams);
     return (() => {
       // When the component is being unmounted,
       // abort the current fetch request if it is in flight.
@@ -501,14 +467,14 @@ function PagedListView(props) {
 
   /**
    * When the supplied filter params are changed, OR the pagnation/ordering
-   * paramters change, update the applied filter params
+   * parameters change, update the applied filter params
    */
   useEffect(() => {
-    if (!(filterParams && extraRequestParams)) {
+    if (!filterParams) {
       return;
     }
 
-    let params = { ...filterParams, ...extraRequestParams };
+    let params = { ...filterParams };
     // Enable the filter parameters be modified by the consumer prior
     // to issuing the API request. An example use case would be to convert
     // "param=null" to "param__isnull=true"
@@ -522,7 +488,7 @@ function PagedListView(props) {
     params = coerceFilterParams(params);
 
     setAppliedFilterParams(params);
-  }, [filterParams, extraRequestParams]);
+  }, [filterParams]);
 
 
   /**
@@ -566,7 +532,7 @@ function PagedListView(props) {
    * When the pagination info is updated, update the dependent toolbar items
    */
   useEffect(() => {
-    if (!paginationInfo) {
+    if (!(paginated && paginationInfo)) {
       return;
     }
 
@@ -605,7 +571,7 @@ function PagedListView(props) {
       />
     );
 
-    if (paginationInfo) {
+    if (paginated && paginationInfo) {
       let pageLabel = null;
       if (!selectionDisabled && selectionMode === 'multiple') {
         pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
@@ -628,7 +594,7 @@ function PagedListView(props) {
 
 
   useEffect(() => {
-    if (!(extraRequestParams && filterMetadata && filterMetadata.ordering_fields && filterMetadata.ordering_fields.length)) {
+    if (!(filterMetadata && filterMetadata.ordering_fields && filterMetadata.ordering_fields.length)) {
       return;
     }
 
@@ -636,13 +602,13 @@ function PagedListView(props) {
     newToolbarItems.sortControl = (
       <SortControl
         choices={filterMetadata.ordering_fields}
-        selectedOrdering={extraRequestParams[orderParamName]}
+        selectedOrdering={ordering}
         onClick={(e) => setSortControlEl(e.currentTarget)}
       />
     );
 
     setToolbarItems(newToolbarItems);
-  }, [extraRequestParams]);
+  }, [filterMetadata]);
 
 
   useEffect(() => {
@@ -747,20 +713,8 @@ function PagedListView(props) {
 
   const handleSortDialogDismiss = (choice) => {
     setSortControlEl(null);
-
-    const selectedOrdering = choice ? choice.value : null;
-
-    const newExtraRequestParams = { ...extraRequestParams };
-    if (selectedOrdering) {
-      newExtraRequestParams[orderParamName] = selectedOrdering;
-    } else {
-      delete newExtraRequestParams[orderParamName];
-    }
-
-    setExtraRequestParams(newExtraRequestParams);
-
-    if (urlUpdateFunc) {
-      urlUpdateFunc({ [orderParamName]: selectedOrdering });
+    if (onOrderingChange) {
+      onOrderingChange(choice);
     }
   };
 
@@ -987,7 +941,7 @@ function PagedListView(props) {
             <MenuItem
               key={sortChoice.value}
               onClick={() => handleSortDialogDismiss(sortChoice)}
-              selected={sortChoice.value === extraRequestParams[orderParamName]}
+              selected={sortChoice.value === ordering}
             >
               {sortChoice.label}
             </MenuItem>
@@ -1035,16 +989,15 @@ PagedListView.propTypes = {
   onLoad: PropTypes.func,
   onLoadComplete: PropTypes.func,
   onLoadError: PropTypes.func,
+  onOrderingChange: PropTypes.func,
+  onPageChange: PropTypes.func,
+  onPageSizeChange: PropTypes.func,
   onSelectionChange: PropTypes.func,
   onToolbarChange: PropTypes.func,
 
-  orderParamName: PropTypes.string,
-  pageParamName: PropTypes.string,
-  pageSizeParamName: PropTypes.string,
+  orderingParamName: PropTypes.string,
   paginated: PropTypes.bool,
   paginationListControlProps: PropTypes.object,
-
-  qsParams: PropTypes.object,
 
   selection: PropTypes.object,
   selectionDisabled: PropTypes.bool,
@@ -1070,9 +1023,7 @@ PagedListView.defaultProps = {
   filterParams: {},
   itemIdKey: 'id',
   loadingVariant: 'circular',
-  orderParamName: 'order',
-  pageParamName: 'page',
-  pageSizeParamName: 'page_size',
+  orderingParamName: 'order',
   paginated: false,
   paginationControlProps: {
     pageSizeChoices: [10, 20, 50, 100],
