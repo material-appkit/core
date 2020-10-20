@@ -28,7 +28,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
-import Spacer from '@material-appkit/core/components/Spacer';
+import Spacer from './Spacer';
 
 import EditDialog from './EditDialog';
 import PagedListView from './PagedListView';
