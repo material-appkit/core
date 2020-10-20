@@ -98,7 +98,7 @@ function PagedListViewDialog(props) {
   const dialogRef = useRef(null);
   const searchFieldRef = useRef(null);
 
-  const onChangeHandlerRef = useRef(
+  const searchTermChangeHandlerRef = useRef(
     debounce(() => {
       setAppliedFilterParams({
         ...filterParams,
@@ -129,6 +129,14 @@ function PagedListViewDialog(props) {
     if (commitOnSelect) {
       onDismiss(Array.from(selection));
     }
+  };
+
+  //----------------------------------------------------------------------------
+  const handlePageChange = (page) => {
+    setAppliedFilterParams({
+      ...appliedFilterParams,
+      page
+    });
   };
 
   //----------------------------------------------------------------------------
@@ -195,7 +203,7 @@ function PagedListViewDialog(props) {
                 fullWidth
                 inputRef={searchFieldRef}
                 margin="dense"
-                onChange={onChangeHandlerRef.current}
+                onChange={searchTermChangeHandlerRef.current}
                 placeholder="Filter by search term..."
                 variant="outlined"
               />
@@ -218,6 +226,7 @@ function PagedListViewDialog(props) {
               commitOnSelect: props.commitOnSelect,
             }}
             onConfig={setListViewConfig}
+            onPageChange={handlePageChange}
             onSelectionChange={handleSelectionChange}
             onToolbarChange={setListViewToolbarItems}
             paginated={props.paginated}
