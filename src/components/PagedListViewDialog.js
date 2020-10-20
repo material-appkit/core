@@ -4,8 +4,6 @@
 *
 */
 
-import debounce from 'lodash.debounce';
-
 import PropTypes from 'prop-types';
 import React, {
   Fragment,
@@ -23,11 +21,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
+import SearchField from './SearchField';
 import Spacer from './Spacer';
 
 import EditDialog from './EditDialog';
@@ -96,16 +94,6 @@ function PagedListViewDialog(props) {
   const [dialogTitle, setDialogTitle] = useState(null);
 
   const dialogRef = useRef(null);
-  const searchFieldRef = useRef(null);
-
-  const searchTermChangeHandlerRef = useRef(
-    debounce(() => {
-      setAppliedFilterParams({
-        ...filterParams,
-        [searchFilterParam]: searchFieldRef.current.value,
-      });
-    }, 500, { leading: false, trailing: true })
-  );
 
   useEffect(() => {
     if (listViewConfig) {
@@ -114,7 +102,6 @@ function PagedListViewDialog(props) {
     } else {
       setDialogTitle('Loading...');
     }
-
   }, [listViewConfig]);
 
 
@@ -136,6 +123,14 @@ function PagedListViewDialog(props) {
     setAppliedFilterParams({
       ...appliedFilterParams,
       page
+    });
+  };
+
+  //----------------------------------------------------------------------------
+  const handleSearchFieldChange = (value) => {
+    setAppliedFilterParams({
+      ...appliedFilterParams,
+      [searchFilterParam]: value
     });
   };
 
@@ -198,14 +193,11 @@ function PagedListViewDialog(props) {
 
           {props.searchFilterParam &&
             <Box className={classes.filterFieldContainer}>
-              <TextField
+              <SearchField
                 autoFocus
                 fullWidth
-                inputRef={searchFieldRef}
                 margin="dense"
-                onChange={searchTermChangeHandlerRef.current}
-                placeholder="Filter by search term..."
-                variant="outlined"
+                onTimeout={handleSearchFieldChange}
               />
             </Box>
           }
