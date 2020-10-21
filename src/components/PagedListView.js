@@ -487,7 +487,9 @@ function PagedListView(props) {
     // Let the filter params be transformed before they're committed
     params = coerceFilterParams(params);
 
-    setAppliedFilterParams(params);
+    if (!isEqual(params, appliedFilterParams)) {
+      setAppliedFilterParams(params);
+    }
   }, [filterParams]);
 
 
