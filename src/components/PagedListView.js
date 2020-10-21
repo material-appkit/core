@@ -531,28 +531,6 @@ function PagedListView(props) {
 
 
   /**
-   * When the pagination info is updated, update the dependent toolbar items
-   */
-  useEffect(() => {
-    if (!(paginated && paginationInfo)) {
-      return;
-    }
-
-    const newToolbarItems = { ...toolbarItems };
-
-    newToolbarItems.paginationListControl = (
-      <Pagination
-        count={paginationInfo.total_pages}
-        page={paginationInfo.current_page}
-        onChange={(value) => setPage(value)}
-        {...paginationListControlProps}
-      />
-    );
-
-    setToolbarItems(newToolbarItems);
-  }, [paginationInfo]);
-
-  /**
    * Update the selectionControl toolbarItem when selection mode is enabled/disabled
    */
   useEffect(() => {
@@ -587,6 +565,15 @@ function PagedListView(props) {
           onPageChange={(value) => setPage(value + 1) }
           onPageSizeChange={(value) => setPageSize(value) }
           {...paginationControlProps}
+        />
+      );
+
+      newToolbarItems.paginationListControl = (
+        <Pagination
+          count={paginationInfo.total_pages}
+          page={paginationInfo.current_page}
+          onChange={(e, value) => setPage(value)}
+          {...paginationListControlProps}
         />
       );
     }
