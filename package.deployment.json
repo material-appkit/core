@@ -1,6 +1,6 @@
 {
   "name": "@material-appkit/core",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "keywords": [
     "React",
@@ -33,7 +33,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "notistack": "^1.0.1",
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0"
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   }
 }
