@@ -1,7 +1,7 @@
 import debounce from 'lodash.debounce';
 
 import PropTypes from 'prop-types';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -11,25 +11,35 @@ import SearchIcon from '@material-ui/icons/Search';
 
 function SearchField(props) {
   const {
-    value,
-    onTimeout,
     onChange,
     timeoutDelay,
+    value,
     ...textFieldProps
   } = props;
 
-  const [searchTerm, setSearchTerm] = useState(value);
+  const [searchTerm, setSearchTerm] = useState(value || '');
+
+  useEffect(() => {
+    if (value !== searchTerm) {
+      updateSearchTerm(value);
+    }
+  }, [value]);
 
   const searchTermChangeHandlerRef = useRef(
     debounce((value) => {
-      onTimeout(value);
+      console.log('delayed change');
+      onChange(value);
     }, timeoutDelay, { leading: false, trailing: true })
   );
 
 
   const updateSearchTerm = (value) => {
     setSearchTerm(value);
-    searchTermChangeHandlerRef.current(value);
+    if (timeoutDelay) {
+      searchTermChangeHandlerRef.current(value);
+    } else {
+      onChange(value);
+    }
   };
 
   return (
@@ -68,9 +78,9 @@ SearchField.propTypes = {
 
 SearchField.defaultProps = {
   placeholder: 'Filter by search term...',
-  timeoutDelay: 500,
+  timeoutDelay: 200,
   value: '',
-  variant: 'outlined',
+  variant: 'standard',
 };
 
 export default SearchField;
