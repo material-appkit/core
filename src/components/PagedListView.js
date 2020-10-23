@@ -50,29 +50,71 @@ import ToolbarItem from './ToolbarItem';
 
 //------------------------------------------------------------------------------
 function SortControl(props) {
+  const {
+    choices,
+    onDismiss,
+    selectedOrdering,
+  } = props;
+
+  const [sortControlEl, setSortControlEl] = useState(null);
+
   let orderingLabel = '';
-  props.choices.forEach((choice) => {
-    if (choice[0] === props.selectedOrdering) {
+  choices.forEach((choice) => {
+    if (choice[0] === selectedOrdering) {
       orderingLabel = choice[1];
     }
   });
 
+  const dismissMenu = (choice) => {
+    setSortControlEl(null);
+    onDismiss(choice);
+  };
+
   return (
-    <Tooltip title={`Ordered by: ${orderingLabel}`}>
-      <IconButton
-        color="primary"
-        onClick={props.onClick}
-        style={{ borderRadius: 0 }}
+    <Fragment>
+      <Tooltip title={`Ordered by: ${orderingLabel}`}>
+        <IconButton
+          color="primary"
+          onClick={(e) => setSortControlEl(e.currentTarget)}
+          style={{ borderRadius: 0 }}
+        >
+          <SortIcon />
+        </IconButton>
+      </Tooltip>
+
+      <Menu
+        anchorEl={sortControlEl}
+        getContentAnchorEl={null}
+        id="sort-menu"
+        open={Boolean(sortControlEl)}
+        onClose={() => dismissMenu(null)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
       >
-        <SortIcon />
-      </IconButton>
-    </Tooltip>
+        {makeChoices(choices).map((sortChoice) => (
+          <MenuItem
+            key={sortChoice.value}
+            onClick={() => dismissMenu(sortChoice)}
+            selected={sortChoice.value === selectedOrdering}
+          >
+            {sortChoice.label}
+          </MenuItem>
+        ))}
+      </Menu>
+    </Fragment>
   );
 }
 
 SortControl.propTypes = {
   choices: PropTypes.array.isRequired,
-  onClick: PropTypes.func.isRequired,
+  onDismiss: PropTypes.func.isRequired,
+  selectedOrdering: PropTypes.string,
 };
 
 
@@ -215,7 +257,6 @@ function PagedListView(props) {
   const [selectedSubsetArrangementIndex, setSelectedSubsetArrangementIndex] = useState(null);
   const [uncontrolledSelection, setUncontrolledSelection] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(props.selectionDisabled);
-  const [sortControlEl, setSortControlEl] = useState(null);
 
   // Maintain a reference to the fetch request so it can be aborted
   // if this component is unmounted while it is in flight.
@@ -593,20 +634,27 @@ function PagedListView(props) {
 
 
   useEffect(() => {
-    if (!(filterMetadata && filterMetadata.ordering_fields && filterMetadata.ordering_fields.length)) {
+    if (!filterMetadata) {
+      return;
+    }
+
+    const orderingFields = filterMetadata.ordering_fields;
+    if (!(orderingFields && orderingFields.length)) {
       return;
     }
 
     updateToolbarItems({
       sortControl: (
-        <SortControl
-          choices={filterMetadata.ordering_fields}
-          selectedOrdering={ordering}
-          onClick={(e) => setSortControlEl(e.currentTarget)}
-        />
+        <Fragment>
+          <SortControl
+            choices={orderingFields}
+            selectedOrdering={ordering}
+            onDismiss={handleSortDialogDismiss}
+          />
+        </Fragment>
       )
     });
-  }, [filterMetadata]);
+  }, [filterMetadata, ordering]);
 
 
   /**
@@ -701,7 +749,6 @@ function PagedListView(props) {
 
 
   const handleSortDialogDismiss = (choice) => {
-    setSortControlEl(null);
     if (onOrderingChange) {
       onOrderingChange(choice);
     }
@@ -906,40 +953,9 @@ function PagedListView(props) {
     }
   }
 
-  return (
-    <Fragment>
-      {view}
-
-      {toolbarItemsRef.current.sortControl &&
-        <Menu
-          anchorEl={sortControlEl}
-          getContentAnchorEl={null}
-          id="sort-menu"
-          open={Boolean(sortControlEl)}
-          onClose={() => handleSortDialogDismiss(null)}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-        >
-          {makeChoices(filterMetadata.ordering_fields).map((sortChoice) => (
-            <MenuItem
-              key={sortChoice.value}
-              onClick={() => handleSortDialogDismiss(sortChoice)}
-              selected={sortChoice.value === ordering}
-            >
-              {sortChoice.label}
-            </MenuItem>
-          ))}
-        </Menu>
-      }
-    </Fragment>
-  );
+  return view;
 }
+
 
 PagedListView.propTypes = {
   classes: PropTypes.object,
