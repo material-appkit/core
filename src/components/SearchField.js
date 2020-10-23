@@ -27,7 +27,6 @@ function SearchField(props) {
 
   const searchTermChangeHandlerRef = useRef(
     debounce((value) => {
-      console.log('delayed change');
       onChange(value);
     }, timeoutDelay, { leading: false, trailing: true })
   );
@@ -78,7 +77,7 @@ SearchField.propTypes = {
 
 SearchField.defaultProps = {
   placeholder: 'Filter by search term...',
-  timeoutDelay: 200,
+  timeoutDelay: 300,
   value: '',
   variant: 'standard',
 };
