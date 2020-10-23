@@ -645,13 +645,11 @@ function PagedListView(props) {
 
     updateToolbarItems({
       sortControl: (
-        <Fragment>
-          <SortControl
-            choices={orderingFields}
-            selectedOrdering={ordering}
-            onDismiss={handleSortDialogDismiss}
-          />
-        </Fragment>
+        <SortControl
+          choices={orderingFields}
+          selectedOrdering={ordering}
+          onDismiss={handleSortDialogDismiss}
+        />
       )
     });
   }, [filterMetadata, ordering]);
