@@ -216,7 +216,6 @@ function PagedListView(props) {
   const [uncontrolledSelection, setUncontrolledSelection] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(props.selectionDisabled);
   const [sortControlEl, setSortControlEl] = useState(null);
-  const [toolbarItems, setToolbarItems] = useState({});
 
   // Maintain a reference to the fetch request so it can be aborted
   // if this component is unmounted while it is in flight.
@@ -224,6 +223,8 @@ function PagedListView(props) {
 
   const [measuring, setMeasuring] = useState(false);
   const itemHeights = useRef(null);
+
+  const toolbarItemsRef = useRef({});
 
   // Derived properties
 
@@ -451,6 +452,15 @@ function PagedListView(props) {
   };
 
   // ---------------------------------------------------------------------------
+  const updateToolbarItems = (items) => {
+    const newToolbarItems = { ...toolbarItemsRef.current, ...items };
+    toolbarItemsRef.current = newToolbarItems;
+
+    if (onToolbarChange) {
+      onToolbarChange(newToolbarItems);
+    }
+  };
+
   /**
    * Initialization
    */
@@ -534,9 +544,9 @@ function PagedListView(props) {
    * Update the selectionControl toolbarItem when selection mode is enabled/disabled
    */
   useEffect(() => {
-    const newToolbarItems = { ...toolbarItems };
+    const updatedToolbarItems = {};
 
-    newToolbarItems.selectionControl = (
+    updatedToolbarItems.selectionControl = (
       <SelectionControl
         onClick={() => {
           // When the selection control button is clicked, toggle selection mode.
@@ -556,7 +566,7 @@ function PagedListView(props) {
       if (!selectionDisabled && selectionMode === 'multiple') {
         pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
       }
-      newToolbarItems.paginationControl = (
+      updatedToolbarItems.paginationControl = (
         <PaginationControl
           count={paginationInfo.total}
           page={(paginationInfo.current_page) - 1}
@@ -568,7 +578,7 @@ function PagedListView(props) {
         />
       );
 
-      newToolbarItems.paginationListControl = (
+      updatedToolbarItems.paginationListControl = (
         <Pagination
           count={paginationInfo.total_pages}
           page={paginationInfo.current_page}
@@ -578,7 +588,7 @@ function PagedListView(props) {
       );
     }
 
-    setToolbarItems(newToolbarItems);
+    updateToolbarItems(updatedToolbarItems);
   }, [paginationInfo, selection, selectionDisabled]);
 
 
@@ -587,26 +597,16 @@ function PagedListView(props) {
       return;
     }
 
-    const newToolbarItems = { ...toolbarItems };
-    newToolbarItems.sortControl = (
-      <SortControl
-        choices={filterMetadata.ordering_fields}
-        selectedOrdering={ordering}
-        onClick={(e) => setSortControlEl(e.currentTarget)}
-      />
-    );
-
-    setToolbarItems(newToolbarItems);
+    updateToolbarItems({
+      sortControl: (
+        <SortControl
+          choices={filterMetadata.ordering_fields}
+          selectedOrdering={ordering}
+          onClick={(e) => setSortControlEl(e.currentTarget)}
+        />
+      )
+    });
   }, [filterMetadata]);
-
-
-  useEffect(() => {
-    if (!onToolbarChange) {
-      return;
-    }
-
-    onToolbarChange(toolbarItems);
-  }, [toolbarItems]);
 
 
   /**
@@ -910,7 +910,7 @@ function PagedListView(props) {
     <Fragment>
       {view}
 
-      {toolbarItems.sortControl &&
+      {toolbarItemsRef.current.sortControl &&
         <Menu
           anchorEl={sortControlEl}
           getContentAnchorEl={null}
