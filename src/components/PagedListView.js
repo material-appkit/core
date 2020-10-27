@@ -516,6 +516,13 @@ function PagedListView(props) {
     });
   }, []);
 
+  /**
+   * When items are supplied directly via the 'items' prop, apply them
+   * immediately.
+   */
+  useEffect(() => {
+    setRenderedItems(items);
+  }, [items]);
 
   /**
    * When the supplied filter params are changed, OR the pagnation/ordering
@@ -549,7 +556,9 @@ function PagedListView(props) {
    * Reload the list whenever ANY properties affecting the source query are altered
    */
   useEffect(() => {
-    if (!appliedFilterParams) {
+    // When the list items have been explicitly provided as props,
+    // there is no need to proceed further
+    if (items) {
       return;
     }
 
@@ -579,7 +588,7 @@ function PagedListView(props) {
         onLoadError(err);
       }
     });
-  }, [appliedFilterParams]);
+  }, [appliedFilterParams, items]);
 
 
   /**
@@ -959,13 +968,13 @@ function PagedListView(props) {
 PagedListView.propTypes = {
   classes: PropTypes.object,
 
-  filterParams: PropTypes.object,
   defaultSelection: PropTypes.object,
 
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
 
   emptyListPlaceholder: PropTypes.element,
 
+  filterParams: PropTypes.object,
   filterMetadata: PropTypes.object,
   filterParamTransformer: PropTypes.func,
 
@@ -1024,6 +1033,7 @@ PagedListView.propTypes = {
 
 PagedListView.defaultProps = {
   classes: {},
+  filterParams: {},
   itemIdKey: 'id',
   loadingVariant: 'circular',
   orderingParamName: 'order',
