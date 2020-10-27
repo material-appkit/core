@@ -1034,6 +1034,7 @@ PagedListView.propTypes = {
 PagedListView.defaultProps = {
   classes: {},
   filterParams: {},
+  items: null,
   itemIdKey: 'id',
   loadingVariant: 'circular',
   orderingParamName: 'order',
