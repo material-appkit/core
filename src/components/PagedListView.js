@@ -558,7 +558,7 @@ function PagedListView(props) {
   useEffect(() => {
     // When the list items have been explicitly provided as props,
     // there is no need to proceed further
-    if (items) {
+    if (items || !appliedFilterParams) {
       return;
     }
 
