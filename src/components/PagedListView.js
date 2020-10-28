@@ -35,16 +35,16 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ErrorIcon from '@material-ui/icons/Error';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import SortIcon from '@material-ui/icons/Sort';
 
 import ServiceAgent from '../util/ServiceAgent';
 import { makeChoices } from '../util/array';
-import { filterExcludeKeys, filterEmptyValues } from '../util/object';
+import { filterEmptyValues } from '../util/object';
 import { find as setFind } from '../util/set';
 
 import PaginationControl from './PaginationControl';
-import PlaceholderView from './PlaceholderView';
 import TileList from './TileList';
 import ToolbarItem from './ToolbarItem';
 
@@ -221,7 +221,20 @@ SelectionControl.propTypes = {
 };
 
 //------------------------------------------------------------------------------
+const pagedListViewStyles = makeStyles((theme) => ({
+  centeredContentContainer: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    height: '100%',
+    width: '100%',
+  },
+}));
+
 function PagedListView(props) {
+  const styles = pagedListViewStyles();
+
   const {
     classes,
     filterMetadata,
@@ -232,6 +245,7 @@ function PagedListView(props) {
     itemContextProvider,
     itemTransformer,
     listItemProps,
+    loadingVariant,
     onConfig,
     onLoad,
     onLoadComplete,
@@ -244,6 +258,7 @@ function PagedListView(props) {
     paginated,
     paginationControlProps,
     paginationListControlProps,
+    PlaceholderComponent,
     selectionMenu,
     selectionMode,
     src,
@@ -493,7 +508,7 @@ function PagedListView(props) {
     setRenderedItems(updatedItems);
   };
 
-  // ---------------------------------------------------------------------------
+
   const updateToolbarItems = (change) => {
     const newToolbarItems = { ...toolbarItemsRef.current, ...change };
     toolbarItemsRef.current = newToolbarItems;
@@ -502,6 +517,8 @@ function PagedListView(props) {
       onToolbarChange(newToolbarItems);
     }
   };
+
+  // ---------------------------------------------------------------------------
 
   /**
    * Initialization
@@ -831,6 +848,7 @@ function PagedListView(props) {
   }, [windowed, renderedItems]);
 
   //----------------------------------------------------------------------------
+
   /**
    * Produce a list item from the given item
    * @param item: Item to be rendered
@@ -849,34 +867,53 @@ function PagedListView(props) {
     />
   );
 
+  const createPlaceholderComponent = () => {
+    if (loadingVariant === 'circular') {
+      return (
+        <div className={styles.centeredContentContainer}>
+          <CircularProgress disableShrink />
+        </div>
+      );
+    }
+
+    if (loadingVariant === 'placeholder' && PlaceholderComponent) {
+      const placeholderCount = 10;
+      const placeholders = new Array(placeholderCount);
+      for (let i = 0; i < placeholderCount; ++i) {
+        placeholders[i] = <PlaceholderComponent key={i} />
+      }
+
+      return (
+        <List disablePadding>
+          {placeholders}
+        </List>
+      );
+    }
+
+    if (loadingVariant === 'linear') {
+      return <LinearProgress />;
+    }
+
+    return null;
+  };
+
+
   //----------------------------------------------------------------------------
   // Putting it all together...time to render the main view
   //----------------------------------------------------------------------------
   if (loadError) {
     return (
-      <PlaceholderView padding={2}>
+      <div className={styles.centeredContentContainer}>
+        <ErrorIcon fontSize="large" />
         <Typography>
           Failed to load data.
         </Typography>
-      </PlaceholderView>
+      </div>
     );
   }
 
   if (!renderedItems) {
-    switch (props.loadingVariant) {
-      case 'circular':
-        return (
-          <PlaceholderView border={false}>
-            <CircularProgress disableShrink />
-          </PlaceholderView>
-        );
-      case 'linear':
-        return (
-          <LinearProgress />
-        );
-      default:
-        return null;
-    }
+    return createPlaceholderComponent();
   }
 
   if (!renderedItems.length) {
@@ -885,11 +922,11 @@ function PagedListView(props) {
     }
 
     return (
-      <PlaceholderView padding={2}>
-        <Typography variant="body2">
+      <div className={styles.centeredContentContainer}>
+        <Typography>
           No items to display
         </Typography>
-      </PlaceholderView>
+      </div>
     );
   }
 
@@ -994,7 +1031,7 @@ PagedListView.propTypes = {
   listItemProps: PropTypes.object,
   listItemComponent: PropTypes.func,
 
-  loadingVariant: PropTypes.oneOf(['linear', 'circular']),
+  loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
 
   location: PropTypes.object,
 
@@ -1011,6 +1048,8 @@ PagedListView.propTypes = {
   orderingParamName: PropTypes.string,
   paginated: PropTypes.bool,
   paginationListControlProps: PropTypes.object,
+
+  PlaceholderComponent: PropTypes.elementType,
 
   selection: PropTypes.object,
   selectionDisabled: PropTypes.bool,
