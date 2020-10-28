@@ -5,14 +5,16 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
+import MuiTextField from '@material-ui/core/TextField';
 import CancelIcon from '@material-ui/icons/Cancel';
 import SearchIcon from '@material-ui/icons/Search';
 
-function SearchField(props) {
+function AttributedTextField(props) {
   const {
+    clearable,
     onChange,
-    timeoutDelay,
+    onChangeDelay,
+    StartIcon,
     value,
     ...textFieldProps
   } = props;
@@ -28,38 +30,44 @@ function SearchField(props) {
   const searchTermChangeHandlerRef = useRef(
     debounce((value) => {
       onChange(value);
-    }, timeoutDelay, { leading: false, trailing: true })
+    }, onChangeDelay, { leading: false, trailing: true })
   );
 
 
   const updateSearchTerm = (value) => {
     setSearchTerm(value);
-    if (timeoutDelay) {
+    if (onChangeDelay) {
       searchTermChangeHandlerRef.current(value);
     } else {
       onChange(value);
     }
   };
 
+  const InputProps = {};
+  if (StartIcon) {
+    InputProps.startAdornment = (
+      <InputAdornment position="start">
+        <StartIcon />
+      </InputAdornment>
+    );
+  }
+
+  if (clearable) {
+    InputProps.endAdornment = searchTerm ? (
+      <InputAdornment position="end">
+        <IconButton
+          onClick={() => updateSearchTerm('')}
+          size="small"
+        >
+        <CancelIcon fontSize="small" />
+        </IconButton>
+      </InputAdornment>
+    ) : null;
+  }
+
   return (
-    <TextField
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <SearchIcon/>
-          </InputAdornment>
-        ),
-        endAdornment: searchTerm ? (
-          <InputAdornment position="end">
-            <IconButton
-              onClick={() => updateSearchTerm('')}
-              size="small"
-            >
-            <CancelIcon fontSize="small" />
-            </IconButton>
-          </InputAdornment>
-        ) : null
-      }}
+    <MuiTextField
+      InputProps={InputProps}
       onChange={(e) => updateSearchTerm(e.target.value)}
       value={searchTerm}
       {...textFieldProps}
@@ -67,19 +75,22 @@ function SearchField(props) {
   );
 }
 
-SearchField.propTypes = {
+AttributedTextField.propTypes = {
+  clearable: PropTypes.bool,
   onTimeout: PropTypes.func,
   placeholder: PropTypes.string,
-  timeoutDelay: PropTypes.number,
+  onChangeDelay: PropTypes.number,
+  StartIcon: PropTypes.elementType,
   value: PropTypes.string,
   variant: PropTypes.string,
 };
 
-SearchField.defaultProps = {
+AttributedTextField.defaultProps = {
+  clearable: true,
+  onChangeDelay: 300,
   placeholder: 'Filter by search term...',
-  timeoutDelay: 300,
   value: '',
   variant: 'standard',
 };
 
-export default SearchField;
+export default AttributedTextField;

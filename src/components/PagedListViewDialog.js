@@ -24,8 +24,9 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
+import SearchIcon from '@material-ui/icons/Search';
 
-import SearchField from './SearchField';
+import AttributedTextField from './AttributedTextField';
 import Spacer from './Spacer';
 
 import EditDialog from './EditDialog';
@@ -193,11 +194,13 @@ function PagedListViewDialog(props) {
 
           {props.searchFilterParam &&
             <Box className={classes.filterFieldContainer}>
-              <SearchField
+              <AttributedTextField
                 autoFocus
                 fullWidth
                 margin="dense"
-                onTimeout={handleSearchFieldChange}
+                onChange={handleSearchFieldChange}
+                StartIcon={SearchIcon}
+                variant="outlined"
               />
             </Box>
           }
