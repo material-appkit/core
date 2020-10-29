@@ -7,7 +7,6 @@ import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import MuiTextField from '@material-ui/core/TextField';
 import CancelIcon from '@material-ui/icons/Cancel';
-import SearchIcon from '@material-ui/icons/Search';
 
 function AttributedTextField(props) {
   const {
@@ -16,30 +15,36 @@ function AttributedTextField(props) {
     onChangeDelay,
     StartIcon,
     value,
+    valueTransformer,
     ...textFieldProps
   } = props;
 
-  const [searchTerm, setSearchTerm] = useState(value || '');
+  const [fieldValue, setFieldValue] = useState(value);
 
   useEffect(() => {
-    if (value !== searchTerm) {
-      updateSearchTerm(value);
+    if (value !== fieldValue) {
+      updateFieldValue(value);
     }
   }, [value]);
 
   const searchTermChangeHandlerRef = useRef(
-    debounce((value) => {
-      onChange(value);
+    debounce((v) => {
+      onChange(v);
     }, onChangeDelay, { leading: false, trailing: true })
   );
 
 
-  const updateSearchTerm = (value) => {
-    setSearchTerm(value);
+  const updateFieldValue = (v) => {
+    let updatedValue = v;
+    if (valueTransformer) {
+      updatedValue = valueTransformer(updatedValue);
+    }
+
+    setFieldValue(updatedValue);
     if (onChangeDelay) {
-      searchTermChangeHandlerRef.current(value);
+      searchTermChangeHandlerRef.current(updatedValue);
     } else {
-      onChange(value);
+      onChange(updatedValue);
     }
   };
 
@@ -53,10 +58,11 @@ function AttributedTextField(props) {
   }
 
   if (clearable) {
-    InputProps.endAdornment = searchTerm ? (
+    InputProps.endAdornment = fieldValue ? (
       <InputAdornment position="end">
         <IconButton
-          onClick={() => updateSearchTerm('')}
+          edge="end"
+          onClick={() => updateFieldValue('')}
           size="small"
         >
         <CancelIcon fontSize="small" />
@@ -68,8 +74,8 @@ function AttributedTextField(props) {
   return (
     <MuiTextField
       InputProps={InputProps}
-      onChange={(e) => updateSearchTerm(e.target.value)}
-      value={searchTerm}
+      onChange={(e) => updateFieldValue(e.target.value)}
+      value={fieldValue}
       {...textFieldProps}
     />
   );
@@ -81,14 +87,17 @@ AttributedTextField.propTypes = {
   placeholder: PropTypes.string,
   onChangeDelay: PropTypes.number,
   StartIcon: PropTypes.elementType,
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
+  valueTransformer: PropTypes.func,
   variant: PropTypes.string,
 };
 
 AttributedTextField.defaultProps = {
   clearable: true,
   onChangeDelay: 300,
-  placeholder: 'Filter by search term...',
   value: '',
   variant: 'standard',
 };
