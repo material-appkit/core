@@ -1,4 +1,4 @@
-import { storageOfType } from '../storage';
+import StorageManager from '../../managers/StorageManager';
 
 const DEFAULT_REQUEST_HEADERS = {
   'Accept': 'application/json',
@@ -42,18 +42,15 @@ export default class SAServiceProxy {
   }
 
   static getAccessToken() {
-    const localStorage = storageOfType('localStorage');
-    return localStorage.getItem(this.getAccessTokenCookieName());
+    return StorageManager.localValue(this.getAccessTokenCookieName());
   }
 
   static setAccessToken(value) {
-    const localStorage = storageOfType('localStorage');
-
     const cookieName = this.getAccessTokenCookieName();
     if (value) {
-      localStorage.setItem(cookieName, value);
+      StorageManager.setLocalValue(cookieName, value);
     } else {
-      localStorage.removeItem(cookieName);
+      StorageManager.removeLocalValue(cookieName);
     }
   }
 
@@ -74,8 +71,7 @@ export default class SAServiceProxy {
       requestHeaders.Authorization = `Bearer ${accessToken}`;
     }
 
-    const localStorage = storageOfType('localStorage');
-    const csrfToken = localStorage.getItem('csrftoken');
+    const csrfToken = StorageManager.localValue('csrftoken');
     if (csrfToken) {
       requestHeaders['X-CSRFToken'] = csrfToken;
     }
