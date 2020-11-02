@@ -1,4 +1,4 @@
-import cookie from 'js-cookie';
+import { storageOfType } from '../storage';
 
 const DEFAULT_REQUEST_HEADERS = {
   'Accept': 'application/json',
@@ -42,16 +42,18 @@ export default class SAServiceProxy {
   }
 
   static getAccessToken() {
-    return cookie.get(this.getAccessTokenCookieName());
+    const localStorage = storageOfType('localStorage');
+    return localStorage.getItem(this.getAccessTokenCookieName());
   }
 
-  static setAccessToken(value, attrs) {
-    const cookieAttributes = attrs || {};
+  static setAccessToken(value) {
+    const localStorage = storageOfType('localStorage');
+
     const cookieName = this.getAccessTokenCookieName();
     if (value) {
-      cookie.set(cookieName, value, cookieAttributes);
+      localStorage.setItem(cookieName, value);
     } else {
-      cookie.remove(cookieName, cookieAttributes);
+      localStorage.removeItem(cookieName);
     }
   }
 
@@ -72,7 +74,8 @@ export default class SAServiceProxy {
       requestHeaders.Authorization = `Bearer ${accessToken}`;
     }
 
-    const csrfToken = cookie.get('csrftoken');
+    const localStorage = storageOfType('localStorage');
+    const csrfToken = localStorage.getItem('csrftoken');
     if (csrfToken) {
       requestHeaders['X-CSRFToken'] = csrfToken;
     }
