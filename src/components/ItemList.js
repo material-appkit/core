@@ -4,7 +4,7 @@
 *
 */
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
@@ -147,7 +147,7 @@ function ItemListItem(props) {
 
   return (
     <ListItem
-      className={classNames(listItemClasses)}
+      className={clsx(listItemClasses)}
       {...props.listItemProps}
     >
       {(props.mode === 'view' && props.icon) &&

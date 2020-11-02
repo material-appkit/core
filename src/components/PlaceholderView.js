@@ -1,4 +1,4 @@
-import cx from 'classnames';
+import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -69,7 +69,7 @@ const PlaceholderView = React.forwardRef((props, ref) => {
   return (
     <Box {...boxProps}>
       <Component
-        className={cx(classNames)}
+        className={clsx(classNames)}
         ref={ref}
         {...componentProps}
       >

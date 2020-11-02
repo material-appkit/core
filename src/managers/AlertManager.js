@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
@@ -91,7 +91,7 @@ function AlertDialog({ alertInfo, onDismiss }) {
       }
 
       <DialogContent className={classes.dialogContent}>
-        <TitleIcon className={classNames([classes.titleIcon, alertInfo.type])} />
+        <TitleIcon className={clsx([classes.titleIcon, alertInfo.type])} />
 
         {alertInfo.description &&
           <DialogContentText className={classes.dialogContentText}>

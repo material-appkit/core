@@ -4,7 +4,7 @@
 *
 */
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
@@ -172,7 +172,7 @@ function VirtualizedListItem(props) {
       );
     }
     secondaryListItemAction = (
-      <ListItemSecondaryAction className={classNames(secondaryListItemClasses)}>
+      <ListItemSecondaryAction className={clsx(secondaryListItemClasses)}>
         {secondaryListItemActionContent}
       </ListItemSecondaryAction>
     );

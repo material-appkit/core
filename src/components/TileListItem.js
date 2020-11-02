@@ -4,7 +4,7 @@
 *
 */
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -74,7 +74,7 @@ function TileListItem(props) {
       {...listTileProps}
       {...rest}
     >
-      <span className={classNames(tileClasses)}>
+      <span className={clsx(tileClasses)}>
         {props.children}
       </span>
 

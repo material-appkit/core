@@ -4,7 +4,7 @@
 *
 */
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
@@ -951,7 +951,7 @@ function PagedListView(props) {
         <AutoSizer>
           {({width, height}) => (
             <VariableSizeList
-              className={classNames(listViewClassNames)}
+              className={clsx(listViewClassNames)}
               height={height}
               innerElementType={List}
               itemData={{ renderedItems }}
@@ -969,7 +969,7 @@ function PagedListView(props) {
     } else {
       view = (
         <List
-          className={classNames(listViewClassNames)}
+          className={clsx(listViewClassNames)}
           disablePadding
         >
           {renderedItems.map(

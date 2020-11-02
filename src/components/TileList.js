@@ -4,7 +4,7 @@
 *
 */
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
@@ -36,7 +36,7 @@ function TileList(props) {
   }
 
   return (
-    <Box className={classNames(boxClasses)} style={gridStyles}>
+    <Box className={clsx(boxClasses)} style={gridStyles}>
       {props.children}
     </Box>
   );

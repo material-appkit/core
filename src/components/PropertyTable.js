@@ -4,7 +4,7 @@
 *
 */
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -81,11 +81,11 @@ function PropertyTable(props) {
 
           return (
             <TableRow
-              className={classNames(rowClasses)}
+              className={clsx(rowClasses)}
               {...rowProps}
             >
               {selection &&
-                <TableCell className={classNames(classes.cell, classes.selectionCell)}>
+                <TableCell className={clsx(classes.cell, classes.selectionCell)}>
                   <Checkbox
                     checked={!!selection[key]}
                     onClick={handleCheckboxClick(key)}
@@ -95,7 +95,7 @@ function PropertyTable(props) {
               }
 
               <TableCell
-                className={classNames(classes.cell, classes.labelCell)}
+                className={clsx(classes.cell, classes.labelCell)}
                 style={labelCellStyle}
               >
                 {key}

@@ -4,7 +4,7 @@
 *
 */
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -167,7 +167,7 @@ function CheckboxGroupWidget(props) {
 
     handleEditDialogClose();
   };
-  
+
   //----------------------------------------------------------------------------
   const classes = styles();
 
@@ -183,7 +183,7 @@ function CheckboxGroupWidget(props) {
 
   return (
     <FormControl fullWidth margin="none">
-      <fieldset className={classNames(fieldsetClasses)}>
+      <fieldset className={clsx(fieldsetClasses)}>
         {label &&
           <legend className={classes.legend}>
             {label}
