@@ -4,7 +4,7 @@ const DEFAULT_REQUEST_HEADERS = {
   'Accept': 'application/json',
 };
 
-export default class SAServiceProxy {
+export default class AbstractServiceProxy {
   static getAccessTokenCookieName() {
     const cookieName = (
       process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME ||
