@@ -37,7 +37,7 @@ class ViewController extends React.PureComponent {
 
 ViewController.propTypes = {
   children: PropTypes.any,
-  contextMenuItems: PropTypes.object,
+  contextMenuItems: PropTypes.array,
   mountPath: PropTypes.string,
   onMount: PropTypes.func,
   onUpdate: PropTypes.func,
