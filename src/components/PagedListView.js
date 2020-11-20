@@ -244,6 +244,8 @@ function PagedListView(props) {
     itemContextMenuArrangement,
     itemContextProvider,
     itemTransformer,
+    listItemComponent,
+    listItemComponentFunc,
     listItemProps,
     loadingVariant,
     onConfig,
@@ -856,16 +858,19 @@ function PagedListView(props) {
    * @param style: Additional style params (primarily used in windowed mode)
    * @param onMount: Optional callback to be invoked when the list item mounts
    */
-  const renderListItem = (item, itemIndex, style, onMount) => (
-    <props.listItemComponent
-      key={keyForItem(item)}
-      to={pathForItem(item)}
-      onMount={onMount}
-      selectOnClick={props.selectOnClick}
-      style={style}
-      {...itemProps(item)}
-    />
-  );
+  const renderListItem = (item, itemIndex, style, onMount) => {
+    const ListItemType = listItemComponentFunc ? listItemComponentFunc(item) : listItemComponent;
+    return (
+      <ListItemType
+        key={keyForItem(item)}
+        to={pathForItem(item)}
+        onMount={onMount}
+        selectOnClick={props.selectOnClick}
+        style={style}
+        {...itemProps(item)}
+      />
+    );
+  }
 
   const createPlaceholderComponent = () => {
     if (loadingVariant === 'circular') {
@@ -1029,7 +1034,8 @@ PagedListView.propTypes = {
   itemTransformer: PropTypes.func,
 
   listItemProps: PropTypes.object,
-  listItemComponent: PropTypes.func,
+  listItemComponent: PropTypes.elementType,
+  listItemComponentFunc: PropTypes.func,
 
   loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
 
