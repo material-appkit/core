@@ -870,7 +870,7 @@ function PagedListView(props) {
         {...itemProps(item)}
       />
     );
-  }
+  };
 
   const createPlaceholderComponent = () => {
     if (loadingVariant === 'circular') {
