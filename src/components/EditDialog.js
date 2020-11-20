@@ -187,14 +187,14 @@ function EditDialog(props) {
 
         <Spacer />
 
-        <Button onClick={() => { dismiss(); }}>
+        <Button onClick={() => dismiss()}>
           {props.labels.CANCEL}
         </Button>
 
         <Button
           color="primary"
           disabled={saving}
-          onClick={() => { formRef.current.save(); }}
+          onClick={() => formRef.current.save()}
         >
           {saving ? props.labels.SAVING : props.labels.SAVE}
         </Button>
@@ -204,6 +204,7 @@ function EditDialog(props) {
 }
 
 EditDialog.propTypes = {
+  apiCreateUrl: PropTypes.string,
   apiDetailUrl: PropTypes.string,
   canDelete: PropTypes.bool,
   commitOnEnter: PropTypes.bool,

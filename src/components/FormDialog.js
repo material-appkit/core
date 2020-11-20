@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
@@ -20,6 +19,12 @@ import { formToObject } from '../util/form';
 import { titleCase } from '../util/string';
 
 const styles = makeStyles((theme) => ({
+  leftActionControl: {
+    alignItems: 'center',
+    display: 'flex',
+    paddingLeft: theme.spacing(1),
+  },
+
   activityLabel: {
     marginLeft: 8,
   },
@@ -34,6 +39,7 @@ function FormDialog(props) {
   const { endpoint, representedObject } = props;
 
   const [loading, setLoading] = useState(false);
+
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -58,6 +64,7 @@ function FormDialog(props) {
     }
   };
 
+
   const handleDeleteButtonClick = async() => {
     setLoading(true);
     props.onDelete().then(() => {
@@ -71,15 +78,16 @@ function FormDialog(props) {
     });
   };
 
+
   let leftActionControl  = null;
   if (loading) {
     leftActionControl = (
-      <Box display="flex" alignItems="center" paddingLeft={1}>
+      <div className={classes.leftActionControl}>
         <CircularProgress size={20} />
         <Typography className={classes.activityLabel} variant="subtitle2">
           {props.activityLabel}
         </Typography>
-      </Box>
+      </div>
     );
   } else if (props.onDelete) {
     leftActionControl = (
@@ -103,7 +111,7 @@ function FormDialog(props) {
         onSubmit: handleFormSubmit,
       }}
       open
-      onClose={() => { props.onDismiss(null); }}
+      onClose={() => props.onDismiss(null)}
     >
       <DialogTitle>
         {props.title}
@@ -120,13 +128,15 @@ function FormDialog(props) {
           let textFieldProps = fieldInfo;
           if (typeof(fieldInfo) === 'string') {
             textFieldProps = {
-              label: titleCase(fieldInfo),
               name: fieldInfo,
               type: 'text',
             }
           }
 
           const fieldName = textFieldProps.name;
+          if (!textFieldProps.label) {
+            textFieldProps.label = titleCase(fieldName);
+          }
 
           if (representedObject) {
             textFieldProps.defaultValue = representedObject[fieldName];

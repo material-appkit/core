@@ -179,7 +179,7 @@ class Form extends React.PureComponent {
     }
 
     // Inject any additionally supplied context parameters
-    Object.assign(coercedData, this.props.requestContext);
+    Object.assign(coercedData, this.props.extraRequestParams);
 
     return coercedData;
   }
@@ -409,7 +409,7 @@ Form.propTypes = {
   children: PropTypes.any,
   defaultValues: PropTypes.object,
   entityType: PropTypes.string,
-  requestContext: PropTypes.object,
+  extraRequestParams: PropTypes.object,
   FieldSetComponent: PropTypes.func,
   fieldArrangement: PropTypes.array,
   fieldInfoProvider: PropTypes.func,
@@ -430,10 +430,10 @@ Form.propTypes = {
 Form.defaultProps = {
   autosaveDelay: null,
   defaultValues: {},
+  extraRequestParams: {},
   entityType: '',
   FieldSetComponent: FormFieldSet,
   optionsRequestParams: {},
-  requestContext: {},
   updateMethod: 'PATCH',
 };
 

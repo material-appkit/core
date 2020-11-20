@@ -37,10 +37,16 @@ class ViewController extends React.PureComponent {
 
 ViewController.propTypes = {
   children: PropTypes.any,
+  contextMenuItems: PropTypes.object,
   mountPath: PropTypes.string,
   onMount: PropTypes.func,
   onUpdate: PropTypes.func,
   onUnmount: PropTypes.func,
+  onViewDidMount: PropTypes.func,
+  onViewDidAppear: PropTypes.func,
+  onViewDidUpdate: PropTypes.func,
+  rightBarItem: PropTypes.element,
+  toolbarItems: PropTypes.object,
 };
 
 export default ViewController;
