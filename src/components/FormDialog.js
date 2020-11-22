@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -26,7 +26,7 @@ const styles = makeStyles((theme) => ({
   },
 
   activityLabel: {
-    marginLeft: 8,
+    marginLeft: theme.spacing(1),
   },
 
   deleteButton: {
@@ -36,9 +36,28 @@ const styles = makeStyles((theme) => ({
 
 function FormDialog(props) {
   const classes = styles();
-  const { endpoint, representedObject } = props;
+  const {
+    endpoint,
+    errors,
+    representedObject,
+    onDelete,
+    onDismiss,
+    onError,
+  } = props;
 
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+
+  useEffect(() => {
+    setFieldErrors(errors || {});
+  }, [errors]);
+
+
+  const handleFormChange = (e) => {
+    const fieldName = e.target.name;
+    setFieldErrors({ ...fieldErrors, [fieldName]: null });
+  };
 
 
   const handleFormSubmit = (e) => {
@@ -50,30 +69,30 @@ function FormDialog(props) {
       const requestMethod = representedObject ? 'PATCH' : 'POST';
       ServiceAgent.request(requestMethod, endpoint, formData)
         .then((res) => {
-          props.onDismiss(res.jsonData);
+          onDismiss(res.jsonData);
         })
         .catch((err) => {
           setLoading(false);
 
-          if (props.onError) {
-            props.onError(err);
+          if (onError) {
+            onError(err);
           }
         });
     } else {
-      props.onDismiss(formData);
+      onDismiss(formData);
     }
   };
 
 
   const handleDeleteButtonClick = async() => {
     setLoading(true);
-    props.onDelete().then(() => {
-      props.onDismiss(null);
+    onDelete().then(() => {
+      onDismiss(null);
     }).catch((err) => {
       setLoading(false);
 
-      if (props.onError) {
-        props.onError(err);
+      if (onError) {
+        onError(err);
       }
     });
   };
@@ -108,6 +127,7 @@ function FormDialog(props) {
       maxWidth={props.maxWidth}
       PaperProps={{
         component: 'form',
+        onChange: handleFormChange,
         onSubmit: handleFormSubmit,
       }}
       open
@@ -144,6 +164,8 @@ function FormDialog(props) {
 
           return (
             <TextField
+              error={Boolean(fieldErrors[fieldName])}
+              helperText={fieldErrors[fieldName]}
               fullWidth
               key={fieldName}
               margin="dense"
@@ -179,6 +201,7 @@ FormDialog.propTypes = {
   cancelButtonTitle: PropTypes.string,
   commitButtonTitle: PropTypes.string,
   contentText: PropTypes.string,
+  errors: PropTypes.object,
   onDelete: PropTypes.func,
   fieldArrangement: PropTypes.array.isRequired,
   endpoint: PropTypes.string,
