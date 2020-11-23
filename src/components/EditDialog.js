@@ -231,7 +231,7 @@ EditDialog.defaultProps = {
     E_CREATE_DUPLICATE_RECORD: 'Refused to create duplicate record',
     SAVE: 'Save',
     SAVING: 'Saving...',
-    SAVE_FAIL_NOTIFICATION: 'Unable to Save',
+    SAVE_FAIL_NOTIFICATION: 'Unable to save',
     UPDATE: 'Update',
   },
 };
