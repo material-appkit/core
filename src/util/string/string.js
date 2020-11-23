@@ -40,7 +40,7 @@ export function titleCase(str) {
     return null;
   }
 
-  str = str.toLowerCase().split('_');
+  str = str.toLowerCase().replace(/ /g, '_').split('_');
   for (let i = 0, n = str.length; i < n; i++) {
     str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
   }

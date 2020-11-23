@@ -31,7 +31,6 @@ const alertStyles = makeStyles((theme) => ({
 
   dialogTitleHeading: {
     fontSize: theme.typography.pxToRem(18),
-    textTransform: 'capitalize',
   },
 
   dialogContentText: {
