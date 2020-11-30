@@ -206,7 +206,6 @@ function PropertyList(props) {
           fieldLabel = titleCase(fieldInfo.name);
         }
 
-        console.log(`${fieldLabel}-${fieldInfo.keyPath || fieldInfo.name}`);
         return (
           <PropertyListItem
             fieldInfo={fieldInfo}
