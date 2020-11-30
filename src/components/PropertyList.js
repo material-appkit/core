@@ -63,7 +63,7 @@ function PropertyListItem(props) {
     return null;
   }
 
-  let LabelContent = fieldInfo.label;
+  let LabelContent = props.label;
   if (LabelContent === undefined) {
     LabelContent = titleCase(fieldInfo.name);
   }
@@ -170,6 +170,7 @@ function PropertyListItem(props) {
 PropertyListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
   fontSize: PropTypes.number,
+  label: PropTypes.string.isRequired,
   listItemAlignment: PropTypes.string,
   listItemPadding: PropTypes.number,
   minLabelWidth: PropTypes.number,
@@ -200,15 +201,17 @@ function PropertyList(props) {
           fieldInfo = { name: fieldInfo };
         }
 
-        let key = fieldInfo.name;
-        if (fieldInfo.keyPath) {
-          key = `${key}-${fieldInfo.keyPath}`;
+        let fieldLabel = fieldInfo.label;
+        if (fieldLabel === undefined) {
+          fieldLabel = titleCase(fieldInfo.name);
         }
 
+        console.log(`${fieldLabel}-${fieldInfo.keyPath || fieldInfo.name}`);
         return (
           <PropertyListItem
             fieldInfo={fieldInfo}
-            key={key}
+            key={`${fieldLabel}-${fieldInfo.keyPath || fieldInfo.name}`}
+            label={fieldLabel}
             {...propertyListItemProps}
           />
         );
