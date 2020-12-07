@@ -2,12 +2,22 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme) => ({
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+  },
+
+  activeTabContainer: {
+    flex: 1,
+    overflow: 'auto',
+  },
+
   tabs: {
     backgroundColor: theme.palette.grey[50],
     borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
@@ -29,24 +39,22 @@ function TabView(props) {
   } = props;
 
 
-  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(null);
   const [activeTabConfig, setActiveTabConfig] = useState(null);
   const activeTabViewRef = useRef(null);
 
   useEffect(() => {
-    if (tabArrangement) {
-      const currentLocationPath = location.pathname;
-      tabArrangement.forEach((tabConfig, tabIndex) => {
-        if (currentLocationPath === tabConfig.path) {
-          setSelectedTabIndex(tabIndex);
-        }
-      });
-    }
+    const currentLocationPath = location.pathname;
+    tabArrangement.forEach((tabConfig, tabIndex) => {
+      if (currentLocationPath === tabConfig.path) {
+        setSelectedTabIndex(tabIndex);
+      }
+    });
   }, [tabArrangement]);
 
 
   useEffect(() => {
-    if (tabArrangement && selectedTabIndex !== null) {
+    if (selectedTabIndex !== null) {
       setActiveTabConfig(tabArrangement[selectedTabIndex]);
     }
   }, [tabArrangement, selectedTabIndex]);
@@ -81,8 +89,8 @@ function TabView(props) {
   const classes = styles();
 
   return (
-    <Box display="flex" flexDirection="column" height="100%">
-      {tabArrangement &&
+    <div className={classes.container}>
+      {(selectedTabIndex !== null) &&
         <Tabs
           value={selectedTabIndex}
           className={classes.tabs}
@@ -103,7 +111,7 @@ function TabView(props) {
         </Tabs>
       }
 
-      <Box flex={1} overflow="auto" ref={activeTabViewRef}>
+      <div className={classes.activeTabContainer} ref={activeTabViewRef}>
         {activeTabConfig &&
           <activeTabConfig.component
             onConfig={handleTabConfig}
@@ -115,10 +123,9 @@ function TabView(props) {
             {...rest}
           />
         }
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
-
 }
 
 TabView.propTypes = {
@@ -127,7 +134,7 @@ TabView.propTypes = {
   onTabMount: PropTypes.func,
   onTabConfig: PropTypes.func,
   onTabUnmount: PropTypes.func,
-  tabArrangement: PropTypes.array,
+  tabArrangement: PropTypes.array.isRequired,
 };
 
 export default TabView;
