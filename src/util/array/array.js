@@ -12,6 +12,36 @@ export function arrayToObject(array, key) {
   }, {});
 }
 
+
+/**
+ * Given an array of objects, return an array of arrays of length {size}
+ */
+export function chunk(array, size) {
+  const result = [];
+  for (let i = 0, n = array.length; i < n; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+}
+
+
+/**
+ * Given an array of objects, return the first one where
+ * obj[fieldName] === value
+ */
+export function findObject(array, fieldName, value) {
+  return array.find((item) => item[fieldName] === value);
+}
+
+
+export function makeChoices(choiceInfoList, valueKey, labelKey) {
+  return choiceInfoList.map((choiceInfo) => ({
+    [valueKey || 'value']: choiceInfo[0],
+    [labelKey || 'label']: choiceInfo[1],
+  }));
+}
+
+
 export function removeObject(array, fieldName, value) {
   const newArray = [...array];
   for (let i = newArray.length - 1; i >= 0; --i) {
@@ -20,14 +50,6 @@ export function removeObject(array, fieldName, value) {
     }
   }
   return newArray;
-}
-
-/**
- * Given an array of objects, return the first one where
- * obj[fieldName] === value
- */
-export function findObject(array, fieldName, value) {
-  return array.find((item) => item[fieldName] === value);
 }
 
 
@@ -41,13 +63,6 @@ export function replaceObject(array, fieldName, value) {
   }
 }
 
-
-export function makeChoices(choiceInfoList, valueKey, labelKey) {
-  return choiceInfoList.map((choiceInfo) => ({
-    [valueKey || 'value']: choiceInfo[0],
-    [labelKey || 'label']: choiceInfo[1],
-  }));
-}
 
 export function shuffle(array) {
   const arrayLength = array.length;

@@ -9,10 +9,11 @@ Object.defineProperty(exports, "arrayToObject", {
   },
 });
 
-Object.defineProperty(exports, "removeObject", {
+
+Object.defineProperty(exports, "chunk", {
   enumerable: true,
   get: function get() {
-    return _array.removeObject;
+    return _array.chunk;
   },
 });
 
@@ -25,18 +26,26 @@ Object.defineProperty(exports, "findObject", {
 });
 
 
-Object.defineProperty(exports, "replaceObject", {
-  enumerable: true,
-  get: function get() {
-    return _array.replaceObject;
-  },
-});
-
-
 Object.defineProperty(exports, "makeChoices", {
   enumerable: true,
   get: function get() {
     return _array.makeChoices;
+  },
+});
+
+
+Object.defineProperty(exports, "removeObject", {
+  enumerable: true,
+  get: function get() {
+    return _array.removeObject;
+  },
+});
+
+
+Object.defineProperty(exports, "replaceObject", {
+  enumerable: true,
+  get: function get() {
+    return _array.replaceObject;
   },
 });
 
