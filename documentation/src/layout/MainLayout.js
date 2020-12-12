@@ -1,6 +1,6 @@
 import React, { lazy, useContext, useState } from 'react';
 
-import AirportShuttleIcon from '@material-ui/icons/AirportShuttle';
+import HomeIcon from '@material-ui/icons/Home';
 
 import BaseLayout from './BaseLayout';
 
@@ -25,7 +25,7 @@ function MainLayout(props) {
         {
           title: 'Home',
           path: paths.index,
-          Icon: AirportShuttleIcon,
+          Icon: HomeIcon,
         },
       ]);
 

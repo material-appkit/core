@@ -113,7 +113,10 @@ class App extends React.PureComponent {
 
     return (
       <AppContext.Provider value={appContext}>
-        <Router history={NavManager.history}>
+        <Router
+          basename="/material-appkit"
+          history={NavManager.history}
+        >
           <HelmetProvider>
             <Helmet>
               <link rel="canonical" href="https://admin.motostar.ca/" />
