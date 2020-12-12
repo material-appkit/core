@@ -192,7 +192,7 @@ function initialize() {
     modalContainer.appendChild(promptContainer);
 
     const logo = document.createElement('img');
-    logo.src = '/apple-touch-icon.png';
+    logo.src = `${PUBLIC_URL}/android-chrome-192x192`;
     logo.width = '150';
     logo.height = '150';
     promptContainer.appendChild(logo);
