@@ -1,5 +1,5 @@
 {
-  "name": "@material-appkit/docs",
+  "name": "@material-appkit/documentation",
   "version": "1.0.0",
   "author": "Allan Hart",
   "keywords": [],
@@ -7,6 +7,7 @@
   "private": true,
   "homepage": "/",
   "dependencies": {
+    "@material-appkit/core": "^2.9.2",
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
