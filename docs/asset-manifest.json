@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/material-appkit/static/js/main.958a517e.chunk.js",
+    "main.js": "/material-appkit/static/js/main.75105133.chunk.js",
     "runtime-main.js": "/material-appkit/static/js/runtime-main.095967b5.js",
     "static/js/2.5818c06d.chunk.js": "/material-appkit/static/js/2.5818c06d.chunk.js",
     "static/js/3.57ded4c4.chunk.js": "/material-appkit/static/js/3.57ded4c4.chunk.js",
@@ -14,6 +14,6 @@
   "entrypoints": [
     "static/js/runtime-main.095967b5.js",
     "static/js/2.5818c06d.chunk.js",
-    "static/js/main.958a517e.chunk.js"
+    "static/js/main.75105133.chunk.js"
   ]
 }

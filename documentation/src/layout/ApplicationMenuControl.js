@@ -49,7 +49,7 @@ function ApplicationMenuControl(props) {
         className={classes.drawerMenuButton}
         onClick={() => { setMobileOpen(true); }}
       >
-        <Avatar src='/favicon-32x32.png' />
+        <Avatar src={`${process.env.PUBLIC_URL}/favicon-32x32.png`} />
       </IconButton>
 
       <Drawer
