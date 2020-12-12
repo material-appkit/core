@@ -1,4 +1,16 @@
+import PropTypes from 'prop-types';
+
 export const BREAKPOINTS = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+export const COMMON_PAGE_PROPS = {
+  history: PropTypes.object,
+  location: PropTypes.object,
+  match: PropTypes.object,
+  mountPath: PropTypes.string,
+  onMount: PropTypes.func,
+  onUnmount: PropTypes.func,
+  onUpdate: PropTypes.func,
+};
 
 export const DEFAULT_LOCALE = 'en-US';
 

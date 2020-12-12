@@ -13,7 +13,10 @@ import withWidth from '@material-ui/core/withWidth';
 import NavManager from '@material-appkit/core/managers/NavManager';
 import { filterByKeys } from '@material-appkit/core/util/object';
 
+import PlaceholderLayout from 'layout/PlaceholderLayout';
+
 import AppContext from 'AppContext';
+import paths from 'paths';
 import { activeLocale } from 'util/shortcuts';
 
 import {
@@ -26,7 +29,11 @@ class App extends React.PureComponent {
   constructor(props) {
     super();
 
-    this.layoutRoutes = [];
+    this.layoutRoutes = [{
+      pathname: paths.index,
+      Component: React.lazy(() => import('./layout/MainLayout')),
+      placeholder: <PlaceholderLayout />,
+    }];
 
     this.state = {
       layoutConfig: null,
@@ -112,6 +119,25 @@ class App extends React.PureComponent {
               <link rel="canonical" href="https://admin.motostar.ca/" />
               <title>{this.pageTitle}</title>
             </Helmet>
+
+            <Switch>
+              {this.layoutRoutes.map((routeInfo) => (
+                <Route
+                  key={routeInfo.pathname}
+                  path={routeInfo.pathname}
+                  render={(routeProps) => (
+                    <Suspense fallback={routeInfo.placeholder}>
+                      <routeInfo.Component
+                        onMount={this.layoutDidMount}
+                        onUnmount={this.layoutWillUnmount}
+                        {...this.props}
+                        {...routeProps}
+                      />
+                    </Suspense>
+                  )}
+                />
+              ))}
+            </Switch>
           </HelmetProvider>
         </Router>
       </AppContext.Provider>
