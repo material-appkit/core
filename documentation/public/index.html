@@ -3,6 +3,17 @@
   <head>
     <script async src="%PUBLIC_URL%/pwa.js"></script>
 
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=%REACT_APP_GA_ID%"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '%REACT_APP_GA_ID%');
+    </script>
+    <!-- End Google Analytics -->
+
     <meta charset="utf-8">
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
