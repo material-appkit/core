@@ -2,8 +2,8 @@
 build/
 node_modules/
 
-/components
-/managers
-/notification
-/stores
-/util
+core/components
+core/managers
+core/notification
+core/stores
+core/util
