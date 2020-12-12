@@ -9,7 +9,7 @@ const isLocalhost = Boolean(
   )
 );
 
-const PUBLIC_URL = '';
+const PUBLIC_URL = '/material-appkit';
 
 // -----------------------------------------------------------------------------
 function register(config) {
