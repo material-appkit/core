@@ -22,7 +22,7 @@ function WelcomePage(props) {
     >
       <Box p={2}>
         <Typography variant="h1">
-          Welcome to Material Appkit
+          Material Appkit Documentation
         </Typography>
       </Box>
     </ViewController>
