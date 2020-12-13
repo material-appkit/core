@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { lazy, useContext, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
+import Container from '@material-ui/core/Container';
 import { useTheme } from '@material-ui/core/styles';
 
 import SplitView from '@material-appkit/core/components/SplitView';
@@ -63,29 +64,34 @@ function StandardLayout(props) {
       barSize={theme.topbar.height}
       placement="top"
     >
-      <Switch>
-        {routes.map((routeInfo) => {
-          let exact = true;
-          if (isValue(routeInfo.exact)) {
-            exact = routeInfo.exact;
-          }
-          return (
-            <Route
-              exact={exact}
-              key={routeInfo.path}
-              path={routeInfo.path}
-              render={(routeProps) => (
-                <routeInfo.component
-                  location={props.location}
-                  match={routeProps.match}
-                  onMount={handleViewControllerMount}
-                />
-              )}
-            />
-          );
-        })}
-        <Redirect to={paths.index} />
-      </Switch>
+      <Container
+        disableGutters
+        maxWidth={props.maxWidth}
+      >
+        <Switch>
+          {routes.map((routeInfo) => {
+            let exact = true;
+            if (isValue(routeInfo.exact)) {
+              exact = routeInfo.exact;
+            }
+            return (
+              <Route
+                exact={exact}
+                key={routeInfo.path}
+                path={routeInfo.path}
+                render={(routeProps) => (
+                  <routeInfo.component
+                    location={props.location}
+                    match={routeProps.match}
+                    onMount={handleViewControllerMount}
+                  />
+                )}
+              />
+            );
+          })}
+          <Redirect to={paths.index} />
+        </Switch>
+      </Container>
     </SplitView>
   );
 }
@@ -93,8 +99,13 @@ function StandardLayout(props) {
 StandardLayout.propTypes = {
   initialize: PropTypes.func,
   location: PropTypes.object.isRequired,
+  maxWidth: PropTypes.string,
   onMount: PropTypes.func.isRequired,
   onUnmount: PropTypes.func.isRequired,
+};
+
+StandardLayout.defaultProps = {
+  maxWidth: 'lg',
 };
 
 export default StandardLayout;
