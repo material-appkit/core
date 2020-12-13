@@ -18,6 +18,6 @@ rsync -avz --delete $BUILD_PATH $TARGET_PATH
 rm -rf $BUILD_PATH
 
 # Commit all changes
-cd $TARGET_PATH
-git add --all
+cd $ROOT_PATH
+git add $TARGET_PATH
 git commit -m "Updated documentation build products"
