@@ -1,3 +1,5 @@
+import isEqual from 'lodash.isequal';
+
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -9,7 +11,7 @@ import SplitView from '@material-appkit/core/components/SplitView';
 
 import { matchesForPath } from '@material-appkit/core/util/urls';
 
-import { usePrevious, useInit } from '@material-appkit/core/util/hooks';
+import { useInit } from '@material-appkit/core/util/hooks';
 
 import ApplicationBar from 'layout/ApplicationBar';
 
@@ -27,10 +29,8 @@ function NavigationControllerLayout(props) {
   } = props;
 
   const [initialized, setInitialized] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState(null);
 
   const [matches, setMatches] = useState([]);
-  const prevMatches = usePrevious(matches);
 
   // Operations to perform when component initially mounts
   useInit(async () => {
@@ -49,26 +49,16 @@ function NavigationControllerLayout(props) {
   });
 
   useEffect(() => {
-    if (location !== currentLocation) {
-      const pathMatches = matchesForPath(location.pathname, routes);
+    const pathMatches = matchesForPath(location.pathname, routes);
 
-      // If there isn't a single path that matches, redirect to the dashboard
-      if (!pathMatches.length) {
-        NavManager.navigate(redirectPath, null, true);
-      } else {
-        if (pathMatches !== prevMatches) {
-          setCurrentLocation(location);
-          setMatches(pathMatches);
-        }
-      }
+    // If there isn't a single path that matches, redirect to the dashboard
+    if (!pathMatches.length) {
+      NavManager.navigate(redirectPath, null, true);
+    } else if (!isEqual(pathMatches, matches)) {
+      setMatches(pathMatches);
     }
-  }, [
-    location,
-    redirectPath,
-    routes,
-    currentLocation,
-    prevMatches,
-  ]);
+  }, [location, matches, redirectPath, routes]);
+
 
   const handleViewDidAppear = (viewController) => {
     context.update({ pageTitle: viewController.props.title });
@@ -80,7 +70,7 @@ function NavigationControllerLayout(props) {
   if (initialized) {
     contentView = (
       <NavigationController
-        location={props.location}
+        location={location}
         matches={matches}
         onViewDidAppear={handleViewDidAppear}
       />
