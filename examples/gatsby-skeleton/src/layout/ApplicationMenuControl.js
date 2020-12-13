@@ -21,10 +21,6 @@ import { applicationNavLinkArrangement } from 'util/shortcuts';
 
 
 const styles = makeStyles((theme) => ({
-  drawerMenuButton: {
-    padding: 0,
-  },
-
   drawerModal: {
     zIndex: `${theme.zIndex.appBar} !important`,
   },
@@ -74,7 +70,8 @@ function ApplicationMenuControl(props) {
     <Fragment>
       <IconButton
         className={classes.drawerMenuButton}
-        onClick={() => setDrawerOpen(true)}
+        onClick={() => setDrawerOpen(!drawerOpen)}
+        size="small"
       >
         <Img fixed={applicationLogo.childImageSharp.fixed} />
       </IconButton>
