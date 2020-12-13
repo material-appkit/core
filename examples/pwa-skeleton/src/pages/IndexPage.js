@@ -5,20 +5,26 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import ViewController from '@material-appkit/core/components/ViewController';
 
-import { staticUrl } from 'util/shortcuts';
 import { COMMON_PAGE_PROPS } from 'variables';
+
+import AppLogo from 'images/app-logo.png';
 
 const styles = makeStyles((theme) => ({
   main: {
-    padding: theme.spacing(8, 2, 2),
+    padding: theme.spacing(2),
     textAlign: 'center',
   },
 
-  appTitle: {
+  logoContainer: {
+    margin: theme.spacing(6, 0, 2),
+
+  },
+
+  title: {
     fontSize: theme.typography.pxToRem(28),
     fontWeight: 300,
     letterSpacing: '0.7rem',
-    marginTop: theme.spacing(2),
+    textTransform: 'uppercase',
   },
 }));
 
@@ -31,12 +37,17 @@ function IndexPage(props) {
       {...props}
     >
       <main className={classes.main}>
-        <img
-          alt="Material-AppKit Logo"
-          src={staticUrl('android-chrome-192x192.png')}
-        />
-        <Typography component="h1" className={classes.appTitle}>
-          MATERIAL-APPKIT
+        <div className={classes.logoContainer}>
+          <img
+            alt="Application Logo"
+            src={AppLogo}
+          />
+        </div>
+        <Typography component="h1" color="primary" className={classes.title}>
+          {process.env.REACT_APP_TITLE}
+        </Typography>
+        <Typography component="h2" className={classes.title}>
+          PWA Skeleton
         </Typography>
       </main>
     </ViewController>

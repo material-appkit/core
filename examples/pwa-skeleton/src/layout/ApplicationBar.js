@@ -86,7 +86,7 @@ function ApplicationBar(props) {
         />
 
         <Typography className={classes.appTitle}>
-          Material-AppKit
+          {process.env.REACT_APP_TITLE}
         </Typography>
 
         <Spacer />

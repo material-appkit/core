@@ -1,9 +1,9 @@
 {
-  "name": "@material-appkit/documentation",
+  "name": "@material-appkit/pwa-starter",
   "version": "1.0.0",
   "author": "Allan Hart",
   "keywords": [],
-  "description": "Material-AppKit Documentation",
+  "description": "Material-AppKit PWA Starter",
   "private": true,
   "homepage": "/",
   "dependencies": {
