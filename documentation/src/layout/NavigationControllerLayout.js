@@ -11,15 +11,20 @@ import { matchesForPath } from '@material-appkit/core/util/urls';
 
 import { usePrevious, useInit } from '@material-appkit/core/util/hooks';
 
-import AppContext from 'AppContext';
-
 import ApplicationBar from 'layout/ApplicationBar';
 
-//------------------------------------------------------------------------------
+import AppContext from 'AppContext';
 
-function BaseLayout(props) {
+
+function NavigationControllerLayout(props) {
   const context = useContext(AppContext);
   const theme = useTheme();
+
+  const {
+    location,
+    redirectPath,
+    routes,
+  } = props;
 
   const [initialized, setInitialized] = useState(false);
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -44,27 +49,26 @@ function BaseLayout(props) {
   });
 
   useEffect(() => {
-    if (props.location !== currentLocation) {
-      const pathMatches = matchesForPath(props.location.pathname, props.routes);
+    if (location !== currentLocation) {
+      const pathMatches = matchesForPath(location.pathname, routes);
 
       // If there isn't a single path that matches, redirect to the dashboard
       if (!pathMatches.length) {
-        NavManager.navigate(props.redirectPath, null, true);
+        NavManager.navigate(redirectPath, null, true);
       } else {
         if (pathMatches !== prevMatches) {
-          setCurrentLocation(props.location);
+          setCurrentLocation(location);
           setMatches(pathMatches);
         }
       }
     }
   }, [
-    props.location,
-    props.redirectPath,
-    props.routes,
+    location,
+    redirectPath,
+    routes,
     currentLocation,
     prevMatches,
   ]);
-
 
   const handleViewDidAppear = (viewController) => {
     context.update({ pageTitle: viewController.props.title });
@@ -85,11 +89,7 @@ function BaseLayout(props) {
 
   return (
     <SplitView
-      bar={(
-        <ApplicationBar
-          navLinkArrangement={props.navLinkArrangement}
-        />
-      )}
+      bar={<ApplicationBar />}
       barSize={theme.topbar.height}
       placement="top"
     >
@@ -98,14 +98,13 @@ function BaseLayout(props) {
   );
 }
 
-BaseLayout.propTypes = {
+NavigationControllerLayout.propTypes = {
   redirectPath: PropTypes.string.isRequired,
   initialize: PropTypes.func,
   location: PropTypes.object.isRequired,
-  navLinkArrangement: PropTypes.array,
   onMount: PropTypes.func.isRequired,
   onUnmount: PropTypes.func.isRequired,
   routes: PropTypes.array.isRequired,
 };
 
-export default BaseLayout;
+export default NavigationControllerLayout;

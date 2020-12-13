@@ -7,9 +7,13 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import HomeIcon from '@material-ui/icons/Home';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 
 import ApplicationMenuControl from './ApplicationMenuControl';
 import AppContext from 'AppContext';
+
+import paths from 'paths';
 
 //------------------------------------------------------------------------------
 const styles = makeStyles((theme) => ({
@@ -51,13 +55,24 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
+const navLinkArrangement = [
+  {
+    title: 'Home',
+    path: paths.index,
+    Icon: HomeIcon,
+  },
+  {
+    title: 'Reference',
+    path: paths.reference.index,
+    Icon: MenuBookIcon,
+  },
+];
+
 function ApplicationBar(props) {
   const classes = styles();
 
   const context = useContext(AppContext);
   const { loadProgress } = context;
-
-  const { navLinkArrangement } = props;
 
   return (
     <AppBar

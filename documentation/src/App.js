@@ -29,11 +29,18 @@ class App extends React.PureComponent {
   constructor(props) {
     super();
 
-    this.layoutRoutes = [{
-      pathname: paths.index,
-      Component: React.lazy(() => import('./layout/MainLayout')),
-      placeholder: <PlaceholderLayout />,
-    }];
+    this.layoutRoutes = [
+      {
+        pathname: paths.reference.index,
+        Component: React.lazy(() => import('./layout/ReferenceLayout')),
+        placeholder: <PlaceholderLayout />,
+      },
+      {
+        pathname: paths.index,
+        Component: React.lazy(() => import('./layout/StandardLayout')),
+        placeholder: <PlaceholderLayout />,
+      },
+    ];
 
     this.state = {
       layoutConfig: null,
