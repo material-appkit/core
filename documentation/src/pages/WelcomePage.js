@@ -11,7 +11,7 @@ function WelcomePage(props) {
   const [title] = useState('Welcome');
   const [contextMenuItems] = useState(null);
   const [rightToolbarItem] = useState(null);
-    
+
   return (
     <ViewController
       contextMenuItems={contextMenuItems}
@@ -22,7 +22,7 @@ function WelcomePage(props) {
     >
       <Box p={2}>
         <Typography variant="h1">
-          Material Appkit Documentation
+          Material AppKit Documentation
         </Typography>
       </Box>
     </ViewController>

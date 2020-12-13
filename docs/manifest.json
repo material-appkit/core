@@ -1,6 +1,6 @@
 {
   "name": "Material-AppKit Documentation",
-  "short_name": "MOTO Admin",
+  "short_name": "Material AppKit",
   "icons": [
     {
       "src": "favicon.ico",
@@ -22,5 +22,5 @@
   "background_color": "#ffffff",
   "display": "standalone",
   "theme_color": "#3C3B6E",
-  "start_url": "/vehicles?from=homescreen"
+  "start_url": "/material-appkit?from=homescreen"
 }

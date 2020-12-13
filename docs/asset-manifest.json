@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.js": "/material-appkit/static/js/main.673fbc4b.chunk.js",
-    "runtime-main.js": "/material-appkit/static/js/runtime-main.96842b7a.js",
-    "static/js/2.e3e32136.chunk.js": "/material-appkit/static/js/2.e3e32136.chunk.js",
+    "main.js": "/material-appkit/static/js/main.2b7edd34.chunk.js",
+    "runtime-main.js": "/material-appkit/static/js/runtime-main.648bd5fe.js",
+    "static/js/2.1c5ae044.chunk.js": "/material-appkit/static/js/2.1c5ae044.chunk.js",
     "static/js/3.e3f94ed6.chunk.js": "/material-appkit/static/js/3.e3f94ed6.chunk.js",
-    "static/js/4.f3ee24d4.chunk.js": "/material-appkit/static/js/4.f3ee24d4.chunk.js",
-    "static/js/5.0827b543.chunk.js": "/material-appkit/static/js/5.0827b543.chunk.js",
+    "static/js/4.c05e8f57.chunk.js": "/material-appkit/static/js/4.c05e8f57.chunk.js",
+    "static/js/5.9dbedc41.chunk.js": "/material-appkit/static/js/5.9dbedc41.chunk.js",
     "index.html": "/material-appkit/index.html",
     "service-worker.js": "/material-appkit/service-worker.js",
-    "static/js/2.e3e32136.chunk.js.LICENSE.txt": "/material-appkit/static/js/2.e3e32136.chunk.js.LICENSE.txt",
+    "static/js/2.1c5ae044.chunk.js.LICENSE.txt": "/material-appkit/static/js/2.1c5ae044.chunk.js.LICENSE.txt",
     "static/js/3.e3f94ed6.chunk.js.LICENSE.txt": "/material-appkit/static/js/3.e3f94ed6.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.96842b7a.js",
-    "static/js/2.e3e32136.chunk.js",
-    "static/js/main.673fbc4b.chunk.js"
+    "static/js/runtime-main.648bd5fe.js",
+    "static/js/2.1c5ae044.chunk.js",
+    "static/js/main.2b7edd34.chunk.js"
   ]
 }
