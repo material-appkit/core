@@ -38,14 +38,13 @@ function IndexPage(props) {
     >
       <main className={classes.main}>
         <div className={classes.logoContainer}>
-          <img
-            alt="Application Logo"
-            src={AppLogo}
-          />
+          <img alt="Application Logo" src={AppLogo} />
         </div>
+
         <Typography component="h1" color="primary" className={classes.title}>
           {process.env.REACT_APP_TITLE}
         </Typography>
+
         <Typography component="h2" className={classes.title}>
           PWA Skeleton
         </Typography>

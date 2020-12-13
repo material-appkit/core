@@ -4,30 +4,59 @@ import React from 'react';
 import { graphql } from 'gatsby';
 import Img from 'gatsby-image';
 
-import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
 import Layout from 'layout/Layout';
 
-//------------------------------------------------------------------------------
+const styles = makeStyles((theme) => ({
+  main: {
+    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: theme.spacing(6, 0, 2),
+  },
+
+  contentContainer: {
+    textAlign: 'center',
+  },
+
+  titleContainer: {
+    marginTop: theme.spacing(2),
+  },
+
+  title: {
+    fontSize: theme.typography.pxToRem(28),
+    fontWeight: 300,
+    letterSpacing: '0.7rem',
+    textTransform: 'uppercase',
+  },
+}));
+
 function HomePage({ data }) {
+  const classes = styles();
+
   return (
     <Layout
       pageTitle="Home"
       showBackButton={false}
       title={process.env.GATSBY_APP_TITLE}
     >
-      <Box p={2} textAlign="center">
-        <Img fixed={data.applicationLogo.childImageSharp.fixed} />
+      <main className={classes.main}>
+        <div className={classes.contentContainer}>
+          <Img fixed={data.applicationLogo.childImageSharp.fixed} />
 
-        <p>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-        </p>
+          <div className={classes.titleContainer}>
+            <Typography component="h1" color="primary" className={classes.title}>
+              {process.env.GATSBY_APP_TITLE}
+            </Typography>
 
-        <p>
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-        </p>
-
-      </Box>
+            <Typography component="h2" className={classes.title}>
+              Gatsby App Skeleton
+            </Typography>
+          </div>
+        </div>
+      </main>
 
     </Layout>
   );
