@@ -24,19 +24,12 @@ const styles = makeStyles((theme) => ({
     backgroundColor: theme.palette.common.white,
     display: 'flex',
     flexDirection: 'column',
-    minHeight: `calc(100vh - ${theme.appbar.height + 1}px)`,
-
-    [theme.breakpoints.up('md')]: {
-      minHeight: '100vh',
-    },
+    minHeight: `calc(100vh - ${theme.appbar.height}px)`,
   },
 
   fixedHeaderRootContainer: {
+    minHeight: '100vh',
     paddingTop: theme.appbar.height,
-  },
-
-  fixedFooterRootContainer: {
-    paddingBottom: theme.bottomBar.height,
   },
 
   contentContainer: {
@@ -153,6 +146,7 @@ Layout.propTypes = {
 };
 
 Layout.defaultProps = {
+  fixedHeader: true,
   showBackButton: true,
   loading: false,
   mainProps: {},
