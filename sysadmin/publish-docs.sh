@@ -17,4 +17,7 @@ rsync -avz --delete $BUILD_PATH $TARGET_PATH
 # Clean up the build products
 rm -rf $BUILD_PATH
 
-# TODO: Push all changes to GitHub?
+# Commit all changes
+#cd $ROOT_PATH
+#git add --all
+#git commit -m "Updated documentation build products"
