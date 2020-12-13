@@ -53,7 +53,7 @@ function Footer(props) {
         flexDirection={isWidthMediumUp ? 'row' : 'column'}
       >
         <Typography className={classes.copyright}>
-          © {new Date().getFullYear()} {process.env.GATSBY_APP_TITLE}, Inc. All rights reserved
+          © {new Date().getFullYear()} {process.env.GATSBY_APP_TITLE}
         </Typography>
 
 
