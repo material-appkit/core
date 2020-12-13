@@ -11,6 +11,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { staticUrl } from 'util/shortcuts';
 
 const styles = makeStyles((theme) => ({
   drawerMenuButton: {
@@ -49,7 +50,7 @@ function ApplicationMenuControl(props) {
         className={classes.drawerMenuButton}
         onClick={() => { setMobileOpen(true); }}
       >
-        <Avatar src={`${process.env.PUBLIC_URL}/favicon-32x32.png`} />
+        <Avatar src={staticUrl('favicon-32x32.png')} />
       </IconButton>
 
       <Drawer

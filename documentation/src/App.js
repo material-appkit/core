@@ -107,7 +107,7 @@ class App extends React.PureComponent {
         pageTitleComponents = [pageTitle];
       }
     }
-    pageTitleComponents.push('Material AppKit');
+    pageTitleComponents.push('Material-AppKit');
 
     return pageTitleComponents.join(' | ');
   }

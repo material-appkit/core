@@ -7,3 +7,7 @@ export function activeLocale() {
     'en-US'
   );
 }
+
+export function staticUrl(relativeUrl) {
+  return `${process.env.PUBLIC_URL}/${relativeUrl}`;
+}

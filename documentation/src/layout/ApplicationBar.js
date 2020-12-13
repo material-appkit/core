@@ -3,16 +3,19 @@ import PropTypes from 'prop-types';
 import React, { useContext } from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
+import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import GitHubIcon from '@material-ui/icons/GitHub';
 import HomeIcon from '@material-ui/icons/Home';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 
+import Spacer from '@material-appkit/core/components/Spacer';
+
 import ApplicationMenuControl from './ApplicationMenuControl';
 import AppContext from 'AppContext';
-
 import paths from 'paths';
 
 //------------------------------------------------------------------------------
@@ -43,15 +46,11 @@ const styles = makeStyles((theme) => ({
   },
 
   appTitle: {
-    color: 'inherit',
     fontSize: theme.typography.pxToRem(20),
-    letterSpacing: 0,
   },
 
-  buildLabel: {
-    fontFamily: 'monospace',
-    fontSize: theme.typography.pxToRem(11),
-    lineHeight: 1,
+  navButton: {
+    color: theme.palette.common.white,
   },
 }));
 
@@ -87,8 +86,18 @@ function ApplicationBar(props) {
         />
 
         <Typography className={classes.appTitle}>
-          Material AppKit
+          Material-AppKit
         </Typography>
+
+        <Spacer />
+
+        <IconButton
+          alt="GitHub Repository"
+          className={classes.navButton}
+          href="https://github.com/allanhart/material-appkit"
+        >
+          <GitHubIcon />
+        </IconButton>
       </Toolbar>
 
       {loadProgress !== null &&

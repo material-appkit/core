@@ -20,7 +20,7 @@ function ReferenceIndexPage(props) {
     >
       <Box component="main" p={2}>
         <Typography variant="h1">
-          Material AppKit Documentation
+          Material-AppKit Documentation
         </Typography>
       </Box>
     </ViewController>
