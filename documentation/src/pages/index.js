@@ -28,9 +28,14 @@ const styles = makeStyles((theme) => ({
   title: {
     fontSize: theme.typography.pxToRem(28),
     fontWeight: 300,
-    letterSpacing: '0.7rem',
+    letterSpacing: '0.5rem',
     textTransform: 'uppercase',
   },
+
+  version: {
+    fontSize: theme.typography.pxToRem(20),
+    letterSpacing: '0.2rem',
+  }
 }));
 
 function HomePage({ data }) {
@@ -38,9 +43,8 @@ function HomePage({ data }) {
 
   return (
     <Layout
-      pageTitle="Home"
       showBackButton={false}
-      title={process.env.GATSBY_APP_TITLE}
+      title="Introduction"
     >
       <main className={classes.main}>
         <div className={classes.contentContainer}>
@@ -51,13 +55,12 @@ function HomePage({ data }) {
               {process.env.GATSBY_APP_TITLE}
             </Typography>
 
-            <Typography component="h2" className={classes.title}>
-              Gatsby App Skeleton
+            <Typography component="h2" className={classes.version}>
+              v2.9.2
             </Typography>
           </div>
         </div>
       </main>
-
     </Layout>
   );
 }

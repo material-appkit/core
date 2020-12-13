@@ -38,7 +38,7 @@ export const dialogProps = (fullScreen) => {
 
 export function applicationNavLinkArrangement(context) {
   const navLinkArrangement = [
-    { title: 'Home', Icon: HomeIcon, path: paths.index },
+    { title: 'Introduction', Icon: HomeIcon, path: paths.index },
   ];
 
   return navLinkArrangement;
