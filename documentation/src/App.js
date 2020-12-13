@@ -119,7 +119,7 @@ class App extends React.PureComponent {
         >
           <HelmetProvider>
             <Helmet>
-              <link rel="canonical" href="https://admin.motostar.ca/" />
+              <link rel="canonical" href="https://material-appkit.com/" />
               <title>{this.pageTitle}</title>
             </Helmet>
 
