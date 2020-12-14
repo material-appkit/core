@@ -55,7 +55,11 @@ function ApplicationNavTree({ location }) {
     let path = '';
     indices.forEach((pathIndex, i) => {
       currentNode = currentNode[parseInt(pathIndex)];
-      path = `${path}/${currentNode.path}`;
+      if (currentNode.anchor) {
+        path = `${path}#${currentNode.anchor}`;
+      } else {
+        path = `${path}/${currentNode.path}`;
+      }
       if (i < indices.length - 1) {
         currentNode = currentNode.children;
       }

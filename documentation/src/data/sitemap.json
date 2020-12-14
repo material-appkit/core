@@ -2,12 +2,12 @@
   { "name": "Introduction", "path": "" },
 
   { "name": "Getting Started", "path": "getting-started", "children": [
-    { "name": "Quickstart",   "path": "quickstart" },
-    { "name": "Installation", "path": "installation" },
-    { "name": "Usage", "path": "usage" },
+    { "name": "Quickstart",   "anchor": "quickstart" },
+    { "name": "Installation", "anchor": "installation" },
+    { "name": "Usage", "anchor": "usage" },
     { "name": "Examples", "path": "examples", "children": [
-      { "name": "PWA Skeleton", "path": "pwa-skeleton" },
-      { "name": "Gatsby Skeleton", "path": "gatsby-skeleton" }
+      { "name": "PWA Skeleton", "anchor": "pwa-skeleton" },
+      { "name": "Gatsby Skeleton", "anchor": "gatsby-skeleton" }
     ]}
   ]},
 
@@ -18,8 +18,8 @@
   ]},
 
   { "name": "About", "icon": "info", "path": "about", "children": [
-      { "name": "Motivation", "path": "motivation" },
-      { "name": "Design Philosphy", "path": "philosophy" },
-      { "name": "The Author", "path": "author" }
+      { "name": "Motivation", "anchor": "motivation" },
+      { "name": "Design Philosphy", "anchor": "philosophy" },
+      { "name": "The Author", "anchor": "author" }
     ]}
 ]
