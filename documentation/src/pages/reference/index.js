@@ -7,8 +7,8 @@ import Layout from 'layout/Layout';
 
 import {
   PageTitle,
-  // ContentHeading,
-  // ContentSection,
+  ContentHeading,
+  ContentSection,
 } from 'components/typography';
 import { COMMON_PAGE_PROPS } from 'variables';
 
@@ -31,6 +31,24 @@ function ReferencePage({ data, location }) {
         <PageTitle>
           API Reference
         </PageTitle>
+
+        <ContentSection>
+          <ContentHeading>
+            Components
+          </ContentHeading>
+        </ContentSection>
+
+        <ContentSection>
+          <ContentHeading>
+            Managers
+          </ContentHeading>
+        </ContentSection>
+
+        <ContentSection>
+          <ContentHeading>
+            Utilities
+          </ContentHeading>
+        </ContentSection>
       </main>
     </Layout>
   );
