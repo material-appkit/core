@@ -11,7 +11,11 @@
     ]}
   ]},
 
-  { "name": "API Reference",   "path": "reference" },
+  { "name": "API Reference",   "path": "reference", "children": [
+    { "name": "Components",   "path": "components" },
+    { "name": "Managers",   "path": "managers" },
+    { "name": "Utilities",   "path": "utilities" }
+  ]},
 
   { "name": "About", "icon": "info", "path": "about", "children": [
       { "name": "The Motivation", "path": "motivation" },

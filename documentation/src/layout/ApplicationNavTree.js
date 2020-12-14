@@ -9,20 +9,27 @@ import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import SitemapData from 'data/sitemap.json';
 
 const styles = makeStyles((theme) => ({
-  d1IconContainer: {
-    display: 'none',
+  treeView: {
+    paddingLeft: theme.spacing(1),
   },
 
   d1Link: {
-    fontSize: theme.typography.pxToRem(16),
-    padding: theme.spacing(0.5, 2),
+    fontSize: theme.typography.pxToRem(18),
+    padding: theme.spacing(0.5, 0),
   },
 
   d2Link: {
+    fontSize: theme.typography.pxToRem(16),
+    padding: theme.spacing(0.25, 0),
+  },
+
+  d3Link: {
     fontSize: theme.typography.pxToRem(14),
     padding: theme.spacing(0.25, 0),
   },
@@ -57,7 +64,7 @@ function ApplicationNavTree({ location }) {
     return (
       <TreeItem
         classes={{
-          iconContainer: classes[`d${depth}IconContainer`],
+          // iconContainer: classes[`d${depth}IconContainer`],
         }}
         key={nodeIndexPath}
         label={(
@@ -80,7 +87,10 @@ function ApplicationNavTree({ location }) {
 
   return (
     <TreeView
-      expanded={['1', '3']}
+      className={classes.treeView}
+      defaultCollapseIcon={<ExpandMoreIcon />}
+      defaultExpandIcon={<ChevronRightIcon />}
+      defaultExpanded={['1', '2', '3']}
     >
       {SitemapData.map((rootNode, rootNodeIndex) =>
         renderTree(rootNode, `${rootNodeIndex}`, 1)
