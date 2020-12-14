@@ -28,9 +28,20 @@ const styles = makeStyles((theme) => ({
     flexDirection: 'column',
     minHeight: `calc(100vh - ${theme.appbar.height}px)`,
 
-    [theme.breakpoints.up('md')]: {
-      paddingLeft: theme.navbar.width,
-    },
+    transition: theme.transitions.create(['padding'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+
+  },
+
+  rootContainerShift: {
+    paddingLeft: theme.navbar.width,
+
+    transition: theme.transitions.create(['padding'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
   },
 
   fixedHeaderRootContainer: {
@@ -75,6 +86,7 @@ const Layout = (props) => {
     children,
     contentContainerClassName,
     fixedHeader,
+    location,
     rootContainerClassName,
     showBackButton,
   } = props;
@@ -84,16 +96,26 @@ const Layout = (props) => {
 
   const isWidthMediumUp = breakpoint ? isWidthUp('md', breakpoint) : true;
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [desktopDrawerOpen, setDesktopDrawerOpen] = useState(true);
 
   const rootContainerClasses = [classes.rootContainer, rootContainerClassName];
   if (fixedHeader) {
     rootContainerClasses.push(classes.fixedHeaderRootContainer);
   }
+  if (isWidthMediumUp && desktopDrawerOpen) {
+    rootContainerClasses.push(classes.rootContainerShift);
+  }
 
+  const handleApplicationLogoClick = () => {
+    if (isWidthMediumUp) {
+      setDesktopDrawerOpen(!desktopDrawerOpen);
+    } else {
+      setMobileDrawerOpen(!mobileDrawerOpen);
+    }
+  };
 
   let fabButton = null;
-
   if (!isWidthMediumUp && showBackButton) {
     fabButton = (
       <Zoom
@@ -112,24 +134,24 @@ const Layout = (props) => {
     );
   }
 
-  const applicationNavTree = <ApplicationNavTree location={props.location} />;
+  const applicationNavTree = <ApplicationNavTree location={location} />;
 
   return (
     <Fragment>
       <SEO title={props.pageTitle || props.title} />
 
+      {fabButton}
+
       <Header
         fixed={fixedHeader}
         isWidthMediumUp={isWidthMediumUp}
         loading={props.loading}
-        onApplicationLogoClick={() => setDrawerOpen(!drawerOpen)}
+        onApplicationLogoClick={handleApplicationLogoClick}
         showBackButton={showBackButton}
         title={props.title}
       />
 
-      <div
-        className={clsx(rootContainerClasses)}
-      >
+      <div className={clsx(rootContainerClasses)}>
         <div className={clsx(classes.contentContainer, contentContainerClassName)}>
           {children}
         </div>
@@ -137,7 +159,7 @@ const Layout = (props) => {
         <Footer />
       </div>
 
-      <Hidden mdUp implementation="css">
+      <Hidden mdUp implementation="js" initialWidth="xs">
         <Drawer
           anchor="left"
           classes={{
@@ -145,8 +167,8 @@ const Layout = (props) => {
             paper: classes.drawerPaper,
           }}
           ModalProps={{ keepMounted: true }}
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
+          open={mobileDrawerOpen}
+          onClose={() => setMobileDrawerOpen(false)}
           variant="temporary"
         >
           {applicationNavTree}
@@ -154,14 +176,14 @@ const Layout = (props) => {
       </Hidden>
       <Hidden smDown implementation="css">
         <Drawer
+          anchor="left"
           classes={{ paper: classes.drawerPaper }}
-          variant="permanent"
-          open={drawerOpen}
+          variant="persistent"
+          open={desktopDrawerOpen}
         >
           {applicationNavTree}
         </Drawer>
       </Hidden>
-      {fabButton}
     </Fragment>
   );
 };
@@ -172,7 +194,6 @@ Layout.propTypes = {
   fixedHeader: PropTypes.bool,
   loading: PropTypes.bool,
   location: PropTypes.object.isRequired,
-  mainProps: PropTypes.object,
   pageTitle: PropTypes.string,
   rootContainerClassName: PropTypes.string,
   showBackButton: PropTypes.bool,
@@ -183,7 +204,6 @@ Layout.defaultProps = {
   fixedHeader: true,
   showBackButton: true,
   loading: false,
-  mainProps: {},
 };
 
 export default Layout;
