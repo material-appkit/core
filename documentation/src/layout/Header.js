@@ -15,6 +15,8 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import { makeStyles } from '@material-ui/core/styles';
 import GitHubIcon from '@material-ui/icons/GitHub';
 
+import NpmLogo from 'images/npm-logo.png';
+
 import TopNavbar from './TopNavbar';
 import NavMenu from './NavMenu';
 
@@ -72,7 +74,11 @@ const Header = (props) => {
   const trigger = useScrollTrigger();
 
   const navLinkArrangement = [{
-    title: 'GitHub',
+    title: 'Published Build',
+    image: NpmLogo,
+    href: 'https://www.npmjs.com/package/@material-appkit/core',
+  }, {
+    title: 'Public Repository',
     Icon: GitHubIcon,
     href: 'https://github.com/allanhart/material-appkit',
   }];

@@ -4,6 +4,7 @@ import { Link as GatsbyLink } from 'gatsby';
 
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -29,8 +30,13 @@ const styles = makeStyles((theme) => ({
   },
 
   listItemText: {
-    marginBottom: 0,
+    marginBottom: 2,
   },
+
+  image: {
+    width: 24,
+    height: 24,
+  }
 }));
 
 function NavMenu(props) {
@@ -59,11 +65,12 @@ function NavMenu(props) {
         onClose={() => setMobileOpen(false)}
         variant="temporary"
       >
-        <List disablePadding>
+        <List component="div" disablePadding>
           {props.navLinkArrangement.map((linkInfo) => {
             const {
               href,
               Icon,
+              image,
               onClick,
               path,
               title
@@ -77,6 +84,13 @@ function NavMenu(props) {
                 </ListItemIcon>
               );
             }
+            if (image) {
+              listItemIcon = (
+                <ListItemIcon className={classes.listItemIcon}>
+                  <img alt={title} className={classes.image} src={image} />
+                </ListItemIcon>
+              );
+            }
 
             const listItemProps = {};
             if (path) {
@@ -84,9 +98,9 @@ function NavMenu(props) {
               listItemProps.component = GatsbyLink;
             }
             if (href) {
+              listItemProps.component = Link;
+              listItemProps.color = 'textPrimary';
               listItemProps.href = href;
-              listItemProps.target = '_blank';
-              listItemProps.rel = 'noopener';
             }
             if (onClick) {
               listItemProps.onClick = onClick;

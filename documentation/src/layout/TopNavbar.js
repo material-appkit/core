@@ -13,7 +13,14 @@ const styles = makeStyles((theme) => ({
 
   navLink: {
     marginLeft: theme.spacing(1),
+    width: 48,
+    height: 48,
   },
+
+  image: {
+    width: 32,
+    height: 32,
+  }
 }));
 
 
@@ -26,6 +33,7 @@ function Navbar(props) {
         const {
           href,
           Icon,
+          image,
           onClick,
           path,
           title,
@@ -39,11 +47,20 @@ function Navbar(props) {
         }
         if (href) {
           buttonProps.href = href;
-          buttonProps.target = '_blank';
-          buttonProps.rel = 'noopener';
         }
         if (onClick) {
           buttonProps.onClick = onClick;
+        }
+
+
+        let content = null;
+        if (Icon) {
+          content = <Icon />;
+        }
+        if (image) {
+          content = (
+            <img alt={title} className={classes.image} src={image} />
+          );
         }
 
         return (
@@ -52,7 +69,7 @@ function Navbar(props) {
               className={classes.navLink}
               {...buttonProps}
             >
-              <Icon />
+              {content}
             </IconButton>
           </Tooltip>
         );
