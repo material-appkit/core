@@ -6,6 +6,7 @@ import Img from 'gatsby-image';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
+import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Slide from '@material-ui/core/Slide';
@@ -19,7 +20,6 @@ import NpmLogo from 'images/npm-logo.png';
 
 import TopNavbar from './TopNavbar';
 import NavMenu from './NavMenu';
-
 
 
 const styles = makeStyles((theme) => ({
@@ -107,11 +107,12 @@ const Header = (props) => {
           </Box>
         </Box>
 
-        {isWidthMediumUp ? (
-          <TopNavbar navLinkArrangement={navLinkArrangement} />
-        ) : (
+        <Hidden mdUp>
           <NavMenu navLinkArrangement={navLinkArrangement} />
-        )}
+        </Hidden>
+        <Hidden smDown>
+          <TopNavbar navLinkArrangement={navLinkArrangement} />
+        </Hidden>
       </Toolbar>
 
       {props.loading &&
