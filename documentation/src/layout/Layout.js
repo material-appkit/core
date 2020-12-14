@@ -28,19 +28,22 @@ const styles = makeStyles((theme) => ({
     flexDirection: 'column',
     minHeight: `calc(100vh - ${theme.appbar.height}px)`,
 
-    transition: theme.transitions.create(['padding'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
+    [theme.breakpoints.up('md')]: {
+      paddingLeft: theme.navbar.width,
 
+      transition: theme.transitions.create(['padding'], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
   },
 
   rootContainerShift: {
-    paddingLeft: theme.navbar.width,
+    paddingLeft: 0,
 
     transition: theme.transitions.create(['padding'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
     }),
   },
 
@@ -103,7 +106,7 @@ const Layout = (props) => {
   if (fixedHeader) {
     rootContainerClasses.push(classes.fixedHeaderRootContainer);
   }
-  if (isWidthMediumUp && desktopDrawerOpen) {
+  if (!desktopDrawerOpen) {
     rootContainerClasses.push(classes.rootContainerShift);
   }
 
