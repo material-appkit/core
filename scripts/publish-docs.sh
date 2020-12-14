@@ -9,7 +9,7 @@ TARGET_PATH=$SYSADMIN_PATH/../docs/
 
 # Generate the documentation build products
 cd $SRC_PATH
-gatsby build
+npm run build
 
 # RSync the build products to their destination directory
 rsync -avz --delete $BUILD_PATH $TARGET_PATH
