@@ -85,7 +85,7 @@ const Header = (props) => {
             className={classes.applicationLogoButton}
             onClick={onApplicationLogoClick}
           >
-            <img src={ApplicationLogo} width="36" />
+            <img alt="Material-AppKit Logo" src={ApplicationLogo} width="36" />
           </IconButton>
 
           <Box marginLeft={1}>

@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { Fragment, useContext, useState } from 'react';
 
+import Container from '@material-ui/core/Container';
 import Drawer from '@material-ui/core/Drawer';
 import Fab from '@material-ui/core/Fab';
 import Hidden from '@material-ui/core/Hidden';
@@ -54,6 +55,8 @@ const styles = makeStyles((theme) => ({
 
   contentContainer: {
     flex: 1,
+    margin: 0,
+    paddingTop: theme.spacing(2),
   },
 
   drawerModal: {
@@ -155,14 +158,17 @@ const Layout = (props) => {
       />
 
       <div className={clsx(rootContainerClasses)}>
-        <div className={clsx(classes.contentContainer, contentContainerClassName)}>
+        <Container
+          className={clsx(classes.contentContainer, contentContainerClassName)}
+          maxWidth="md"
+        >
           {children}
-        </div>
+        </Container>
 
         <Footer />
       </div>
 
-      <Hidden mdUp implementation="css" initialWidth="xs">
+      <Hidden mdUp implementation="css">
         <Drawer
           anchor="left"
           classes={{

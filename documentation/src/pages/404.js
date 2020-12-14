@@ -10,18 +10,11 @@ import Layout from 'layout/Layout';
 import { COMMON_PAGE_PROPS } from 'variables';
 
 const styles = makeStyles((theme) => ({
-  main: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    padding: theme.spacing(6, 0, 2),
-  },
-
   contentContainer: {
+    marginTop: theme.spacing(4),
     textAlign: 'center',
   },
 }));
-
 
 function NotFoundPage({ data }) {
   const classes = styles();
@@ -30,7 +23,7 @@ function NotFoundPage({ data }) {
     <Layout
       title="Page Not Found"
     >
-      <main className={classes.main}>
+      <main>
         <div className={classes.contentContainer}>
           <Img fixed={data.sadFace.childImageSharp.fixed} />
         </div>

@@ -39,7 +39,6 @@ export const ContentSection = withStyles((theme) => ({
 
 export const ContentHeading = withStyles((theme) => ({
   h2: {
-    borderBottom: `1px solid ${theme.palette.grey[800]}`,
     fontSize: theme.typography.pxToRem(18),
     fontWeight: 400,
     marginBottom: theme.spacing(1),

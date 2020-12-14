@@ -1,7 +1,6 @@
 import React from 'react';
 
 // import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 
 import Layout from 'layout/Layout';
 
@@ -13,22 +12,15 @@ import {
   ContentSection,
 } from 'components/typography';
 
-const styles = makeStyles((theme) => ({
-  main: {
-    padding: theme.spacing(2),
-  },
-}));
 
 function GettingStartedPage({ data, location }) {
-  const classes = styles();
-
   return (
     <Layout
       location={location}
       showBackButton={false}
       title="Getting Started"
     >
-      <main className={classes.main}>
+      <main>
         <PageTitle>
           Getting started
         </PageTitle>

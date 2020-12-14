@@ -14,7 +14,6 @@ const styles = makeStyles((theme) => ({
     alignItems: 'center',
     display: 'flex',
     flexDirection: 'column',
-    padding: theme.spacing(6, 0, 2),
   },
 
   contentContainer: {
@@ -49,7 +48,7 @@ function HomePage({ data, location }) {
     >
       <main className={classes.main}>
         <div className={classes.contentContainer}>
-          <img src={ApplicationLogo} width="300" />
+          <img alt="Material-AppKit Logo" src={ApplicationLogo} width="300" />
 
           <div className={classes.titleContainer}>
             <Typography component="h1" color="primary" className={classes.title}>
