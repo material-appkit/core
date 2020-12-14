@@ -95,10 +95,10 @@ const Header = (props) => {
           </Box>
         </Box>
 
-        <Hidden mdUp>
+        <Hidden mdUp implementation="css">
           <NavMenu navLinkArrangement={navLinkArrangement} />
         </Hidden>
-        <Hidden smDown>
+        <Hidden smDown implementation="css">
           <TopNavbar navLinkArrangement={navLinkArrangement} />
         </Hidden>
       </Toolbar>

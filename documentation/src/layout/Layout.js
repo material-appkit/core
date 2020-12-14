@@ -162,7 +162,7 @@ const Layout = (props) => {
         <Footer />
       </div>
 
-      <Hidden mdUp implementation="js" initialWidth="xs">
+      <Hidden mdUp implementation="css" initialWidth="xs">
         <Drawer
           anchor="left"
           classes={{
