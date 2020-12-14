@@ -81,7 +81,8 @@ const Layout = (props) => {
 
   const context = useContext(AppContext);
   const { breakpoint } = context;
-  const isWidthMediumUp = isWidthUp('md', breakpoint);
+
+  const isWidthMediumUp = breakpoint ? isWidthUp('md', breakpoint) : true;
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 

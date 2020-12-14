@@ -41,7 +41,8 @@ function Footer(props) {
   const classes = styles();
 
   const context = useContext(AppContext);
-  const isWidthMediumUp = isWidthUp('md', context.breakpoint);
+  const { breakpoint } = context;
+  const isWidthMediumUp = breakpoint ? isWidthUp('md', context.breakpoint) : true;
 
   const footerLinkArrangement = [
     { label: 'Home', path: paths.index },
