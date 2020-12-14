@@ -57,7 +57,7 @@ function HomePage({ data, location }) {
             </Typography>
 
             <Typography component="h2" className={classes.version}>
-              v2.9.2
+              v{process.env.GATSBY_APP_VERSION}
             </Typography>
           </div>
         </div>

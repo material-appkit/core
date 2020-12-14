@@ -2,8 +2,8 @@
   "name": "@material-appkit/documentation",
   "private": true,
   "description": "Material-AppKit Documentation",
-  "version": "0.1.0",
-  "author": "Allan Hart <allan.w.hart@gmail.com>",
+  "version": "2.9.3",
+  "author": "Allan Hart",
   "dependencies": {
     "@material-appkit/core": "^2.9.3",
     "@material-ui/core": "^4.11.2",
@@ -42,11 +42,10 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "gatsby build",
-    "build-dev": "dotenv -e .env.development gatsby build",
+    "build": "GATSBY_APP_VERSION=$npm_package_version gatsby build",
     "develop": "gatsby develop -H 0.0.0.0 -p 8001",
     "format": "prettier --write src/**/*.{js,jsx}",
-    "start": "npm run develop",
+    "start": "GATSBY_APP_VERSION=$npm_package_version npm run develop",
     "serve": "gatsby serve",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },
