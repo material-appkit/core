@@ -9,11 +9,6 @@ const webpack = require('webpack');
 
 exports.onCreateWebpackConfig = ({ getConfig, stage, actions }) => {
   const extraWebpackConfig = {
-    plugins: [
-      // Required if using superagent due to build issues
-      // See: https://github.com/gatsbyjs/gatsby/issues/2615
-      // new webpack.DefinePlugin({ "global.GENTLY": false })
-    ],
     resolve: {
       modules: [
         path.resolve(__dirname, 'src'),
