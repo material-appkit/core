@@ -56,7 +56,6 @@ function ApplicationMenuControl(props) {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-
   return (
     <Fragment>
       <IconButton
@@ -76,7 +75,6 @@ function ApplicationMenuControl(props) {
         ModalProps={{ keepMounted: true }}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        variant="temporary"
       >
         <ApplicationNavTree
           location={props.location}

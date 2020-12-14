@@ -1,19 +1,17 @@
 [
-  { "name": "Introduction", "icon": "home", "path": "" },
+  { "name": "Introduction", "path": "" },
 
-  { "name": "Quickstart",   "icon": "home", "path": "quickstart" },
-
-  { "name": "Orientation", "icon": "home", "path": "getting-started", "children": [
+  { "name": "Getting Started", "path": "getting-started", "children": [
+    { "name": "Quickstart",   "path": "quickstart" },
     { "name": "Installation", "path": "installation" },
-    { "name": "Usage", "path": "usage" }
+    { "name": "Usage", "path": "usage" },
+    { "name": "Examples", "path": "examples", "children": [
+      { "name": "PWA Skeleton", "path": "pwa-skeleton" },
+      { "name": "Gatsby Skeleton", "path": "gatsby-skeleton" }
+    ]}
   ]},
 
-  { "name": "API Reference",   "icon": "home", "path": "api" },
-
-  { "name": "Examples", "icon": "home", "path": "examples", "children": [
-    { "name": "PWA Skeleton", "path": "pwa-skeleton" },
-    { "name": "Gatsby Skeleton", "path": "gatsby-skeleton" }
-  ]},
+  { "name": "API Reference",   "path": "reference" },
 
   { "name": "About", "icon": "info", "path": "about", "children": [
       { "name": "The Motivation", "path": "motivation" },

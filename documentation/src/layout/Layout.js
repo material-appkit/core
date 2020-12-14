@@ -54,7 +54,6 @@ const Layout = (props) => {
   const {
     children,
     contentContainerClassName,
-    navLinkArrangement,
     rootContainerClassName,
     showBackButton,
   } = props;
@@ -71,11 +70,6 @@ const Layout = (props) => {
   const rootContainerClasses = [classes.rootContainer, rootContainerClassName];
   if (fixedHeader) {
     rootContainerClasses.push(classes.fixedHeaderRootContainer);
-  }
-
-  let headerNavLinkArrangement = [];
-  if (navLinkArrangement) {
-    headerNavLinkArrangement = navLinkArrangement;
   }
 
 
@@ -100,7 +94,6 @@ const Layout = (props) => {
   }
 
 
-
   return (
     <Fragment>
       <SEO title={props.pageTitle || props.title} />
@@ -110,7 +103,6 @@ const Layout = (props) => {
         isWidthMediumUp={isWidthMediumUp}
         loading={props.loading}
         location={props.location}
-        navLinkArrangement={headerNavLinkArrangement}
         showBackButton={showBackButton}
         title={props.title}
       />
@@ -140,7 +132,6 @@ Layout.propTypes = {
   location: PropTypes.object.isRequired,
   maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   mainProps: PropTypes.object,
-  navLinkArrangement: PropTypes.array,
   pageTitle: PropTypes.string,
   rootContainerClassName: PropTypes.string,
   showBackButton: PropTypes.bool,
@@ -152,7 +143,7 @@ Layout.defaultProps = {
   showBackButton: true,
   loading: false,
   mainProps: {},
-  maxWidth: 'md',
+  maxWidth: 'lg',
 };
 
 export default Layout;

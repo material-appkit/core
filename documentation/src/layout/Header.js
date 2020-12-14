@@ -102,7 +102,6 @@ Header.propTypes = {
   isWidthMediumUp: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
   location: PropTypes.object.isRequired,
-  navLinkArrangement: PropTypes.array.isRequired,
   showBackButton: PropTypes.bool.isRequired,
   title: PropTypes.string,
 };
