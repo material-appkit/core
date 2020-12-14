@@ -1,0 +1,23 @@
+[
+  { "name": "Introduction", "icon": "home", "path": "" },
+
+  { "name": "Quickstart",   "icon": "home", "path": "quickstart" },
+
+  { "name": "Orientation", "icon": "home", "path": "getting-started", "children": [
+    { "name": "Installation", "path": "installation" },
+    { "name": "Usage", "path": "usage" }
+  ]},
+
+  { "name": "API Reference",   "icon": "home", "path": "api" },
+
+  { "name": "Examples", "icon": "home", "path": "examples", "children": [
+    { "name": "PWA Skeleton", "path": "pwa-skeleton" },
+    { "name": "Gatsby Skeleton", "path": "gatsby-skeleton" }
+  ]},
+
+  { "name": "About", "icon": "info", "path": "about", "children": [
+      { "name": "The Motivation", "path": "motivation" },
+      { "name": "The Philosphy", "path": "philosophy" },
+      { "name": "The Author", "path": "author" }
+    ]}
+]

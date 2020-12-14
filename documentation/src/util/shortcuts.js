@@ -1,10 +1,6 @@
-import HomeIcon from '@material-ui/icons/Home';
-
 import { SlideUpTransition } from './transitions';
 
 import { E_REQUEST_ABORTED } from 'variables';
-
-import paths from 'paths';
 
 export function abortRequest(requestContext) {
   if (requestContext && requestContext.abortController) {
@@ -34,12 +30,3 @@ export const dialogProps = (fullScreen) => {
 
   return dialogProps;
 };
-
-
-export function applicationNavLinkArrangement(context) {
-  const navLinkArrangement = [
-    { title: 'Introduction', Icon: HomeIcon, path: paths.index },
-  ];
-
-  return navLinkArrangement;
-}

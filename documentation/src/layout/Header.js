@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useContext } from 'react';
+import React from 'react';
 
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
@@ -13,8 +13,6 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 
 import TopNavbar from './TopNavbar';
 import NavMenu from './NavMenu';
-
-import AppContext from 'AppContext';
 
 import ApplicationMenuControl from './ApplicationMenuControl';
 
@@ -49,7 +47,6 @@ const Header = (props) => {
 
   const { fixed, isWidthMediumUp, title } = props;
 
-  const context = useContext(AppContext);
   const trigger = useScrollTrigger();
 
   const navLinkArrangement = [{
@@ -67,9 +64,7 @@ const Header = (props) => {
     >
       <Toolbar className={classes.toolBar} disableGutters>
         <Box display="flex" alignItems="center">
-          <ApplicationMenuControl
-            context={context}
-          />
+          <ApplicationMenuControl location={props.location} />
 
           <Box marginLeft={1}>
             <Typography component="h1" className={classes.pageTitle}>
@@ -79,13 +74,9 @@ const Header = (props) => {
         </Box>
 
         {isWidthMediumUp ? (
-          <TopNavbar
-            navLinkArrangement={navLinkArrangement}
-          />
+          <TopNavbar navLinkArrangement={navLinkArrangement} />
         ) : (
-          <NavMenu
-            navLinkArrangement={navLinkArrangement}
-          />
+          <NavMenu navLinkArrangement={navLinkArrangement} />
         )}
       </Toolbar>
 
@@ -110,6 +101,7 @@ Header.propTypes = {
   fixed: PropTypes.bool.isRequired,
   isWidthMediumUp: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
+  location: PropTypes.object.isRequired,
   navLinkArrangement: PropTypes.array.isRequired,
   showBackButton: PropTypes.bool.isRequired,
   title: PropTypes.string,

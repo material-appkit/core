@@ -38,11 +38,12 @@ const styles = makeStyles((theme) => ({
   }
 }));
 
-function HomePage({ data }) {
+function HomePage({ data, location }) {
   const classes = styles();
 
   return (
     <Layout
+      location={location}
       showBackButton={false}
       title="Introduction"
     >

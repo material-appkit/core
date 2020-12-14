@@ -109,6 +109,7 @@ const Layout = (props) => {
         fixed={fixedHeader}
         isWidthMediumUp={isWidthMediumUp}
         loading={props.loading}
+        location={props.location}
         navLinkArrangement={headerNavLinkArrangement}
         showBackButton={showBackButton}
         title={props.title}
@@ -136,6 +137,7 @@ Layout.propTypes = {
   contentContainerClassName: PropTypes.string,
   fixedHeader: PropTypes.bool,
   loading: PropTypes.bool,
+  location: PropTypes.object.isRequired,
   maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   mainProps: PropTypes.object,
   navLinkArrangement: PropTypes.array,
