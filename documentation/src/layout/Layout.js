@@ -5,9 +5,9 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { Fragment, useContext, useState } from 'react';
 
-import Container from '@material-ui/core/Container';
 import Drawer from '@material-ui/core/Drawer';
 import Fab from '@material-ui/core/Fab';
+import Hidden from '@material-ui/core/Hidden';
 import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
 import { isWidthUp } from '@material-ui/core/withWidth';
@@ -42,16 +42,6 @@ const styles = makeStyles((theme) => ({
     flex: 1,
   },
 
-  fab: {
-    position: 'fixed',
-    bottom: theme.spacing(2),
-    right: theme.spacing(2),
-
-    '@media print': {
-      display: 'none',
-    },
-  },
-
   drawerModal: {
     zIndex: `${theme.zIndex.appBar - 1} !important`,
   },
@@ -63,6 +53,16 @@ const styles = makeStyles((theme) => ({
 
     [theme.breakpoints.up('md')]: {
       zIndex: `${theme.zIndex.appBar - 1}`,
+    },
+  },
+
+  fab: {
+    position: 'fixed',
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
+
+    '@media print': {
+      display: 'none',
     },
   },
 }));
@@ -85,7 +85,6 @@ const Layout = (props) => {
   const isWidthMediumUp = breakpoint ? isWidthUp('md', breakpoint) : true;
 
   const [drawerOpen, setDrawerOpen] = useState(false);
-
 
   const rootContainerClasses = [classes.rootContainer, rootContainerClassName];
   if (fixedHeader) {
@@ -113,22 +112,7 @@ const Layout = (props) => {
     );
   }
 
-
-  const drawer = (
-    <Drawer
-      anchor="left"
-      classes={{
-        modal: classes.drawerModal,
-        paper: classes.drawerPaper,
-      }}
-      ModalProps={{ keepMounted: true }}
-      open={drawerOpen}
-      onClose={() => setDrawerOpen(false)}
-      variant={isWidthMediumUp ? 'permanent' : 'temporary'}
-    >
-      <ApplicationNavTree location={props.location} />
-    </Drawer>
-  );
+  const applicationNavTree = <ApplicationNavTree location={props.location} />;
 
   return (
     <Fragment>
@@ -143,19 +127,40 @@ const Layout = (props) => {
         title={props.title}
       />
 
-      <Container
+      <div
         className={clsx(rootContainerClasses)}
-        disableGutters
-        maxWidth={props.maxWidth}
       >
         <div className={clsx(classes.contentContainer, contentContainerClassName)}>
           {children}
         </div>
 
         <Footer />
-      </Container>
+      </div>
 
-      {drawer}
+      <Hidden mdUp implementation="css">
+        <Drawer
+          anchor="left"
+          classes={{
+            modal: classes.drawerModal,
+            paper: classes.drawerPaper,
+          }}
+          ModalProps={{ keepMounted: true }}
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          variant="temporary"
+        >
+          {applicationNavTree}
+        </Drawer>
+      </Hidden>
+      <Hidden smDown implementation="css">
+        <Drawer
+          classes={{ paper: classes.drawerPaper }}
+          variant="permanent"
+          open={drawerOpen}
+        >
+          {applicationNavTree}
+        </Drawer>
+      </Hidden>
       {fabButton}
     </Fragment>
   );
@@ -167,7 +172,6 @@ Layout.propTypes = {
   fixedHeader: PropTypes.bool,
   loading: PropTypes.bool,
   location: PropTypes.object.isRequired,
-  maxWidth: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   mainProps: PropTypes.object,
   pageTitle: PropTypes.string,
   rootContainerClassName: PropTypes.string,
@@ -180,7 +184,6 @@ Layout.defaultProps = {
   showBackButton: true,
   loading: false,
   mainProps: {},
-  maxWidth: 'xl',
 };
 
 export default Layout;
