@@ -1,13 +1,10 @@
-import React, { Fragment, useContext } from 'react';
+import React from 'react';
 import { Link as GatsbyLink } from 'gatsby';
 
-import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import { isWidthUp } from '@material-ui/core/withWidth';
 
-import AppContext from 'AppContext';
 import paths from 'paths';
 
 const styles = makeStyles((theme) => ({
@@ -18,12 +15,26 @@ const styles = makeStyles((theme) => ({
     padding: theme.spacing(2),
   },
 
+  content: {
+    display: 'flex',
+  },
+
   copyright: {
     fontSize: theme.typography.pxToRem(14),
   },
 
   linkList: {
     display: 'flex',
+    margin: 0,
+    padding: 0,
+  },
+
+  linkListItem: {
+    marginLeft: 5,
+    '&::before': {
+      content: '"·"',
+      marginRight: 5,
+    }
   },
 
   linkSeparator: {
@@ -36,10 +47,6 @@ const styles = makeStyles((theme) => ({
 function Footer(props) {
   const classes = styles();
 
-  const context = useContext(AppContext);
-  const { breakpoint } = context;
-  const isWidthMediumUp = breakpoint ? isWidthUp('md', context.breakpoint) : true;
-
   const footerLinkArrangement = [
     { label: 'Home', path: paths.index },
     { label: 'Privacy', path: '#' },
@@ -47,19 +54,19 @@ function Footer(props) {
   ];
 
   return (
-    <Box component="footer" className={classes.footer}>
-      <Box
-        display="flex"
-        flexDirection={isWidthMediumUp ? 'row' : 'column'}
-      >
+    <footer className={classes.footer}>
+      <div className={classes.content}>
         <Typography className={classes.copyright}>
           © {new Date().getFullYear()} {process.env.GATSBY_APP_TITLE}
         </Typography>
 
 
-        <div className={classes.linkList}>
+        <ul className={classes.linkList}>
           {footerLinkArrangement.map((linkInfo, i) => {
-            const linkProps = {};
+            const linkProps = {
+              className: classes.linkListItem,
+              key: linkInfo.label
+            };
 
             if (linkInfo.path) {
               linkProps.component = GatsbyLink;
@@ -71,19 +78,14 @@ function Footer(props) {
             }
 
             return (
-              <Fragment key={linkInfo.label}>
-                {(isWidthMediumUp || i > 0) &&
-                  <span className={classes.linkSeparator}>·</span>
-                }
-                <Link {...linkProps}>
-                  {linkInfo.label}
-                </Link>
-              </Fragment>
+              <Link component="li" {...linkProps}>
+                {linkInfo.label}
+              </Link>
             );
           })}
-        </div>
-      </Box>
-    </Box>
+        </ul>
+      </div>
+    </footer>
   );
 }
 
