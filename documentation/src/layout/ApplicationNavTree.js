@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { Link as GatsbyLink } from 'gatsby';
 
@@ -44,14 +44,10 @@ function ApplicationNavTree({ location }) {
   const context = useContext(AppContext);
   const { sitemap } = context;
 
-  const renderTree = (node, depth) => {
-    let childTreeItems = null;
-    if (Array.isArray(node.children)) {
-      childTreeItems = node.children.map((childNode) => (
-        renderTree(childNode, depth + 1)
-      ));
-    }
+  const [selectedNodeId] = useState(null);
 
+
+  const renderTree = (node, depth) => {
     return (
       <TreeItem
         key={node.id}
@@ -68,7 +64,9 @@ function ApplicationNavTree({ location }) {
         )}
         nodeId={node.id}
       >
-        {childTreeItems}
+        {Array.isArray(node.children) && (
+          node.children.map((childNode) => renderTree(childNode, depth + 1))
+        )}
       </TreeItem>
     );
   };
@@ -78,7 +76,8 @@ function ApplicationNavTree({ location }) {
       className={classes.treeView}
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
-      defaultExpanded={['1', '2', '3']}
+      defaultExpanded={['1', '1.3', '2', '3']}
+      selected={selectedNodeId}
     >
       {sitemap.map((rootNode) => renderTree(rootNode, 1))}
     </TreeView>
