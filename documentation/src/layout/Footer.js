@@ -15,8 +15,11 @@ const styles = makeStyles((theme) => ({
     alignItems: 'center',
     borderTop: `1px solid ${theme.palette.grey[400]}`,
     display: 'flex',
-    flexShrink: 0,
     padding: theme.spacing(2),
+
+    [theme.breakpoints.up('md')]: {
+      marginLeft: theme.navbar.width,
+    },
   },
 
   copyright: {

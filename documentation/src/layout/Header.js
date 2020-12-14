@@ -1,8 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { graphql, useStaticQuery } from 'gatsby';
+import Img from 'gatsby-image';
+
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Slide from '@material-ui/core/Slide';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -14,7 +18,6 @@ import GitHubIcon from '@material-ui/icons/GitHub';
 import TopNavbar from './TopNavbar';
 import NavMenu from './NavMenu';
 
-import ApplicationMenuControl from './ApplicationMenuControl';
 
 
 const styles = makeStyles((theme) => ({
@@ -43,9 +46,28 @@ const styles = makeStyles((theme) => ({
 }));
 
 const Header = (props) => {
+  const { applicationLogo } = useStaticQuery(
+    graphql`
+      query {
+        applicationLogo: file(relativePath: { eq: "application-logo.png" }) {
+          childImageSharp {
+            fixed(width: 40, height: 40) {
+              ...GatsbyImageSharpFixed
+            }
+          }
+        }
+      }
+    `
+  );
+
   const classes = styles();
 
-  const { fixed, isWidthMediumUp, title } = props;
+  const {
+    fixed,
+    isWidthMediumUp,
+    onApplicationLogoClick,
+    title,
+  } = props;
 
   const trigger = useScrollTrigger();
 
@@ -64,7 +86,13 @@ const Header = (props) => {
     >
       <Toolbar className={classes.toolBar} disableGutters>
         <Box display="flex" alignItems="center">
-          <ApplicationMenuControl location={props.location} />
+          <IconButton
+            className={classes.drawerMenuButton}
+            onClick={onApplicationLogoClick}
+            size="small"
+          >
+            <Img fixed={applicationLogo.childImageSharp.fixed} />
+          </IconButton>
 
           <Box marginLeft={1}>
             <Typography component="h1" className={classes.pageTitle}>
@@ -86,7 +114,7 @@ const Header = (props) => {
     </AppBar>
   );
 
-  if (fixed) {
+  if (!isWidthMediumUp) {
     view = (
       <Slide appear={false} direction="down" in={!trigger}>
         {view}
@@ -101,7 +129,7 @@ Header.propTypes = {
   fixed: PropTypes.bool.isRequired,
   isWidthMediumUp: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired,
+  onApplicationLogoClick: PropTypes.func.isRequired,
   showBackButton: PropTypes.bool.isRequired,
   title: PropTypes.string,
 };

@@ -3,20 +3,22 @@
  */
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React, { Fragment, useContext } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 
 import Container from '@material-ui/core/Container';
+import Drawer from '@material-ui/core/Drawer';
 import Fab from '@material-ui/core/Fab';
 import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
 import { isWidthUp } from '@material-ui/core/withWidth';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
-import Footer from 'layout/Footer';
-import Header from 'layout/Header';
+import Footer from './Footer';
+import Header from './Header';
 
 import AppContext from 'AppContext';
 
+import ApplicationNavTree from './ApplicationNavTree';
 import SEO from './seo';
 
 const styles = makeStyles((theme) => ({
@@ -34,6 +36,10 @@ const styles = makeStyles((theme) => ({
 
   contentContainer: {
     flex: 1,
+
+    [theme.breakpoints.up('md')]: {
+      marginLeft: theme.navbar.width,
+    },
   },
 
   fab: {
@@ -45,6 +51,20 @@ const styles = makeStyles((theme) => ({
       display: 'none',
     },
   },
+
+  drawerModal: {
+    zIndex: `${theme.zIndex.appBar - 1} !important`,
+  },
+
+  drawerPaper: {
+    backgroundColor: theme.palette.grey[50],
+    paddingTop: theme.appbar.height,
+    width: theme.navbar.width,
+
+    [theme.breakpoints.up('md')]: {
+      zIndex: `${theme.zIndex.appBar - 1}`,
+    },
+  },
 }));
 
 
@@ -54,6 +74,7 @@ const Layout = (props) => {
   const {
     children,
     contentContainerClassName,
+    fixedHeader,
     rootContainerClassName,
     showBackButton,
   } = props;
@@ -62,10 +83,8 @@ const Layout = (props) => {
   const { breakpoint } = context;
   const isWidthMediumUp = isWidthUp('md', breakpoint);
 
-  let fixedHeader = props.fixedHeader;
-  if (fixedHeader === undefined) {
-    fixedHeader = isWidthMediumUp;
-  }
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
 
   const rootContainerClasses = [classes.rootContainer, rootContainerClassName];
   if (fixedHeader) {
@@ -94,6 +113,22 @@ const Layout = (props) => {
   }
 
 
+  const drawer = (
+    <Drawer
+      anchor="left"
+      classes={{
+        modal: classes.drawerModal,
+        paper: classes.drawerPaper,
+      }}
+      ModalProps={{ keepMounted: true }}
+      open={drawerOpen}
+      onClose={() => setDrawerOpen(false)}
+      variant={isWidthMediumUp ? 'permanent' : 'temporary'}
+    >
+      <ApplicationNavTree location={props.location} />
+    </Drawer>
+  );
+
   return (
     <Fragment>
       <SEO title={props.pageTitle || props.title} />
@@ -102,7 +137,7 @@ const Layout = (props) => {
         fixed={fixedHeader}
         isWidthMediumUp={isWidthMediumUp}
         loading={props.loading}
-        location={props.location}
+        onApplicationLogoClick={() => setDrawerOpen(!drawerOpen)}
         showBackButton={showBackButton}
         title={props.title}
       />
@@ -119,6 +154,7 @@ const Layout = (props) => {
         <Footer />
       </Container>
 
+      {drawer}
       {fabButton}
     </Fragment>
   );
@@ -143,7 +179,7 @@ Layout.defaultProps = {
   showBackButton: true,
   loading: false,
   mainProps: {},
-  maxWidth: 'lg',
+  maxWidth: 'xl',
 };
 
 export default Layout;
