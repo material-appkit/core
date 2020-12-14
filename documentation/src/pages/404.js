@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import { graphql } from 'gatsby';
@@ -7,6 +6,8 @@ import Img from 'gatsby-image';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Layout from 'layout/Layout';
+
+import { COMMON_PAGE_PROPS } from 'variables';
 
 const styles = makeStyles((theme) => ({
   main: {
@@ -38,11 +39,7 @@ function NotFoundPage({ data }) {
   );
 }
 
-NotFoundPage.propTypes = {
-  data: PropTypes.object,
-  location: PropTypes.object,
-  pageContext: PropTypes.object,
-};
+NotFoundPage.propTypes = COMMON_PAGE_PROPS;
 
 export default NotFoundPage;
 

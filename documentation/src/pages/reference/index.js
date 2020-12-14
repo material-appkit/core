@@ -13,25 +13,25 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
-function AboutPage({ data, location }) {
+function ReferencePage({ data, location }) {
   const classes = styles();
 
   return (
     <Layout
       location={location}
       showBackButton={false}
-      title="About"
+      title="API Reference"
     >
       <main className={classes.main}>
         <Typography component="h1">
-          About Material-AppKit
+          API Reference
         </Typography>
       </main>
     </Layout>
   );
 }
 
-AboutPage.propTypes = COMMON_PAGE_PROPS;
+ReferencePage.propTypes = COMMON_PAGE_PROPS;
 
-export default AboutPage;
+export default ReferencePage;
 

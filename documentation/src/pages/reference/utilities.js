@@ -13,25 +13,25 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
-function AboutPage({ data, location }) {
+function UtilitiesPage({ data, location }) {
   const classes = styles();
 
   return (
     <Layout
       location={location}
       showBackButton={false}
-      title="About"
+      title="Utilities"
     >
       <main className={classes.main}>
         <Typography component="h1">
-          About Material-AppKit
+          Utilities
         </Typography>
       </main>
     </Layout>
   );
 }
 
-AboutPage.propTypes = COMMON_PAGE_PROPS;
+UtilitiesPage.propTypes = COMMON_PAGE_PROPS;
 
-export default AboutPage;
+export default UtilitiesPage;
 

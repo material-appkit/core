@@ -18,8 +18,8 @@
   ]},
 
   { "name": "About", "icon": "info", "path": "about", "children": [
-      { "name": "The Motivation", "path": "motivation" },
-      { "name": "The Philosphy", "path": "philosophy" },
+      { "name": "Motivation", "path": "motivation" },
+      { "name": "Design Philosphy", "path": "philosophy" },
       { "name": "The Author", "path": "author" }
     ]}
 ]

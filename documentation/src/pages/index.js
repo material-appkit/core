@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import { graphql } from 'gatsby';
@@ -8,6 +7,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Layout from 'layout/Layout';
+
+import { COMMON_PAGE_PROPS } from 'variables';
 
 const styles = makeStyles((theme) => ({
   main: {
@@ -66,11 +67,7 @@ function HomePage({ data, location }) {
   );
 }
 
-HomePage.propTypes = {
-  data: PropTypes.object,
-  location: PropTypes.object,
-  pageContext: PropTypes.object,
-};
+HomePage.propTypes = COMMON_PAGE_PROPS;
 
 export default HomePage;
 

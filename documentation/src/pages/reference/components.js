@@ -13,25 +13,25 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
-function AboutPage({ data, location }) {
+function ComponentsPage({ data, location }) {
   const classes = styles();
 
   return (
     <Layout
       location={location}
       showBackButton={false}
-      title="About"
+      title="Components"
     >
       <main className={classes.main}>
         <Typography component="h1">
-          About Material-AppKit
+          Components
         </Typography>
       </main>
     </Layout>
   );
 }
 
-AboutPage.propTypes = COMMON_PAGE_PROPS;
+ComponentsPage.propTypes = COMMON_PAGE_PROPS;
 
-export default AboutPage;
+export default ComponentsPage;
 
