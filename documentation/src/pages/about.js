@@ -1,11 +1,17 @@
 import React from 'react';
 
-import Typography from '@material-ui/core/Typography';
+// import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Layout from 'layout/Layout';
 
 import { COMMON_PAGE_PROPS } from 'variables';
+
+import {
+  PageTitle,
+  ContentHeading,
+  ContentSection,
+} from 'components/helpers';
 
 const styles = makeStyles((theme) => ({
   main: {
@@ -23,9 +29,27 @@ function AboutPage({ data, location }) {
       title="About"
     >
       <main className={classes.main}>
-        <Typography component="h1">
+        <PageTitle>
           About Material-AppKit
-        </Typography>
+        </PageTitle>
+
+        <ContentSection>
+          <ContentHeading>
+            Motivation
+          </ContentHeading>
+        </ContentSection>
+
+        <ContentSection>
+          <ContentHeading>
+            Design Philosophy
+          </ContentHeading>
+        </ContentSection>
+
+        <ContentSection>
+          <ContentHeading>
+            The Author
+          </ContentHeading>
+        </ContentSection>
       </main>
     </Layout>
   );

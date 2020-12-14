@@ -76,7 +76,7 @@ function ApplicationNavTree({ location }) {
       className={classes.treeView}
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
-      defaultExpanded={['1', '1.3', '2', '3']}
+      defaultExpanded={['1', '1.2', '2', '3']}
       selected={selectedNodeId}
     >
       {sitemap.map((rootNode) => renderTree(rootNode, 1))}

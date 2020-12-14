@@ -1,9 +1,15 @@
 import React from 'react';
 
-import Typography from '@material-ui/core/Typography';
+// import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Layout from 'layout/Layout';
+
+import {
+  PageTitle,
+  ContentHeading,
+  ContentSection,
+} from 'components/helpers';
 
 import { COMMON_PAGE_PROPS } from 'variables';
 
@@ -23,9 +29,21 @@ function ExamplesPage({ data, location }) {
       title="Examples"
     >
       <main className={classes.main}>
-        <Typography component="h1">
+        <PageTitle>
           Examples
-        </Typography>
+        </PageTitle>
+
+        <ContentSection>
+          <ContentHeading>
+            PWA Skeleton
+          </ContentHeading>
+        </ContentSection>
+
+        <ContentSection>
+          <ContentHeading>
+            Gatsby Skeleton
+          </ContentHeading>
+        </ContentSection>
       </main>
     </Layout>
   );

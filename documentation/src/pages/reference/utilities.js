@@ -1,10 +1,15 @@
 import React from 'react';
 
-import Typography from '@material-ui/core/Typography';
+// import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Layout from 'layout/Layout';
 
+import {
+  PageTitle,
+  // ContentHeading,
+  // ContentSection,
+} from 'components/helpers';
 import { COMMON_PAGE_PROPS } from 'variables';
 
 const styles = makeStyles((theme) => ({
@@ -23,9 +28,9 @@ function UtilitiesPage({ data, location }) {
       title="Utilities"
     >
       <main className={classes.main}>
-        <Typography component="h1">
+        <PageTitle>
           Utilities
-        </Typography>
+        </PageTitle>
       </main>
     </Layout>
   );

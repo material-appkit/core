@@ -2,7 +2,6 @@
   { "name": "Introduction", "path": "" },
 
   { "name": "Getting Started", "path": "getting-started", "children": [
-    { "name": "Quickstart",   "anchor": "quickstart" },
     { "name": "Installation", "anchor": "installation" },
     { "name": "Usage", "anchor": "usage" },
     { "name": "Examples", "path": "examples", "children": [
