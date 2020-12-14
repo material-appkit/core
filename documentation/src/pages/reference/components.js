@@ -9,7 +9,7 @@ import {
   PageTitle,
   // ContentHeading,
   // ContentSection,
-} from 'components/helpers';
+} from 'components/typography';
 
 import { COMMON_PAGE_PROPS } from 'variables';
 

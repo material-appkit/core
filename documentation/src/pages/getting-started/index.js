@@ -11,7 +11,7 @@ import {
   PageTitle,
   ContentHeading,
   ContentSection,
-} from 'components/helpers';
+} from 'components/typography';
 
 const styles = makeStyles((theme) => ({
   main: {
