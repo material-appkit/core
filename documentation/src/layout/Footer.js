@@ -16,10 +16,6 @@ const styles = makeStyles((theme) => ({
     borderTop: `1px solid ${theme.palette.grey[400]}`,
     display: 'flex',
     padding: theme.spacing(2),
-
-    [theme.breakpoints.up('md')]: {
-      marginLeft: theme.navbar.width,
-    },
   },
 
   copyright: {

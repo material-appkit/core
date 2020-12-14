@@ -27,6 +27,10 @@ const styles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     minHeight: `calc(100vh - ${theme.appbar.height}px)`,
+
+    [theme.breakpoints.up('md')]: {
+      paddingLeft: theme.navbar.width,
+    },
   },
 
   fixedHeaderRootContainer: {
@@ -36,10 +40,6 @@ const styles = makeStyles((theme) => ({
 
   contentContainer: {
     flex: 1,
-
-    [theme.breakpoints.up('md')]: {
-      marginLeft: theme.navbar.width,
-    },
   },
 
   fab: {
