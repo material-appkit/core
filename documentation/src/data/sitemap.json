@@ -17,7 +17,7 @@
     { "name": "Utilities",   "path": "utilities" }
   ]},
 
-  { "name": "About", "icon": "info", "path": "about", "children": [
+  { "name": "About", "path": "about", "children": [
       { "name": "Motivation", "anchor": "motivation" },
       { "name": "Design Philosphy", "anchor": "philosophy" },
       { "name": "The Author", "anchor": "author" }

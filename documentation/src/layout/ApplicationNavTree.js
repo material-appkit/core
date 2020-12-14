@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { Link as GatsbyLink } from 'gatsby';
 
@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import SitemapData from 'data/sitemap.json';
+import AppContext from 'AppContext';
 
 const styles = makeStyles((theme) => ({
   treeView: {
@@ -41,50 +41,34 @@ const styles = makeStyles((theme) => ({
 
 function ApplicationNavTree({ location }) {
   const classes = styles();
+  const context = useContext(AppContext);
+  const { sitemap } = context;
 
-  const renderTree = (node, nodeIndexPath, depth) => {
-    let children = null;
+  const renderTree = (node, depth) => {
+    let childTreeItems = null;
     if (Array.isArray(node.children)) {
-      children = node.children.map((node, childIndex) => (
-        renderTree(node, `${nodeIndexPath}.${childIndex}`, depth + 1)
+      childTreeItems = node.children.map((childNode) => (
+        renderTree(childNode, depth + 1)
       ));
     }
 
-    const indices = nodeIndexPath.split('.');
-    let currentNode = SitemapData;
-    let path = '';
-    indices.forEach((pathIndex, i) => {
-      currentNode = currentNode[parseInt(pathIndex)];
-      if (currentNode.anchor) {
-        path = `${path}#${currentNode.anchor}`;
-      } else {
-        path = `${path}/${currentNode.path}`;
-      }
-      if (i < indices.length - 1) {
-        currentNode = currentNode.children;
-      }
-    });
-
     return (
       <TreeItem
-        classes={{
-          // iconContainer: classes[`d${depth}IconContainer`],
-        }}
-        key={nodeIndexPath}
+        key={node.id}
         label={(
           <Link
             color="textPrimary"
             component={GatsbyLink}
             className={clsx(classes.link, classes[`d${depth}Link`])}
-            to={path}
+            to={node.url}
             underline="hover"
           >
             {node.name}
           </Link>
         )}
-        nodeId={nodeIndexPath}
+        nodeId={node.id}
       >
-        {children}
+        {childTreeItems}
       </TreeItem>
     );
   };
@@ -96,9 +80,7 @@ function ApplicationNavTree({ location }) {
       defaultExpandIcon={<ChevronRightIcon />}
       defaultExpanded={['1', '2', '3']}
     >
-      {SitemapData.map((rootNode, rootNodeIndex) =>
-        renderTree(rootNode, `${rootNodeIndex}`, 1)
-      )}
+      {sitemap.map((rootNode) => renderTree(rootNode, 1))}
     </TreeView>
   );
 }
