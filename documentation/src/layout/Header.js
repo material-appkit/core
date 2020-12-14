@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { graphql, useStaticQuery } from 'gatsby';
-import Img from 'gatsby-image';
-
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Hidden from '@material-ui/core/Hidden';
@@ -16,6 +13,7 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import { makeStyles } from '@material-ui/core/styles';
 import GitHubIcon from '@material-ui/icons/GitHub';
 
+import ApplicationLogo from 'images/application-logo.svg';
 import NpmLogo from 'images/npm-logo.png';
 
 import TopNavbar from './TopNavbar';
@@ -37,6 +35,11 @@ const styles = makeStyles((theme) => ({
     paddingLeft: theme.spacing(1),
   },
 
+  applicationLogoButton: {
+    width: 48,
+    height: 48,
+  },
+
   pageTitle: {
     fontSize: theme.typography.pxToRem(20),
   },
@@ -48,20 +51,6 @@ const styles = makeStyles((theme) => ({
 }));
 
 const Header = (props) => {
-  const { applicationLogo } = useStaticQuery(
-    graphql`
-      query {
-        applicationLogo: file(relativePath: { eq: "application-logo.png" }) {
-          childImageSharp {
-            fixed(width: 40, height: 40) {
-              ...GatsbyImageSharpFixed
-            }
-          }
-        }
-      }
-    `
-  );
-
   const classes = styles();
 
   const {
@@ -93,11 +82,10 @@ const Header = (props) => {
       <Toolbar className={classes.toolBar} disableGutters>
         <Box display="flex" alignItems="center">
           <IconButton
-            className={classes.drawerMenuButton}
+            className={classes.applicationLogoButton}
             onClick={onApplicationLogoClick}
-            size="small"
           >
-            <Img fixed={applicationLogo.childImageSharp.fixed} />
+            <img src={ApplicationLogo} width="36" />
           </IconButton>
 
           <Box marginLeft={1}>

@@ -1,14 +1,13 @@
 import React from 'react';
 
-import { graphql } from 'gatsby';
-import Img from 'gatsby-image';
-
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Layout from 'layout/Layout';
 
 import { COMMON_PAGE_PROPS } from 'variables';
+
+import ApplicationLogo from 'images/application-logo.svg';
 
 const styles = makeStyles((theme) => ({
   main: {
@@ -50,7 +49,7 @@ function HomePage({ data, location }) {
     >
       <main className={classes.main}>
         <div className={classes.contentContainer}>
-          <Img fixed={data.applicationLogo.childImageSharp.fixed} />
+          <img src={ApplicationLogo} width="300" />
 
           <div className={classes.titleContainer}>
             <Typography component="h1" color="primary" className={classes.title}>
@@ -70,15 +69,3 @@ function HomePage({ data, location }) {
 HomePage.propTypes = COMMON_PAGE_PROPS;
 
 export default HomePage;
-
-export const query = graphql`
-  query {
-    applicationLogo: file(relativePath: { eq: "application-logo.png" }) {
-      childImageSharp {
-        fixed(width: 256, height: 256) {
-          ...GatsbyImageSharpFixed
-        }
-      }
-    }
-  }
-`;
