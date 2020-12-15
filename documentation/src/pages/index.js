@@ -12,7 +12,7 @@ import ApplicationLogo from 'images/application-logo.svg';
 const styles = makeStyles((theme) => ({
   contentContainer: {
     margin: 'auto',
-    paddingTop: theme.spacing(6),
+    padding: '48px 0 16px',
   },
 
   header: {
