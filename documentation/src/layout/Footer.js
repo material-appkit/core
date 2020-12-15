@@ -1,12 +1,15 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Link as GatsbyLink } from 'gatsby';
 
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
-import paths from 'paths';
+import { TreeEnumerator } from 'util/tree';
+
+import { pathnameForUrl } from 'util/shortcuts';
+
 
 const styles = makeStyles((theme) => ({
   footer: {
@@ -42,7 +45,65 @@ const styles = makeStyles((theme) => ({
 function Footer(props) {
   const classes = styles();
   const { location, sitemap } = props;
-  console.log(location, sitemap);
+
+  const [navLinks, setNavLinks] = useState({
+    previous: null,
+    next: null,
+  });
+
+  useEffect(() => {
+    const locationPathname = location.pathname;
+
+    const links = {
+      previous: null,
+      next: null,
+    };
+
+    let previousPathname = null;
+    let currentPathname = null;
+
+    let currentNode = null;
+    const treeEnumerator = new TreeEnumerator(sitemap);
+    while (Boolean(currentNode = treeEnumerator.nextObject())) {
+      if (!currentNode.url) {
+        continue;
+      }
+
+      const pathname = pathnameForUrl(currentNode.url);
+      if (currentPathname && currentPathname !== pathname) {
+        previousPathname = currentPathname;
+      }
+
+      if (pathname === locationPathname) {
+        if (previousPathname) {
+          links.previous = (
+            <Link component={GatsbyLink} to={previousPathname}>
+              Previous
+            </Link>
+          );
+        }
+
+        // Search forward for the next link
+        let nextNode = null;
+        while (Boolean(nextNode = treeEnumerator.nextObject())) {
+          const nextPathname = pathnameForUrl(nextNode.url);
+          if (nextPathname !== pathname) {
+            links.next = (
+              <Link component={GatsbyLink} to={nextPathname}>
+                Next
+              </Link>
+            );
+            break;
+          }
+        }
+
+        break;
+      }
+
+      currentPathname = pathname;
+    }
+    setNavLinks(links);
+  }, [location, sitemap]);
 
   return (
     <footer className={classes.footer}>
@@ -54,11 +115,21 @@ function Footer(props) {
 
         <div className={classes.linkList}>
           <span>·</span>
-          <Link component={GatsbyLink} to={paths.index}>Home</Link>
-          <span>·</span>
-          <Link component={GatsbyLink} to="#">Previous</Link>
-          <span>·</span>
-          <Link component={GatsbyLink} to="#">Next</Link>
+          <Link component={GatsbyLink} to="/">Home</Link>
+
+          {navLinks.previous &&
+            <Fragment>
+              <span>·</span>
+              {navLinks.previous}
+            </Fragment>
+          }
+
+          {navLinks.next &&
+            <Fragment>
+              <span>·</span>
+              {navLinks.next}
+            </Fragment>
+          }
         </div>
       </div>
     </footer>

@@ -30,3 +30,13 @@ export const dialogProps = (fullScreen) => {
 
   return dialogProps;
 };
+
+
+export const pathnameForUrl = (url) => {
+  let pathname = url;
+  const hashIndex = pathname.lastIndexOf('#');
+  if (hashIndex !== -1) {
+    pathname = pathname.substring(0, hashIndex);
+  }
+  return pathname;
+};
