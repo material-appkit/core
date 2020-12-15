@@ -13,12 +13,12 @@ import {
 } from 'components/typography';
 
 
-function GettingStartedPage({ data, location }) {
+function GettingStartedPage(props) {
   return (
     <Layout
-      location={location}
       showBackButton={false}
       title="Getting Started"
+      {...props}
     >
       <main>
         <PageTitle>

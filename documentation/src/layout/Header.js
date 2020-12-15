@@ -63,7 +63,7 @@ const Header = (props) => {
   const trigger = useScrollTrigger();
 
   const navLinkArrangement = [{
-    title: 'Published Build',
+    title: 'Latest Build',
     image: NpmLogo,
     href: 'https://www.npmjs.com/package/@material-appkit/core',
   }, {

@@ -11,12 +11,12 @@ import {
 } from 'components/typography';
 import { COMMON_PAGE_PROPS } from 'variables';
 
-function ReferencePage({ data, location }) {
+function ReferencePage(props) {
   return (
     <Layout
-      location={location}
       showBackButton={false}
       title="API Reference"
+      {...props}
     >
       <main>
         <PageTitle>

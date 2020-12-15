@@ -13,12 +13,12 @@ import {
 import { COMMON_PAGE_PROPS } from 'variables';
 
 
-function ComponentsPage({ data, location }) {
+function ComponentsPage(props) {
   return (
     <Layout
-      location={location}
       showBackButton={false}
       title="Components"
+      {...props}
     >
       <main>
         <PageTitle>

@@ -13,12 +13,12 @@ import {
 } from 'components/typography';
 
 
-function AboutPage({ data, location }) {
+function AboutPage(props) {
   return (
     <Layout
-      location={location}
       showBackButton={false}
       title="About"
+      {...props}
     >
       <main>
         <PageTitle>

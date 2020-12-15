@@ -164,7 +164,7 @@ const Layout = (props) => {
           {children}
         </Container>
 
-        <Footer />
+        <Footer location={location} sitemap={context.sitemap} />
       </div>
 
       <Hidden mdUp implementation="css">

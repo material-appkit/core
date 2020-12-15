@@ -12,12 +12,12 @@ import {
 import { COMMON_PAGE_PROPS } from 'variables';
 
 
-function UtilitiesPage({ data, location }) {
+function UtilitiesPage(props) {
   return (
     <Layout
-      location={location}
       showBackButton={false}
       title="Utilities"
+      {...props}
     >
       <main>
         <PageTitle>

@@ -79,7 +79,7 @@ function ApplicationNavTree({ location }) {
       defaultExpanded={['1', '1.2', '2', '3']}
       selected={selectedNodeId}
     >
-      {sitemap.map((rootNode) => renderTree(rootNode, 1))}
+      {sitemap.children.map((rootNode) => renderTree(rootNode, 1))}
     </TreeView>
   );
 }
@@ -88,4 +88,4 @@ ApplicationNavTree.propTypes = {
   location: PropTypes.object.isRequired,
 };
 
-export default ApplicationNavTree;
+export default React.memo(ApplicationNavTree);

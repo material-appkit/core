@@ -28,8 +28,8 @@ function Application(props) {
       }
     }
 
-    const sitemap = [...SitemapData];
-    sitemap.forEach((node, rootNodeIndex) => {
+    const sitemap = SitemapData;
+    sitemap.children.forEach((node, rootNodeIndex) => {
       processNode(node, `${rootNodeIndex}`, '');
     });
 

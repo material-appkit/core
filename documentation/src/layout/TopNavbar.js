@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Link as GatsbyLink } from 'gatsby';
 
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme) => ({
@@ -39,7 +38,7 @@ function Navbar(props) {
           title,
         } = linkInfo;
 
-        const buttonProps = {};
+        const buttonProps = { key: title };
 
         if (path) {
           buttonProps.to = path;
@@ -64,14 +63,12 @@ function Navbar(props) {
         }
 
         return (
-          <Tooltip key={title} title={title}>
-            <IconButton
-              className={classes.navLink}
-              {...buttonProps}
-            >
-              {content}
-            </IconButton>
-          </Tooltip>
+          <IconButton
+            className={classes.navLink}
+            {...buttonProps}
+          >
+            {content}
+          </IconButton>
         );
       })}
     </nav>

@@ -1,4 +1,4 @@
-[
+{ "name": "Root", "path": null, "children": [
   { "name": "Introduction", "path": "" },
 
   { "name": "Getting Started", "path": "getting-started", "children": [
@@ -21,4 +21,4 @@
       { "name": "Design Philosphy", "anchor": "philosophy" },
       { "name": "The Author", "anchor": "author" }
     ]}
-]
+]}

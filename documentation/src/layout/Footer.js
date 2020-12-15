@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as GatsbyLink } from 'gatsby';
 
@@ -25,15 +26,9 @@ const styles = makeStyles((theme) => ({
 
   linkList: {
     display: 'flex',
-    margin: 0,
-    padding: 0,
-  },
 
-  linkListItem: {
-    marginLeft: 5,
-    '&::before': {
-      content: '"·"',
-      marginRight: 5,
+    '& > span': {
+      margin: '0 5px',
     }
   },
 
@@ -46,12 +41,8 @@ const styles = makeStyles((theme) => ({
 
 function Footer(props) {
   const classes = styles();
-
-  const footerLinkArrangement = [
-    { label: 'Home', path: paths.index },
-    { label: 'Privacy', path: '#' },
-    { label: 'Terms', path: '#' },
-  ];
+  const { location, sitemap } = props;
+  console.log(location, sitemap);
 
   return (
     <footer className={classes.footer}>
@@ -61,32 +52,22 @@ function Footer(props) {
         </Typography>
 
 
-        <ul className={classes.linkList}>
-          {footerLinkArrangement.map((linkInfo, i) => {
-            const linkProps = {
-              className: classes.linkListItem,
-              key: linkInfo.label
-            };
-
-            if (linkInfo.path) {
-              linkProps.component = GatsbyLink;
-              linkProps.to = linkInfo.path;
-            } else if (linkInfo.href) {
-              linkProps.href = linkInfo.href;
-              linkProps.target = '_blank';
-              linkProps.rel = 'noopener';
-            }
-
-            return (
-              <Link component="li" {...linkProps}>
-                {linkInfo.label}
-              </Link>
-            );
-          })}
-        </ul>
+        <div className={classes.linkList}>
+          <span>·</span>
+          <Link component={GatsbyLink} to={paths.index}>Home</Link>
+          <span>·</span>
+          <Link component={GatsbyLink} to="#">Previous</Link>
+          <span>·</span>
+          <Link component={GatsbyLink} to="#">Next</Link>
+        </div>
       </div>
     </footer>
   );
 }
 
-export default Footer;
+Footer.propTypes = {
+  location: PropTypes.object.isRequired,
+  sitemap: PropTypes.object.isRequired,
+};
+
+export default React.memo(Footer);

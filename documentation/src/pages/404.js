@@ -16,16 +16,17 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
-function NotFoundPage({ data }) {
+function NotFoundPage(props) {
   const classes = styles();
 
   return (
     <Layout
       title="Page Not Found"
+      {...props}
     >
       <main>
         <div className={classes.contentContainer}>
-          <Img fixed={data.sadFace.childImageSharp.fixed} />
+          <Img fixed={props.data.sadFace.childImageSharp.fixed} />
         </div>
       </main>
     </Layout>

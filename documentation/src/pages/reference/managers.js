@@ -11,12 +11,12 @@ import {
 } from 'components/typography';
 import { COMMON_PAGE_PROPS } from 'variables';
 
-function ManagersPage({ data, location }) {
+function ManagersPage(props) {
   return (
     <Layout
-      location={location}
       showBackButton={false}
       title="Managers"
+      {...props}
     >
       <main>
         <PageTitle>
