@@ -10,13 +10,12 @@ import { COMMON_PAGE_PROPS } from 'variables';
 import ApplicationLogo from 'images/application-logo.svg';
 
 const styles = makeStyles((theme) => ({
-  main: {
-    alignItems: 'center',
-    display: 'flex',
-    flexDirection: 'column',
+  contentContainer: {
+    margin: 'auto',
+    paddingTop: theme.spacing(6),
   },
 
-  contentContainer: {
+  header: {
     textAlign: 'center',
   },
 
@@ -37,17 +36,18 @@ const styles = makeStyles((theme) => ({
   }
 }));
 
-function HomePage({ data, location }) {
+function HomePage(props) {
   const classes = styles();
 
   return (
     <Layout
-      location={location}
+      contentContainerClassName={classes.contentContainer}
       showBackButton={false}
       title="Introduction"
+      {...props}
     >
-      <main className={classes.main}>
-        <div className={classes.contentContainer}>
+      <main>
+        <header className={classes.header}>
           <img alt="Material-AppKit Logo" src={ApplicationLogo} width="300" />
 
           <div className={classes.titleContainer}>
@@ -59,7 +59,7 @@ function HomePage({ data, location }) {
               v{process.env.GATSBY_APP_VERSION}
             </Typography>
           </div>
-        </div>
+        </header>
       </main>
     </Layout>
   );

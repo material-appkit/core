@@ -93,7 +93,6 @@ const Layout = (props) => {
     contentContainerClassName,
     fixedHeader,
     location,
-    rootContainerClassName,
     showBackButton,
   } = props;
 
@@ -105,7 +104,7 @@ const Layout = (props) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [desktopDrawerOpen, setDesktopDrawerOpen] = useState(true);
 
-  const rootContainerClasses = [classes.rootContainer, rootContainerClassName];
+  const rootContainerClasses = [classes.rootContainer];
   if (fixedHeader) {
     rootContainerClasses.push(classes.fixedHeaderRootContainer);
   }
@@ -204,7 +203,6 @@ Layout.propTypes = {
   loading: PropTypes.bool,
   location: PropTypes.object.isRequired,
   pageTitle: PropTypes.string,
-  rootContainerClassName: PropTypes.string,
   showBackButton: PropTypes.bool,
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
 };
