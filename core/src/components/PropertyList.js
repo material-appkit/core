@@ -44,7 +44,7 @@ const propertyListItemStyles = makeStyles(
 );
 
 function PropertyListItem(props) {
-  const { fieldInfo, representedObject } = props;
+  const { fieldInfo, label, representedObject } = props;
   const classes = propertyListItemStyles();
 
   //----------------------------------------------------------------------------
@@ -59,50 +59,32 @@ function PropertyListItem(props) {
     value = fieldInfo.nullValue || null;
   }
 
-  if (value === null) {
+  if (!isValue(value)) {
     return null;
   }
 
-  let LabelContent = props.label;
-  if (LabelContent === undefined) {
-    LabelContent = titleCase(fieldInfo.name);
-  }
-
   let labelComponent = null;
-  if (LabelContent) {
-    if (typeof(LabelContent) === 'string') {
-      labelComponent = (
-        <Typography
-          className={classes.label}
-          style={{
-            minWidth: props.minLabelWidth,
-            maxWidth: props.maxLabelWidth,
-          }}
-          variant="inherit"
-        >
-          {LabelContent}
-        </Typography>
-      );
-    } else {
-      labelComponent = (
-        <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
-          <LabelContent className={classes.listItemIcon} />
-        </ListItemIcon>
-      );
-    }
+  if (fieldInfo.Icon) {
+    labelComponent = (
+      <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
+        <fieldInfo.Icon className={classes.listItemIcon} />
+      </ListItemIcon>
+    );
+  } else {
+    labelComponent = (
+      <Typography
+        className={classes.label}
+        style={{
+          minWidth: props.minLabelWidth,
+          maxWidth: props.maxLabelWidth,
+        }}
+        variant="inherit"
+      >
+        {label}
+      </Typography>
+    );
   }
 
-  const listItemStyle = {};
-
-  if (isValue(props.listItemPadding)) {
-    listItemStyle.padding = `${props.listItemPadding}px 0`;
-  }
-  if (props.fontSize) {
-    listItemStyle.fontSize = `${props.fontSize}px`;
-  }
-  if (props.listItemAlignment) {
-    listItemStyle.alignItems = props.listItemAlignment;
-  }
 
   let listItemTextPrimary = null;
   if (Array.isArray(value)) {
@@ -150,6 +132,17 @@ function PropertyListItem(props) {
     return null;
   }
 
+  const listItemStyle = {};
+  if (isValue(props.listItemPadding)) {
+    listItemStyle.padding = `${props.listItemPadding}px 0`;
+  }
+  if (props.fontSize) {
+    listItemStyle.fontSize = `${props.fontSize}px`;
+  }
+  if (props.listItemAlignment) {
+    listItemStyle.alignItems = props.listItemAlignment;
+  }
+
   return (
     <ListItem
       classes={{ root: classes.listItemRoot }}
@@ -170,6 +163,7 @@ function PropertyListItem(props) {
 PropertyListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
   fontSize: PropTypes.number,
+  Icon: PropTypes.elementType,
   label: PropTypes.string.isRequired,
   listItemAlignment: PropTypes.string,
   listItemPadding: PropTypes.number,
@@ -188,10 +182,7 @@ const metadataStyles = makeStyles(
 function PropertyList(props) {
   const classes = metadataStyles();
 
-  const {
-    arrangement,
-    ...propertyListItemProps
-  } = props;
+  const { arrangement, ...propertyListItemProps } = props;
 
   return (
     <List className={classes.root}>
