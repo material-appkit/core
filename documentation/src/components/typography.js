@@ -20,37 +20,55 @@ export const PageTitle = withStyles((theme) => ({
   );
 });
 
-export const ContentSection = withStyles((theme) => ({
-  section: {
-    marginBottom: theme.spacing(3),
-  },
-}))((props) => {
-  const { classes, className, children, ...boxProps } = props;
+export const ContentSection = (props) => {
+  const {className, children, ...boxProps} = props;
+  if (!boxProps.marginBottom) {
+    boxProps.marginBottom = 4;
+  }
   return (
     <Box
       component="section"
-      className={clsx(classes.section, className)}
+      className={className}
       {...boxProps}
     >
       {children}
     </Box>
   );
-});
+};
+
+const CONTENT_HEADING_FONT_SIZES = {
+  'h1': 24,
+  'h2': 20,
+  'h3': 18,
+  'h4': 16,
+};
 
 export const ContentHeading = withStyles((theme) => ({
-  h2: {
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: 400,
-    marginBottom: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
+  heading: {
+    flex: 1,
+    fontWeight: 300,
   },
-}))((props) => {
+}))(({ children, classes, component, gutterBottom, underline }) => {
+  const _component = component || 'h2';
+
+  const style = {
+    fontSize: CONTENT_HEADING_FONT_SIZES[_component],
+  };
+
+  if (underline) {
+    style.borderBottom = `1px solid #424242`;
+  }
+  if (gutterBottom) {
+    style.marginBottom = 8;
+  }
+
   return (
     <Typography
-      variant="h2"
-      classes={{ h2: props.classes.h2 }}
+      className={classes.heading}
+      component={_component}
+      style={style}
     >
-      {props.children}
+      {children}
     </Typography>
   );
 });
