@@ -3,7 +3,7 @@
     [
       "prismjs", {
         "languages": ["bash", "jsx"],
-        "plugins": ["line-numbers"],
+        "plugins": [],
         "theme": "tomorrow",
         "css": true
       }
