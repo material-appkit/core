@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
 
-function CodeView({ code, language }) {
+function CodeView({ children, language }) {
   const [html] = useState(() => {
     return {
-      __html: Prism.highlight(code, Prism.languages[language], language)
+      __html: Prism.highlight(children, Prism.languages[language], language)
     };
   });
 
@@ -22,7 +22,7 @@ function CodeView({ code, language }) {
 }
 
 CodeView.propTypes = {
-  code: PropTypes.string.isRequired,
+  children: PropTypes.string.isRequired,
   language: PropTypes.string.isRequired,
 };
 
