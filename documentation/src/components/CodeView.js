@@ -1,17 +1,16 @@
 import Prism from 'prismjs';
 
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 
 
 function CodeView({ code, language, multiline, plugins }) {
-  const codeRef = useRef(null);
+  const [env] = useState(() => {
+    return {
+      __html: Prism.highlight(code, Prism.languages[language], language)
+    };
+  });
 
-  useEffect(() => {
-    if (codeRef.current) {
-      Prism.highlightElement(codeRef.current)
-    }
-  }, [code]);
 
   const activePlugins = plugins || [];
   if (multiline && !plugins) {
@@ -19,10 +18,11 @@ function CodeView({ code, language, multiline, plugins }) {
   }
 
   return (
-    <pre className={activePlugins.join(" ")}>
-      <code ref={codeRef} className={`language-${language}`}>
-        {code.trim()}
-      </code>
+    <pre className={`language-${language}`}>
+      <code
+        className={`language-${language}`}
+        dangerouslySetInnerHTML={env}
+      />
     </pre>
   );
 }
