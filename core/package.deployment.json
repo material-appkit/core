@@ -1,7 +1,9 @@
 {
+  "author": "Allan Hart",
   "name": "@material-appkit/core",
   "version": "2.9.4",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
+  "homepage": "https://material-appkit.com/",
   "keywords": [
     "React",
     "Material",
@@ -10,7 +12,6 @@
     "Library",
     "Toolkit"
   ],
-  "author": "Allan Hart",
   "license": "MIT",
   "repository": {
     "type" : "git",
@@ -31,7 +32,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "notistack": "^1.0.2",
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0"
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
   }
 }

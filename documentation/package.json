@@ -2,7 +2,7 @@
   "name": "@material-appkit/documentation",
   "private": true,
   "description": "Material-AppKit Documentation",
-  "version": "2.9.3",
+  "version": "2.9.4",
   "author": "Allan Hart",
   "dependencies": {
     "@material-appkit/core": "^2.9.4",
