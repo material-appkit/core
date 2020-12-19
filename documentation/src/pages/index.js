@@ -1,40 +1,46 @@
 import React from 'react';
 
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import Layout from 'layout/Layout';
 
-import { COMMON_PAGE_PROPS } from 'variables';
+import CodeView from 'components/CodeView';
 
 import ApplicationLogo from 'images/application-logo.svg';
+import { ContentHeading } from 'components/typography';
+import { COMMON_PAGE_PROPS } from 'variables';
 
 const styles = makeStyles((theme) => ({
   contentContainer: {
     margin: 'auto',
-    padding: '48px 0 16px',
+    padding: theme.spacing(6, 2, 2),
   },
 
   header: {
+    marginBottom: 32,
     textAlign: 'center',
-  },
-
-  titleContainer: {
-    marginTop: theme.spacing(2),
   },
 
   title: {
     fontSize: theme.typography.pxToRem(28),
-    fontWeight: 300,
     letterSpacing: '0.5rem',
+    marginTop: theme.spacing(2),
     textTransform: 'uppercase',
   },
 
   version: {
     fontSize: theme.typography.pxToRem(20),
     letterSpacing: '0.2rem',
-  }
+  },
+
+  instructionBox: {
+    backgroundColor: '#f5f5f5',
+    padding: theme.spacing(2),
+  },
 }));
+
 
 function HomePage(props) {
   const classes = styles();
@@ -46,20 +52,46 @@ function HomePage(props) {
       title="Introduction"
       {...props}
     >
-      <main>
+      <main className={classes.main}>
         <header className={classes.header}>
           <img alt="Material-AppKit Logo" src={ApplicationLogo} width="300" />
 
-          <div className={classes.titleContainer}>
-            <Typography component="h1" color="primary" className={classes.title}>
-              {process.env.GATSBY_APP_TITLE}
-            </Typography>
+          <Typography component="h1" color="primary" className={classes.title}>
+            {process.env.GATSBY_APP_TITLE}
+          </Typography>
 
-            <Typography component="h2" className={classes.version}>
-              v{process.env.GATSBY_APP_VERSION}
-            </Typography>
-          </div>
+          <Typography component="h2" className={classes.version}>
+            v{process.env.GATSBY_APP_VERSION}
+          </Typography>
         </header>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <div className={classes.instructionBox}>
+              <ContentHeading gutterBottom>
+                Installation
+              </ContentHeading>
+              <Typography>
+                Install Material-AppKit via npm:
+              </Typography>
+              <CodeView language="bash">
+                $ npm install @material-appkit/core
+              </CodeView>
+            </div>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <div className={classes.instructionBox}>
+              <ContentHeading gutterBottom>
+                Usage
+              </ContentHeading>
+              <Typography>
+                Use Material-AppKit components and utilities via direct
+                import
+              </Typography>
+            </div>
+          </Grid>
+        </Grid>
       </main>
     </Layout>
   );
