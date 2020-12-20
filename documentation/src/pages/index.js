@@ -12,7 +12,7 @@ import CodeView from 'components/CodeView';
 import ApplicationLogo from 'media/application-logo.svg';
 import { ContentHeading } from 'components/typography';
 import { COMMON_PAGE_PROPS } from 'variables';
-
+import { fileContent } from 'util/shortcuts';
 
 const styles = makeStyles((theme) => ({
   contentContainer: {
@@ -37,15 +37,23 @@ const styles = makeStyles((theme) => ({
     letterSpacing: '0.2rem',
   },
 
-  instructionBox: {
+  instructionSection: {
     backgroundColor: '#f5f5f5',
-    padding: theme.spacing(2),
+    height: '100%',
+    padding: theme.spacing(0, 2),
   },
+
+  instructionArticle: {
+    padding: theme.spacing(2, 0),
+  }
 }));
 
 
 function HomePage(props) {
   const classes = styles();
+
+  const samples = props.data.samples.nodes;
+  console.log(fileContent(samples, 'quickstart.sh'));
 
   return (
     <Layout
@@ -69,32 +77,48 @@ function HomePage(props) {
 
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
-            <div className={classes.instructionBox}>
-              <ContentHeading gutterBottom>
-                Installation
-              </ContentHeading>
-              <Typography>
-                Install Material-AppKit via npm:
-              </Typography>
-              <CodeView language="bash">
-                $ npm install @material-appkit/core
-              </CodeView>
-            </div>
+            <section className={classes.instructionSection}>
+              <article className={classes.instructionArticle}>
+                <ContentHeading gutterBottom>
+                  Installation
+                </ContentHeading>
+                <Typography>
+                  Install Material-AppKit via npm:
+                </Typography>
+                <CodeView language="bash">
+                  $ npm install @material-appkit/core
+                </CodeView>
+              </article>
+
+              <article className={classes.instructionArticle}>
+                <ContentHeading gutterBottom>
+                  Quickstart
+                </ContentHeading>
+                <Typography>
+                  Start coding immediately using one of the following project templates:
+                </Typography>
+                <CodeView language="bash">
+                  {fileContent(samples, 'quickstart.sh')}
+                </CodeView>
+              </article>
+            </section>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <div className={classes.instructionBox}>
-              <ContentHeading gutterBottom>
-                Usage
-              </ContentHeading>
-              <Typography>
-                Import components and utilities as you would any other
-                Material-UI component or function.
-              </Typography>
-              <CodeView language="jsx">
-                {props.data.usageExample.childSourceFile.content}
-              </CodeView>
-            </div>
+            <section className={classes.instructionSection}>
+              <article className={classes.instructionArticle}>
+                <ContentHeading gutterBottom>
+                  Usage
+                </ContentHeading>
+                <Typography>
+                  Import components and utilities as you would any other
+                  Material-UI component or function.
+                </Typography>
+                <CodeView language="jsx">
+                  {fileContent(samples, 'usage-example.jsx')}
+                </CodeView>
+              </article>
+            </section>
           </Grid>
         </Grid>
       </main>
@@ -109,10 +133,13 @@ export default HomePage;
 
 export const query = graphql`
   query {
-    usageExample: file(relativePath: { eq: "code/usage-example.jsx" }) {
-      childSourceFile {
-        content
-      }      
-    }
+    samples: allFile(filter: {relativeDirectory: {eq: "samples/index"}}) {
+      nodes {
+        base
+        internal {
+          content
+        }
+      }
+    }  
   }
 `;

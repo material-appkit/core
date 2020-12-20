@@ -2,7 +2,7 @@ const isSourceFile = (node) => {
   const { type, mediaType } = node.internal;
 
   if (type === 'File') {
-    if (mediaType === 'text/jsx') {
+    if (mediaType === 'text/jsx' || mediaType === 'application/x-sh') {
       return true;
     }
   }
@@ -21,8 +21,7 @@ exports.onCreateNode = async ({
   actions,
   loadNodeContent,
   createNodeId,
-  createContentDigest,
-  ...rest
+  createContentDigest
 }) => {
   if (!isNodeSupported(node)) {
     return;
@@ -39,7 +38,7 @@ exports.onCreateNode = async ({
     parent: node.id,
     internal: {
       contentDigest: createContentDigest(content),
-      type: "SourceFile",
+      type: 'SourceFile',
     },
   };
 
