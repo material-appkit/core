@@ -28,7 +28,7 @@ import ServiceAgent from '../util/ServiceAgent';
 import { valueForKeyPath } from '../util/object';
 
 import EditDialog from './EditDialog';
-import PagedListViewDialog from './PagedListViewDialog';
+import ListViewDialog from './ListViewDialog';
 
 
 const itemListItemStyles = makeStyles((theme) => ({
@@ -392,7 +392,7 @@ class ItemList extends React.PureComponent {
             }
 
             {this.props.apiListUrl && this.state.listDialogOpen &&
-              <PagedListViewDialog
+              <ListViewDialog
                 apiCreateUrl={this.props.apiCreateUrl}
                 filterParams={this.props.filterParams}
                 displayMode="list"

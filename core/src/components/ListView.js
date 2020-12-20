@@ -1,6 +1,6 @@
 /**
 *
-* PagedListView
+* ListView
 *
 */
 
@@ -221,7 +221,7 @@ SelectionControl.propTypes = {
 };
 
 //------------------------------------------------------------------------------
-const pagedListViewStyles = makeStyles((theme) => ({
+const listViewStyles = makeStyles((theme) => ({
   centeredContentContainer: {
     alignItems: 'center',
     display: 'flex',
@@ -232,8 +232,8 @@ const pagedListViewStyles = makeStyles((theme) => ({
   },
 }));
 
-function PagedListView(props) {
-  const styles = pagedListViewStyles();
+function ListView(props) {
+  const styles = listViewStyles();
 
   const {
     classes,
@@ -1007,7 +1007,7 @@ function PagedListView(props) {
 }
 
 
-PagedListView.propTypes = {
+ListView.propTypes = {
   classes: PropTypes.object,
 
   defaultSelection: PropTypes.object,
@@ -1076,7 +1076,7 @@ PagedListView.propTypes = {
   windowed: PropTypes.bool,
 };
 
-PagedListView.defaultProps = {
+ListView.defaultProps = {
   classes: {},
   filterParams: {},
   items: null,
@@ -1099,4 +1099,4 @@ PagedListView.defaultProps = {
   windowed: false,
 };
 
-export default PagedListView;
+export default ListView;

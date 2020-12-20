@@ -14,7 +14,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 
 import { removeObject } from '../../util/array';
 
-import VirtualizedListItem from '../VirtualizedListItem';
+import ListViewItem from '../ListViewItem';
 import ItemList from '../ItemList';
 
 class ItemListWidget extends React.PureComponent {
@@ -153,7 +153,7 @@ ItemListWidget.defaultProps = {
   editDialogProps: {},
   filterParams: {},
   listDialogProps: {},
-  listItemComponent: VirtualizedListItem,
+  listItemComponent: ListViewItem,
   listItemProps: {},
 };
 

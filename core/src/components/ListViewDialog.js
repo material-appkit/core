@@ -1,6 +1,6 @@
 /**
 *
-* PagedListViewDialog
+* ListViewDialog
 *
 */
 
@@ -30,7 +30,7 @@ import AttributedTextField from './AttributedTextField';
 import Spacer from './Spacer';
 
 import EditDialog from './EditDialog';
-import PagedListView from './PagedListView';
+import ListView from './ListView';
 
 const styles = makeStyles((theme) => ({
   filterFieldContainer: {
@@ -75,7 +75,7 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
-function PagedListViewDialog(props) {
+function ListViewDialog(props) {
   const {
     commitOnSelect,
     filterParams,
@@ -84,7 +84,7 @@ function PagedListViewDialog(props) {
     onDismiss,
     listItemProps,
     searchFilterParam,
-    ...pagedListViewProps
+    ...listViewProps
   } = props;
 
   const [listViewConfig, setListViewConfig] = useState(null);
@@ -213,8 +213,8 @@ function PagedListViewDialog(props) {
         </DialogTitle>
 
         <DialogContent className={classes.dialogContent}>
-          <PagedListView
-            {...pagedListViewProps}
+          <ListView
+            {...listViewProps}
             filterParams={appliedFilterParams}
             listItemProps={{
               ...(listItemProps || {}),
@@ -270,7 +270,7 @@ function PagedListViewDialog(props) {
   );
 }
 
-PagedListViewDialog.propTypes = {
+ListViewDialog.propTypes = {
   apiCreateUrl: PropTypes.string,
   commitOnSelect: PropTypes.bool,
   dialogProps: PropTypes.object,
@@ -284,7 +284,7 @@ PagedListViewDialog.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
 
-PagedListViewDialog.defaultProps = {
+ListViewDialog.defaultProps = {
   commitOnSelect: false,
   dialogProps: { fullWidth: true },
   displayMode: 'list',
@@ -294,4 +294,4 @@ PagedListViewDialog.defaultProps = {
   selectOnClick: true,
 };
 
-export default PagedListViewDialog;
+export default ListViewDialog;

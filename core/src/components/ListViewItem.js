@@ -1,6 +1,6 @@
 /**
 *
-* VirtualizedListItem
+* ListViewItem
 *
 */
 
@@ -61,7 +61,7 @@ export const commonPropTypes = {
 };
 
 // -----------------------------------------------------------------------------
-function VirtualizedListItem(props) {
+function ListViewItem(props) {
   const classes = styles();
 
   const {
@@ -196,7 +196,7 @@ function VirtualizedListItem(props) {
   );
 }
 
-VirtualizedListItem.propTypes = {
+ListViewItem.propTypes = {
   children: PropTypes.node,
   secondaryActionControl: PropTypes.element,
   secondaryActionPlacement: PropTypes.string,
@@ -211,4 +211,4 @@ VirtualizedListItem.propTypes = {
   to: PropTypes.string,
 };
 
-export default VirtualizedListItem;
+export default ListViewItem;

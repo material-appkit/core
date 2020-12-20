@@ -5,10 +5,10 @@ import React from 'react';
 import ListItemText from '@material-ui/core/ListItemText';
 import { valueForKeyPath } from '../util/object';
 
-import VirtualizedListItem, {
+import ListViewItem, {
   listItemProps,
   commonPropTypes,
-} from './VirtualizedListItem';
+} from './ListViewItem';
 
 // -----------------------------------------------------------------------------
 function SimpleListItem(props) {
@@ -33,9 +33,9 @@ function SimpleListItem(props) {
   }
 
   return (
-    <VirtualizedListItem {...listItemProps(rest)}>
+    <ListViewItem {...listItemProps(rest)}>
       <ListItemText primary={primary} secondary={secondary} />
-    </VirtualizedListItem>
+    </ListViewItem>
   );
 }
 SimpleListItem.propTypes = {

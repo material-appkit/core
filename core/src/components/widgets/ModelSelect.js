@@ -14,7 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { withStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
-import PagedListViewDialog from '../PagedListViewDialog';
+import ListViewDialog from '../ListViewDialog';
 
 
 class ModelSelectWidget extends React.PureComponent {
@@ -111,7 +111,7 @@ class ModelSelectWidget extends React.PureComponent {
         </fieldset>
 
         {this.state.listDialogOpen &&
-          <PagedListViewDialog {...listDialogProps}
+          <ListViewDialog {...listDialogProps}
             apiCreateUrl={apiListUrl}
             onDismiss={this.handleListDialogDismiss}
             selectionMode="single"
