@@ -47,8 +47,10 @@
   "scripts": {
     "build": "GATSBY_APP_VERSION=$npm_package_version gatsby build",
     "develop": "gatsby develop -H 0.0.0.0 -p 8001",
+    "debug": "node --no-lazy node_modules/.bin/gatsby develop --inspect-brk develop -H 0.0.0.0 -p 8001",
     "format": "prettier --write src/**/*.{js,jsx}",
     "start": "GATSBY_APP_VERSION=$npm_package_version npm run develop",
+    "start-debug": "GATSBY_APP_VERSION=$npm_package_version npm run debug",
     "serve": "gatsby serve",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\""
   },

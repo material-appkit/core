@@ -1,4 +1,5 @@
 import React from 'react';
+import { graphql } from 'gatsby';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -11,6 +12,7 @@ import CodeView from 'components/CodeView';
 import ApplicationLogo from 'media/application-logo.svg';
 import { ContentHeading } from 'components/typography';
 import { COMMON_PAGE_PROPS } from 'variables';
+
 
 const styles = makeStyles((theme) => ({
   contentContainer: {
@@ -89,6 +91,9 @@ function HomePage(props) {
                 Import components and utilities as you would any other
                 Material-UI component or function.
               </Typography>
+              <CodeView language="jsx">
+                {props.data.usageExample.childSourceFile.content}
+              </CodeView>
             </div>
           </Grid>
         </Grid>
@@ -100,3 +105,14 @@ function HomePage(props) {
 HomePage.propTypes = COMMON_PAGE_PROPS;
 
 export default HomePage;
+
+
+export const query = graphql`
+  query {
+    usageExample: file(relativePath: { eq: "code/usage-example.jsx" }) {
+      childSourceFile {
+        content
+      }      
+    }
+  }
+`;

@@ -64,6 +64,14 @@ module.exports = {
 
     //--------------------------------------------------------------------------
     {
+      resolve: 'gatsby-transformer-filecontent',
+      options: {
+        mediaTypes: ['text/javascript', 'text/jsx'],
+      }
+    },
+
+    //--------------------------------------------------------------------------
+    {
       resolve: 'gatsby-source-filesystem',
       options: {
         name: 'images',
