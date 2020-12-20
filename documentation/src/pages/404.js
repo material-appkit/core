@@ -39,7 +39,7 @@ export default NotFoundPage;
 
 export const query = graphql`
   query {
-    sadFace: file(relativePath: { eq: "sad-face.png" }) {
+    sadFace: file(relativePath: { eq: "images/sad-face.png" }) {
       childImageSharp {
         fixed(width: 192, height: 192) {
           ...GatsbyImageSharpFixed

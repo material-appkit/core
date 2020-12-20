@@ -13,8 +13,8 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import { makeStyles } from '@material-ui/core/styles';
 import GitHubIcon from '@material-ui/icons/GitHub';
 
-import ApplicationLogo from 'images/application-logo.svg';
-import NpmLogo from 'images/npm-logo.png';
+import ApplicationLogo from 'media/application-logo.svg';
+import NpmLogo from 'media/npm-logo.png';
 
 import TopNavbar from './TopNavbar';
 import NavMenu from './NavMenu';

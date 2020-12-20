@@ -8,7 +8,7 @@ import Layout from 'layout/Layout';
 
 import CodeView from 'components/CodeView';
 
-import ApplicationLogo from 'images/application-logo.svg';
+import ApplicationLogo from 'media/application-logo.svg';
 import { ContentHeading } from 'components/typography';
 import { COMMON_PAGE_PROPS } from 'variables';
 
@@ -86,8 +86,8 @@ function HomePage(props) {
                 Usage
               </ContentHeading>
               <Typography>
-                Use Material-AppKit components and utilities via direct
-                import
+                Import components and utilities as you would any other
+                Material-UI component or function.
               </Typography>
             </div>
           </Grid>

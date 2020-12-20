@@ -5,7 +5,7 @@ import { useWidth } from '@material-appkit/core/util/hooks';
 
 import AppContext from 'AppContext';
 
-import SitemapData from 'data/sitemap.json';
+import SitemapData from 'media/sitemap.json';
 
 
 function Application(props) {

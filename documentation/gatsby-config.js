@@ -22,7 +22,7 @@ module.exports = {
         background_color: '#fafafa',
         cache_busting_mode: 'none',
         display: 'standalone',
-        icon: 'src/images/favicon-192x192.png',
+        icon: 'src/data/images/favicon-192x192.png',
         name: process.env.GATSBY_APP_TITLE,
         theme_color: '#fff',
         short_name: process.env.GATSBY_APP_TITLE,
@@ -67,7 +67,7 @@ module.exports = {
       resolve: 'gatsby-source-filesystem',
       options: {
         name: 'images',
-        path: `${__dirname}/src/images/`,
+        path: `${__dirname}/src/data/`,
       },
     },
 
