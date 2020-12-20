@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SYSADMIN_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-PROJECT_PATH=$SYSADMIN_PATH/../core
+SCRIPTS_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_PATH=$SCRIPTS_PATH/..
 BUILD_PATH=$PROJECT_PATH/build
 
 # Transpile the source to ES5

@@ -3,12 +3,8 @@
 .idea
 node_modules/
 
-core/build/
-core/components
-core/managers
-core/notification
-core/stores
-core/util
-
-documentation/public/
-examples/gatsby-skeleton/public/
+build/
+components/
+managers/
+notification/
+util/
