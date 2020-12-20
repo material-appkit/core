@@ -28,8 +28,6 @@ exports.onCreateNode = async ({
     return;
   }
 
-  console.log(rest);
-
   const { createNode, createParentChildLink } = actions;
   const content = await loadNodeContent(node);
   const id = createNodeId(`${node.id} >>> SourceFile`);
