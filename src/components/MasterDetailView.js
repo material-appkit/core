@@ -73,6 +73,7 @@ function MasterDetailView(props) {
   const {
     breakpoint,
     className,
+    detailPathInfo,
     detailViewPlaceholder,
     DetailViewComponent,
     detailViewProps,
@@ -148,7 +149,8 @@ function MasterDetailView(props) {
     if (showDetailView) {
       loadItem(item);
     } else {
-      NavManager.navigate(item.path, { state: { item }});
+      const pathInfo = detailPathInfo(item);
+      NavManager.navigate(pathInfo.pathname, pathInfo.qsParams, false, { item });
     }
   };
 
@@ -234,6 +236,7 @@ MasterDetailView.propTypes = {
   className: PropTypes.string,
   DetailViewComponent: PropTypes.elementType.isRequired,
   detailViewPlaceholder: PropTypes.element,
+  detailPathInfo: PropTypes.func.isRequired,
   detailViewProps: PropTypes.object,
   inspectedObjectLoader: PropTypes.func.isRequired,
   itemIdKey: PropTypes.string.isRequired,
