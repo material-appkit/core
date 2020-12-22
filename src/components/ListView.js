@@ -242,7 +242,7 @@ function ListView(props) {
     filterParamTransformer,
     items,
     itemContextMenuArrangement,
-    itemContextProvider,
+    listItemContextProvider,
     itemTransformer,
     listItemComponent,
     listItemComponentFunc,
@@ -393,7 +393,7 @@ function ListView(props) {
   const itemProps = (item) => {
     const itemKey = keyForItem(item);
 
-    const itemContext = itemContextProvider ? itemContextProvider(item) : {};
+    const itemContext = listItemContextProvider ? listItemContextProvider(item) : {};
 
     let selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
 
@@ -1022,7 +1022,6 @@ ListView.propTypes = {
 
   items: PropTypes.array,
   itemContextMenuArrangement: PropTypes.func,
-  itemContextProvider: PropTypes.func,
   itemIdKey: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
@@ -1033,9 +1032,10 @@ ListView.propTypes = {
   ]),
   itemTransformer: PropTypes.func,
 
-  listItemProps: PropTypes.object,
+  listItemContextProvider: PropTypes.func,
   listItemComponent: PropTypes.elementType,
   listItemComponentFunc: PropTypes.func,
+  listItemProps: PropTypes.object,
 
   loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
 
