@@ -77,6 +77,7 @@ function MasterDetailView(props) {
     ListViewComponent,
     listViewProps,
     location,
+    onDetailViewClose,
   } = props;
 
   const detailViewContainerRef = useRef(null);
