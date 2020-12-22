@@ -3,12 +3,7 @@ import clsx from 'clsx';
 import qs from 'query-string';
 
 import PropTypes from 'prop-types';
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -81,7 +76,6 @@ function MasterDetailView(props) {
     itemIdKey,
     ListViewComponent,
     listViewProps,
-    listViewWidth,
     location,
   } = props;
 
@@ -115,7 +109,7 @@ function MasterDetailView(props) {
 
   const currentScreenWidth = useWidth();
   const showDetailView = isWidthUp(breakpoint, currentScreenWidth);
-  
+
 
   const updateInspectedObject = (item) => {
     detailViewContainerRef.current.scrollTop = 0;
@@ -129,17 +123,6 @@ function MasterDetailView(props) {
   };
 
 
-  const loadItem = (item) => {
-    if (inspectedObject) {
-      if (inspectedObject[itemIdKey] !== item[itemIdKey]) {
-        setNextInspectedObject(item);
-      }
-    } else {
-      updateInspectedObject(item);
-    }
-  };
-
-
   const handleDetailViewTransitionExited = () => {
     updateInspectedObject(nextInspectedObject);
   };
@@ -147,17 +130,18 @@ function MasterDetailView(props) {
 
   const handleListItemNavigate = (item) => {
     if (showDetailView) {
-      loadItem(item);
+      if (inspectedObject) {
+        if (inspectedObject[itemIdKey] !== item[itemIdKey]) {
+          setNextInspectedObject(item);
+        }
+      } else {
+        updateInspectedObject(item);
+      }
     } else {
       const pathInfo = detailPathInfo(item);
       NavManager.navigate(pathInfo.pathname, pathInfo.qsParams, false, { item });
     }
   };
-
-
-  const handleDetailViewClose = useCallback(() => {
-    NavManager.clearUrlParam(itemIdKey);
-  }, []);
 
 
   // Do not render until the screen width has been determined
@@ -208,7 +192,7 @@ function MasterDetailView(props) {
         <DetailViewComponent
           location={location}
           representedObject={inspectedObject}
-          onClose={handleDetailViewClose}
+          onClose={onDetailViewClose}
           {...detailViewProps}
         />
       </CSSTransition>
@@ -217,10 +201,7 @@ function MasterDetailView(props) {
 
   return (
     <div className={clsx(classes.masterDetailView, className)}>
-      <div
-        className={classes.listViewContainer}
-        style={{ width: listViewWidth }}
-      >
+      <div className={classes.listViewContainer}>
         {listView}
       </div>
 
@@ -242,15 +223,14 @@ MasterDetailView.propTypes = {
   itemIdKey: PropTypes.string.isRequired,
   ListViewComponent: PropTypes.elementType.isRequired,
   listViewProps: PropTypes.object,
-  listViewWidth: PropTypes.number.isRequired,
   location: PropTypes.object.isRequired,
+  onDetailViewClose: PropTypes.func,
 };
 
 MasterDetailView.defaultProps = {
   breakpoint: 'md',
   detailViewProps: {},
   listViewProps: {},
-  listViewWidth: 375,
 };
 
 export default MasterDetailView;

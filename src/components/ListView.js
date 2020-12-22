@@ -938,7 +938,10 @@ function ListView(props) {
   let view = null;
 
   if (props.displayMode === 'list') {
-    const listViewClassNames = [classes.listView];
+    const listViewClassNames = [
+      classes.listView,
+      props.listViewClassName,
+    ];
     if (loading) {
       listViewClassNames.push(classes.listViewLoading);
     }
@@ -1036,6 +1039,8 @@ ListView.propTypes = {
   listItemComponent: PropTypes.elementType,
   listItemComponentFunc: PropTypes.func,
   listItemProps: PropTypes.object,
+
+  listViewClassName: PropTypes.string,
 
   loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
 
