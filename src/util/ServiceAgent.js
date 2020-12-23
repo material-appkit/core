@@ -1,13 +1,14 @@
 import NativeServiceProxy from './ajax/NativeServiceProxy';
 
 class ServiceAgent {
-  static ServiceProxyClass = null;
+  static ServiceProxyClass = NativeServiceProxy;
+  static config;
 
-  static initialize(options) {
-    if (options.ServiceProxyClass) {
-      this.ServiceProxyClass = options.ServiceProxyClass;
-    } else {
-      this.ServiceProxyClass = NativeServiceProxy;
+  static initialize(config) {
+    this.config = config || {};
+
+    if (this.config.ServiceProxyClass) {
+      this.ServiceProxyClass = this.config.ServiceProxyClass;
     }
   }
 
