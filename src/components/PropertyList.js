@@ -164,7 +164,7 @@ PropertyListItem.propTypes = {
   fieldInfo: PropTypes.object.isRequired,
   fontSize: PropTypes.number,
   Icon: PropTypes.elementType,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   listItemAlignment: PropTypes.string,
   listItemPadding: PropTypes.number,
   minLabelWidth: PropTypes.number,
