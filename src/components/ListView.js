@@ -49,6 +49,29 @@ import TileList from './TileList';
 import ToolbarItem from './ToolbarItem';
 
 //------------------------------------------------------------------------------
+// Utility Functions
+//------------------------------------------------------------------------------
+const transformFetchItemsResponse = (res, itemTransformer) => {
+  const responseData = res.jsonData;
+
+  let items = responseData.data ? responseData.data : responseData;
+
+  // If a transformer has been supplied, apply it to the retrieved records.
+  if (itemTransformer) {
+    items = items.map(itemTransformer);
+  }
+
+  const transformedData = { items };
+
+  if (responseData.meta && responseData.meta.pagination) {
+    transformedData.pagination = responseData.meta.pagination;
+  }
+
+  return transformedData;
+};
+
+
+//------------------------------------------------------------------------------
 function SortControl(props) {
   const {
     choices,
@@ -222,25 +245,6 @@ SelectionControl.propTypes = {
 
 
 //------------------------------------------------------------------------------
-const transformFetchItemsResponse = (res, itemTransformer) => {
-  const responseData = res.jsonData;
-
-  let items = responseData.data ? responseData.data : responseData;
-
-  // If a transformer has been supplied, apply it to the retrieved records.
-  if (itemTransformer) {
-    items = items.map(itemTransformer);
-  }
-
-  const transformedData = { items };
-
-  if (responseData.meta && responseData.meta.pagination) {
-    transformedData.pagination = responseData.meta.pagination;
-  }
-
-  return transformedData;
-};
-
 const listViewStyles = makeStyles((theme) => ({
   centeredContentContainer: {
     alignItems: 'center',
@@ -598,7 +602,7 @@ function ListView(props) {
   useEffect(() => {
     // When the list items have been explicitly provided as props,
     // there is no need to proceed further
-    if (items || !appliedFilterParams) {
+    if (!(src && appliedFilterParams)) {
       return;
     }
 
@@ -628,7 +632,7 @@ function ListView(props) {
         onLoadError(err);
       }
     });
-  }, [appliedFilterParams, items]);
+  }, [appliedFilterParams, src]);
 
 
   /**
