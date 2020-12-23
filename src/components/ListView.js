@@ -221,6 +221,26 @@ SelectionControl.propTypes = {
 };
 
 //------------------------------------------------------------------------------
+const transformFetchItemsResponse = (res, itemTransformer) => {
+  const responseData = res.jsonData;
+
+  let items = responseData.data ? responseData.data : responseData;
+
+  // If a transformer has been supplied, apply it to the retrieved records.
+  if (itemTransformer) {
+    items = items.map(itemTransformer);
+  }
+
+  const transformedData = { items };
+
+
+  if (responseData.meta && responseData.meta.pagination) {
+    transformedData.pagination = responseData.meta.pagination;
+  }
+
+  return transformedData;
+};
+
 const listViewStyles = makeStyles((theme) => ({
   centeredContentContainer: {
     alignItems: 'center',
@@ -261,6 +281,7 @@ function ListView(props) {
     paginationControlProps,
     paginationListControlProps,
     PlaceholderComponent,
+    responseTransformer,
     selectionMenu,
     selectionMode,
     src,
@@ -585,19 +606,19 @@ function ListView(props) {
       onLoad(appliedFilterParams);
     }
 
-    fetchItems(src, appliedFilterParams).then((fetchItemsResult) => {
-      let updatedItems = fetchItemsResult.items;
+    fetchItems(src, appliedFilterParams).then((res) => {
+      const transformer = responseTransformer || transformFetchItemsResponse;
+      const responseData = transformer(res, itemTransformer);
 
-      // If a transformer has been supplied, apply it to the newly assigned records.
-      if (itemTransformer) {
-        updatedItems = updatedItems.map(itemTransformer);
+      if (responseData.pagination) {
+        setPaginationInfo(responseData.pagination);
       }
 
-      setRenderedItems(updatedItems);
+      setRenderedItems(responseData.items);
       setLoadError(null);
 
       if (onLoadComplete) {
-        onLoadComplete(updatedItems, fetchItemsResult.response);
+        onLoadComplete(responseData, res);
       }
     }).catch((err) => {
       setRenderedItems(null);
@@ -806,17 +827,10 @@ function ListView(props) {
         .then((response) => {
           setFetchRequestContext(null);
           if (response === null) {
-            return;
+            reject(response);
           }
 
-          const responseInfo = response.jsonData;
-          const loadedItems = responseInfo.data ? responseInfo.data : responseInfo;
-
-          if (responseInfo.meta && responseInfo.meta.pagination) {
-            setPaginationInfo(responseInfo.meta.pagination);
-          }
-
-          resolve({ items: loadedItems, response });
+          resolve(response);
         })
         .catch((err) => {
           setFetchRequestContext(null);
@@ -1061,6 +1075,8 @@ ListView.propTypes = {
   paginationListControlProps: PropTypes.object,
 
   PlaceholderComponent: PropTypes.elementType,
+
+  responseTransformer: PropTypes.func,
 
   selection: PropTypes.object,
   selectionDisabled: PropTypes.bool,
