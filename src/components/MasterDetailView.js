@@ -75,6 +75,7 @@ function MasterDetailView(props) {
     inspectedObjectLoader,
     itemIdKey,
     ListViewComponent,
+    listViewContainerClassName,
     listViewProps,
     location,
     onDetailViewClose,
@@ -202,7 +203,7 @@ function MasterDetailView(props) {
 
   return (
     <div className={clsx(classes.masterDetailView, className)}>
-      <div className={classes.listViewContainer}>
+      <div className={clsx(classes.listViewContainer, listViewContainerClassName)}>
         {listView}
       </div>
 
@@ -222,6 +223,7 @@ MasterDetailView.propTypes = {
   detailViewProps: PropTypes.object,
   inspectedObjectLoader: PropTypes.func.isRequired,
   itemIdKey: PropTypes.string.isRequired,
+  listViewContainerClassName: PropTypes.string,
   ListViewComponent: PropTypes.elementType.isRequired,
   listViewProps: PropTypes.object,
   location: PropTypes.object.isRequired,

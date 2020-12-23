@@ -220,6 +220,7 @@ SelectionControl.propTypes = {
   onSelectionMenuItemClick: PropTypes.func.isRequired,
 };
 
+
 //------------------------------------------------------------------------------
 const transformFetchItemsResponse = (res, itemTransformer) => {
   const responseData = res.jsonData;
@@ -232,7 +233,6 @@ const transformFetchItemsResponse = (res, itemTransformer) => {
   }
 
   const transformedData = { items };
-
 
   if (responseData.meta && responseData.meta.pagination) {
     transformedData.pagination = responseData.meta.pagination;
@@ -952,10 +952,7 @@ function ListView(props) {
   let view = null;
 
   if (props.displayMode === 'list') {
-    const listViewClassNames = [
-      classes.listView,
-      props.listViewClassName,
-    ];
+    const listViewClassNames = [];
     if (loading) {
       listViewClassNames.push(classes.listViewLoading);
     }
@@ -1053,8 +1050,6 @@ ListView.propTypes = {
   listItemComponent: PropTypes.elementType,
   listItemComponentFunc: PropTypes.func,
   listItemProps: PropTypes.object,
-
-  listViewClassName: PropTypes.string,
 
   loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
 
