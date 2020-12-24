@@ -228,6 +228,7 @@ function ListViewDialog(props) {
             onToolbarChange={setListViewToolbarItems}
             selectionDisabled={false}
             selectionMode={commitOnSelect ? 'single' : selectionMode}
+            selectOnClick
           />
         </DialogContent>
 
