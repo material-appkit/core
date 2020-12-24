@@ -25,7 +25,7 @@ const styles = makeStyles((theme) => ({
   },
 
   listViewContainer: {
-    borderRight: `1px solid ${theme.palette.grey[200]}`,
+    borderRight: `1px solid ${theme.palette.grey[400]}`,
     height: '100%',
     overflow: 'auto',
   },
