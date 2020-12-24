@@ -77,6 +77,7 @@ const styles = makeStyles((theme) => ({
 
 function ListViewDialog(props) {
   const {
+    apiCreateUrl,
     commitOnSelect,
     filterParams,
     dialogProps,
@@ -84,6 +85,7 @@ function ListViewDialog(props) {
     onDismiss,
     listItemProps,
     searchFilterParam,
+    selectionMode,
     ...listViewProps
   } = props;
 
@@ -174,7 +176,7 @@ function ListViewDialog(props) {
                 {dialogTitle}
               </Typography>
 
-              {(props.selectionMode === 'multiple' && listViewConfig) &&
+              {(selectionMode === 'multiple' && listViewConfig) &&
                 <Typography variant="subtitle2" color="textSecondary">
                   {`${listViewConfig.selection.size} selected`}
                 </Typography>
@@ -224,15 +226,13 @@ function ListViewDialog(props) {
             onPageChange={handlePageChange}
             onSelectionChange={handleSelectionChange}
             onToolbarChange={setListViewToolbarItems}
-            paginated={props.paginated}
             selectionDisabled={false}
-            selectionMode={commitOnSelect ? 'single' : props.selectionMode}
-            selectOnClick
+            selectionMode={commitOnSelect ? 'single' : selectionMode}
           />
         </DialogContent>
 
         <DialogActions className={classes.dialogActions}>
-          {props.apiCreateUrl &&
+          {apiCreateUrl &&
             <Button onClick={() => { setAddDialogIsOpen(true); }}>
               Create
             </Button>
@@ -259,7 +259,7 @@ function ListViewDialog(props) {
 
       {addDialogIsOpen &&
         <EditDialog
-          apiCreateUrl={props.apiCreateUrl}
+          apiCreateUrl={apiCreateUrl}
           entityType={props.entityType}
           onClose={handleEditDialogClose}
           onSave={handleEditDialogSave}
@@ -274,12 +274,10 @@ ListViewDialog.propTypes = {
   apiCreateUrl: PropTypes.string,
   commitOnSelect: PropTypes.bool,
   dialogProps: PropTypes.object,
-  displayMode: PropTypes.string,
+  entityType: PropTypes.string,
   fullHeight: PropTypes.bool,
   onDismiss: PropTypes.func,
-  paginated: PropTypes.bool,
   searchFilterParam: PropTypes.string,
-  selectOnClick: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
@@ -287,11 +285,8 @@ ListViewDialog.propTypes = {
 ListViewDialog.defaultProps = {
   commitOnSelect: false,
   dialogProps: { fullWidth: true },
-  displayMode: 'list',
   fullHeight: true,
-  paginated: true,
   selectionMode: 'multiple',
-  selectOnClick: true,
 };
 
 export default ListViewDialog;
