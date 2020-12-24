@@ -1,3 +1,7 @@
+export function isSet(value) {
+  return (value !== undefined && value !== null);
+}
+
 /**
  * Return true if a given value is anything other than:
  * - undefined
@@ -7,13 +11,9 @@
  */
 export function isValue(value) {
   return (
-    value !== undefined &&
-    value !== null &&
+    isSet(value) &&
     value !== '' &&
     !Number.isNaN(value)
   );
 }
 
-export function isSet(value) {
-  return (value !== undefined && value !== null);
-}
