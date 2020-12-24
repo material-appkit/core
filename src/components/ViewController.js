@@ -31,7 +31,7 @@ class ViewController extends React.PureComponent {
   }
 
   render() {
-    return this.props.children;
+    return this.props.children || null;
   }
 }
 
