@@ -44,4 +44,11 @@ Object.defineProperty(exports, "find", {
   },
 });
 
+Object.defineProperty(exports, "pluck", {
+  enumerable: true,
+  get: function get() {
+    return _set.pluck;
+  },
+});
+
 const _set = _interopRequireDefault(require("./set"));
