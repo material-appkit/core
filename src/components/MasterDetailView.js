@@ -10,10 +10,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { isWidthUp } from '@material-ui/core/withWidth';
 
 import { pluck } from '../util/set';
-import { useWidth } from '../util/hooks';
-
-const DETAIL_VIEW_TRANSITION_ENTER_DURATION = 1000;
-const DETAIL_VIEW_TRANSITION_EXIT_DURATION = 200;
 
 const styles = makeStyles((theme) => ({
   masterDetailView: {
@@ -34,33 +30,8 @@ const styles = makeStyles((theme) => ({
     flex: 1,
     overflow: 'auto',
   },
-
-  detailViewTransitionEnter: {
-    opacity: 0,
-  },
-
-  detailViewTransitionEnterActive: {
-    opacity: 1,
-    transition: `opacity ${DETAIL_VIEW_TRANSITION_ENTER_DURATION}ms`,
-  },
-
-  detailViewTransitionEnterDone: {
-    opacity: 1,
-  },
-
-  detailViewTransitionExit: {
-    opacity: 1,
-  },
-
-  detailViewTransitionExitActive: {
-    opacity: 0,
-    transition: `opacity ${DETAIL_VIEW_TRANSITION_EXIT_DURATION}ms`,
-  },
-
-  detailViewTransitionExitDone: {
-    opacity: 0,
-  },
 }));
+
 
 function MasterDetailView(props) {
   const classes = styles();
