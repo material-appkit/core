@@ -74,8 +74,9 @@ function ListViewItem(props) {
     onMount,
     onUnmount,
     onSelectionChange,
-    selectionMode,
+    selectionControl,
     selectionDisabled,
+    selectionMode,
     selectOnClick,
     secondaryActionControl,
     ...rest
@@ -107,7 +108,7 @@ function ListViewItem(props) {
     listItemProps.button = true;
   }
 
-  if (selectOnClick) {
+  if (selectionMode && selectOnClick && !selectionDisabled) {
     listItemProps.button = true;
     listItemProps.onClick = (e) => {
       if (onSelectionChange) {
@@ -143,7 +144,7 @@ function ListViewItem(props) {
 
 
   let SelectionComponent = null;
-  if (!(selectionDisabled || commitOnSelect)) {
+  if (selectionMode && selectionControl) {
     if (selectionMode === 'multiple') {
       SelectionComponent = Checkbox;
     }
@@ -184,6 +185,7 @@ function ListViewItem(props) {
         <SelectionComponent
           checked={props.selected}
           className={classes.selectionControl}
+          disabled={selectionDisabled}
           disableRipple
           edge="start"
           onClick={handleSelectionControlClick}
@@ -205,9 +207,10 @@ ListViewItem.propTypes = {
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
   selected: PropTypes.bool,
+  selectionControl: PropTypes.bool,
   selectOnClick: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  selectionDisabled: PropTypes.bool,
+  selectionDisabled: PropTypes.bool.isRequired,
   to: PropTypes.string,
 };
 
