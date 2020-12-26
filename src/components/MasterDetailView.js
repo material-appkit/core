@@ -51,14 +51,11 @@ function MasterDetailView(props) {
   } = props;
 
 
-  const [inspectedObject, setInspectedObject] = useState(null);
-
   const [detailView, setDetailView] = useState(null);
   const [nextDetailView, setNextDetailView] = useState(null);
   const [detailViewReady, setDetailViewReady] = useState(true);
 
   const detailViewContainerRef = useRef(null);
-
 
   const handleDetailViewFadeExited = () => {
     setDetailView(nextDetailView);
@@ -69,8 +66,7 @@ function MasterDetailView(props) {
 
   const handleListViewSelectionChange = (newSelection) => {
     const selectedItem = newSelection.size ? pluck(newSelection) : null;
-    setInspectedObject(selectedItem);
-    
+
     if (showDetailView) {
       setDetailViewReady(false);
       if (selectedItem) {
@@ -121,7 +117,7 @@ function MasterDetailView(props) {
         {listView}
       </div>
 
-      <Fade 
+      <Fade
         in={detailViewReady}
         onExited={handleDetailViewFadeExited}
       >
