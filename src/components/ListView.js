@@ -1132,4 +1132,4 @@ ListView.defaultProps = {
   windowed: false,
 };
 
-export default ListView;
+export default React.memo(ListView);

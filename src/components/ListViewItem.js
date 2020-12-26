@@ -214,4 +214,4 @@ ListViewItem.propTypes = {
   to: PropTypes.string,
 };
 
-export default ListViewItem;
+export default React.memo(ListViewItem);
