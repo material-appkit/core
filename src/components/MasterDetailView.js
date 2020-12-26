@@ -74,7 +74,6 @@ function MasterDetailView(props) {
     listViewContainerClassName,
     listViewProps,
     listViewSelectionInitializer,
-    location,
     onDetailViewClose,
     onListViewSelectionChange,
     showDetailView,
@@ -106,7 +105,6 @@ function MasterDetailView(props) {
       if (selectedItem) {
         setNextDetailView((
           <DetailViewComponent
-            location={location}
             representedObject={selectedItem}
             onClose={onDetailViewClose}
             {...detailViewProps}
@@ -137,7 +135,6 @@ function MasterDetailView(props) {
         onSelectionChange: handleListViewSelectionChange,
         ...listViewProps,
       }}
-      location={location}
     />
   );
 
@@ -174,7 +171,6 @@ MasterDetailView.propTypes = {
   ListViewComponent: PropTypes.elementType.isRequired,
   listViewProps: PropTypes.object,
   listViewSelectionInitializer: PropTypes.func,
-  location: PropTypes.object.isRequired,
   onDetailViewClose: PropTypes.func,
   onListViewSelectionChange: PropTypes.func,
   showDetailView: PropTypes.bool.isRequired,
