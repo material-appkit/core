@@ -79,7 +79,7 @@ class NavManager {
 
 
   /**
-   * Convenience method to set a single querystring param
+   * Convenience method to clear a set of querystring params
    */
   static clearUrlParams(paramNames, replace) {
     const params = { ...this.qsParams };
@@ -87,6 +87,13 @@ class NavManager {
       params[paramName] = null;
     });
     this.setUrlParams(params, null, replace);
+  };
+
+  /**
+   * Convenience method to clear a single querystring param
+   */
+  static clearUrlParam(paramName, replace) {
+    this.clearUrlParams([paramName], replace);
   };
 
   /**

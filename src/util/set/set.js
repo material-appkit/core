@@ -54,3 +54,10 @@ export function find(set, resolverFunc) {
   }
   return null;
 }
+
+export function pluck(set) {
+  if (set.size) {
+    return set.values().next().value;
+  }
+  return null;
+}

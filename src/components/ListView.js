@@ -270,6 +270,7 @@ function ListView(props) {
     itemTransformer,
     listItemComponent,
     listItemComponentFunc,
+    listItemSelectionControl,
     listItemProps,
     loadingVariant,
     onConfig,
@@ -286,6 +287,7 @@ function ListView(props) {
     paginationListControlProps,
     PlaceholderComponent,
     responseTransformer,
+    selectionInitializer,
     selectionMenu,
     selectionMode,
     src,
@@ -323,7 +325,9 @@ function ListView(props) {
   const selection = props.selection || uncontrolledSelection;
 
   const setSelection = (updatedSelection) => {
-    setUncontrolledSelection(updatedSelection);
+    if (!props.selection) {
+      setUncontrolledSelection(updatedSelection);
+    }
 
     if (props.onSelectionChange) {
       props.onSelectionChange(updatedSelection);
@@ -427,6 +431,7 @@ function ListView(props) {
       item,
       onSelectionChange: (item) => updateSelection(item),
       selected,
+      selectionControl: listItemSelectionControl,
       selectionMode,
       selectionDisabled,
       ...itemContext,
@@ -613,12 +618,18 @@ function ListView(props) {
     fetchItems(src, appliedFilterParams).then((res) => {
       const transformer = responseTransformer || transformFetchItemsResponse;
       const responseData = transformer(res, itemTransformer);
+      const { items, pagination } = responseData;
 
-      if (responseData.pagination) {
-        setPaginationInfo(responseData.pagination);
+      if (pagination) {
+        setPaginationInfo(pagination);
       }
 
-      setRenderedItems(responseData.items);
+      setRenderedItems(items);
+
+      if (selectionInitializer) {
+        setSelection(selectionInitializer(items));
+      }
+
       setLoadError(null);
 
       if (onLoadComplete) {
@@ -626,6 +637,7 @@ function ListView(props) {
       }
     }).catch((err) => {
       setRenderedItems(null);
+      setSelection(new Set());
       setLoadError(err);
 
       if (onLoadError) {
@@ -1028,8 +1040,6 @@ function ListView(props) {
 ListView.propTypes = {
   classes: PropTypes.object,
 
-  defaultSelection: PropTypes.object,
-
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
 
   emptyListPlaceholder: PropTypes.element,
@@ -1054,7 +1064,7 @@ ListView.propTypes = {
   listItemComponent: PropTypes.elementType,
   listItemComponentFunc: PropTypes.func,
   listItemProps: PropTypes.object,
-
+  listItemSelectionControl: PropTypes.bool,
   loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
 
   location: PropTypes.object,
@@ -1079,6 +1089,7 @@ ListView.propTypes = {
 
   selection: PropTypes.object,
   selectionDisabled: PropTypes.bool,
+  selectionInitializer: PropTypes.func,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionMenu: PropTypes.bool,
   selectOnClick: PropTypes.bool,
@@ -1101,7 +1112,8 @@ ListView.defaultProps = {
   filterParams: {},
   items: null,
   itemIdKey: 'id',
-  loadingVariant: 'circular',
+  listItemSelectionControl: true,
+  loadingVariant: 'linear',
   orderingParamName: 'order',
   paginated: false,
   paginationControlProps: {
@@ -1111,12 +1123,13 @@ ListView.defaultProps = {
     shape: 'rounded',
     variant: 'outlined',
   },
-  selectionDisabled: true,
+
+  selectionDisabled: false,
   selectionMenu: false,
-  selectOnClick: false,
+  selectOnClick: true,
   subsetParamName: 'subset',
   tileListProps: {},
   windowed: false,
 };
 
-export default ListView;
+export default React.memo(ListView);
