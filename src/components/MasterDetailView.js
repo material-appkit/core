@@ -66,7 +66,6 @@ function MasterDetailView(props) {
   const classes = styles();
 
   const {
-    breakpoint,
     className,
     detailViewPlaceholder,
     DetailViewComponent,
@@ -78,6 +77,7 @@ function MasterDetailView(props) {
     location,
     onDetailViewClose,
     onListViewSelectionChange,
+    showDetailView,
   } = props;
 
 
@@ -88,9 +88,6 @@ function MasterDetailView(props) {
   const [detailViewReady, setDetailViewReady] = useState(true);
 
   const detailViewContainerRef = useRef(null);
-
-  const currentScreenWidth = useWidth();
-  const showDetailView = isWidthUp(breakpoint, currentScreenWidth);
 
 
   const handleDetailViewFadeExited = () => {
@@ -127,7 +124,7 @@ function MasterDetailView(props) {
 
 
   // Do not render until the screen width has been determined
-  if (!currentScreenWidth) {
+  if (showDetailView === undefined) {
     return null;
   }
 
@@ -169,7 +166,6 @@ function MasterDetailView(props) {
 }
 
 MasterDetailView.propTypes = {
-  breakpoint: PropTypes.string.isRequired,
   className: PropTypes.string,
   DetailViewComponent: PropTypes.elementType.isRequired,
   detailViewPlaceholder: PropTypes.element,
@@ -181,10 +177,10 @@ MasterDetailView.propTypes = {
   location: PropTypes.object.isRequired,
   onDetailViewClose: PropTypes.func,
   onListViewSelectionChange: PropTypes.func,
+  showDetailView: PropTypes.bool.isRequired,
 };
 
 MasterDetailView.defaultProps = {
-  breakpoint: 'md',
   detailViewProps: {},
   listViewProps: {},
 };
