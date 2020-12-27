@@ -293,6 +293,7 @@ function ListView(props) {
     src,
     subsetFilterArrangement,
     windowed,
+    windowedListItemHeight,
   } = props;
 
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
@@ -779,21 +780,6 @@ function ListView(props) {
 
   // ---------------------------------------------------------------------------
   /**
-   * Callback invoked when a list item is first mounted.
-   * When in windowed mode, whereby a height must be specified for each list item,
-   * this routine is used to initially determine that height.
-   */
-  const handleListItemMount = (item, itemIndex, element) => {
-    const listItemRect = element.getBoundingClientRect();
-    itemHeights.current[itemIndex] = listItemRect.height;
-
-    if (itemIndex === renderedItems.length - 1) {
-      setMeasuring(false);
-    }
-  };
-
-
-  /**
    * Respond to selection menu by updating selection accordingly
    */
   const handleSelectionMenuItemClick = (action) => {
@@ -866,16 +852,17 @@ function ListView(props) {
    * and a VariableSizedList / VariableSizedGrid is displayed
    */
   useEffect(() => {
-    if (!(windowed && renderedItems)) {
-      itemHeights.current = null;
-      return;
-    }
-
-    if (renderedItems.length) {
-      itemHeights.current = new Array(renderedItems.length).fill(50);
-      setMeasuring(true);
+    if (windowed) {
+      if (renderedItems && renderedItems.length) {
+        itemHeights.current = new Array(renderedItems.length).fill(windowedListItemHeight);
+        if (!windowedListItemHeight) {
+          setMeasuring(true);
+        }
+      } else {
+        itemHeights.current = [];
+      }
     } else {
-      itemHeights.current = [];
+      itemHeights.current = null;
     }
   }, [windowed, renderedItems]);
 
@@ -974,17 +961,25 @@ function ListView(props) {
     }
 
     if (windowed) {
+      const itemCount = renderedItems.length;
       view = measuring ? (
         <List disablePadding style={{ visibility: 'hidden' }}>
           {renderedItems.map(
             (item, itemIndex) => renderListItem(item, itemIndex, null, (element) => {
-              handleListItemMount(item, itemIndex, element)
+               // Callback invoked when a list item is first mounted.
+               // When in windowed mode, whereby a height must be specified for each list item,
+               // this routine is used to initially determine that height.
+              const listItemRect = element.getBoundingClientRect();
+              itemHeights.current[itemIndex] = listItemRect.height;
+              if (itemIndex === itemCount - 1) {
+                setMeasuring(false);
+              }
             })
           )}
         </List>
       ) : (
         <AutoSizer>
-          {({width, height}) => (
+          {({ width, height }) => (
             <VariableSizeList
               className={clsx(listViewClassNames)}
               height={height}
@@ -1105,6 +1100,7 @@ ListView.propTypes = {
   urlUpdateFunc: PropTypes.func,
 
   windowed: PropTypes.bool,
+  windowedListItemHeight: PropTypes.number,
 };
 
 ListView.defaultProps = {
@@ -1130,6 +1126,7 @@ ListView.defaultProps = {
   subsetParamName: 'subset',
   tileListProps: {},
   windowed: false,
+  windowedListItemHeight: 0,
 };
 
 export default React.memo(ListView);
