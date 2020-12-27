@@ -287,6 +287,7 @@ function ListView(props) {
     paginationListControlProps,
     PlaceholderComponent,
     responseTransformer,
+    selectOnClick,
     selectionInitializer,
     selectionMenu,
     selectionMode,
