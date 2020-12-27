@@ -148,4 +148,4 @@ MasterDetailView.defaultProps = {
   listViewProps: {},
 };
 
-export default MasterDetailView;
+export default React.memo(MasterDetailView);

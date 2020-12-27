@@ -287,4 +287,4 @@ NavigationController.defaultProps = {
   splitViewProps: {},
 };
 
-export default NavigationController;
+export default React.memo(NavigationController);

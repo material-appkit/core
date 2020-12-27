@@ -220,4 +220,4 @@ PropertyList.propTypes = {
   representedObject: PropTypes.object.isRequired,
 };
 
-export default PropertyList;
+export default React.memo(PropertyList);

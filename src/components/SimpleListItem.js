@@ -46,4 +46,4 @@ SimpleListItem.propTypes = {
 
 
 // -----------------------------------------------------------------------------
-export default SimpleListItem;
+export default React.memo(SimpleListItem);

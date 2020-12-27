@@ -49,4 +49,4 @@ ViewController.propTypes = {
   toolbarItems: PropTypes.object,
 };
 
-export default ViewController;
+export default React.memo(ViewController);

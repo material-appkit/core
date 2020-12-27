@@ -87,4 +87,4 @@ ExpandableBox.defaultProps = {
   defaultExpanded: false,
 };
 
-export default ExpandableBox;
+export default React.memo(ExpandableBox);

@@ -148,4 +148,4 @@ SplitView.defaultProps = {
   scrollContent: false,
 };
 
-export default SplitView;
+export default React.memo(SplitView);

@@ -35,7 +35,7 @@ function NavigationControllerBreadcrumbs(props) {
     onContextMenuButtonClick,
     ...attributes
   } = props;
-  
+
 
   const classes = styles();
 
@@ -70,4 +70,4 @@ NavigationControllerBreadcrumbs.propTypes = {
 };
 
 
-export default NavigationControllerBreadcrumbs;
+export default React.memo(NavigationControllerBreadcrumbs);

@@ -157,4 +157,4 @@ PaginationControl.defaultProps = {
   }
 };
 
-export default PaginationControl;
+export default React.memo(PaginationControl);

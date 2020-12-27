@@ -128,4 +128,4 @@ PropertyTable.defaultProps = {
   striped: false,
 };
 
-export default PropertyTable;
+export default React.memo(PropertyTable);

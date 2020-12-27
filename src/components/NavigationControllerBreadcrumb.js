@@ -100,4 +100,4 @@ NavigationControllerBreadcrumb.propTypes = {
   topbarConfig: PropTypes.object,
 };
 
-export default NavigationControllerBreadcrumb;
+export default React.memo(NavigationControllerBreadcrumb);

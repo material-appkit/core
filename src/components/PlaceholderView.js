@@ -98,4 +98,4 @@ PlaceholderView.defaultProps = {
   padding: 0,
 };
 
-export default PlaceholderView;
+export default React.memo(PlaceholderView);

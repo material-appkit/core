@@ -391,4 +391,4 @@ Image.defaultProps = {
   Tag: `div`,
 };
 
-export default Image;
+export default React.memo(Image);
