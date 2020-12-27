@@ -32,13 +32,13 @@ const styles = makeStyles((theme) => {
 
     navBar: {
       borderBottom: `1px solid ${theme.palette.grey[400]}`,
-      height: theme.sizes.navigationController.navbarHeight,
+      height: theme.navigationController.navbarHeight,
       padding: theme.spacing(0, 2),
     },
 
     toolBar: {
       borderBottom: `1px solid ${theme.palette.grey[400]}`,
-      height: theme.sizes.navigationController.toolbarHeight,
+      height: theme.navigationController.toolbarHeight,
     },
 
     loadingProgressBar: {
@@ -177,7 +177,7 @@ function NavigationController(props) {
   };
 
 
-  let appBarHeight = theme.sizes.navigationController.navbarHeight;
+  let appBarHeight = theme.navigationController.navbarHeight;
 
   let contextToolbar = null;
   if (activeTopBarConfig.toolbarItems) {
@@ -186,7 +186,7 @@ function NavigationController(props) {
         {activeTopBarConfig.toolbarItems}
       </Toolbar>
     );
-    appBarHeight += theme.sizes.navigationController.toolbarHeight;
+    appBarHeight += theme.navigationController.toolbarHeight;
   }
 
 
@@ -194,7 +194,6 @@ function NavigationController(props) {
     <SplitView
       bar={(
         <AppBar
-          style={{ height: appBarHeight }}
           color="default"
           elevation={0}
           position="static"
