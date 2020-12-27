@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -18,7 +18,7 @@ function ContextMenuButton(props) {
   };
 
   return (
-    <Fragment>
+    <>
       <IconButton
         aria-owns={menuIsOpen ? 'context-menu' : undefined}
         aria-haspopup="true"
@@ -36,7 +36,7 @@ function ContextMenuButton(props) {
         onClose={handleContextMenuClose}
         open={menuIsOpen}
       />
-    </Fragment>
+    </>
   );
 }
 
@@ -54,4 +54,4 @@ ContextMenuButton.defaultProps = {
   icon: MoreVertIcon,
 };
 
-export default ContextMenuButton;
+export default React.memo(ContextMenuButton);
