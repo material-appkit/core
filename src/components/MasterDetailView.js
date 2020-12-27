@@ -95,13 +95,11 @@ function MasterDetailView(props) {
 
   const listView = (
     <ListViewComponent
-      listViewProps={{
-        selectionInitializer: listViewSelectionInitializer,
-        listItemSelectionControl: false,
-        selectionMode: 'single',
-        onSelectionChange: handleListViewSelectionChange,
-        ...listViewProps,
-      }}
+      listItemSelectionControl={false}
+      onSelectionChange={handleListViewSelectionChange}
+      selectionMode="single"
+      selectionInitializer={listViewSelectionInitializer}
+      {...listViewProps}
     />
   );
 
