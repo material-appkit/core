@@ -45,7 +45,7 @@ import { filterEmptyValues } from '../util/object';
 import { find as setFind } from '../util/set';
 
 import PaginationControl from './PaginationControl';
-import TileList from './TileList';
+import TileView from './TileView';
 import ToolbarItem from './ToolbarItem';
 
 //------------------------------------------------------------------------------
@@ -292,6 +292,9 @@ function ListView(props) {
     selectionMode,
     src,
     subsetFilterArrangement,
+    tileItemComponent,
+    tileItemComponentFunc,
+    tileViewProps,
     windowed,
     windowedListItemHeight,
   } = props;
@@ -429,12 +432,15 @@ function ListView(props) {
 
     return {
       contextMenuItemArrangement: itemContextMenuArrangement,
+      key: itemKey,
       item,
       onSelectionChange: (item) => updateSelection(item),
       selected,
+      selectOnClick,
       selectionControl: listItemSelectionControl,
       selectionMode,
       selectionDisabled,
+      to: pathForItem(item),
       ...itemContext,
       ...listItemProps,
     };
@@ -877,17 +883,26 @@ function ListView(props) {
    */
   const renderListItem = (item, itemIndex, style, onMount) => {
     const ListItemType = listItemComponentFunc ? listItemComponentFunc(item) : listItemComponent;
+
     return (
       <ListItemType
-        key={keyForItem(item)}
-        to={pathForItem(item)}
         onMount={onMount}
-        selectOnClick={props.selectOnClick}
         style={style}
         {...itemProps(item)}
       />
     );
   };
+
+  const tileItemProps = (item, itemIndex, style, onMount) => {
+    return {
+      Component: tileItemComponentFunc ? tileItemComponentFunc(item) : tileItemComponent,
+      item,
+      key: keyForItem(item),
+      onMount,
+      style
+    };
+  };
+
 
   const createPlaceholderComponent = () => {
     if (loadingVariant === 'circular') {
@@ -1012,18 +1027,16 @@ function ListView(props) {
     if (windowed) {
       console.log('TODO: Implement windowed grid view!');
     } else {
+      const dataSource = renderedItems.map(
+        (item, itemIndex) => tileItemProps(item, itemIndex)
+      );
+
       view = (
-        <TileList
+        <TileView
+          dataSource={dataSource}
           selectionDisabled={selectionDisabled}
-          {...props.tileListProps}
-        >
-          {renderedItems.map((item) => (
-            <props.tileItemComponent
-              key={keyForItem(item)}
-              {...itemProps(item)}
-            />
-          ))}
-        </TileList>
+          {...tileViewProps}
+        />
       );
     }
   }
@@ -1094,8 +1107,9 @@ ListView.propTypes = {
   subsetParamName: PropTypes.string,
   subsetFilterArrangement: PropTypes.array,
 
-  tileItemComponent: PropTypes.func,
-  tileListProps: PropTypes.object,
+  tileItemComponent: PropTypes.elementType,
+  tileItemComponentFunc: PropTypes.func,
+  tileViewProps: PropTypes.object,
 
   urlUpdateFunc: PropTypes.func,
 
@@ -1124,7 +1138,7 @@ ListView.defaultProps = {
   selectionMenu: false,
   selectOnClick: true,
   subsetParamName: 'subset',
-  tileListProps: {},
+  tileViewProps: {},
   windowed: false,
   windowedListItemHeight: 0,
 };

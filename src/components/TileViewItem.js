@@ -1,23 +1,18 @@
 /**
 *
-* TileListItem
+* TileViewItem
 *
 */
-
-import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
+
 import CheckCircleTwoToneIcon from '@material-ui/icons/CheckCircleTwoTone';
 
 const styles = makeStyles((theme) => ({
-  root: {
-    position: 'relative',
-  },
-
   selected: {
     opacity: 0.6,
   },
@@ -36,30 +31,28 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
-function TileListItem(props) {
+function TileViewItem(props) {
   const {
     item,
-    component,
-    contextProvider,
     onItemClick,
+    onMount,
     onSelectionChange,
     selected,
     selectionMode,
-    ...rest
+    ...gridProps
   } = props;
 
-  const Component = component;
-  const listTileProps = contextProvider ? contextProvider(item) : {};
-
-  listTileProps.onClick = (e) => {
-    if (selectionMode && onSelectionChange) {
-      onSelectionChange(item);
-    }
-
-    if (onItemClick) {
-      onItemClick(item, e);
-    }
-  };
+  // const listTileProps = {};
+  //
+  // listTileProps.onClick = (e) => {
+  //   if (selectionMode && onSelectionChange) {
+  //     onSelectionChange(item);
+  //   }
+  //
+  //   if (onItemClick) {
+  //     onItemClick(item, e);
+  //   }
+  // };
 
   const classes = styles();
 
@@ -69,35 +62,33 @@ function TileListItem(props) {
   }
 
   return (
-    <Component
-      className={classes.root}
-      {...listTileProps}
-      {...rest}
-    >
-      <span className={clsx(tileClasses)}>
-        {props.children}
-      </span>
+    <Grid item {...gridProps}>
+      {props.children}
 
       {selected &&
         <CheckCircleTwoToneIcon className={classes.selectedIcon} />
       }
-    </Component>
+    </Grid>
   );
 }
 
-TileListItem.propTypes = {
-  component: PropTypes.any,
-  contextProvider: PropTypes.func,
+export const commonPropTypes = {
   children: PropTypes.any,
-  item: PropTypes.object.isRequired,
+  item: PropTypes.object,
+  onItemUpdate: PropTypes.func,
+  onMount: PropTypes.func,
+  onUnmount: PropTypes.func,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
   selected: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
 };
 
-TileListItem.defaultProps = {
+TileViewItem.propTypes = commonPropTypes;
+
+TileViewItem.defaultProps = {
   component: 'span',
 };
 
-export default TileListItem;
+export default TileViewItem;
+
