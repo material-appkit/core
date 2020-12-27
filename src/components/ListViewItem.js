@@ -144,7 +144,7 @@ function ListViewItem(props) {
 
 
   let SelectionComponent = null;
-  if (selectionMode && selectionControl) {
+  if (selectionMode && selectionControl && !selectionDisabled) {
     if (selectionMode === 'multiple') {
       SelectionComponent = Checkbox;
     }
@@ -185,7 +185,6 @@ function ListViewItem(props) {
         <SelectionComponent
           checked={props.selected}
           className={classes.selectionControl}
-          disabled={selectionDisabled}
           disableRipple
           edge="start"
           onClick={handleSelectionControlClick}
