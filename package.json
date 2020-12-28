@@ -21,6 +21,7 @@
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
+    "path-to-regexp": "^6.2.0",
     "query-string": "^6.13.7",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.5"
@@ -41,7 +42,6 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "notistack": "^1.0.2",
-    "path-to-regexp": "^6.2.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0"
   }
