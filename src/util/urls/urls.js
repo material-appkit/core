@@ -1,15 +1,33 @@
 import { pathToRegexp, compile } from 'path-to-regexp';
 
-export function reverse(path, params) {
-  const toPath = compile(path);
-  return toPath(params);
+const cache = {};
+const cacheLimit = 10000;
+let cacheCount = 0;
+
+function compilePath(path, options) {
+  const cacheKey = `${options.end}${options.strict}${options.sensitive}`;
+  const pathCache = cache[cacheKey] || (cache[cacheKey] = {});
+
+  if (pathCache[path]) return pathCache[path];
+
+  const keys = [];
+  const regexp = pathToRegexp(path, keys, options);
+  const result = { regexp, keys };
+
+  if (cacheCount < cacheLimit) {
+    pathCache[path] = result;
+    cacheCount++;
+  }
+
+  return result;
 }
+
 
 /**
  * Public API for matching a URL pathname to a path.
  * Source: https://github.com/ReactTraining/react-router/blob/master/packages/react-router/modules/matchPath.js
  */
-function matchPath(pathname, options = {}) {
+export function matchPath(pathname, options = {}) {
   if (typeof options === "string" || Array.isArray(options)) {
     options = { path: options };
   }
@@ -46,6 +64,12 @@ function matchPath(pathname, options = {}) {
       }, {})
     };
   }, null);
+}
+
+
+export function reverse(path, params) {
+  const toPath = compile(path);
+  return toPath(params);
 }
 
 
