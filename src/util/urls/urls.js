@@ -24,6 +24,7 @@ function compilePath(path, options) {
 
 
 /**
+ * @public
  * Public API for matching a URL pathname to a path.
  * Source: https://github.com/ReactTraining/react-router/blob/master/packages/react-router/modules/matchPath.js
  */
@@ -67,12 +68,24 @@ export function matchPath(pathname, options = {}) {
 }
 
 
+/**
+ * @public
+ * @param path
+ * @param params
+ * @returns {string}
+ */
 export function reverse(path, params) {
   const toPath = compile(path);
   return toPath(params);
 }
 
 
+/**
+ * @public
+ * @param pathname
+ * @param routes
+ * @returns {Array}
+ */
 export function matchesForPath(pathname, routes) {
   const matches = [];
   routes.forEach((routeInfo) => {
