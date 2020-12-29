@@ -1,9 +1,3 @@
-/**
-*
-* PropertyTable
-*
-*/
-
 import clsx from 'clsx';
 
 import React from 'react';
@@ -39,6 +33,9 @@ const styles = makeStyles(
 );
 
 
+/**
+ * @public
+ */
 function PropertyTable(props) {
   const {
     inspectedObject,

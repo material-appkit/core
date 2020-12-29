@@ -1,5 +1,8 @@
 const DEFAULT_STACK_SIZE = 32;
 
+/**
+ * A utility class used to walk a tree using a depth-first tree traversal
+ */
 export default class TreeEnumerator {
   constructor(root) {
     this.root = root;

@@ -10,7 +10,10 @@ import ListViewItem, {
   commonPropTypes,
 } from './ListViewItem';
 
-// -----------------------------------------------------------------------------
+
+/**
+ * @public
+ */
 function SimpleListItem(props) {
   const { primaryField, secondaryField, ...rest } = props;
 

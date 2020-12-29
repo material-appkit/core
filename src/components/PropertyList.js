@@ -179,6 +179,10 @@ const metadataStyles = makeStyles(
   (theme) => theme.propertyList
 );
 
+
+/**
+ * @public
+ */
 function PropertyList(props) {
   const classes = metadataStyles();
 

@@ -7,6 +7,9 @@ const DEFAULT_FETCH_OPTIONS = {
   credentials: 'same-origin',
 };
 
+/**
+ * @public
+ */
 export default class NativeServiceProxy extends AbstractServiceProxy {
   handleJsonResponse(response, resolve, reject) {
     response.json().then((jsonData) => {

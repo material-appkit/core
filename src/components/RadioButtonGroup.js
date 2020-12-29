@@ -21,6 +21,10 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
+
+/**
+ * @public
+ */
 function RadioButtonGroup(props) {
   const classes = styles();
 

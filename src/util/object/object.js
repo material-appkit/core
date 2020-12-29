@@ -1,5 +1,6 @@
-import { isValue } from '../value';
 import { valueForKeyPath as arrayValueForKeyPath } from '../array';
+import { isValue } from '../value';
+
 /**
  * Given an object, return a new object with only the keys
  * contained in the given `keys` array
@@ -14,6 +15,12 @@ export function filterByKeys(object, keys) {
   return filteredObject;
 }
 
+/**
+ * Return a copy of the given object _minus_ the given keys.
+ * @param object Object to be filtered
+ * @param keys An array containing keys to exclude
+ * @returns {{}} A copy of the original object without the excluded keys
+ */
 export function filterExcludeKeys(object, keys) {
   const filteredObject = {};
   Object.keys(object).forEach((key) => {
@@ -51,6 +58,12 @@ export function objectToArray(object) {
   }, []);
 }
 
+/**
+ * Retrieves a value at the given key path.
+ * @param object
+ * @param keyPath A dot (.) delimited series of keys
+ * @returns {*} Value at the given key path
+ */
 export function valueForKeyPath(object, keyPath) {
   const keys = keyPath.split('.');
   let value = object;
@@ -77,6 +90,12 @@ export function valueForKeyPath(object, keyPath) {
 }
 
 
+/**
+ * Set a value at the given key path.
+ * @param obj
+ * @param keyPath
+ * @param value
+ */
 export function setValueForKeyPath(obj, keyPath, value) {
   let targetObj = obj;
 

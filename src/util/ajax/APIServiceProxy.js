@@ -8,6 +8,9 @@ const DEFAULT_REQUEST_HEADERS = {
 };
 
 
+/**
+ * @public
+ */
 export default class APIServiceProxy extends NativeServiceProxy {
   static getAccessTokenCookieName() {
     const cookieName = (

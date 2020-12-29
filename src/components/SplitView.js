@@ -1,6 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 
+/**
+ * @public
+ */
 function SplitView(props) {
   const {
     bar,
