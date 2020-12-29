@@ -1,4 +1,4 @@
-import NotificationCenter from '../notification/NotificationCenter';
+import NotificationCenter from '../util/NotificationCenter';
 
 export default class NotificationManager {
   static defaultCenter = new NotificationCenter();
