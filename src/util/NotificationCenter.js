@@ -1,3 +1,5 @@
+import Notification from './Notification';
+
 /**
  * Copied verbatim from Cocoa's NSNotificationCenter:
  *
@@ -7,9 +9,6 @@
  *
  * Weak dictionary keys are used to allow notification senders to be eligible for garbage collection.
  */
-
-import Notification from './Notification';
-
 export default class NotificationCenter {
   constructor() {
     this._notificationSenders = {};
