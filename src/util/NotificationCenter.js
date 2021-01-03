@@ -10,11 +10,19 @@ import Notification from './Notification';
  * Weak dictionary keys are used to allow notification senders to be eligible for garbage collection.
  */
 export default class NotificationCenter {
+  _notificationSenders = {};
+
+  /**
+   * @constructor
+   */
   constructor() {
-    this._notificationSenders = {};
     this._registerNotificationSender(null);
   }
 
+  /**
+   * @param notificationSender
+   * @private
+   */
   _registerNotificationSender(notificationSender) {
     const observers = {};
     observers[null] = [];
@@ -24,11 +32,16 @@ export default class NotificationCenter {
   /**
    * Creates a notification with a given name, sender, and information and posts it to the receiver.
    *
-   * @param notificationName The name of the notification.
+   * @param {string} notificationName
+   * The name of the notification.
    *
-   * @param notificationSender The object posting the notification.
+   * @param {object} notificationSender
+   * The object posting the notification.
    *
-   * @param context Information about the the notification. May be null.
+   * @param {object} context
+   * Information about the the notification. May be null.
+   *
+   * @public
    */
   postNotification(notificationName, notificationSender, context) {
     if (typeof(notificationName) !== 'string') {
@@ -64,6 +77,13 @@ export default class NotificationCenter {
     }
   }
 
+
+  /**
+   *
+   * @param invocation
+   * @param notification
+   * @private
+   */
   _performInvocation(invocation, notification) {
     const receiver = invocation.receiver;
     const method = invocation.method;
@@ -71,6 +91,7 @@ export default class NotificationCenter {
   }
 
   /**
+   *
    * Adds an entry to the receiver’s dispatch table with an observer,
    * a notification selector and optional criteria: notification name and sender.
    *
@@ -90,6 +111,8 @@ export default class NotificationCenter {
    * The object whose notifications the observer wants to receive;
    * that is, only notifications sent by this sender are delivered to the observer.
    * When null, the notification center doesn’t use a notification’s sender to decide whether to deliver it to the observer.
+   *
+   * @public
    */
   addObserver(notificationObserver, callback, notificationName, notificationSender) {
     notificationName = notificationName || null;
@@ -110,19 +133,21 @@ export default class NotificationCenter {
   /**
    * Removes matching entries from the receiver’s dispatch table.
    *
-   * @param notificationObserver
+   * @param {object} notificationObserver
    * Observer to remove from the dispatch table. Specify an observer to remove only entries for this observer.
    * Must not be null, or message will have no effect.
    *
-   * @param notificationName
+   * @param {string} notificationName
    * Name of the notification to remove from dispatch table.
    * Specify a notification name to remove only entries that specify this notification name.
    * When null, the receiver does not use notification names as criteria for removal.
    *
-   * @param notificationSender
+   * @param {object} notificationSender
    * Sender to remove from the dispatch table.
    * Specify a notification sender to remove only entries that specify this sender.
    * When null, the receiver does not use notification senders as criteria for removal.
+   *
+   * @public
    */
   removeObserver(notificationObserver, notificationName, notificationSender) {
     notificationName = notificationName || null;
@@ -141,6 +166,14 @@ export default class NotificationCenter {
     }
   }
 
+
+  /**
+   *
+   * @param notificationObserver
+   * @param notificationName
+   * @param senders
+   * @private
+   */
   _removeObserver(notificationObserver, notificationName, senders) {
     if (notificationName === null) {
       Object.keys(senders).forEach((name) => {
@@ -151,6 +184,13 @@ export default class NotificationCenter {
     }
   }
 
+
+  /**
+   *
+   * @param notificationObserver
+   * @param invocations
+   * @private
+   */
   __removeObserver(notificationObserver, invocations) {
     for (let i = invocations.length - 1; i >= 0; --i) {
       const invocation = invocations[i];

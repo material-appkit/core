@@ -4,6 +4,10 @@ class ServiceAgent {
   static ServiceProxyClass = NativeServiceProxy;
   static config;
 
+  /**
+   *
+   * @param {object} config
+   */
   static initialize(config) {
     this.config = config || {};
 
@@ -12,12 +16,21 @@ class ServiceAgent {
     }
   }
 
-  static createProxy() {
+  static _createProxy() {
     return new this.ServiceProxyClass();
   }
 
+  /**
+   *
+   * @param {string} method
+   * @param {string} endpoint
+   * @param {object} params
+   * @param {object} context
+   * @param {object} headers
+   * @returns {Promise}
+   */
   static request(method, endpoint, params, context, headers) {
-    const proxy = this.createProxy();
+    const proxy = this._createProxy();
     return proxy.request(method, endpoint, params, context, headers);
   }
 
@@ -50,12 +63,12 @@ class ServiceAgent {
   }
 
   static download(endpoint, params, context, headers) {
-    const proxy = this.createProxy();
+    const proxy = this._createProxy();
     return proxy.download(endpoint, params, context, headers);
   }
 
   static upload(endpoint, files, params, context, headers) {
-    const proxy = this.createProxy();
+    const proxy = this._createProxy();
     return proxy.upload(endpoint, files, params, context, headers);
   }
 }
