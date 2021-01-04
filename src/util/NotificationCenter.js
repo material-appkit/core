@@ -1,13 +1,15 @@
 import Notification from './Notification';
 
 /**
- * Copied verbatim from Cocoa's NSNotificationCenter:
- *
- * The NotificationCenter class provides a way to send notifications to objects in the same application.
  * It takes Notification objects and broadcasts them to any objects in the same task that have registered
  * to receive the notification with the task’s default notification center.
  *
  * Weak dictionary keys are used to allow notification senders to be eligible for garbage collection.
+ *
+ * Attribution: https://developer.apple.com/documentation/foundation/nsnotificationcenter
+ *
+ * @summary
+ * A notification dispatch mechanism that enables the broadcast of information to registered observers.
  */
 export default class NotificationCenter {
   _notificationSenders = {};
@@ -41,7 +43,6 @@ export default class NotificationCenter {
    * @param {object} context
    * Information about the the notification. May be null.
    *
-   * @public
    */
   postNotification(notificationName, notificationSender, context) {
     if (typeof(notificationName) !== 'string') {
@@ -112,7 +113,6 @@ export default class NotificationCenter {
    * that is, only notifications sent by this sender are delivered to the observer.
    * When null, the notification center doesn’t use a notification’s sender to decide whether to deliver it to the observer.
    *
-   * @public
    */
   addObserver(notificationObserver, callback, notificationName, notificationSender) {
     notificationName = notificationName || null;
@@ -147,7 +147,6 @@ export default class NotificationCenter {
    * Specify a notification sender to remove only entries that specify this sender.
    * When null, the receiver does not use notification senders as criteria for removal.
    *
-   * @public
    */
   removeObserver(notificationObserver, notificationName, notificationSender) {
     notificationName = notificationName || null;
