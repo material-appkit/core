@@ -1,5 +1,8 @@
 import NativeServiceProxy from './ajax/NativeServiceProxy';
 
+/**
+ * General description about the ServiceAgent class
+ */
 class ServiceAgent {
   static ServiceProxyClass = NativeServiceProxy;
   static config;

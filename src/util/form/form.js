@@ -1,9 +1,4 @@
 /**
- * Credit: JASON LENGSTORF
- * https://code.lengstorf.com/get-form-values-as-json/
- */
-
-/**
  * Checks that an element has a non-empty `name` and `value` property.
  * @param  {Element} element  the element to check
  * @return {Bool}             true if the element is an input, false if not
@@ -44,6 +39,8 @@ function getSelectValues(options) {
 
 /**
  * Retrieves input data from a form and returns it as a JSON object.
+ *
+ * Attribution: https://code.lengstorf.com/get-form-values-as-json/
  * @param  {HTMLFormControlsCollection} elements  the form elements
  * @return {Object}                               form data as an object literal
  */
