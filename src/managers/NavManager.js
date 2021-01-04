@@ -3,9 +3,16 @@ import { createBrowserHistory } from 'history';
 
 import { isSet } from '../util/value';
 
+/**
+ * General description about the NavManager
+ */
 class NavManager {
   static history = null;
 
+  /**
+   *
+   * @param options
+   */
   static initialize(options) {
     const historyBaseName = options.basename || process.env.REACT_APP_URL_BASENAME;
     this.history = createBrowserHistory({ basename: historyBaseName });
@@ -24,6 +31,9 @@ class NavManager {
   }
 
 
+  /**
+   * Reload the page at the current location
+   */
   static reloadWindow() {
     window.location.reload();
   }
@@ -89,12 +99,14 @@ class NavManager {
     this.setUrlParams(params, null, replace);
   };
 
+
   /**
    * Convenience method to clear a single querystring param
    */
   static clearUrlParam(paramName, replace) {
     this.clearUrlParams([paramName], replace);
   };
+
 
   /**
    * Unlike the underlying setUrlParams method, this method will clear the
@@ -104,6 +116,9 @@ class NavManager {
     this.setUrlParams(qsParams || {}, path, replace, state);
   }
 
+  /**
+   * Navigate to the previous page in the location history
+   */
   static goBack() {
     this.history.goBack();
   }

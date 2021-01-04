@@ -1,5 +1,6 @@
 /**
- * Credit:
+ *
+ * Attribution:
  * https://gist.github.com/hagemann/382adfc57adbd5af078dc93feef01fe1
  */
 export function slugify(str) {
