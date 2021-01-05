@@ -1,7 +1,13 @@
 /**
  *
- * Attribution:
+ * @attribution
  * https://gist.github.com/hagemann/382adfc57adbd5af078dc93feef01fe1
+ *
+ * @param {string} str
+ * String to be converted into a slug
+ *
+ * @returns {string}
+ * Slugified version `string`
  */
 export function slugify(str) {
   const a = 'àáäâãåèéëêìíïîòóöôùúüûñçßÿœæŕśńṕẃǵǹḿǘẍźḧ·/_,:;';
@@ -20,30 +26,37 @@ export function slugify(str) {
 
 /**
  *
- * @param string
- * @param value
- * @returns {*}
+ * @param {string} str
+ * String to remove suffix `value` from
+ *
+ * @param {string} value
+ * Suffix to be removed from `string`
+ *
+ * @returns {string}
+ * The given `string` without suffix `value`
  */
-export function rstrip(string, value) {
+export function rstrip(str, value) {
   const lastIndex = string.lastIndexOf(value);
   if (lastIndex !== -1) {
-    return string.substring(0, lastIndex);
+    return str.substring(0, lastIndex);
   }
 }
 
 /**
  *
- * @param str
- * @returns {string}
+ * @param {string} str
+ * String to be converted into title case
+ *
+ * @returns {string} The given `string`, converted into title case
  */
 export function titleCase(str) {
-  if (typeof(str) !== 'string') {
+  if (typeof(string) !== 'string') {
     return null;
   }
 
-  str = str.toLowerCase().replace(/ /g, '_').split('_');
+  const tcString = str.toLowerCase().replace(/ /g, '_').split('_');
   for (let i = 0, n = str.length; i < n; i++) {
-    str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+    tcString[i] = tcString[i].charAt(0).toUpperCase() + tcString[i].slice(1);
   }
-  return str.join(' ');
+  return tcString.join(' ');
 }
