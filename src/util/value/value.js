@@ -1,8 +1,7 @@
 /**
  *
  * @summary
- * Returns __true__ if a given value is anything other than null or
- * undefined, otherwise __false__.
+ * Returns __false__ if the given value is `null` or `undefined`, otherwise __true__.
  *
  * @param {*} value
  * Value to be evaluated as non-(null/undefined)
@@ -15,8 +14,8 @@ export function isSet(value) {
 
 /**
  * @summary
- * Returns __true__ if a given value is anything other than
- * (undefined, null, empty string, NaN), otherwise __false__.
+ * Returns __false__ if the given value is `null`, `undefined`, `NaN`, or `""`,
+ * otherwise __true__.
  *
  * @param {*} value
  * Value to be evaluated as truthy or not
