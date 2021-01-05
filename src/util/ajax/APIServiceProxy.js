@@ -12,6 +12,10 @@ const DEFAULT_REQUEST_HEADERS = {
  * @public
  */
 export default class APIServiceProxy extends NativeServiceProxy {
+  /**
+   * @static
+   * @returns {*}
+   */
   static getAccessTokenCookieName() {
     const cookieName = (
       process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME ||
@@ -24,6 +28,11 @@ export default class APIServiceProxy extends NativeServiceProxy {
     return cookieName;
   }
 
+
+  /**
+   * @static
+   * @returns {*}
+   */
   static getBaseURL() {
     const baseUrl = (
       process.env.REACT_APP_API_URL ||
@@ -36,6 +45,11 @@ export default class APIServiceProxy extends NativeServiceProxy {
     return baseUrl;
   }
 
+
+  /**
+   * @static
+   * @returns {*}
+   */
   static getBaseURLPrefix() {
     const urlPrefix = (
       process.env.REACT_APP_API_ENDPOINT_PREFIX ||
@@ -48,10 +62,20 @@ export default class APIServiceProxy extends NativeServiceProxy {
     return urlPrefix;
   }
 
+
+  /**
+   * @static
+   * @returns {*}
+   */
   static getAccessToken() {
     return StorageManager.localValue(this.getAccessTokenCookieName());
   }
 
+
+  /**
+   * @static
+   * @returns {*}
+   */
   static setAccessToken(value) {
     const cookieName = this.getAccessTokenCookieName();
     if (value) {
@@ -62,6 +86,10 @@ export default class APIServiceProxy extends NativeServiceProxy {
   }
 
 
+  /**
+   * @static
+   * @returns {*}
+   */
   static getRequestHeaders(headers, params) {
     const requestHeaders = { ...DEFAULT_REQUEST_HEADERS };
 

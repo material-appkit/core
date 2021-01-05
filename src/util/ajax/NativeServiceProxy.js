@@ -11,6 +11,12 @@ const DEFAULT_FETCH_OPTIONS = {
  * @public
  */
 export default class NativeServiceProxy extends AbstractServiceProxy {
+  /**
+   *
+   * @param response
+   * @param resolve
+   * @param reject
+   */
   handleJsonResponse(response, resolve, reject) {
     response.json().then((jsonData) => {
       response.jsonData = jsonData;
@@ -28,6 +34,12 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   }
 
 
+  /**
+   *
+   * @param response
+   * @param resolve
+   * @param reject
+   */
   handleBlobResponse(response, resolve, reject) {
     response.blob().then((blobData) => {
       response.blobData = blobData;
@@ -44,6 +56,13 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     });
   }
 
+
+  /**
+   *
+   * @param response
+   * @param resolve
+   * @param reject
+   */
   handleResponse(response, resolve, reject) {
     const contentType = response.headers.get('content-type');
     if (contentType === 'application/json') {
@@ -54,6 +73,14 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   }
 
 
+  /**
+   *
+   * @param method
+   * @param endpoint
+   * @param params
+   * @param headers
+   * @returns {{abortController: *, url: *, options: {method: *, headers: *}}}
+   */
   requestInfo(method, endpoint, params, headers) {
     let requestURL = this.constructor.buildRequestUrl(endpoint);
 
@@ -96,6 +123,15 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   }
 
 
+  /**
+   *
+   * @param method
+   * @param endpoint
+   * @param params
+   * @param context
+   * @param headers
+   * @returns {Promise}
+   */
   request(method, endpoint, params, context, headers) {
     return new Promise((resolve, reject) => {
       const requestHeaders = this.constructor.getRequestHeaders(headers, params);
@@ -116,11 +152,28 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   }
 
 
+  /**
+   *
+   * @param endpoint
+   * @param params
+   * @param context
+   * @param headers
+   * @returns {*}
+   */
   download(endpoint, params, context, headers) {
     return this.get(endpoint, params, context, headers);
   }
 
 
+  /**
+   *
+   * @param endpoint
+   * @param filesInfoList
+   * @param params
+   * @param context
+   * @param headers
+   * @returns {Promise}
+   */
   upload(endpoint, filesInfoList, params, context, headers) {
     if (!Array.isArray(filesInfoList)) {
       throw new Error('Expecting "files" to be an array');
