@@ -1,9 +1,16 @@
 const DEFAULT_STACK_SIZE = 32;
 
 /**
- * A utility class used to walk a tree using a depth-first tree traversal
+ *
+ * @summary
+ * A utility class used to walk a tree using a depth-first tree traversal.
  */
 export default class TreeEnumerator {
+  /**
+   * @constructor
+   * @param {Object} root
+   * Tree-like object to be traversed
+   */
   constructor(root) {
     this.root = root;
 
@@ -15,7 +22,13 @@ export default class TreeEnumerator {
   }
 
 
-  nextObject = () => {
+  /**
+   * @summary
+   * Return the item at the current cursor position, then advance cursor to the next item
+   *
+   * @returns {*}
+   */
+  nextObject() {
     while (this.stackIndex >= 0) {
       const top = this.stack[this.stackIndex];
       const children = top.node.children;
@@ -39,11 +52,15 @@ export default class TreeEnumerator {
     }
 
     return null;
-  };
+  }
 
 
-  reset = () => {
+  /**
+   * @summary
+   * Return the cursor to the beginning of the collection
+   */
+  reset() {
     this.stack[0] = { node: this.root, index: -1 };
     this.stackIndex = 0;
-  };
+  }
 }
