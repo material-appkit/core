@@ -6,7 +6,7 @@ import { storageOfType } from '../util/storage';
 class StorageManager {
   /**
    *
-   * @param {string} key
+   * @param {String} key
    * @returns {string|number|Date}
    */
   static localValue(key) {
@@ -17,7 +17,7 @@ class StorageManager {
 
   /**
    *
-   * @param {string} key
+   * @param {String} key
    * @param {string|number|Date} value
    */
   static setLocalValue(key, value) {
@@ -31,7 +31,7 @@ class StorageManager {
 
   /**
    *
-   * @param {string} key
+   * @param {String} key
    */
   static removeLocalValue(key) {
     const storage = storageOfType('localStorage');

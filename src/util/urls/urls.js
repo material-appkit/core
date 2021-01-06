@@ -72,7 +72,7 @@ export function matchPath(pathname, options = {}) {
  * @public
  * @param path
  * @param params
- * @returns {string}
+ * @returns {String}
  */
 export function reverse(path, params) {
   const toPath = compile(path);

@@ -14,7 +14,7 @@ const DEFAULT_REQUEST_HEADERS = {
 export default class APIServiceProxy extends NativeServiceProxy {
   /**
    * @static
-   * @returns {string}
+   * @returns {String}
    */
   static getAccessTokenCookieName() {
     const cookieName = (
@@ -31,7 +31,7 @@ export default class APIServiceProxy extends NativeServiceProxy {
 
   /**
    * @static
-   * @returns {string}
+   * @returns {String}
    */
   static getBaseURL() {
     const baseUrl = (
@@ -48,7 +48,7 @@ export default class APIServiceProxy extends NativeServiceProxy {
 
   /**
    * @static
-   * @returns {string}
+   * @returns {String}
    */
   static getBaseURLPrefix() {
     const urlPrefix = (
@@ -65,7 +65,7 @@ export default class APIServiceProxy extends NativeServiceProxy {
 
   /**
    * @static
-   * @returns {string}
+   * @returns {String}
    */
   static getAccessToken() {
     return StorageManager.localValue(this.getAccessTokenCookieName());

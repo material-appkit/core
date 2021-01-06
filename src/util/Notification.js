@@ -17,7 +17,7 @@ export default class Notification {
    * Returns a notification object with a specified name, object, and user information.
    *
    * @constructor
-   * @param {string} notificationName The name for the new notification. May not be nil.
+   * @param {String} notificationName The name for the new notification. May not be nil.
    * @param {object} anObject The object for the new notification.
    * @param {object} context The user information dictionary for the new notification. May be nil.
    */

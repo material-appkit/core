@@ -34,7 +34,7 @@ export default class NotificationCenter {
   /**
    * Creates a notification with a given name, sender, and information and posts it to the receiver.
    *
-   * @param {string} notificationName
+   * @param {String} notificationName
    * The name of the notification.
    *
    * @param {object} notificationSender
@@ -103,7 +103,7 @@ export default class NotificationCenter {
    * Method that the receiver invokes on notificationObserver to notify it of the notification posting.
    * The method the selector specifies must have one and only one argument.
    *
-   * @param {string} notificationName
+   * @param {String} notificationName
    * The name of the notification for which to register the observer;
    * that is, only notifications with this name are delivered to the observer.
    * When null, the notification center doesn’t use a notification’s name to decide whether to deliver it to the observer.
@@ -137,7 +137,7 @@ export default class NotificationCenter {
    * Observer to remove from the dispatch table. Specify an observer to remove only entries for this observer.
    * Must not be null, or message will have no effect.
    *
-   * @param {string} notificationName
+   * @param {String} notificationName
    * Name of the notification to remove from dispatch table.
    * Specify a notification name to remove only entries that specify this notification name.
    * When null, the receiver does not use notification names as criteria for removal.

@@ -3,10 +3,10 @@
  * @attribution
  * https://gist.github.com/hagemann/382adfc57adbd5af078dc93feef01fe1
  *
- * @param {string} str
+ * @param {String} str
  * String to be converted into a slug
  *
- * @returns {string}
+ * @returns {String}
  * Slugified version `string`
  */
 export function slugify(str) {
@@ -26,13 +26,13 @@ export function slugify(str) {
 
 /**
  *
- * @param {string} str
+ * @param {String} str
  * String to remove suffix `value` from
  *
- * @param {string} value
+ * @param {String} value
  * Suffix to be removed from `string`
  *
- * @returns {string}
+ * @returns {String}
  * The given `string` without suffix `value`
  */
 export function rstrip(str, value) {
@@ -44,10 +44,10 @@ export function rstrip(str, value) {
 
 /**
  *
- * @param {string} str
+ * @param {String} str
  * String to be converted into title case
  *
- * @returns {string} The given `string`, converted into title case
+ * @returns {String} The given `string`, converted into title case
  */
 export function titleCase(str) {
   if (typeof(string) !== 'string') {

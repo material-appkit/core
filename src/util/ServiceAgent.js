@@ -25,8 +25,8 @@ class ServiceAgent {
 
   /**
    *
-   * @param {string} method
-   * @param {string} endpoint
+   * @param {String} method
+   * @param {String} endpoint
    * @param {object} params
    * @param {object} context
    * @param {object} headers
