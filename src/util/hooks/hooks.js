@@ -6,7 +6,6 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 /**
  * See: https://reactjs.org/docs/hooks-faq.html
  * @param value
- * @returns {*}
  */
 export function usePrevious(value) {
   const ref = useRef();
@@ -17,6 +16,11 @@ export function usePrevious(value) {
 }
 
 
+/**
+ *
+ * @param {function} initFunc
+ * @param {function} disposer
+ */
 export function useInit(initFunc, disposer) {
   useEffect(() => {
     initFunc();
@@ -27,12 +31,13 @@ export function useInit(initFunc, disposer) {
 }
 
 /**
- * Source: https://material-ui.com/components/use-media-query/#migrating-from-withwidth
- *
  * Be careful using this hook. It only works because the number of
  * breakpoints in theme is static. It will break once you change the number of
  * breakpoints.
  * See https://reactjs.org/docs/hooks-rules.html#only-call-hooks-at-the-top-level
+ *
+ * @attribution
+ * https://material-ui.com/components/use-media-query/#migrating-from-withwidth
  */
 export function useWidth() {
   const theme = useTheme();
@@ -49,7 +54,7 @@ export function useWidth() {
 
 /**
  * Utility hook to help determine why/when a component is re-rendered
- * @param props
+ * @param {object} props
  */
 export function useTraceUpdate(props) {
   const prev = useRef(props);
@@ -60,6 +65,7 @@ export function useTraceUpdate(props) {
       }
       return ps;
     }, {});
+
     if (Object.keys(changedProps).length > 0) {
       console.log('Changed props:', changedProps);
     }
