@@ -33,9 +33,6 @@ const styles = makeStyles(
 );
 
 
-/**
- * @public
- */
 function PropertyTable(props) {
   const {
     inspectedObject,

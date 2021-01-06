@@ -26,9 +26,8 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
-/**
- * @public
- */
+
+
 function TabView(props) {
   const {
     location,

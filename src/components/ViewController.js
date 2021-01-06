@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-/**
- * @public
- */
+
 class ViewController extends React.PureComponent {
   componentDidMount() {
     const {

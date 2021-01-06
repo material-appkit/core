@@ -14,9 +14,7 @@ const styles = makeStyles({
   }
 });
 
-/**
- * @public
- */
+
 function TileView(props) {
   const classes = styles();
 

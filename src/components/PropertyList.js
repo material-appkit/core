@@ -180,9 +180,6 @@ const metadataStyles = makeStyles(
 );
 
 
-/**
- * @public
- */
 function PropertyList(props) {
   const classes = metadataStyles();
 

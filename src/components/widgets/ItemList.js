@@ -1,9 +1,3 @@
-/**
-*
-* ItemListWidget
-*
-*/
-
 import isEqual from 'lodash.isequal';
 
 import React from 'react';

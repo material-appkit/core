@@ -1,9 +1,3 @@
-/**
-*
-* CheckboxGroupWidget
-*
-*/
-
 import clsx from 'clsx';
 
 import React, { Fragment, useEffect, useState } from 'react';
