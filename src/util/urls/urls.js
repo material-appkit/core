@@ -4,11 +4,20 @@ const cache = {};
 const cacheLimit = 10000;
 let cacheCount = 0;
 
+
+/**
+ *
+ * @param {String} path
+ * @param {Object} options
+ * @returns {Object}
+ */
 function compilePath(path, options) {
   const cacheKey = `${options.end}${options.strict}${options.sensitive}`;
   const pathCache = cache[cacheKey] || (cache[cacheKey] = {});
 
-  if (pathCache[path]) return pathCache[path];
+  if (pathCache[path]) {
+    return pathCache[path];
+  }
 
   const keys = [];
   const regexp = pathToRegexp(path, keys, options);
@@ -24,9 +33,16 @@ function compilePath(path, options) {
 
 
 /**
- * @public
+ *
+ * @summary
  * Public API for matching a URL pathname to a path.
- * Source: https://github.com/ReactTraining/react-router/blob/master/packages/react-router/modules/matchPath.js
+ *
+ * @param {String} pathname
+ *
+ * @param {Object} options
+ *
+ * @attribution
+ * https://github.com/ReactTraining/react-router/blob/master/packages/react-router/modules/matchPath.js
  */
 export function matchPath(pathname, options = {}) {
   if (typeof options === "string" || Array.isArray(options)) {
@@ -69,9 +85,8 @@ export function matchPath(pathname, options = {}) {
 
 
 /**
- * @public
- * @param path
- * @param params
+ * @param {String} path
+ * @param {Object} params
  * @returns {String}
  */
 export function reverse(path, params) {
@@ -82,8 +97,8 @@ export function reverse(path, params) {
 
 /**
  * @public
- * @param pathname
- * @param routes
+ * @param {String} pathname
+ * @param {Array} routes
  * @returns {Array}
  */
 export function matchesForPath(pathname, routes) {

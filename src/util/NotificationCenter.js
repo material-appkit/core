@@ -6,10 +6,11 @@ import Notification from './Notification';
  *
  * Weak dictionary keys are used to allow notification senders to be eligible for garbage collection.
  *
- * Attribution: https://developer.apple.com/documentation/foundation/nsnotificationcenter
- *
  * @summary
  * A notification dispatch mechanism that enables the broadcast of information to registered observers.
+ *
+ * @attribution
+ * https://developer.apple.com/documentation/foundation/nsnotificationcenter
  */
 export default class NotificationCenter {
   _notificationSenders = {};
@@ -37,10 +38,10 @@ export default class NotificationCenter {
    * @param {String} notificationName
    * The name of the notification.
    *
-   * @param {object} notificationSender
+   * @param {Object} notificationSender
    * The object posting the notification.
    *
-   * @param {object} context
+   * @param {Object} context
    * Information about the the notification. May be null.
    *
    */
@@ -96,7 +97,7 @@ export default class NotificationCenter {
    * Adds an entry to the receiver’s dispatch table with an observer,
    * a notification selector and optional criteria: notification name and sender.
    *
-   * @param {object} notificationObserver
+   * @param {Object} notificationObserver
    * Object registering as an observer. Must not be null.
    *
    * @param {function} callback
@@ -108,7 +109,7 @@ export default class NotificationCenter {
    * that is, only notifications with this name are delivered to the observer.
    * When null, the notification center doesn’t use a notification’s name to decide whether to deliver it to the observer.
    *
-   * @param {object} notificationSender
+   * @param {Object} notificationSender
    * The object whose notifications the observer wants to receive;
    * that is, only notifications sent by this sender are delivered to the observer.
    * When null, the notification center doesn’t use a notification’s sender to decide whether to deliver it to the observer.
@@ -133,7 +134,7 @@ export default class NotificationCenter {
   /**
    * Removes matching entries from the receiver’s dispatch table.
    *
-   * @param {object} notificationObserver
+   * @param {Object} notificationObserver
    * Observer to remove from the dispatch table. Specify an observer to remove only entries for this observer.
    * Must not be null, or message will have no effect.
    *
@@ -142,7 +143,7 @@ export default class NotificationCenter {
    * Specify a notification name to remove only entries that specify this notification name.
    * When null, the receiver does not use notification names as criteria for removal.
    *
-   * @param {object} notificationSender
+   * @param {Object} notificationSender
    * Sender to remove from the dispatch table.
    * Specify a notification sender to remove only entries that specify this sender.
    * When null, the receiver does not use notification senders as criteria for removal.

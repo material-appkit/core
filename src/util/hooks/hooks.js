@@ -54,7 +54,7 @@ export function useWidth() {
 
 /**
  * Utility hook to help determine why/when a component is re-rendered
- * @param {object} props
+ * @param {Object} props
  */
 export function useTraceUpdate(props) {
   const prev = useRef(props);

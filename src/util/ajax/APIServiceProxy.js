@@ -87,7 +87,7 @@ export default class APIServiceProxy extends NativeServiceProxy {
 
   /**
    * @static
-   * @returns {object}
+   * @returns {Object}
    */
   static getRequestHeaders(headers, params) {
     const requestHeaders = { ...DEFAULT_REQUEST_HEADERS };

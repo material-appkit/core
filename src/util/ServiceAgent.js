@@ -9,7 +9,7 @@ class ServiceAgent {
 
   /**
    *
-   * @param {object} config
+   * @param {Object} config
    */
   static initialize(config) {
     this.config = config || {};
@@ -27,9 +27,9 @@ class ServiceAgent {
    *
    * @param {String} method
    * @param {String} endpoint
-   * @param {object} params
-   * @param {object} context
-   * @param {object} headers
+   * @param {Object} params
+   * @param {Object} context
+   * @param {Object} headers
    * @returns {Promise}
    */
   static request(method, endpoint, params, context, headers) {

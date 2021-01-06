@@ -1,6 +1,4 @@
 /**
-  * Sourced from Cocoa's NSNotification:
-  *
  * Notification objects encapsulate information so that it can be broadcast to other objects by an NotificationCenter object.
  * An Notification object (referred to as a notification) contains a name, an object, and an optional dictionary.
  * The name is a tag identifying the notification. The object is any object that the poster of the notification wants to send
@@ -11,6 +9,9 @@
  * However, you don’t usually create your own notifications directly.
  * The NotificationCenter methods postNotificationName:object: and postNotificationName:object:userInfo: allow you to conveniently
  * post a notification without creating it first.
+ *
+ * @attribution
+ * https://developer.apple.com/documentation/foundation/nsnotification
  */
 export default class Notification {
   /**
@@ -18,8 +19,8 @@ export default class Notification {
    *
    * @constructor
    * @param {String} notificationName The name for the new notification. May not be nil.
-   * @param {object} anObject The object for the new notification.
-   * @param {object} context The user information dictionary for the new notification. May be nil.
+   * @param {Object} anObject The object for the new notification.
+   * @param {Object} context The user information dictionary for the new notification. May be nil.
    */
   constructor(notificationName, anObject, context) {
     this.name = notificationName;
