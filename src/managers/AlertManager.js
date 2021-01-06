@@ -125,8 +125,10 @@ AlertDialog.propTypes = {
   onDismiss: PropTypes.func.isRequired,
 };
 
-// -----------------------------------------------------------------------------
 
+/**
+ * Convenience facility for the presentation of informational dialogs
+ */
 class AlertManager extends React.PureComponent {
   constructor(props) {
     super(props);
