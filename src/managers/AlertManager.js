@@ -128,6 +128,8 @@ AlertDialog.propTypes = {
 
 /**
  * Convenience facility for the presentation of informational dialogs
+ *
+ * @public
  */
 class AlertManager extends React.PureComponent {
   constructor(props) {
