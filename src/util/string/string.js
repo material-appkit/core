@@ -50,13 +50,14 @@ export function rstrip(str, value) {
  * @returns {String} The given `string`, converted into title case
  */
 export function titleCase(str) {
-  if (typeof(string) !== 'string') {
+  if (typeof(str) !== 'string') {
     return null;
   }
 
-  const tcString = str.toLowerCase().replace(/ /g, '_').split('_');
-  for (let i = 0, n = str.length; i < n; i++) {
-    tcString[i] = tcString[i].charAt(0).toUpperCase() + tcString[i].slice(1);
+  const components = str.toLowerCase().replace(/ /g, '_').split('_');
+
+  for (let i = 0, n = components.length; i < n; i++) {
+    components[i] = components[i].charAt(0).toUpperCase() + components[i].slice(1);
   }
-  return tcString.join(' ');
+  return components.join(' ');
 }
