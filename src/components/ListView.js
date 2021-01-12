@@ -467,14 +467,12 @@ function ListView(props) {
    * @param item
    * Helper function to locate the index of the given item
    */
-  const findItemIndex = (item) => {
-    const sourceItemKey = keyForItem(item);
-    return renderedItems.findIndex((item) => {
-      const itemKey = keyForItem(item);
-      if (itemKey === sourceItemKey) {
-        return true;
-      }
-    });
+  const findItemIndex = (sourceItem) => {
+    const sourceItemKey = keyForItem(sourceItem);
+
+    return renderedItems.findIndex((targetItem) => (
+      keyForItem(targetItem) === sourceItemKey
+    ));
   };
 
 
@@ -813,6 +811,10 @@ function ListView(props) {
 
 
   const handleItemUpdate = (change) => {
+    if (!renderedItems) {
+      return;
+    }
+
     if (change.old && change.new === null) {
       removeItem(change.old);
     } else if (change.old === null && change.new) {
@@ -1144,4 +1146,4 @@ ListView.defaultProps = {
   windowedListItemHeight: 0,
 };
 
-export default React.memo(ListView);
+export default ListView;
