@@ -11,6 +11,47 @@ const DEFAULT_FETCH_OPTIONS = {
  * @public
  */
 export default class NativeServiceProxy extends AbstractServiceProxy {
+  static buildRequestInfo(method, endpoint, params, headers) {
+    let requestURL = this.buildRequestUrl(endpoint);
+
+    const fetchOptions = {
+      ...DEFAULT_FETCH_OPTIONS,
+      method,
+      headers,
+    };
+
+    let abortController = null;
+    if (window.AbortController) {
+      abortController = new AbortController();
+      fetchOptions.signal = abortController.signal;
+    }
+
+    if (params) {
+      let requestParams = params;
+
+      const paramType = typeof requestParams;
+      if (paramType === 'function') {
+        requestParams = requestParams();
+      }
+
+      if (method === 'GET') {
+        requestURL = `${requestURL}?${qs.stringify(params)}`;
+      } else {
+        if (requestParams instanceof FormData) {
+          fetchOptions.body = requestParams;
+        } else {
+          fetchOptions.body = JSON.stringify(requestParams);
+        }
+      }
+    }
+
+    return {
+      abortController,
+      url: requestURL,
+      options: fetchOptions,
+    };
+  }
+
   /**
    *
    * @param response
@@ -82,44 +123,9 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
    * @returns {{abortController: *, url: *, options: {method: *, headers: *}}}
    */
   requestInfo(method, endpoint, params, headers) {
-    let requestURL = this.constructor.buildRequestUrl(endpoint);
-
-    const fetchOptions = {
-      ...DEFAULT_FETCH_OPTIONS,
-      method,
-      headers,
-    };
-    
-    let abortController = null;
-    if (window.AbortController) {
-      abortController = new AbortController();
-      fetchOptions.signal = abortController.signal;
-    }
-
-    if (params) {
-      let requestParams = params;
-
-      const paramType = typeof requestParams;
-      if (paramType === 'function') {
-        requestParams = requestParams();
-      }
-
-      if (method === 'GET') {
-        requestURL = `${requestURL}?${qs.stringify(params)}`;
-      } else {
-        if (requestParams instanceof FormData) {
-          fetchOptions.body = requestParams;
-        } else {
-          fetchOptions.body = JSON.stringify(requestParams);
-        }
-      }
-    }
-
-    return {
-      abortController,
-      url: requestURL,
-      options: fetchOptions,
-    };
+    return this.constructor.buildRequestInfo(
+      method, endpoint, params, headers
+    );
   }
 
 
