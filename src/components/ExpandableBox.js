@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,6 +9,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const styles = makeStyles((theme) => ({
   header: {
+    alignItems: 'center',
     display: 'flex',
     justifyContent: 'space-between',
     marginBottom: theme.spacing(0.5),
@@ -43,7 +43,7 @@ function ExpandableBox(props) {
 
   return (
     <div>
-      <Box component="header" className={classes.header}>
+      <header className={classes.header}>
         <Button
           classes={{
             root: classes.disclosureButton,
@@ -67,7 +67,7 @@ function ExpandableBox(props) {
             {props.valueLabel}
           </Typography>
         }
-      </Box>
+      </header>
 
       {expanded &&
         props.children
