@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 
-import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -29,7 +27,10 @@ function renderValue(value, fieldInfo) {
   const valueType = typeof(renderedValue);
   if (valueType === 'string' || valueType === 'number') {
     renderedValue = (
-      <Typography variant="inherit">
+      <Typography
+        variant="inherit"
+        noWrap={!fieldInfo.wrap}
+      >
         {renderedValue}
       </Typography>
     );
@@ -107,7 +108,7 @@ function PropertyListItem(props) {
   } else {
     const renderedValue = renderValue(value, fieldInfo);
     if (renderedValue) {
-      let PrimaryComponent = Box;
+      let PrimaryComponent = Fragment;
       const primaryComponentProps = {};
       if (fieldInfo.type === 'link' && value.path && props.LinkComponent) {
         PrimaryComponent = Link;
@@ -146,15 +147,11 @@ function PropertyListItem(props) {
   return (
     <ListItem
       classes={{ root: classes.listItemRoot }}
+      disableGutters
       style={listItemStyle}
     >
       {labelComponent}
-
-      <ListItemText
-        classes={{ root: classes.listItemTextRoot }}
-        disableTypography
-        primary={listItemTextPrimary}
-      />
+      {listItemTextPrimary}
     </ListItem>
   );
 
@@ -175,18 +172,20 @@ PropertyListItem.propTypes = {
 };
 
 // -----------------------------------------------------------------------------
-const metadataStyles = makeStyles(
-  (theme) => theme.propertyList
-);
+const propertyListStyles = makeStyles({
+  list: {
+    width: '100%',
+  }
+});
 
 
 function PropertyList(props) {
-  const classes = metadataStyles();
+  const classes = propertyListStyles();
 
   const { arrangement, ...propertyListItemProps } = props;
 
   return (
-    <List className={classes.root}>
+    <List disablePadding className={classes.list}>
       {arrangement.map((arrangementItem) => {
         let fieldInfo = arrangementItem;
         if (typeof(fieldInfo) === 'string') {
