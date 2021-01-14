@@ -19,8 +19,25 @@ class ServiceAgent {
     }
   }
 
+
+  /**
+   *
+   * @returns {NativeServiceProxy}
+   * @private
+   */
   static _createProxy() {
     return new this.ServiceProxyClass();
+  }
+
+
+  /**
+   *
+   * @param requestContext
+   */
+  static abortRequest(requestContext) {
+    if (requestContext && requestContext.abortController) {
+      requestContext.abortController.abort();
+    }
   }
 
   /**

@@ -7,7 +7,6 @@ import { CSSTransition } from 'react-transition-group';
 
 import Fade from '@material-ui/core/Fade';
 import { makeStyles } from '@material-ui/core/styles';
-import { isWidthUp } from '@material-ui/core/withWidth';
 
 import { pluck } from '../util/set';
 
