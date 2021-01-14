@@ -172,20 +172,11 @@ PropertyListItem.propTypes = {
 };
 
 // -----------------------------------------------------------------------------
-const propertyListStyles = makeStyles({
-  list: {
-    width: '100%',
-  }
-});
-
-
 function PropertyList(props) {
-  const classes = propertyListStyles();
-
   const { arrangement, ...propertyListItemProps } = props;
 
   return (
-    <List disablePadding className={classes.list}>
+    <List disablePadding>
       {arrangement.map((arrangementItem) => {
         let fieldInfo = arrangementItem;
         if (typeof(fieldInfo) === 'string') {
