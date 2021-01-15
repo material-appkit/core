@@ -171,12 +171,18 @@ PropertyListItem.propTypes = {
   representedObject: PropTypes.object.isRequired,
 };
 
-// -----------------------------------------------------------------------------
+
+const propertyListStyles = makeStyles((theme) => ({
+  list: theme.propertyList.root,
+}));
+
 function PropertyList(props) {
+  const classes = propertyListStyles();
+
   const { arrangement, ...propertyListItemProps } = props;
 
   return (
-    <List disablePadding>
+    <List disablePadding className={classes.list}>
       {arrangement.map((arrangementItem) => {
         let fieldInfo = arrangementItem;
         if (typeof(fieldInfo) === 'string') {
