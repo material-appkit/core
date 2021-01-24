@@ -2,11 +2,6 @@ import qs from 'query-string';
 
 import AbstractServiceProxy from './AbstractServiceProxy';
 
-const DEFAULT_FETCH_OPTIONS = {
-  mode: 'cors',
-  credentials: 'same-origin',
-};
-
 /**
  * @public
  */
@@ -15,7 +10,8 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     let requestURL = this.buildRequestUrl(endpoint);
 
     const fetchOptions = {
-      ...DEFAULT_FETCH_OPTIONS,
+      mode: 'cors',
+      credentials: this.credentials || 'same-origin',
       method,
       headers,
     };
