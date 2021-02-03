@@ -53,8 +53,8 @@ class StorageManager {
    *
    * @param key
    */
-  static getCookie(key) {
-    return Cookies.get(key);
+  static getCookie(key, options) {
+    return Cookies.get(key, options);
   }
 
 
