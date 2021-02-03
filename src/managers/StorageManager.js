@@ -62,18 +62,20 @@ class StorageManager {
    *
    * @param key
    * @param value
+   * @param options
    */
-  static setCookie(key, value) {
-    Cookies.set(key, value);
+  static setCookie(key, value, options) {
+    Cookies.set(key, value, options);
   }
 
 
   /**
    *
    * @param key
+   * @param options
    */
-  static removeCookie(key) {
-    return Cookies.remove(key);
+  static removeCookie(key, options) {
+    return Cookies.remove(key, options);
   }
 }
 
