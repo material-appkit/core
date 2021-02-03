@@ -88,7 +88,7 @@ function Select(props) {
   useEffect(() => {
     if (value) {
       const option = activeOptions.find((option) => option[valueKey] === value);
-      setSelectedOption(option);
+      setSelectedOption(option || null);
     } else {
       setSelectedOption(null);
     }
@@ -136,6 +136,7 @@ function Select(props) {
       </TextField>
     )
   }
+
 
   return (
     <Autocomplete
