@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie';
 import { storageOfType } from '../util/storage';
 
 /**
@@ -45,6 +46,34 @@ class StorageManager {
       return;
     }
     storage.removeItem(key);
+  }
+
+
+  /**
+   *
+   * @param key
+   */
+  static getCookie(key) {
+    return Cookies.get(key);
+  }
+
+
+  /**
+   *
+   * @param key
+   * @param value
+   */
+  static setCookie(key, value) {
+    Cookies.set(key, value);
+  }
+
+
+  /**
+   *
+   * @param key
+   */
+  static removeCookie(key) {
+    return Cookies.remove(key);
   }
 }
 

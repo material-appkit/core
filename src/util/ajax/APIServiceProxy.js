@@ -1,7 +1,6 @@
 import StorageManager from '../../managers/StorageManager';
 
 import NativeServiceProxy from './NativeServiceProxy';
-import { getCookie } from '../cookie';
 
 const DEFAULT_REQUEST_HEADERS = {
   'Accept': 'application/json',
@@ -106,7 +105,7 @@ export default class APIServiceProxy extends NativeServiceProxy {
       requestHeaders.Authorization = `Bearer ${accessToken}`;
     }
 
-    const csrfToken = getCookie('csrftoken');
+    const csrfToken = StorageManager.getCookie('csrftoken');
     if (csrfToken) {
       requestHeaders['X-CSRFToken'] = csrfToken;
     }
