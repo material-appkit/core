@@ -46,7 +46,7 @@ function AttributedTextField(props) {
   }, [value]);
 
 
-  const searchTermChangeHandlerRef = useRef(
+  const delayedChangeHandlerRef = useRef(
     debounce((v) => {
       onChange(v);
     }, onChangeDelay, { leading: false, trailing: true })
@@ -63,7 +63,7 @@ function AttributedTextField(props) {
     if (immediate || !onChangeDelay) {
       onChange(updatedValue);
     } else {
-      searchTermChangeHandlerRef.current(updatedValue);
+      delayedChangeHandlerRef.current(updatedValue);
     }
   };
 
