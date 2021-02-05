@@ -41,7 +41,7 @@ function AttributedTextField(props) {
 
   useEffect(() => {
     if (value !== fieldValue) {
-      updateFieldValue(value);
+      updateFieldValue(value, true);
     }
   }, [value]);
 
@@ -53,17 +53,17 @@ function AttributedTextField(props) {
   );
 
 
-  const updateFieldValue = (v, e) => {
+  const updateFieldValue = (v, immediate) => {
     let updatedValue = v;
     if (valueTransformer) {
       updatedValue = valueTransformer(updatedValue);
     }
 
     setFieldValue(updatedValue);
-    if (onChangeDelay) {
-      searchTermChangeHandlerRef.current(updatedValue);
+    if (immediate || !onChangeDelay) {
+      onChange(updatedValue);
     } else {
-      onChange(updatedValue, e);
+      searchTermChangeHandlerRef.current(updatedValue);
     }
   };
 
@@ -102,7 +102,7 @@ function AttributedTextField(props) {
       <InputAdornment position="end">
         <IconButton
           edge="end"
-          onClick={() => updateFieldValue('')}
+          onClick={(e) => updateFieldValue('', true)}
           size="small"
         >
         <CancelIcon fontSize="small" />
@@ -115,7 +115,7 @@ function AttributedTextField(props) {
     <MuiTextField
       InputProps={FinalInputProps}
       InputLabelProps={FinalInputLabelProps}
-      onChange={(e) => updateFieldValue(e.target.value, e)}
+      onChange={(e) => updateFieldValue(e.target.value)}
       value={fieldValue}
       variant={derivedVariant}
       {...textFieldProps}
