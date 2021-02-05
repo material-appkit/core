@@ -40,8 +40,12 @@ function AttributedTextField(props) {
 
 
   useEffect(() => {
-    if (value !== fieldValue) {
-      updateFieldValue(value, true);
+    let appliedValue = value;
+    if (valueTransformer) {
+      appliedValue = valueTransformer(appliedValue);
+    }
+    if (appliedValue !== fieldValue) {
+      setFieldValue(appliedValue);
     }
   }, [value]);
 
