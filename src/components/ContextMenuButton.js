@@ -22,7 +22,7 @@ function ContextMenuButton(props) {
       <IconButton
         aria-owns={menuIsOpen ? 'context-menu' : undefined}
         aria-haspopup="true"
-        onClick={(e) => { setMenuIsOpen(true); }}
+        onClick={(e) => setMenuIsOpen(true)}
         ref={menuAnchorRef}
         {...props.buttonProps}
       >

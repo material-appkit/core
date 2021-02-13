@@ -27,7 +27,6 @@ function ContextMenu(props) {
   const {
     dense,
     menuItemArrangement,
-    menuItemProps,
     ...menuProps
   } = props;
 
@@ -48,7 +47,6 @@ function ContextMenu(props) {
           dense,
           disabled: menuItemInfo.disabled,
           onClick: (e) => { handleMenuItemClick(e, menuItemInfo); },
-          ref: menuItemInfo.ref,
         };
 
         if (menuItemInfo.href) {
