@@ -738,6 +738,7 @@ function ListView(props) {
     onConfig( {
       extendSelection,
       updateItem: handleItemUpdate,
+      renderedItems,
       selection,
       selectionDisabled,
     })
