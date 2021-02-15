@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -29,6 +31,8 @@ const styles = makeStyles((theme) => ({
 
 
 function TabView(props) {
+  const classes = styles();
+
   const {
     location,
     onTabConfig,
@@ -87,7 +91,24 @@ function TabView(props) {
     }
   };
 
-  const classes = styles();
+
+  let activeTab = null;
+  const activeTabContainerClassNames = [classes.activeTabContainer];
+  if (activeTabConfig) {
+    activeTab = (
+      <activeTabConfig.component
+        onConfig={handleTabConfig}
+        onMount={handleTabMount}
+        onUpdate={onUpdate}
+        mountPath={activeTabConfig.path}
+        containerRef={activeTabViewRef}
+        {...(activeTabConfig.componentProps || {})}
+        {...rest}
+      />
+    );
+
+    activeTabContainerClassNames.push(activeTabConfig.containerClassName);
+  }
 
   return (
     <div className={classes.container}>
@@ -112,18 +133,8 @@ function TabView(props) {
         </Tabs>
       }
 
-      <div className={classes.activeTabContainer} ref={activeTabViewRef}>
-        {activeTabConfig &&
-          <activeTabConfig.component
-            onConfig={handleTabConfig}
-            onMount={handleTabMount}
-            onUpdate={onUpdate}
-            mountPath={activeTabConfig.path}
-            containerRef={activeTabViewRef}
-            {...(activeTabConfig.componentProps || {})}
-            {...rest}
-          />
-        }
+      <div className={clsx(activeTabContainerClassNames)} ref={activeTabViewRef}>
+        {activeTab}
       </div>
     </div>
   );
