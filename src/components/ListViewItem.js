@@ -164,15 +164,15 @@ function ListViewItem(props) {
     if (secondaryActionControl) {
       secondaryListItemActionContent = secondaryActionControl;
     } else {
-      let actionMenuItemArrangement = contextMenuItemArrangement;
-      if (typeof(actionMenuItemArrangement) === 'function') {
-        actionMenuItemArrangement = actionMenuItemArrangement(item);
+      let menuItemArrangement = contextMenuItemArrangement;
+      if (typeof(menuItemArrangement) === 'function') {
+        menuItemArrangement = menuItemArrangement(item);
       }
       secondaryListItemActionContent = (
         <ContextMenuButton
           buttonProps={{ size: 'small' }}
           representedObject={item}
-          menuItemArrangement={actionMenuItemArrangement}
+          menuItemArrangement={menuItemArrangement}
         />
       );
     }
