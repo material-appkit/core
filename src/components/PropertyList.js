@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import PropTypes from 'prop-types';
 import React, { Fragment } from 'react';
 
@@ -179,10 +181,17 @@ const propertyListStyles = makeStyles((theme) => ({
 function PropertyList(props) {
   const classes = propertyListStyles();
 
-  const { arrangement, ...propertyListItemProps } = props;
+  const {
+    arrangement,
+    className,
+    ...propertyListItemProps,
+  } = props;
 
   return (
-    <List disablePadding className={classes.list}>
+    <List
+      disablePadding
+      className={clsx(classes.list, className)}
+    >
       {arrangement.map((arrangementItem) => {
         let fieldInfo = arrangementItem;
         if (typeof(fieldInfo) === 'string') {
@@ -209,6 +218,7 @@ function PropertyList(props) {
 
 PropertyList.propTypes = {
   arrangement: PropTypes.array.isRequired,
+  className: PropTypes.string,
   fontSize: PropTypes.number,
   listItemPadding: PropTypes.number,
   minLabelWidth: PropTypes.number,
