@@ -36,7 +36,7 @@ const styles = makeStyles((theme) => ({
 
   listItemSecondaryActionTop: {
     top: 0,
-    transform: 'translateY(50%)',
+    transform: `translateY(${theme.spacing(1)}px)`,
   },
 }));
 
@@ -164,11 +164,15 @@ function ListViewItem(props) {
     if (secondaryActionControl) {
       secondaryListItemActionContent = secondaryActionControl;
     } else {
+      let actionMenuItemArrangement = contextMenuItemArrangement;
+      if (typeof(actionMenuItemArrangement) === 'function') {
+        actionMenuItemArrangement = actionMenuItemArrangement(item);
+      }
       secondaryListItemActionContent = (
         <ContextMenuButton
           buttonProps={{ size: 'small' }}
           representedObject={item}
-          menuItemArrangement={contextMenuItemArrangement(item)}
+          menuItemArrangement={actionMenuItemArrangement}
         />
       );
     }
@@ -201,7 +205,7 @@ ListViewItem.propTypes = {
   children: PropTypes.node,
   secondaryActionControl: PropTypes.element,
   secondaryActionPlacement: PropTypes.string,
-  contextMenuItemArrangement: PropTypes.func,
+  contextMenuItemArrangement: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
   item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
