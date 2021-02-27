@@ -1,9 +1,3 @@
-/**
-*
-* ListViewItem
-*
-*/
-
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
@@ -27,14 +21,11 @@ const styles = makeStyles((theme) => ({
   },
 
   secondaryAction: {
-    paddingRight: 36,
-  },
-
-  listItemSecondaryAction: {
-    right: 6,
+    paddingRight: theme.spacing(2),
   },
 
   listItemSecondaryActionTop: {
+    right: 6,
     top: 0,
     transform: `translateY(${theme.spacing(1)}px)`,
   },
@@ -156,7 +147,7 @@ function ListViewItem(props) {
   let secondaryListItemAction = null;
   if (secondaryActionControl || contextMenuItemArrangement) {
     let secondaryListItemActionContent = null;
-    const secondaryListItemClasses = [classes.listItemSecondaryAction];
+    const secondaryListItemClasses = [];
     if (secondaryActionPlacement === 'top') {
       secondaryListItemClasses.push(classes.listItemSecondaryActionTop);
     }
