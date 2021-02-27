@@ -212,7 +212,7 @@ function SelectionControl(props) {
         <Button
           className={classes.menuButton}
           disabled={selectionDisabled}
-          onClick={(e) => { setSelectMenuEl(e.currentTarget); }}
+          onClick={(e) => setSelectMenuEl(e.currentTarget)}
           size="small"
         >
           <ArrowDropDownIcon />
@@ -223,12 +223,12 @@ function SelectionControl(props) {
         anchorEl={selectMenuEl}
         id="selection-menu"
         open={Boolean(selectMenuEl)}
-        onClose={() => { handleSelectionMenuDismiss(null); }}
+        onClose={() => handleSelectionMenuDismiss(null)}
       >
-        <MenuItem onClick={() => { handleSelectionMenuDismiss('all'); }}>
+        <MenuItem onClick={() => handleSelectionMenuDismiss('all')}>
           Select All
         </MenuItem>
-        <MenuItem onClick={() => { handleSelectionMenuDismiss('none'); }}>
+        <MenuItem onClick={() => handleSelectionMenuDismiss('none')}>
           Deselect All
         </MenuItem>
       </Menu>
@@ -1140,7 +1140,7 @@ ListView.defaultProps = {
 
   selectionDisabled: false,
   selectionMenu: false,
-  selectOnClick: true,
+  selectOnClick: false,
   subsetParamName: 'subset',
   tileViewProps: {},
   windowed: false,
