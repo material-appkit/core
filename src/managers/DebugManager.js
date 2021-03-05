@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 
 /**
@@ -50,7 +50,14 @@ class DebugManager extends React.PureComponent {
       >
         <header className={classes.header}>
           <IconButton
-            className={classes.closeButton}
+            edge="end"
+            onClick={() => this.textFieldRef.current.value = ''}
+            size="small"
+          >
+            <DeleteIcon />
+          </IconButton>
+
+          <IconButton
             edge="end"
             onClick={() => DebugManager.hide()}
             size="small"
@@ -97,7 +104,9 @@ export default withStyles((theme) => ({
   },
 
   header: {
-    display: 'flex',
+    display: 'grid',
+    gridAutoFlow: 'column',
+    gridGap: theme.spacing(1),
     justifyContent: 'flex-end',
     padding: theme.spacing(0.5, 0),
   },
