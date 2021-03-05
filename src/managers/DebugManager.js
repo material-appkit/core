@@ -20,6 +20,7 @@ class DebugManager extends React.PureComponent {
 
     DebugManager.__instance = this;
     this.viewRef = React.createRef();
+    this.textFieldRef = React.createRef();
   }
 
   static show() {
@@ -32,14 +33,11 @@ class DebugManager extends React.PureComponent {
     view.style.display = 'none';
   }
 
-  static log(messageInfo) {
-    DebugManager.__instance.__log(messageInfo);
+  static log(message) {
+    const textField = DebugManager.__instance.textFieldRef.current;
+    textField.value += `${message}\n`;
+    textField.scrollTo(0, 1e10);
   }
-
-
-  __log = (messageInfo) => {
-    console.log(messageInfo);
-  };
 
 
   render() {
@@ -61,19 +59,19 @@ class DebugManager extends React.PureComponent {
           </IconButton>
         </header>
 
-        <Box height="100%" flex={1}>
-          <TextField
-            className={classes.textField}
-            InputProps={{
-              classes: {
-                root: classes.textArea,
-              }
-            }}
-            fullWidth
-            multiline
-            variant="outlined"
-          />
-        </Box>
+        <TextField
+          className={classes.textField}
+          InputProps={{
+            classes: {
+              multiline: classes.textArea,
+            }
+          }}
+          inputRef={this.textFieldRef}
+          fullWidth
+          multiline
+          rows={6}
+          variant="outlined"
+        />
       </div>
     );
   }
@@ -88,16 +86,14 @@ DebugManager.propTypes = {
 export default withStyles((theme) => ({
   view: {
     backgroundColor: theme.palette.grey[50],
-    display: 'flex',
-    flexDirection: 'column',
     padding: theme.spacing(0, 2, 2, 2),
 
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 200,
     display: 'none',
+    zIndex: 2000,
   },
 
   header: {
@@ -113,7 +109,8 @@ export default withStyles((theme) => ({
 
   textArea: {
     alignItems: 'flex-start',
-    height: '100%',
+    fontSize: theme.typography.pxToRem(12),
+    padding: theme.spacing(1),
   },
 
 
