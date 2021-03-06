@@ -86,6 +86,10 @@ function Select(props) {
 
 
   useEffect(() => {
+    if (value === undefined) {
+      return;
+    }
+
     if (value) {
       const option = activeOptions.find((option) => option[valueKey] === value);
       setSelectedOption(option || null);
@@ -96,19 +100,30 @@ function Select(props) {
 
 
   const handleNativeSelectChange = (e) => {
-    if (!onChange) {
-      return;
+    const option = activeOptions.find(
+      (o) => `${o[valueKey]}` === e.target.value
+    );
+
+    if (value === undefined) {
+      // If uncontrolled, it is safe to the selected option directly
+      setSelectedOption(option);
     }
 
-    onChange(activeOptions.find((o) => `${o[valueKey]}` === e.target.value));
+    if (onChange) {
+      onChange(option);
+    }
   };
 
 
   const handleAutocompleteChange = (e, newValue) => {
-    if (!props.onChange) {
-      return;
+    if (value === undefined) {
+      // If uncontrolled, it is safe to the selected option directly
+      setSelectedOption(newValue);
     }
-    props.onChange(newValue);
+
+    if (onChange) {
+      onChange(newValue);
+    }
   };
 
 
