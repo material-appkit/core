@@ -281,6 +281,7 @@ function ListView(props) {
     onPageChange,
     onPageSizeChange,
     onToolbarChange,
+    orderable,
     orderingParamName,
     paginated,
     paginationControlProps,
@@ -706,7 +707,7 @@ function ListView(props) {
 
 
   useEffect(() => {
-    if (!filterMetadata) {
+    if (!(orderable && filterMetadata)) {
       return;
     }
 
@@ -724,7 +725,7 @@ function ListView(props) {
         />
       )
     });
-  }, [filterMetadata, ordering]);
+  }, [filterMetadata, orderable, ordering]);
 
 
   /**
@@ -1091,6 +1092,7 @@ ListView.propTypes = {
   onSelectionChange: PropTypes.func,
   onToolbarChange: PropTypes.func,
 
+  orderable: PropTypes.bool,
   orderingParamName: PropTypes.string,
   paginated: PropTypes.bool,
   paginationListControlProps: PropTypes.object,
@@ -1128,6 +1130,7 @@ ListView.defaultProps = {
   itemIdKey: 'id',
   listItemSelectionControl: true,
   loadingVariant: 'linear',
+  orderable: true,
   orderingParamName: 'order',
   paginated: false,
   paginationControlProps: {
