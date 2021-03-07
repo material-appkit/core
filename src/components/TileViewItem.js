@@ -1,8 +1,4 @@
-/**
-*
-* TileViewItem
-*
-*/
+import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -31,28 +27,38 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
+
 function TileViewItem(props) {
   const {
+    className,
+    commitOnSelect,
+    secondaryActionPlacement,
+    contextMenuItemArrangement,
     item,
     onItemClick,
     onMount,
+    onUnmount,
     onSelectionChange,
     selected,
+    selectionControl,
+    selectionDisabled,
     selectionMode,
-    ...gridProps
+    selectOnClick,
+    secondaryActionControl,
+    ...rest
   } = props;
 
-  // const listTileProps = {};
-  //
-  // listTileProps.onClick = (e) => {
-  //   if (selectionMode && onSelectionChange) {
-  //     onSelectionChange(item);
-  //   }
-  //
-  //   if (onItemClick) {
-  //     onItemClick(item, e);
-  //   }
-  // };
+  const gridItemProps = { ...rest };
+
+  gridItemProps.onClick = (e) => {
+    if (selectionMode && onSelectionChange) {
+      onSelectionChange(item);
+    }
+
+    if (onItemClick) {
+      onItemClick(item, e);
+    }
+  };
 
   const classes = styles();
 
@@ -62,7 +68,11 @@ function TileViewItem(props) {
   }
 
   return (
-    <Grid item {...gridProps}>
+    <Grid
+      className={clsx(tileClasses)}
+      item
+      {...gridItemProps}
+    >
       {props.children}
 
       {selected &&
@@ -82,6 +92,7 @@ export const commonPropTypes = {
   onSelectionChange: PropTypes.func,
   selected: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
+  selectOnClick: PropTypes.bool,
 };
 
 TileViewItem.propTypes = commonPropTypes;

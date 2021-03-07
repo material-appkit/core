@@ -261,6 +261,7 @@ function ListView(props) {
 
   const {
     classes,
+    displayMode,
     filterMetadata,
     filterParams,
     filterParamTransformer,
@@ -430,7 +431,7 @@ function ListView(props) {
 
     const itemContext = listItemContextProvider ? listItemContextProvider(item) : {};
 
-    let selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
+    const selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
 
     return {
       contextMenuItemArrangement: itemContextMenuArrangement,
@@ -898,14 +899,16 @@ function ListView(props) {
     );
   };
 
-  const tileItemProps = (item, itemIndex, style, onMount) => {
-    return {
-      Component: tileItemComponentFunc ? tileItemComponentFunc(item) : tileItemComponent,
-      item,
-      key: keyForItem(item),
-      onMount,
-      style
-    };
+  const renderTileItem = (item, itemIndex, style, onMount) => {
+    const TileItemType = tileItemComponentFunc ? tileItemComponentFunc(item) : tileItemComponent;
+
+    return (
+      <TileItemType
+        onMount={onMount}
+        style={style}
+        {...itemProps(item)}
+      />
+    );
   };
 
 
@@ -974,7 +977,7 @@ function ListView(props) {
 
   let view = null;
 
-  if (props.displayMode === 'list') {
+  if (displayMode === 'list') {
     const listViewClassNames = [];
     if (loading) {
       listViewClassNames.push(classes.listViewLoading);
@@ -1032,16 +1035,15 @@ function ListView(props) {
     if (windowed) {
       console.log('TODO: Implement windowed grid view!');
     } else {
-      const dataSource = renderedItems.map(
-        (item, itemIndex) => tileItemProps(item, itemIndex)
-      );
-
       view = (
         <TileView
-          dataSource={dataSource}
           selectionDisabled={selectionDisabled}
           {...tileViewProps}
-        />
+        >
+          {renderedItems.map(
+            (item, itemIndex) => renderTileItem(item, itemIndex)
+          )}
+        </TileView>
       );
     }
   }
@@ -1115,6 +1117,7 @@ ListView.propTypes = {
 
   tileItemComponent: PropTypes.elementType,
   tileItemComponentFunc: PropTypes.func,
+  tileItemProps: PropTypes.object,
   tileViewProps: PropTypes.object,
 
   urlUpdateFunc: PropTypes.func,

@@ -65,6 +65,7 @@ function ListViewItem(props) {
     onMount,
     onUnmount,
     onSelectionChange,
+    selected,
     selectionControl,
     selectionDisabled,
     selectionMode,
@@ -178,7 +179,7 @@ function ListViewItem(props) {
     <ListItem {...listItemProps}>
       {SelectionComponent !== null &&
         <SelectionComponent
-          checked={props.selected}
+          checked={selected}
           className={classes.selectionControl}
           disableRipple
           edge="start"
