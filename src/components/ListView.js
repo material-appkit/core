@@ -1114,8 +1114,6 @@ ListView.propTypes = {
 
   tileItemComponent: PropTypes.elementType,
   tileItemComponentFunc: PropTypes.func,
-  tileItemProps: PropTypes.object,
-  tileViewProps: PropTypes.object,
 
   urlUpdateFunc: PropTypes.func,
 
@@ -1145,7 +1143,6 @@ ListView.defaultProps = {
   selectionMenu: false,
   selectOnClick: false,
   subsetParamName: 'subset',
-  tileViewProps: {},
   windowed: false,
   windowedListItemHeight: 0,
 };

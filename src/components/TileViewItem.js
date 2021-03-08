@@ -30,7 +30,6 @@ const styles = makeStyles((theme) => ({
 
 function TileViewItem(props) {
   const {
-    className,
     commitOnSelect,
     secondaryActionPlacement,
     contextMenuItemArrangement,
