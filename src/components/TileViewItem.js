@@ -45,10 +45,14 @@ function TileViewItem(props) {
     selectionMode,
     selectOnClick,
     secondaryActionControl,
+    sizes,
     ...rest
   } = props;
 
-  const gridItemProps = { ...rest };
+  const gridItemProps = {
+    ...sizes,
+    ...rest
+  };
 
   gridItemProps.onClick = (e) => {
     if (selectionMode && onSelectionChange) {
@@ -93,12 +97,14 @@ export const commonPropTypes = {
   selected: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectOnClick: PropTypes.bool,
+  sizes: PropTypes.object,
 };
 
 TileViewItem.propTypes = commonPropTypes;
 
 TileViewItem.defaultProps = {
   component: 'span',
+  sizes: { xs: 12, sm: 6, md: 4, lg: 3 },
 };
 
 export default TileViewItem;

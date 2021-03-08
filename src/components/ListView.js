@@ -23,6 +23,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
 import IconButton from '@material-ui/core/IconButton';
@@ -45,7 +46,6 @@ import { filterEmptyValues } from '../util/object';
 import { find as setFind } from '../util/set';
 
 import PaginationControl from './PaginationControl';
-import TileView from './TileView';
 import ToolbarItem from './ToolbarItem';
 
 //------------------------------------------------------------------------------
@@ -888,10 +888,10 @@ function ListView(props) {
    * @param onMount: Optional callback to be invoked when the list item mounts
    */
   const renderListItem = (item, itemIndex, style, onMount) => {
-    const ListItemType = listItemComponentFunc ? listItemComponentFunc(item) : listItemComponent;
+    const ListItemComponent = listItemComponentFunc ? listItemComponentFunc(item) : listItemComponent;
 
     return (
-      <ListItemType
+      <ListItemComponent
         onMount={onMount}
         style={style}
         {...itemProps(item)}
@@ -900,10 +900,10 @@ function ListView(props) {
   };
 
   const renderTileItem = (item, itemIndex, style, onMount) => {
-    const TileItemType = tileItemComponentFunc ? tileItemComponentFunc(item) : tileItemComponent;
+    const TileItemComponent = tileItemComponentFunc ? tileItemComponentFunc(item) : tileItemComponent;
 
     return (
-      <TileItemType
+      <TileItemComponent
         onMount={onMount}
         style={style}
         {...itemProps(item)}
@@ -1036,14 +1036,11 @@ function ListView(props) {
       console.log('TODO: Implement windowed grid view!');
     } else {
       view = (
-        <TileView
-          selectionDisabled={selectionDisabled}
-          {...tileViewProps}
-        >
+        <Grid container>
           {renderedItems.map(
             (item, itemIndex) => renderTileItem(item, itemIndex)
           )}
-        </TileView>
+        </Grid>
       );
     }
   }
