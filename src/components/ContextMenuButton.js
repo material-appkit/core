@@ -7,6 +7,14 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ContextMenu from './ContextMenu';
 
 function ContextMenuButton(props) {
+  const {
+    buttonProps,
+    dense,
+    Icon,
+    iconClassName,
+    menuItemArrangement,
+  } = props;
+
   const menuAnchorRef = useRef(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
@@ -24,14 +32,15 @@ function ContextMenuButton(props) {
         aria-haspopup="true"
         onClick={(e) => setMenuIsOpen(true)}
         ref={menuAnchorRef}
-        {...props.buttonProps}
+        {...buttonProps}
       >
-        <props.icon className={props.iconClassName} />
+        <Icon className={iconClassName} />
       </IconButton>
+
       <ContextMenu
         anchorEl={menuAnchorRef.current}
-        dense={props.dense}
-        menuItemArrangement={props.menuItemArrangement}
+        dense={dense}
+        menuItemArrangement={menuItemArrangement}
         id="context-menu"
         onClose={handleContextMenuClose}
         open={menuIsOpen}
@@ -43,7 +52,7 @@ function ContextMenuButton(props) {
 ContextMenuButton.propTypes = {
   buttonProps: PropTypes.object,
   dense: PropTypes.bool,
-  icon: PropTypes.elementType,
+  Icon: PropTypes.elementType,
   iconClassName: PropTypes.string,
   menuItemArrangement: PropTypes.array.isRequired,
 };
@@ -51,7 +60,7 @@ ContextMenuButton.propTypes = {
 ContextMenuButton.defaultProps = {
   buttonProps: {},
   dense: false,
-  icon: MoreVertIcon,
+  Icon: MoreVertIcon,
 };
 
 export default React.memo(ContextMenuButton);
