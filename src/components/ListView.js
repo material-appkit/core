@@ -741,6 +741,7 @@ function ListView(props) {
       extendSelection,
       updateItem: handleItemUpdate,
       renderedItems,
+      setRenderedItems: handleSetRenderedItems,
       selection,
       selectionDisabled,
     })
@@ -826,6 +827,13 @@ function ListView(props) {
       updateItem(change.old, change.new);
     }
   };
+
+  const handleSetRenderedItems = (items) => {
+    setSelection(new Set());
+
+    setRenderedItems(items);
+  };
+
 
   // ---------------------------------------------------------------------------
   const fetchItems = (requestUrl, requestParams) => {
