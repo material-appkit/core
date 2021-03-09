@@ -42,40 +42,63 @@ const styles = makeStyles((theme) => ({
 }));
 
 function EditDialog(props) {
+  const classes = styles();
+
+  const {
+    apiDetailUrl,
+    canDelete,
+    commitOnEnter,
+    FormProps,
+    entityType,
+    labels,
+    onClose,
+    onDelete,
+    onError,
+    onLoad,
+    onSave,
+    persistedObject,
+    ...rest
+  } = props;
+
   const formRef = useRef(null);
   const [saving, setSaving] = useState(false);
+
+  let detailUrl = null;
+  if (persistedObject && persistedObject.url) {
+    detailUrl = persistedObject.url;
+  }
 
   let title = null;
   if (props.title) {
     title = props.title;
   } else {
-    title = props.entityType;
-    if (props.persistedObject || props.apiDetailUrl) {
-      title = `${props.labels.UPDATE} ${title}`;
+    title = entityType;
+    if (detailUrl) {
+      title = `${labels.UPDATE} ${title}`;
     } else {
-      title = `${props.labels.ADD} ${title}`;
+      title = `${labels.ADD} ${title}`;
     }
   }
 
-  const deleteRepresentedObject = async() => {
-    const { persistedObject } = props;
-    await ServiceAgent.delete(persistedObject.url);
 
-    if (props.onDelete) {
-      props.onDelete(persistedObject);
+  const deleteRepresentedObject = async() => {
+    await ServiceAgent.delete(detailUrl);
+
+    if (onDelete) {
+      onDelete(persistedObject);
     }
 
     dismiss();
   };
 
   const dismiss = () => {
-    props.onClose(this);
+    onClose(this);
   };
 
 
   const handleFormLoad = (representedObject, fieldInfoMap) => {
-    if (props.onLoad) {
-      props.onLoad(representedObject, fieldInfoMap);
+    if (onLoad) {
+      onLoad(representedObject, fieldInfoMap);
     }
   };
 
@@ -86,8 +109,8 @@ function EditDialog(props) {
   const handleFormSave = (representedObject, response) => {
     setSaving(false);
 
-    if (props.onSave) {
-      props.onSave(representedObject, response);
+    if (onSave) {
+      onSave(representedObject, response);
     }
 
     dismiss();
@@ -96,20 +119,20 @@ function EditDialog(props) {
   const handleFormError = (err) => {
     setSaving(false);
 
-    let errorMessage = props.labels.SAVE_FAIL_NOTIFICATION;
+    let errorMessage = labels.SAVE_FAIL_NOTIFICATION;
 
     const errors = err.response ? err.response.jsonData : {};
     Object.keys(errors).forEach((errorKey) => {
       const errorValue = errors[errorKey];
-      if (props.labels[errorValue]) {
-        errorMessage = props.labels[errorValue];
+      if (labels[errorValue]) {
+        errorMessage = labels[errorValue];
       }
     });
 
     SnackbarManager.error(errorMessage);
 
-    if (props.onError) {
-      props.onError(err);
+    if (onError) {
+      onError(err);
     }
   };
 
@@ -141,19 +164,10 @@ function EditDialog(props) {
   };
 
 
-  const {
-    commitOnEnter,
-    FormProps,
-    onSave,
-    ...rest
-  } = props;
-
-  const classes = styles();
-
   return (
     <Dialog
       classes={{ paper: classes.paper }}
-      onClose={() => { dismiss(); }}
+      onClose={() => dismiss()}
       onKeyDown={commitOnEnter ? handleKeyDown : null}
       open
     >
@@ -170,25 +184,26 @@ function EditDialog(props) {
           onWillSave={handleFormWillSave}
           onSave={handleFormSave}
           onError={handleFormError}
+          persistedObject={persistedObject}
           {...FormProps}
           {...rest}
         />
       </DialogContent>
 
       <DialogActions>
-        {(props.persistedObject && props.canDelete) &&
+        {(detailUrl && canDelete) &&
           <Button
             className={classes.deleteButton}
             onClick={handleDeleteButtonClick}
           >
-            {props.labels.DELETE}
+            {labels.DELETE}
           </Button>
         }
 
         <Spacer />
 
         <Button onClick={() => dismiss()}>
-          {props.labels.CANCEL}
+          {labels.CANCEL}
         </Button>
 
         <Button
@@ -196,7 +211,7 @@ function EditDialog(props) {
           disabled={saving}
           onClick={() => formRef.current.save()}
         >
-          {saving ? props.labels.SAVING : props.labels.SAVE}
+          {saving ? labels.SAVING : labels.SAVE}
         </Button>
       </DialogActions>
     </Dialog>
