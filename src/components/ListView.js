@@ -254,6 +254,10 @@ const listViewStyles = makeStyles((theme) => ({
     height: '100%',
     width: '100%',
   },
+
+  tileView: {
+    padding: theme.spacing(1),
+  }
 }));
 
 function ListView(props) {
@@ -1044,7 +1048,7 @@ function ListView(props) {
       console.log('TODO: Implement windowed grid view!');
     } else {
       view = (
-        <Grid container>
+        <Grid container className={styles.tileView}>
           {renderedItems.map(
             (item, itemIndex) => renderTileItem(item, itemIndex)
           )}
