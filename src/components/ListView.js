@@ -680,22 +680,18 @@ function ListView(props) {
       />
     );
 
-    if (paginated && paginationInfo) {
-      let pageLabel = null;
-      if (!selectionDisabled && selectionMode === 'multiple') {
-        pageLabel = `${selection.size} of ${paginationInfo.total} selected`;
-      }
-      updatedToolbarItems.paginationControl = (
-        <PaginationControl
-          count={paginationInfo.total}
-          page={(paginationInfo.current_page) - 1}
-          pageLabel={pageLabel}
-          pageSize={paginationInfo.per_page}
-          onPageChange={(value) => setPage(value + 1) }
-          onPageSizeChange={(value) => setPageSize(value) }
-          {...paginationControlProps}
-        />
-      );
+    const appliedPaginationControlProps = { ...paginationControlProps };
+
+    let totalCount = null;
+    if (paginationInfo) {
+      totalCount = paginationInfo.total;
+
+      Object.assign(appliedPaginationControlProps, {
+        page: paginationInfo.current_page - 1,
+        pageSize: paginationInfo.per_page,
+        onPageChange: (value) => setPage(value + 1),
+        onPageSizeChange: (value) => setPageSize(value),
+      });
 
       updatedToolbarItems.paginationListControl = (
         <Pagination
@@ -705,10 +701,21 @@ function ListView(props) {
           {...paginationListControlProps}
         />
       );
+    } else {
+      totalCount = renderedItems ? renderedItems.length : null;
     }
 
+    appliedPaginationControlProps.count = totalCount;
+    if (!selectionDisabled && selectionMode === 'multiple') {
+      appliedPaginationControlProps.pageLabel = `${selection.size} of ${totalCount} selected`;
+    }
+
+    updatedToolbarItems.paginationControl = (
+      <PaginationControl {...appliedPaginationControlProps} />
+    );
+
     updateToolbarItems(updatedToolbarItems);
-  }, [paginationInfo, selection, selectionDisabled]);
+  }, [paginationInfo, renderedItems, selection, selectionDisabled]);
 
 
   useEffect(() => {

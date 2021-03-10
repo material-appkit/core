@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -15,6 +15,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 const styles = makeStyles((theme) => ({
   label: {
     fontWeight: 400,
+    padding: theme.spacing(0, 2),
   },
 
   paginationButton: {
@@ -23,7 +24,7 @@ const styles = makeStyles((theme) => ({
 }));
 
 function PaginationControl(props) {
-  const [pageSizeAnchorEl, setPageSizeAnchorEl] = useState(null);
+  const classes = styles();
 
   const {
     count,
@@ -36,103 +37,116 @@ function PaginationControl(props) {
     typographyProps,
   } = props;
 
-  const offset = page * pageSize;
+  const [pageSizeAnchorEl, setPageSizeAnchorEl] = useState(null);
 
-  let hasMore = false;
-  if ((offset + pageSize) < count) {
-    hasMore = true;
-  }
 
-  const handlePageSizeButtonClick = (e) => {
+  const handlePageSizeButtonClick = useCallback((e) => {
     setPageSizeAnchorEl(e.currentTarget);
-  };
+  }, []);
 
-  const handlePageSizeMenuClose = () => {
+
+  const handlePageSizeMenuClose = useCallback(() => {
     setPageSizeAnchorEl(null);
-  };
+  }, []);
+
 
   const handlePageSizeMenuItemClick = (value) => {
     onPageSizeChange(value);
     handlePageSizeMenuClose();
   };
 
-  const classes = styles();
+
+  let previousPageButton = null;
+  let nextPageButton = null;
+
+  let labelText = null;
+  
+  if (count !== null) {
+    if (pageSize) {
+      const offset = page * pageSize;
+      labelText = `${offset + 1} - ${Math.min(offset + pageSize, count)} of ${count}`;
+
+      previousPageButton = (
+        <IconButton
+          className={classes.paginationButton}
+          disabled={page <= 0 }
+          onClick={() => onPageChange(page - 1)}
+        >
+          <ChevronLeftIcon />
+        </IconButton>
+      );
+
+      nextPageButton = (
+        <IconButton
+          className={classes.paginationButton}
+          disabled={!((offset + pageSize) < count)}
+          onClick={() => onPageChange(page + 1)}
+        >
+          <ChevronRightIcon />
+        </IconButton>
+      )
+    } else {
+      labelText = `${count} items`;
+    }
+  } else {
+    labelText = '---';
+  }
+
+  if (pageLabel) {
+    // An explicitly provided label takes precedence over all
+    labelText = pageLabel;
+  }
+
 
   let pageControl = null;
-  if (pageLabel) {
+  if (pageSize && pageSizeChoices && pageSizeChoices.length > 1) {
     pageControl = (
-      <Typography className={classes.label} {...typographyProps}>
-        {pageLabel}
-      </Typography>
+      <Fragment>
+        <Link
+          aria-controls="page-size-menu"
+          aria-haspopup="true"
+          onClick={handlePageSizeButtonClick}
+          component={Button}
+          {...typographyProps}
+        >
+          {labelText}
+        </Link>
+
+        <Menu
+          id="page-size-menu"
+          anchorEl={pageSizeAnchorEl}
+          keepMounted
+          open={Boolean(pageSizeAnchorEl)}
+          onClose={handlePageSizeMenuClose}
+        >
+          {pageSizeChoices.map((value) => (
+            <MenuItem
+              key={value}
+              onClick={() => handlePageSizeMenuItemClick(value)}
+              selected={value === pageSize}
+            >
+              {value}
+            </MenuItem>
+          ))}
+        </Menu>
+      </Fragment>
     );
   } else {
-
-    const labelText = count ? (
-      `${offset + 1} - ${Math.min(offset + pageSize, count)} of ${count}`
-    ) : (
-      'No Results'
+    pageControl = (
+      <Typography className={classes.label} {...typographyProps}>
+        {labelText}
+      </Typography>
     );
-
-    if (count && pageSizeChoices && pageSizeChoices.length > 1) {
-      pageControl = (
-        <Fragment>
-          <Link
-            aria-controls="page-size-menu"
-            aria-haspopup="true"
-            onClick={handlePageSizeButtonClick}
-            component={Button}
-            {...typographyProps}
-          >
-            {labelText}
-          </Link>
-
-          <Menu
-            id="page-size-menu"
-            anchorEl={pageSizeAnchorEl}
-            keepMounted
-            open={Boolean(pageSizeAnchorEl)}
-            onClose={handlePageSizeMenuClose}
-          >
-            {pageSizeChoices.map((value) => (
-              <MenuItem
-                key={value}
-                onClick={() => { handlePageSizeMenuItemClick(value); }}
-                selected={value === pageSize}
-              >
-                {value}
-              </MenuItem>
-            ))}
-          </Menu>
-        </Fragment>
-      );
-    } else {
-      pageControl = (
-        <Typography className={classes.label} {...typographyProps}>
-          {labelText}
-        </Typography>
-      );
-    }
   }
+
 
   return (
     <Box display="flex" alignItems="center">
-      <IconButton
-        className={classes.paginationButton}
-        disabled={page <= 0 }
-        onClick={() => { onPageChange(page - 1); }}
-      >
-        <ChevronLeftIcon />
-      </IconButton>
+      {previousPageButton}
 
       {pageControl}
 
-      <IconButton
-        className={classes.paginationButton}
-        disabled={!hasMore}
-        onClick={() => { onPageChange(page + 1); }}
-      >
-        <ChevronRightIcon />
-      </IconButton>
+      {nextPageButton}
     </Box>
   );
 }
