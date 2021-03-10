@@ -14,7 +14,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const styles = makeStyles((theme) => ({
   label: {
-    fontWeight: 400,
+    fontWeight: 500,
     padding: theme.spacing(0, 2),
   },
 
@@ -59,38 +59,36 @@ function PaginationControl(props) {
   let previousPageButton = null;
   let nextPageButton = null;
 
-  let labelText = null;
-  
-  if (count !== null) {
-    if (pageSize) {
-      const offset = page * pageSize;
+  let labelText = count !== null ? `${count} items` : '---';
+
+  if (pageSize) {
+    const offset = page * pageSize;
+
+    if (count) {
       labelText = `${offset + 1} - ${Math.min(offset + pageSize, count)} of ${count}`;
-
-      previousPageButton = (
-        <IconButton
-          className={classes.paginationButton}
-          disabled={page <= 0 }
-          onClick={() => onPageChange(page - 1)}
-        >
-          <ChevronLeftIcon />
-        </IconButton>
-      );
-
-      nextPageButton = (
-        <IconButton
-          className={classes.paginationButton}
-          disabled={!((offset + pageSize) < count)}
-          onClick={() => onPageChange(page + 1)}
-        >
-          <ChevronRightIcon />
-        </IconButton>
-      )
-    } else {
-      labelText = `${count} items`;
     }
-  } else {
-    labelText = '---';
+
+    previousPageButton = (
+      <IconButton
+        className={classes.paginationButton}
+        disabled={page <= 0 }
+        onClick={() => onPageChange(page - 1)}
+      >
+        <ChevronLeftIcon />
+      </IconButton>
+    );
+
+    nextPageButton = (
+      <IconButton
+        className={classes.paginationButton}
+        disabled={!((offset + pageSize) < count)}
+        onClick={() => onPageChange(page + 1)}
+      >
+        <ChevronRightIcon />
+      </IconButton>
+    )
   }
+
 
   if (pageLabel) {
     // An explicitly provided label takes precedence over all
