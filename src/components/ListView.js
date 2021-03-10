@@ -144,7 +144,11 @@ SortControl.propTypes = {
 //------------------------------------------------------------------------------
 const selectionControlStyles = makeStyles((theme) => ({
   button: {
-    padding: `${theme.spacing(0.5)}px ${theme.spacing(1)}px`,
+    padding: theme.spacing(1),
+  },
+
+  buttonGroupButton: {
+    padding: theme.spacing(0.5, 1),
   },
 
   menuButton: {
@@ -182,6 +186,7 @@ function SelectionControl(props) {
       <ToolbarItem
         control={(
           <IconButton
+            className={classes.button}
             color={selectionDisabled ? 'default' : 'primary' }
             onClick={props.onClick}
           >
@@ -199,7 +204,7 @@ function SelectionControl(props) {
         <Tooltip title={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}>
           <Button
             classes={{
-              root: classes.button,
+              root: classes.buttonGroupButton,
               outlined: selectionDisabled ? classes.disabled : classes.enabled,
             }}
             onClick={props.onClick}
@@ -706,7 +711,7 @@ function ListView(props) {
     }
 
     appliedPaginationControlProps.count = totalCount;
-    if (!selectionDisabled && selectionMode === 'multiple') {
+    if (!selectionDisabled && selectionMode) {
       appliedPaginationControlProps.pageLabel = `${selection.size} of ${totalCount} selected`;
     }
 
@@ -806,7 +811,7 @@ function ListView(props) {
     switch (action) {
       case 'all':
         const newSelection = new Set(selection);
-        renderedItems.forEach((item) => { newSelection.add(item); });
+        renderedItems.forEach((item) => newSelection.add(item));
         setSelection(newSelection);
         break;
       case 'none':
@@ -1158,7 +1163,7 @@ ListView.defaultProps = {
     variant: 'outlined',
   },
 
-  selectionDisabled: false,
+  selectionDisabled: true,
   selectionMenu: false,
   selectOnClick: false,
   subsetParamName: 'subset',
