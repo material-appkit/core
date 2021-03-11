@@ -18,9 +18,15 @@ const styles = makeStyles((theme) => ({
     padding: theme.spacing(0, 2),
   },
 
-  paginationButton: {
+  pageStepButton: {
     padding: theme.spacing(0.75),
-  }
+  },
+
+  pageSizeSelectButton: {
+    minWidth: 'unset',
+    paddingLeft: theme.spacing(0.5),
+    paddingRight: theme.spacing(0.5),
+  },
 }));
 
 function PaginationControl(props) {
@@ -70,7 +76,7 @@ function PaginationControl(props) {
 
     previousPageButton = (
       <IconButton
-        className={classes.paginationButton}
+        className={classes.pageStepButton}
         disabled={page <= 0 }
         onClick={() => onPageChange(page - 1)}
       >
@@ -80,7 +86,7 @@ function PaginationControl(props) {
 
     nextPageButton = (
       <IconButton
-        className={classes.paginationButton}
+        className={classes.pageStepButton}
         disabled={!((offset + pageSize) < count)}
         onClick={() => onPageChange(page + 1)}
       >
@@ -104,6 +110,7 @@ function PaginationControl(props) {
           aria-controls="page-size-menu"
           aria-haspopup="true"
           onClick={handlePageSizeButtonClick}
+          className={classes.pageSizeSelectButton}
           component={Button}
           {...typographyProps}
         >
