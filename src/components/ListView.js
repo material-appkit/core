@@ -271,6 +271,7 @@ function ListView(props) {
   const {
     classes,
     displayMode,
+    displaySelectionCount,
     filterMetadata,
     filterParams,
     filterParamTransformer,
@@ -306,10 +307,10 @@ function ListView(props) {
     subsetFilterArrangement,
     tileItemComponent,
     tileItemComponentFunc,
-    tileViewProps,
     windowed,
     windowedListItemHeight,
   } = props;
+
 
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
   const [renderedItems, setRenderedItems] = useState(null);
@@ -711,7 +712,7 @@ function ListView(props) {
     }
 
     appliedPaginationControlProps.count = totalCount;
-    if (!selectionDisabled && selectionMode) {
+    if (displaySelectionCount && !selectionDisabled && selectionMode && totalCount !== null) {
       appliedPaginationControlProps.pageLabel = `${selection.size} of ${totalCount} selected`;
     }
 
@@ -1077,6 +1078,7 @@ ListView.propTypes = {
   classes: PropTypes.object,
 
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
+  displaySelectionCount: PropTypes.bool,
 
   emptyListPlaceholder: PropTypes.element,
 
@@ -1147,6 +1149,7 @@ ListView.propTypes = {
 
 ListView.defaultProps = {
   classes: {},
+  displaySelectionCount: true,
   filterParams: {},
   items: null,
   itemIdKey: 'id',
