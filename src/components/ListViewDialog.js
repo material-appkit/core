@@ -86,27 +86,37 @@ function ListViewDialog(props) {
     listItemProps,
     searchFilterParam,
     selectionMode,
+    title,
     ...listViewProps
   } = props;
+  
 
   const [listViewConfig, setListViewConfig] = useState(null);
   const [listViewToolbarItems, setListViewToolbarItems] = useState(null);
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
-  const [appliedFilterParams, setAppliedFilterParams] = useState(filterParams);
+  const [appliedFilterParams, setAppliedFilterParams] = useState(null);
   const [dialogTitle, setDialogTitle] = useState(null);
 
   const dialogRef = useRef(null);
 
   useEffect(() => {
     if (listViewConfig) {
-      let title = typeof(props.title) === 'function' ? props.title() : props.title;
-      setDialogTitle(title);
+      let appliedTitle = typeof(title) === 'function' ? title() : title;
+      setDialogTitle(appliedTitle);
     } else {
       setDialogTitle('Loading...');
     }
   }, [listViewConfig]);
 
+
+  useEffect(() => {
+    if (filterParams) {
+      setAppliedFilterParams(filterParams);
+    } else {
+      setAppliedFilterParams({});
+    }
+  }, [filterParams]);
 
   //----------------------------------------------------------------------------
   const commit = () => {
@@ -217,6 +227,7 @@ function ListViewDialog(props) {
         <DialogContent className={classes.dialogContent}>
           <ListView
             {...listViewProps}
+            displaySelectionCount={false}
             filterParams={appliedFilterParams}
             listItemProps={{
               ...(listItemProps || {}),
@@ -232,7 +243,10 @@ function ListViewDialog(props) {
           />
         </DialogContent>
 
-        <DialogActions className={classes.dialogActions}>
+        <DialogActions
+          className={classes.dialogActions}
+          disableSpacing
+        >
           {apiCreateUrl &&
             <Button onClick={() => { setAddDialogIsOpen(true); }}>
               Create
