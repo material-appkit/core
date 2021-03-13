@@ -553,6 +553,13 @@ function ListView(props) {
       return;
     }
 
+    if (selection.has(source)) {
+      const newSelection = new Set(selection);
+      newSelection.delete(source);
+      newSelection.add(target);
+      setSelection(newSelection);
+    }
+
     const updatedItems = [...renderedItems];
     updatedItems[sourceItemIndex] = target;
     setRenderedItems(updatedItems);
