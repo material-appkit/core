@@ -2,11 +2,11 @@
 
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-Object.defineProperty(exports, "intersection", {
+Object.defineProperty(exports, "distance", {
   enumerable: true,
   get: function get() {
-    return _rect.intersection;
+    return _point.distance;
   },
 });
 
-const _rect = _interopRequireDefault(require("./rect"));
+const _point = _interopRequireDefault(require("./point"));
