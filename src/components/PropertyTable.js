@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Checkbox from '@material-ui/core/Checkbox';
@@ -34,7 +34,10 @@ const styles = makeStyles(
 
 
 function PropertyTable(props) {
+  const classes = styles();
+
   const {
+    data,
     inspectedObject,
     labelCellStyle,
     onRowClick,
@@ -43,41 +46,57 @@ function PropertyTable(props) {
     striped,
   } = props;
 
-  const keys = Object.keys(inspectedObject).sort(
-    (a, b) => a.toLowerCase().localeCompare(b.toLowerCase())
-  );
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    if (inspectedObject) {
+      const orderedKeys = Object.keys(inspectedObject).sort(
+        (a, b) => a.toLowerCase().localeCompare(b.toLowerCase())
+      );
+
+      setTableData(orderedKeys.map((key) => ({
+        key,
+        label: key,
+        value: renderValue(inspectedObject[key])
+      })));
+    }
+  }, [inspectedObject]);
 
 
-  const handleCheckboxClick = (key) => (e) => {
+  useEffect(() => {
+    if (Array.isArray(data)) {
+      setTableData(data);
+    }
+  }, [data]);
+
+
+  const handleCheckboxClick = useCallback((key) => (e) => {
     e.stopPropagation();
 
     if (onSelectionClick) {
       onSelectionClick(key, e.target.checked);
     }
-  };
-
-  const classes = styles();
+  }, [onSelectionClick]);
 
   return (
-    <Table>
+    <Table className={classes.table} padding="none">
       <TableBody>
-        {keys.map((key, index) => {
-          const rowClasses = [];
-          if (striped && index % 2) {
-            rowClasses.push(classes.rowOdd);
+        {tableData.map((rowInfo, index) => {
+          const { key, label, value } = rowInfo;
+
+          const rowClasses = [classes.row];
+          if (striped) {
+            rowClasses.push(index % 2 ? classes.rowOdd : classes.rowEven);
           }
 
           const rowProps = { key };
           if (onRowClick) {
-            rowProps.onClick = () => { onRowClick(key); };
+            rowProps.onClick = () => onRowClick(key);
             rowClasses.push(classes.rowInteractive);
           }
 
           return (
-            <TableRow
-              className={clsx(rowClasses)}
-              {...rowProps}
-            >
+            <TableRow className={clsx(rowClasses)} {...rowProps}>
               {selection &&
                 <TableCell className={clsx(classes.cell, classes.selectionCell)}>
                   <Checkbox
@@ -92,11 +111,11 @@ function PropertyTable(props) {
                 className={clsx(classes.cell, classes.labelCell)}
                 style={labelCellStyle}
               >
-                {key}
+                {label}
               </TableCell>
 
-              <TableCell className={classes.cell}>
-                {renderValue(inspectedObject[key])}
+              <TableCell className={clsx(classes.cell, classes.valueCell)}>
+                {value}
               </TableCell>
             </TableRow>
           );
@@ -107,10 +126,8 @@ function PropertyTable(props) {
 }
 
 PropertyTable.propTypes = {
-  inspectedObject: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.object,
-  ]).isRequired,
+  data: PropTypes.array,
+  inspectedObject: PropTypes.object,
   labelCellStyle: PropTypes.object,
   onRowClick: PropTypes.func,
   onSelectionClick: PropTypes.func,
