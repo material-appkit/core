@@ -146,7 +146,7 @@ TileViewItem.propTypes = commonPropTypes;
 
 TileViewItem.defaultProps = {
   component: 'span',
-  sizes: { xs: 12, sm: 6, md: 4, lg: 3 },
+  sizes: { xs: 12, sm: 6, md: 4, lg: 3, xl: 2 },
 };
 
 export default React.memo(TileViewItem);
