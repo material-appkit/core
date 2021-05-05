@@ -30,7 +30,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
         requestParams = requestParams();
       }
 
-      if (method === 'GET') {
+      if (method === 'GET' || method === 'OPTIONS') {
         requestURL = `${requestURL}?${qs.stringify(params)}`;
       } else {
         if (requestParams instanceof FormData) {
