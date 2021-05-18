@@ -20,10 +20,6 @@ const styles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
 
-  secondaryAction: {
-    paddingRight: theme.spacing(2),
-  },
-
   listItemSecondaryActionTop: {
     right: 6,
     top: 0,
@@ -88,10 +84,7 @@ function ListViewItem(props) {
 
 
   const listItemProps = {
-    classes: {
-      root: className,
-      secondaryAction: classes.secondaryAction,
-    },
+    className,
     ref: listItemRef,
     ...rest
   };
