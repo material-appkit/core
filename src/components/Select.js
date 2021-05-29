@@ -152,7 +152,6 @@ function Select(props) {
     )
   }
 
-
   return (
     <Autocomplete
       classes={autocompleteClasses}
@@ -163,14 +162,12 @@ function Select(props) {
       renderInput={(params) => {
         const { inputProps } = params;
         inputProps.placeholder = emptySelectionPlaceholder;
-
         return (
           <TextField
             {...params}
-            inputprops={inputProps}
-            label={placeholder}
-            SelectProps={SelectProps}
             {...textfieldProps}
+            inputProps={inputProps}
+            SelectProps={SelectProps}
           />
         );
       }}
