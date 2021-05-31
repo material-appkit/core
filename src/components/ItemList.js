@@ -160,7 +160,7 @@ function ItemListItem(props) {
         <ListItemIcon
           aria-label="Delete"
           classes={{ root: classes.removeIconRoot }}
-          onClick={() => { props.onRemove(item); }}
+          onClick={() => props.onRemove(item)}
         >
           <DeleteIcon />
         </ListItemIcon>
@@ -174,7 +174,7 @@ function ItemListItem(props) {
             aria-label="Edit"
             className={classes.editIconButton}
             edge="end"
-            onClick={() => { props.onEdit(item); }}
+            onClick={() => props.onEdit(item)}
           >
             <EditIcon />
           </IconButton>

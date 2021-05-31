@@ -45,7 +45,6 @@ function EditDialog(props) {
   const classes = styles();
 
   const {
-    apiDetailUrl,
     canDelete,
     commitOnEnter,
     FormProps,
@@ -63,7 +62,7 @@ function EditDialog(props) {
   const formRef = useRef(null);
   const [saving, setSaving] = useState(false);
 
-  let detailUrl = null;
+  let detailUrl = rest.apiDetailUrl;
   if (persistedObject && persistedObject.url) {
     detailUrl = persistedObject.url;
   }
@@ -162,7 +161,6 @@ function EditDialog(props) {
       formRef.current.save();
     }
   };
-
 
   return (
     <Dialog
