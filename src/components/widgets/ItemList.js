@@ -133,7 +133,7 @@ ItemListWidget.propTypes = {
   filterParams: PropTypes.object,
   itemKeyPath: PropTypes.string,
   listDialogProps: PropTypes.object,
-  listItemComponent: PropTypes.func,
+  listItemComponent: PropTypes.any,
   listItemProps: PropTypes.object,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,

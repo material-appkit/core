@@ -448,7 +448,7 @@ ItemList.propTypes = {
   ]),
   itemKeyPath: PropTypes.string,
   listDialogProps: PropTypes.object,
-  listItemComponent: PropTypes.func,
+  listItemComponent: PropTypes.any,
   listItemProps: PropTypes.object,
   onItemClick: PropTypes.func,
   onAdd: PropTypes.func,
