@@ -184,7 +184,7 @@ function PropertyList(props) {
   const {
     arrangement,
     className,
-    ...propertyListItemProps,
+    ...propertyListItemProps
   } = props;
 
   return (
