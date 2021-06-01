@@ -16,6 +16,9 @@ import HelpIcon from '@material-ui/icons/Help';
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
 
+import FormDialog from '../components/FormDialog';
+import { timestamp } from '../util/date';
+
 const TITLE_ICON_MAP = {
   'confirm': HelpIcon,
   'error': ErrorIcon,
@@ -136,59 +139,88 @@ class AlertManager extends React.PureComponent {
     super(props);
 
     this.state = {
-      queue: new Map()
+      alertQueue: new Map(),
+      promptQueue: new Map(),
     };
 
     AlertManager.__instance = this;
   }
 
-  static enqueueAlert(alertInfo, type) {
+  // ---------------------------------------------------------------------------
+
+  static prompt(promptInfo) {
+    AlertManager.__instance.__enqueuePrompt({
+      ...promptInfo,
+      key: timestamp(),
+    });
+  }
+
+  __enqueuePrompt = (promptInfo) => {
+    const updatedQueue = new Map(this.state.promptQueue);
+    updatedQueue.set(promptInfo.key, promptInfo);
+    this.setState({ promptQueue: updatedQueue });
+  };
+
+  handleFormDialogDismiss = (promptInfo) => (formData) => {
+    if (promptInfo) {
+      promptInfo.onDismiss(formData);
+    }
+
+    const updatedQueue = new Map(this.state.promptQueue);
+    updatedQueue.delete(promptInfo.key);
+    this.setState({ promptQueue: updatedQueue });
+  };
+
+  // ---------------------------------------------------------------------------
+
+  static _enqueueAlert(alertInfo, type) {
     AlertManager.__instance.__enqueueAlert({
       ...alertInfo,
       type,
-      key:new Date().getTime()
+      key: timestamp(),
     });
   }
 
   static info(alertInfo) {
-    this.enqueueAlert(alertInfo, 'info');
+    this._enqueueAlert(alertInfo, 'info');
   }
 
   static warn(alertInfo) {
-    this.enqueueAlert(alertInfo, 'warn');
+    this._enqueueAlert(alertInfo, 'warn');
   }
 
   static error(alertInfo) {
-    this.enqueueAlert(alertInfo, 'error');
+    this._enqueueAlert(alertInfo, 'error');
   }
 
   static confirm(alertInfo) {
-    this.enqueueAlert(alertInfo, 'confirm');
+    this._enqueueAlert(alertInfo, 'confirm');
   }
 
-  // ---------------------------------------------------------------------------
-
   __enqueueAlert = (alertInfo) => {
-    const updatedQueue = new Map(this.state.queue);
+    const updatedQueue = new Map(this.state.alertQueue);
     updatedQueue.set(alertInfo.key, alertInfo);
-    this.setState({ queue: updatedQueue });
+    this.setState({ alertQueue: updatedQueue });
   };
-
 
   handleAlertDialogDismiss = (value, alertInfo) => {
     if (typeof(alertInfo.onDismiss) === 'function') {
       alertInfo.onDismiss(value);
     }
 
-    const updatedQueue = new Map(this.state.queue);
+    const updatedQueue = new Map(this.state.alertQueue);
     updatedQueue.delete(alertInfo.key);
-    this.setState({ queue: updatedQueue });
+    this.setState({ alertQueue: updatedQueue });
   };
+
+  // ---------------------------------------------------------------------------
 
 
   render() {
+    const { alertQueue, promptQueue } = this.state;
+
     const dialogs = [];
-    this.state.queue.forEach((alertInfo) => {
+    alertQueue.forEach((alertInfo) => {
       dialogs.push(
         <AlertDialog
           alertInfo={alertInfo}
@@ -197,6 +229,18 @@ class AlertManager extends React.PureComponent {
         />
       );
     });
+
+    promptQueue.forEach((promptInfo) => {
+      const { key, fieldName, title } = promptInfo;
+      dialogs.push(
+        <FormDialog
+          key={key}
+          title={title}
+          fieldArrangement={[fieldName]}
+          onDismiss={this.handleFormDialogDismiss(promptInfo)}
+        />
+      );
+    })
 
     return dialogs;
   }
