@@ -66,4 +66,12 @@ Object.defineProperty(exports, "valueForKeyPath", {
 });
 
 
+Object.defineProperty(exports, "concat", {
+  enumerable: true,
+  get: function get() {
+    return _array.concat;
+  },
+});
+
+
 const _array = _interopRequireDefault(require("./array"));

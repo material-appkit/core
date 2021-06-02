@@ -78,3 +78,21 @@ export function valueForKeyPath(array, keyPath) {
     return objectValueForKeyPath(value, keyPath);
   })
 }
+
+/**
+ * @returns {*[]} Ordered concatenation of any arguments of type Array
+ */
+export function concat(/* arguments */) {
+  const result = [];
+
+  let insertionIndex = 0;
+  for (const arg of arguments) {
+    if (Array.isArray(arg)) {
+      result.splice(insertionIndex, 0, ...arg);
+      insertionIndex += arg.length;
+    }
+  }
+
+  return result;
+}
+
