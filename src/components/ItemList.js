@@ -1,9 +1,3 @@
-/**
-*
-* ItemList
-*
-*/
-
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
@@ -205,11 +199,16 @@ ItemListItem.defaultProps = {
 
 // -----------------------------------------------------------------------------
 class ItemList extends React.PureComponent {
-  state = {
-    editDialogOpen: false,
-    editingObject: null,
-    listDialogOpen: false,
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      editDialogOpen: false,
+      editingObject: null,
+      listDialogOpen: false,
+    };
+  }
+
 
   get attachUrl() {
     const { apiAttachSuffix, representedObject } = this.props;
@@ -231,6 +230,10 @@ class ItemList extends React.PureComponent {
 
   get items() {
     const { items, itemKeyPath } = this.props;
+    if (!items) {
+      return null;
+    }
+
     if (!itemKeyPath) {
       return items;
     }
@@ -353,58 +356,83 @@ class ItemList extends React.PureComponent {
   };
 
   render() {
-    const { classes, clickAction, mode } = this.props;
+    const {
+      apiCreateUrl,
+      apiListUrl,
+      className,
+      clickAction,
+      editDialogProps,
+      entityType,
+      filterParams,
+      itemComponent,
+      itemComponentProps,
+      itemKeyPath,
+      itemIcon,
+      itemListItemProps,
+      listDialogProps,
+      listItemComponent,
+      listItemProps,
+      mode,
+      onAdd,
+      searchFilterParam,
+      titleKey,
+    } = this.props;
+
+    const items = this.items;
+    if (!(items && items.length)) {
+      return null;
+    }
 
     return (
       <Fragment>
-        <List disablePadding className={this.props.className}>
-          {this.items.map((item) => (
+        <List disablePadding className={className}>
+          {items.map((item) => (
             <ItemListItem
               clickAction={clickAction}
-              component={this.props.itemComponent}
-              componentProps={this.props.itemComponentProps}
+              component={itemComponent}
+              componentProps={itemComponentProps}
               key={this.keyForItem(item)}
-              icon={this.props.itemIcon}
+              icon={itemIcon}
               item={item}
-              itemKeyPath={this.props.itemKeyPath}
-              listItemProps={this.props.itemListItemProps}
+              itemKeyPath={itemKeyPath}
+              listItemProps={itemListItemProps}
               mode={mode}
               onChange={this.handleItemChange}
               onClick={this.handleItemClick}
               onEdit={this.handleEditButtonClick}
               onRemove={this.handleRemoveButtonClick}
-              titleKey={this.props.titleKey}
+              titleKey={titleKey}
             />
           ))}
         </List>
 
         {mode === 'edit' &&
           <Fragment>
-            {this.props.onAdd &&
+            {onAdd &&
               <Button
                 color="primary"
                 onClick={this.handleAddButtonClick}
                 size="small"
                 startIcon={<AddIcon />}
               >
-                Add {this.props.entityType}
+                Add {entityType}
               </Button>
             }
 
-            {this.props.apiListUrl && this.state.listDialogOpen &&
+            {apiListUrl && this.state.listDialogOpen &&
               <ListViewDialog
-                apiCreateUrl={this.props.apiCreateUrl}
-                filterParams={this.props.filterParams}
+                apiCreateUrl={apiCreateUrl}
+                filterParams={filterParams}
                 displayMode="list"
-                editDialogProps={this.props.editDialogProps}
-                entityType={this.props.entityType}
-                listItemComponent={this.props.listItemComponent}
-                listItemProps={this.props.listItemProps}
+                editDialogProps={editDialogProps}
+                entityType={entityType}
+                listItemComponent={listItemComponent}
+                listItemProps={listItemProps}
                 onDismiss={this.handleListDialogDismiss}
-                searchFilterParam={this.props.searchFilterParam}
-                src={this.props.apiListUrl}
-                title={`Choose ${this.props.entityType}`}
-                {...this.props.listDialogProps}
+                searchFilterParam={searchFilterParam}
+                src={apiListUrl}
+                title={`Choose ${entityType}`}
+                {...listDialogProps}
               />
             }
           </Fragment>
@@ -412,12 +440,12 @@ class ItemList extends React.PureComponent {
 
         {this.state.editDialogOpen &&
           <this.props.EditDialogComponent
-            apiCreateUrl={this.props.apiCreateUrl}
+            apiCreateUrl={apiCreateUrl}
             apiDetailUrl={this.state.editingObject ? this.state.editingObject.url : null}
-            entityType={this.props.entityType}
+            entityType={entityType}
             onClose={this.handleEditDialogClose}
             onSave={this.handleItemChange}
-            {...this.props.editDialogProps}
+            {...editDialogProps}
           />
         }
       </Fragment>
@@ -441,7 +469,7 @@ ItemList.propTypes = {
   itemComponentProps: PropTypes.object,
   itemListItemProps: PropTypes.object,
   itemIcon: PropTypes.object,
-  items: PropTypes.array.isRequired,
+  items: PropTypes.array,
   itemIdKey: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
