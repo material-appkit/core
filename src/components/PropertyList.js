@@ -58,7 +58,7 @@ function PropertyListItem(props) {
     value = representedObject[fieldInfo.name];
   }
 
-  if ((Array.isArray(value) && !value.length) || !isValue(value)) {
+  if ((Array.isArray(value) && !value.length) || value === null) {
     value = fieldInfo.nullValue || null;
   }
 
