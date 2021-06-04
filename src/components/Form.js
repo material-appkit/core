@@ -11,7 +11,7 @@ import ModelSelectWidget from './widgets/ModelSelect';
 import RadioGroupWidget from './widgets/RadioGroup';
 
 import ServiceAgent from '../util/ServiceAgent';
-import { arrayToObject } from '../util/array';
+import { arrayToObject, valueForKeyPath } from '../util/array';
 import { reverse } from '../util/urls';
 import { fromRepresentation, toRepresentation } from './FormField';
 
@@ -20,6 +20,8 @@ export const getFieldNames = (metadata, fieldArrangement) => {
   if (!(metadata || fieldArrangement)) {
     throw new Error('Unable to determine form field names. You must supply field arrangement or a map of field metadata');
   }
+
+  const availableFieldNames = valueForKeyPath(metadata, 'key');
 
   if (fieldArrangement) {
     const fieldNames = [];
@@ -31,10 +33,14 @@ export const getFieldNames = (metadata, fieldArrangement) => {
         if (fieldInfoType === 'string') {
           // Exclude anything to do with form layout
           if (fieldInfo !== '---') {
-            fieldNames.push(fieldInfo);
+            if (availableFieldNames.indexOf(fieldInfo) !== -1) {
+              fieldNames.push(fieldInfo);
+            }
           }
         } else if (fieldInfoType === 'object') {
-          fieldNames.push(fieldInfo.name)
+          if (availableFieldNames.indexOf(fieldInfo.name) !== -1) {
+            fieldNames.push(fieldInfo.name);
+          }
         }
       }
     });
@@ -377,8 +383,18 @@ class Form extends React.PureComponent {
 
 
   render() {
-    if (this.state.loading || !this.state.referenceObject) {
+    const { loading, referenceObject, metadata } = this.state;
+    if (loading || !referenceObject) {
       return null;
+    }
+
+    let fieldArrangement = this.props.fieldArrangement;
+    if (metadata) {
+      const fieldNames = getFieldNames(metadata, fieldArrangement);
+      fieldArrangement = fieldArrangement.filter((fieldInfo) => {
+        const fieldName = (typeof(fieldInfo) === 'object') ? fieldInfo.name : fieldInfo;
+        return fieldNames.indexOf(fieldName) !== -1
+      });
     }
 
     return (
@@ -389,11 +405,11 @@ class Form extends React.PureComponent {
       >
         <this.props.FieldSetComponent
           errors={this.state.errors}
-          fieldArrangement={this.props.fieldArrangement}
+          fieldArrangement={fieldArrangement}
           form={this}
           onFieldChange={this.handleFormFieldChange}
-          metadata={this.state.metadata}
-          representedObject={this.state.referenceObject}
+          metadata={metadata}
+          representedObject={referenceObject}
         />
         {this.props.children}
       </form>
