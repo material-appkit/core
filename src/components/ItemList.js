@@ -379,7 +379,7 @@ class ItemList extends React.PureComponent {
     } = this.props;
 
     const items = this.items;
-    if (!(items && items.length)) {
+    if (!items) {
       return null;
     }
 
