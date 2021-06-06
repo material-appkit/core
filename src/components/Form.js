@@ -16,16 +16,12 @@ import { reverse } from '../util/urls';
 import { fromRepresentation, toRepresentation } from './FormField';
 
 //------------------------------------------------------------------------------
-export const getFieldNames = (metadata, fieldArrangement) => {
-  if (!(metadata || fieldArrangement)) {
-    throw new Error('Unable to determine form field names. You must supply field arrangement or a map of field metadata');
-  }
-
+export const getFieldNames = (metadata, fields) => {
   const availableFieldNames = valueForKeyPath(metadata, 'key');
 
-  if (fieldArrangement) {
+  if (fields) {
     const fieldNames = [];
-    fieldArrangement.forEach((fieldInfo) => {
+    fields.forEach((fieldInfo) => {
       if (Array.isArray(fieldInfo)) {
         fieldNames.push(...getFieldNames(metadata, fieldInfo));
       } else {
@@ -44,6 +40,7 @@ export const getFieldNames = (metadata, fieldArrangement) => {
         }
       }
     });
+
     return fieldNames;
   }
 
@@ -53,6 +50,24 @@ export const getFieldNames = (metadata, fieldArrangement) => {
     .filter((fieldInfo) => !fieldInfo.read_only)
     .map((fieldInfo) => fieldInfo.key);
 };
+
+export const getFieldArrangement = (metadata, fieldArrangement) => {
+  if (!(metadata || fieldArrangement)) {
+    throw new Error('Unable to determine field arrangement. You must supply field arrangement or a map of field metadata');
+  }
+
+  const fieldNames = getFieldNames(metadata, fieldArrangement);
+
+  if (!fieldArrangement) {
+    return fieldNames;
+  }
+
+  return fieldArrangement.filter((fieldInfo) => {
+    const fieldName = (typeof(fieldInfo) === 'object') ? fieldInfo.name : fieldInfo;
+    return fieldNames.indexOf(fieldName) !== -1
+  });
+}
+
 
 export const getFieldMetadataMap = (metadata) => {
   return metadata ? arrayToObject(metadata, 'key') : null;
@@ -388,15 +403,6 @@ class Form extends React.PureComponent {
       return null;
     }
 
-    let fieldArrangement = this.props.fieldArrangement;
-    if (metadata) {
-      const fieldNames = getFieldNames(metadata, fieldArrangement);
-      fieldArrangement = fieldArrangement.filter((fieldInfo) => {
-        const fieldName = (typeof(fieldInfo) === 'object') ? fieldInfo.name : fieldInfo;
-        return fieldNames.indexOf(fieldName) !== -1
-      });
-    }
-
     return (
       <form
         onSubmit={this.handleFormSubmit}
@@ -405,7 +411,7 @@ class Form extends React.PureComponent {
       >
         <this.props.FieldSetComponent
           errors={this.state.errors}
-          fieldArrangement={fieldArrangement}
+          fieldArrangement={getFieldArrangement(metadata, this.props.fieldArrangement)}
           form={this}
           onFieldChange={this.handleFormFieldChange}
           metadata={metadata}
