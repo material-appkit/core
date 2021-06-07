@@ -22,21 +22,19 @@ export const getFieldNames = (metadata, fields) => {
   if (fields) {
     const fieldNames = [];
     fields.forEach((fieldInfo) => {
-      if (Array.isArray(fieldInfo)) {
+      // Ignore anything to do with form layout
+      if (fieldInfo === '---') {
+        ;
+      }
+      else if (Array.isArray(fieldInfo)) {
         fieldNames.push(...getFieldNames(metadata, fieldInfo));
       } else {
-        const fieldInfoType = typeof(fieldInfo);
-        if (fieldInfoType === 'string') {
-          // Exclude anything to do with form layout
-          if (fieldInfo !== '---') {
-            if (availableFieldNames.indexOf(fieldInfo) !== -1) {
-              fieldNames.push(fieldInfo);
-            }
-          }
-        } else if (fieldInfoType === 'object') {
-          if (availableFieldNames.indexOf(fieldInfo.name) !== -1) {
-            fieldNames.push(fieldInfo.name);
-          }
+        let fieldName = fieldInfo;
+        if (typeof(fieldName) === 'object') {
+          fieldName = fieldName.name;
+        }
+        if (availableFieldNames.indexOf(fieldName) !== -1) {
+          fieldNames.push(fieldName);
         }
       }
     });
@@ -56,16 +54,31 @@ export const getFieldArrangement = (metadata, fieldArrangement) => {
     throw new Error('Unable to determine field arrangement. You must supply field arrangement or a map of field metadata');
   }
 
-  const fieldNames = getFieldNames(metadata, fieldArrangement);
+  const accessibleFieldNames = getFieldNames(metadata, fieldArrangement);
 
   if (!fieldArrangement) {
-    return fieldNames;
+    return accessibleFieldNames;
   }
 
-  return fieldArrangement.filter((fieldInfo) => {
-    const fieldName = (typeof(fieldInfo) === 'object') ? fieldInfo.name : fieldInfo;
-    return fieldNames.indexOf(fieldName) !== -1
+  const filteredFieldArrangement = [];
+  fieldArrangement.forEach((fieldInfo) => {
+    if (fieldInfo === '---') {
+      filteredFieldArrangement.push(fieldInfo);
+    } else if (Array.isArray(fieldInfo)) {
+      const accessibleSubfields = fieldInfo.filter((subFieldInfo) => {
+        const subfieldName = (typeof(subFieldInfo) === 'object') ? subFieldInfo.name : fieldInfo;
+        return accessibleFieldNames.indexOf(subfieldName) !== -1
+      });
+      filteredFieldArrangement.push(accessibleSubfields);
+    } else {
+      const fieldName = (typeof(fieldInfo) === 'object') ? fieldInfo.name : fieldInfo;
+      if(accessibleFieldNames.indexOf(fieldName) !== -1) {
+        filteredFieldArrangement.push(fieldInfo);
+      }
+    }
   });
+
+  return filteredFieldArrangement;
 }
 
 
