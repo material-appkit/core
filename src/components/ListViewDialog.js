@@ -1,12 +1,7 @@
-/**
-*
-* ListViewDialog
-*
-*/
-
 import PropTypes from 'prop-types';
 import React, {
   Fragment,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -36,7 +31,7 @@ const styles = makeStyles((theme) => ({
   filterFieldContainer: {
     backgroundColor: theme.palette.background.paper,
     borderBottom: `2px solid ${theme.palette.grey[200]}`,
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+    padding: theme.spacing(1, 2),
   },
 
   fullHeight: {
@@ -76,6 +71,8 @@ const styles = makeStyles((theme) => ({
 }));
 
 function ListViewDialog(props) {
+  const classes = styles();
+
   const {
     apiCreateUrl,
     commitOnSelect,
@@ -96,18 +93,11 @@ function ListViewDialog(props) {
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
-  const [dialogTitle, setDialogTitle] = useState(null);
+  const [dialogTitle, setDialogTitle] = useState(() => (
+    typeof(title) === 'function' ? title() : title
+  ));
 
   const dialogRef = useRef(null);
-
-  useEffect(() => {
-    if (listViewConfig) {
-      let appliedTitle = typeof(title) === 'function' ? title() : title;
-      setDialogTitle(appliedTitle);
-    } else {
-      setDialogTitle('Loading...');
-    }
-  }, [listViewConfig]);
 
 
   useEffect(() => {
@@ -140,12 +130,12 @@ function ListViewDialog(props) {
   };
 
   //----------------------------------------------------------------------------
-  const handleSearchFieldChange = (value) => {
+  const handleSearchFieldChange = useCallback((value) => {
     setAppliedFilterParams({
       ...appliedFilterParams,
       [searchFilterParam]: value
     });
-  };
+  }, []);
 
   //----------------------------------------------------------------------------
   const handleKeyDown = (e) => {
@@ -168,8 +158,6 @@ function ListViewDialog(props) {
   };
 
   //----------------------------------------------------------------------------
-  const classes = styles();
-
   return (
     <Fragment>
       <Dialog open
@@ -200,7 +188,7 @@ function ListViewDialog(props) {
 
           <LinearProgress
             className={classes.progressBar}
-            variant={loading ? 'indeterminate' : 'determinate' }
+            variant={loading ? 'indeterminate' : 'determinate'}
             value={0}
           />
 
@@ -211,6 +199,8 @@ function ListViewDialog(props) {
                 fullWidth
                 margin="dense"
                 onChange={handleSearchFieldChange}
+                onChangeDelay={500}
+                propagateChangeEvent={false}
                 StartIcon={SearchIcon}
                 variant="outlined"
               />
@@ -233,7 +223,10 @@ function ListViewDialog(props) {
               ...(listItemProps || {}),
               commitOnSelect: props.commitOnSelect,
             }}
+            loadingVariant="circular"
             onConfig={setListViewConfig}
+            onLoad={() => setLoading(true)}
+            onLoadComplete={() => setLoading(false)}
             onPageChange={handlePageChange}
             onSelectionChange={handleSelectionChange}
             onToolbarChange={setListViewToolbarItems}
