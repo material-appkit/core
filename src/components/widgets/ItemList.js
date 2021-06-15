@@ -112,6 +112,7 @@ class ItemListWidget extends React.PureComponent {
             }}
             listItemComponent={this.props.listItemComponent}
             listItemProps={this.props.listItemProps}
+            listItemsEditable={this.props.listItemsEditable}
             mode="edit"
             onAdd={this.handleItemListAdd}
             onRemove={this.handleItemListRemove}
@@ -135,6 +136,7 @@ ItemListWidget.propTypes = {
   listDialogProps: PropTypes.object,
   listItemComponent: PropTypes.any,
   listItemProps: PropTypes.object,
+  listItemsEditable: PropTypes.bool,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func,
@@ -149,6 +151,7 @@ ItemListWidget.defaultProps = {
   listDialogProps: {},
   listItemComponent: ListViewItem,
   listItemProps: {},
+  listItemsEditable: true,
 };
 
 export default withStyles((theme) => ({

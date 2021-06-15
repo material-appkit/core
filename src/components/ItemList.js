@@ -77,7 +77,7 @@ const itemListItemStyles = makeStyles((theme) => ({
 }));
 
 function ItemListItem(props) {
-  const { item, onChange } = props;
+  const { editable, item, onChange } = props;
   const classes = itemListItemStyles();
 
   let component = null;
@@ -135,7 +135,7 @@ function ItemListItem(props) {
     listItemClasses.push(classes.listItemWithIcon);
   }
 
-  if (props.mode === 'edit' && props.clickAction === 'edit') {
+  if (editable && props.mode === 'edit' && props.clickAction === 'edit') {
     listItemClasses.push(classes.listItemEditable);
   }
 
@@ -162,7 +162,7 @@ function ItemListItem(props) {
 
       {component}
 
-      {(props.mode === 'edit' && props.clickAction === 'edit') &&
+      {(editable && props.mode === 'edit' && props.clickAction === 'edit') &&
         <div>
           <IconButton
             aria-label="Edit"
@@ -182,6 +182,7 @@ ItemListItem.propTypes = {
   clickAction: PropTypes.string,
   component: PropTypes.func,
   componentProps: PropTypes.object,
+  editable: PropTypes.bool,
   icon: PropTypes.object,
   item: PropTypes.object.isRequired,
   listItemProps: PropTypes.object,
@@ -372,6 +373,7 @@ class ItemList extends React.PureComponent {
       listDialogProps,
       listItemComponent,
       listItemProps,
+      listItemsEditable,
       mode,
       onAdd,
       searchFilterParam,
@@ -391,6 +393,7 @@ class ItemList extends React.PureComponent {
               clickAction={clickAction}
               component={itemComponent}
               componentProps={itemComponentProps}
+              editable={listItemsEditable}
               key={this.keyForItem(item)}
               icon={itemIcon}
               item={item}
@@ -478,6 +481,7 @@ ItemList.propTypes = {
   listDialogProps: PropTypes.object,
   listItemComponent: PropTypes.any,
   listItemProps: PropTypes.object,
+  listItemsEditable: PropTypes.bool,
   onItemClick: PropTypes.func,
   onAdd: PropTypes.func,
   onRemove: PropTypes.func,
