@@ -1,7 +1,7 @@
 import debounce from 'lodash.debounce';
 
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -29,6 +29,7 @@ function AttributedTextField(props) {
     InputProps,
     onChange,
     onChangeDelay,
+    propagateChangeEvent,
     StartIcon,
     value,
     valueTransformer,
@@ -70,6 +71,14 @@ function AttributedTextField(props) {
       delayedChangeHandlerRef.current(updatedValue);
     }
   };
+
+  const handleFieldChange = useCallback((e) => {
+    if (!propagateChangeEvent) {
+      e.stopPropagation();
+    }
+
+    updateFieldValue(e.target.value);
+  }, []);
 
 
   const FinalInputProps = InputProps ? {...InputProps} : {};
@@ -119,7 +128,7 @@ function AttributedTextField(props) {
     <MuiTextField
       InputProps={FinalInputProps}
       InputLabelProps={FinalInputLabelProps}
-      onChange={(e) => updateFieldValue(e.target.value)}
+      onChange={handleFieldChange}
       value={fieldValue}
       variant={derivedVariant}
       {...textFieldProps}
@@ -131,6 +140,7 @@ AttributedTextField.propTypes = {
   clearable: PropTypes.bool,
   onTimeout: PropTypes.func,
   onChangeDelay: PropTypes.number,
+  propagateChangeEvent: PropTypes.bool,
   StartIcon: PropTypes.elementType,
   value: PropTypes.oneOfType([
     PropTypes.string,
@@ -143,6 +153,7 @@ AttributedTextField.propTypes = {
 AttributedTextField.defaultProps = {
   clearable: false,
   onChangeDelay: 0,
+  propagateChangeEvent: true,
   value: '',
   variant: 'standard',
 };
