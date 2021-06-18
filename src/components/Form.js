@@ -66,7 +66,7 @@ export const getFieldArrangement = (metadata, fieldArrangement) => {
       filteredFieldArrangement.push(fieldInfo);
     } else if (Array.isArray(fieldInfo)) {
       const accessibleSubfields = fieldInfo.filter((subFieldInfo) => {
-        const subfieldName = (typeof(subFieldInfo) === 'object') ? subFieldInfo.name : fieldInfo;
+        const subfieldName = (typeof(subFieldInfo) === 'object') ? subFieldInfo.name : subFieldInfo;
         return accessibleFieldNames.indexOf(subfieldName) !== -1
       });
       filteredFieldArrangement.push(accessibleSubfields);
