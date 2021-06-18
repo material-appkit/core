@@ -1,4 +1,18 @@
 /**
+ * @param str String to be encoded
+ * @returns {string} Given string with '&', '<', '>', and '"'
+ * substituted with HTML entity equivalents.
+ */
+export function encodeHTMLEntities(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+
+/**
  *
  * @attribution
  * https://gist.github.com/hagemann/382adfc57adbd5af078dc93feef01fe1
