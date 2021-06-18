@@ -1,7 +1,7 @@
 import debounce from 'lodash.debounce';
 
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -65,20 +65,23 @@ function AttributedTextField(props) {
     }
 
     setFieldValue(updatedValue);
-    if (immediate || !onChangeDelay) {
-      onChange(updatedValue);
-    } else {
-      delayedChangeHandlerRef.current(updatedValue);
+
+    if (onChange) {
+      if (immediate || !onChangeDelay) {
+        onChange(updatedValue);
+      } else {
+        delayedChangeHandlerRef.current(updatedValue);
+      }
     }
   };
 
-  const handleFieldChange = useCallback((e) => {
+  const handleFieldChange = (e) => {
     if (!propagateChangeEvent) {
       e.stopPropagation();
     }
 
     updateFieldValue(e.target.value);
-  }, []);
+  };
 
 
   const FinalInputProps = InputProps ? {...InputProps} : {};
