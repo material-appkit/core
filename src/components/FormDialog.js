@@ -19,6 +19,10 @@ import { formToObject } from '../util/form';
 import { titleCase } from '../util/string';
 
 const styles = makeStyles((theme) => ({
+  dialogTitleRoot: {
+    fontSize: theme.typography.pxToRem(18),
+  },
+
   leftActionControl: {
     alignItems: 'center',
     display: 'flex',
@@ -133,8 +137,10 @@ function FormDialog(props) {
       open
       onClose={() => props.onDismiss(null)}
     >
-      <DialogTitle>
-        {props.title}
+      <DialogTitle disableTypography>
+        <Typography variant="h4">
+          {props.title}
+        </Typography>
       </DialogTitle>
 
       <DialogContent dividers>
