@@ -43,53 +43,50 @@ class ServiceAgent {
   /**
    *
    * @param {String} method
-   * @param {String} endpoint
-   * @param {Object} params
-   * @param {Object} context
-   * @param {Object} headers
+   * @param args
    * @returns {Promise}
    */
-  static request(method, endpoint, params, context, headers) {
+  static request(method, ...args) {
     const proxy = this._createProxy();
-    return proxy.request(method, endpoint, params, context, headers);
+    return proxy.request(method, ...args);
   }
 
-  static get(endpoint, params, context, headers) {
-    return this.request('GET', endpoint, params, context, headers);
+  static get(...args) {
+    return this.request('GET', ...args);
   }
 
-  static post(endpoint, params, context, headers) {
-    return this.request('POST', endpoint, params, context, headers);
+  static post(...args) {
+    return this.request('POST', ...args);
   }
 
-  static put(endpoint, params, context, headers) {
-    return this.request('PUT', endpoint, params, context, headers);
+  static put(...args) {
+    return this.request('PUT', ...args);
   }
 
-  static patch(endpoint, params, context, headers) {
-    return this.request('PATCH', endpoint, params, context, headers);
+  static patch(...args) {
+    return this.request('PATCH', ...args);
   }
 
-  static delete(endpoint, params, context, headers) {
-    return this.request('DELETE', endpoint, params, context, headers);
+  static delete(...args) {
+    return this.request('DELETE', ...args);
   }
 
-  static options(endpoint, params, context, headers) {
-    return this.request('OPTIONS', endpoint, params, context, headers);
+  static options(...args) {
+    return this.request('OPTIONS', ...args);
   }
 
-  static head(endpoint, params, context, headers) {
-    return this.request('HEAD', endpoint, params, context, headers);
+  static head(...args) {
+    return this.request('HEAD', ...args);
   }
 
-  static download(endpoint, params, context, headers) {
+  static download(...args) {
     const proxy = this._createProxy();
-    return proxy.download(endpoint, params, context, headers);
+    return proxy.download(...args);
   }
 
-  static upload(endpoint, files, params, context, headers) {
+  static upload(...args) {
     const proxy = this._createProxy();
-    return proxy.upload(endpoint, files, params, context, headers);
+    return proxy.upload(...args);
   }
 }
 
