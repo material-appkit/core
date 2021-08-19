@@ -176,7 +176,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       }
 
       fetch(url, options).then(async(res) => {
-        if (cache) {
+        if (cache && res.status < 400) {
           await cache.put(url, res.clone());
         }
         resolve(res);
