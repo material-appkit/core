@@ -6,7 +6,7 @@ import AbstractServiceProxy from './AbstractServiceProxy';
  * @public
  */
 export default class NativeServiceProxy extends AbstractServiceProxy {
-  static buildRequestInfo(method, endpoint, params, headers) {
+  static buildRequestInfo(method, endpoint, params, headers, cacheVersion) {
     let requestURL = this.buildRequestUrl(endpoint);
 
     const fetchOptions = {
@@ -43,10 +43,12 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
 
     return {
       abortController,
+      cacheVersion,
       url: requestURL,
       options: fetchOptions,
     };
   }
+
 
   /**
    *
@@ -112,47 +114,41 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
 
   /**
    *
-   * @param method
-   * @param endpoint
-   * @param params
-   * @param headers
+   * @param args
    * @returns {{abortController: *, url: *, options: {method: *, headers: *}}}
    */
-  requestInfo(method, endpoint, params, headers) {
-    return this.constructor.buildRequestInfo(
-      method, endpoint, params, headers
-    );
+  requestInfo(...args) {
+    return this.constructor.buildRequestInfo(...args);
   }
 
 
   /**
    *
-   * @param method
+   * @param method {String}
    * @param args
    * @returns {Promise}
    */
   request(method, ...args) {
-    let endpoint, params, context, headers;
+    let endpoint, params, context, headers, cacheVersion;
     if (typeof(args[0]) === 'object') {
       endpoint = args[0].endpoint;
       params = args[0].params;
       context = args[0].context;
       headers = args[0].headers;
+      cacheVersion = args[0].cacheVersion;
     } else {
-      [endpoint, params, context, headers] = args;
+      [endpoint, params, context, headers, cacheVersion] = args;
     }
 
     return new Promise((resolve, reject) => {
       const requestHeaders = this.constructor.getRequestHeaders(headers, params);
-
-      const requestInfo = this.requestInfo(method, endpoint, params, requestHeaders);
-      const { abortController, options, url } = requestInfo;
+      const requestInfo = this.requestInfo(method, endpoint, params, requestHeaders, cacheVersion);
 
       if (context) {
-        context.abortController = abortController;
+        context.abortController = requestInfo.abortController;
       }
 
-      fetch(url, options).then((response) => {
+      this._performRequest(requestInfo).then((response) => {
         this.handleResponse(response, resolve, reject);
       }).catch((fetchError) => {
         reject(fetchError);
@@ -160,17 +156,41 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     });
   }
 
+  /**
+   *
+   * @param requestInfo {Object}
+   * @private
+   */
+  _performRequest(requestInfo) {
+    const { cacheVersion, options, url } = requestInfo;
+
+    return new Promise(async (resolve, reject) => {
+      let cache = null;
+
+      if (cacheVersion) {
+        cache = await caches.open(cacheVersion);
+        const res = await cache.match(url);
+        if (res) {
+          return resolve(res);
+        }
+      }
+
+      fetch(url, options).then(async(res) => {
+        if (cache) {
+          await cache.put(url, res.clone());
+        }
+        resolve(res);
+      }).catch(reject);
+    });
+  }
 
   /**
    *
-   * @param endpoint
-   * @param params
-   * @param context
-   * @param headers
+   * @param args
    * @returns {*}
    */
-  download(endpoint, params, context, headers) {
-    return this.get(endpoint, params, context, headers);
+  download(...args) {
+    return this.get(...args);
   }
 
 
