@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -27,33 +29,35 @@ const styles = makeStyles((theme) => ({
 function SearchField(props) {
   const classes = styles();
 
+  const { className, ...rest } = props;
 
   return (
     <AttributedTextField
-      className={classes.textField}
+      className={clsx(classes.textField, className)}
       InputProps={{
         classes: {
           root: classes.inputRoot,
           adornedStart: classes.inputAdornedStart,
         },
       }}
-      margin="dense"
       onChangeDelay={400}
       StartIcon={SearchIcon}
-      variant="outlined"
-      {...props}
+      {...rest}
     />
   )
 }
 
 SearchField.propTypes = {
+  className: PropTypes.string,
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
   value: PropTypes.string,
 };
 
 SearchField.defaultProps = {
+  margin: 'dense',
   placeholder: 'Search...',
+  variant: 'outlined',
 };
 
 export default SearchField;
