@@ -40,7 +40,6 @@ function SearchField(props) {
           adornedStart: classes.inputAdornedStart,
         },
       }}
-      onChangeDelay={400}
       StartIcon={SearchIcon}
       {...rest}
     />
@@ -50,12 +49,14 @@ function SearchField(props) {
 SearchField.propTypes = {
   className: PropTypes.string,
   onChange: PropTypes.func,
+  onChangeDelay: PropTypes.number,
   placeholder: PropTypes.string,
   value: PropTypes.string,
 };
 
 SearchField.defaultProps = {
   margin: 'dense',
+  onChangeDelay: 400,
   placeholder: 'Search...',
   variant: 'outlined',
 };
