@@ -21,9 +21,9 @@ const styles = makeStyles((theme) => ({
   },
 
   listItemSecondaryActionTop: {
-    right: 6,
-    top: 0,
-    transform: `translateY(${theme.spacing(1)}px)`,
+    right: theme.spacing(0.75),
+    top: theme.spacing(0.5),
+    transform: 'initial',
   },
 }));
 
