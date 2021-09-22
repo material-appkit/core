@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React, { useCallback } from 'react';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -62,11 +62,13 @@ function AlertDialog({ alertInfo, onDismiss }) {
     onDismiss(true, alertInfo);
   };
 
-  const handleEscapeKeyDown = () => {
-    if (alertInfo.type === 'confirm') {
+  const handleDialogClose = useCallback((e, reason) => {
+    console.log(e, reason);
+    if (reason === 'escapeKeyDown') {
       cancel();
     }
-  };
+  }, []);
+
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -78,12 +80,11 @@ function AlertDialog({ alertInfo, onDismiss }) {
 
   return (
     <Dialog
-      disableBackdropClick
       fullWidth={true}
       maxWidth='sm'
       open
+      onClose={handleDialogClose}
       onKeyPress={handleKeyPress}
-      onEscapeKeyDown={handleEscapeKeyDown}
     >
       {alertInfo.title &&
         <DialogTitle disableTypography>
