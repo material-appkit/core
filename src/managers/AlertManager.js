@@ -63,7 +63,6 @@ function AlertDialog({ alertInfo, onDismiss }) {
   };
 
   const handleDialogClose = useCallback((e, reason) => {
-    console.log(e, reason);
     if (reason === 'escapeKeyDown') {
       cancel();
     }
