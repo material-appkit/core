@@ -148,8 +148,8 @@ function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
 
   if (widgetType === 'textarea') {
     textFieldProps.multiline = true;
-    textFieldProps.rows = 2;
-    textFieldProps.rowsMax = 20;
+    textFieldProps.minRows = 2;
+    textFieldProps.maxRows = 20;
   }
 
   if (fieldInfo.type === 'number') {
