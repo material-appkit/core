@@ -125,8 +125,7 @@ function FormDialog(props) {
 
   return (
     <Dialog
-      disableBackdropClick
-      disableEscapeKeyDown
+      open
       fullWidth
       maxWidth={props.maxWidth}
       PaperProps={{
@@ -134,8 +133,6 @@ function FormDialog(props) {
         onChange: handleFormChange,
         onSubmit: handleFormSubmit,
       }}
-      open
-      onClose={() => props.onDismiss(null)}
     >
       <DialogTitle disableTypography>
         <Typography variant="h4">
