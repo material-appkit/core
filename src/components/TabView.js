@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
@@ -65,31 +65,31 @@ function TabView(props) {
   }, [tabArrangement, selectedTabIndex]);
 
 
-  const handleTabChange = (e, index) => {
+  const handleTabChange = useCallback((e, index) => {
     if (onTabUnmount) {
       onTabUnmount(activeTabConfig);
     }
 
     setSelectedTabIndex(index);
-  };
+  }, [activeTabConfig, onTabUnmount]);
 
-  const handleTabMount = (tabContext) => {
+  const handleTabMount = useCallback((tabContext) => {
     if (onTabMount) {
       onTabMount({
         ...activeTabConfig,
         ...tabContext
       });
     }
-  };
+  }, [activeTabConfig, onTabMount]);
 
-  const handleTabConfig = (tabContext) => {
+  const handleTabConfig = useCallback((tabContext) => {
     if (onTabConfig) {
       onTabConfig({
         ...activeTabConfig,
         ...tabContext
       });
     }
-  };
+  }, [activeTabConfig, onTabConfig]);
 
 
   let activeTab = null;
