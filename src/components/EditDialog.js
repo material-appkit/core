@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, useRef, useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import React, { useCallback, useRef, useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -79,6 +78,10 @@ function EditDialog(props) {
     }
   }
 
+  const dismiss = useCallback(() => {
+    onClose(this);
+  }, [onClose]);
+
 
   const deleteRepresentedObject = async() => {
     await ServiceAgent.delete(detailUrl);
@@ -90,9 +93,6 @@ function EditDialog(props) {
     dismiss();
   };
 
-  const dismiss = () => {
-    onClose(this);
-  };
 
 
   const handleFormLoad = (representedObject, fieldInfoMap) => {
@@ -149,7 +149,7 @@ function EditDialog(props) {
     });
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyUp = useCallback((e) => {
     if (e.key === 'Enter') {
       // Intercept the "Enter" key in order to prevent the dialog form
       // (as well as any underlying forms) from being automatically
@@ -160,13 +160,19 @@ function EditDialog(props) {
       // Explicitly submit our own form
       formRef.current.save();
     }
-  };
+  }, []);
+
+  const handleDialogClose = useCallback((e, reason) => {
+    if (reason === 'escapeKeyDown') {
+      dismiss();
+    }
+  }, []);
 
   return (
     <Dialog
       classes={{ paper: classes.paper }}
-      onClose={() => dismiss()}
-      onKeyDown={commitOnEnter ? handleKeyDown : null}
+      onClose={handleDialogClose}
+      onKeyUp={commitOnEnter ? handleKeyUp : null}
       open
     >
       <DialogTitle className={classes.dialogTitle} disableTypography>
