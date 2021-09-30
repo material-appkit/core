@@ -73,19 +73,19 @@ class DialogManager extends React.PureComponent {
       const [dialogId, dialogConfig] = entry;
       const {
         DialogComponent,
-        dialogProps,
+        context,
         fullScreenBreakpoint,
         size,
       } = dialogConfig;
 
-      const appliedDialogProps = {...(dialogProps || {})};
+      const dialogProps = {...(context || {})};
 
       const isFullScreen = !isWidthUp(fullScreenBreakpoint, breakpoint);
       if (isFullScreen) {
-        appliedDialogProps.fullScreen = true;
+        dialogProps.fullScreen = true;
       } else {
-        appliedDialogProps.fullWidth = true;
-        appliedDialogProps.maxWidth = size || 'sm';
+        dialogProps.fullWidth = true;
+        dialogProps.maxWidth = size || 'sm';
       }
 
       return (
@@ -94,7 +94,7 @@ class DialogManager extends React.PureComponent {
           dismiss={this.dismissDialog(dialogId)}
           onClose={this.handleDialogClose(dialogId)}
           open
-          {...appliedDialogProps}
+          {...dialogProps}
         />
       );
     });
