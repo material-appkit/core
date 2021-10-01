@@ -47,7 +47,8 @@ function DialogTitle(props) {
     >
       <Typography
         className={classes.title}
-        variant="h2"
+        component="h2"
+        variant="h3"
       >
         {title}
       </Typography>
