@@ -44,7 +44,11 @@ function ContextMenu(props) {
 
         if (menuItemInfo === '---') {
           return (
-            <MenuItem key={menuItemKey} button={false}>
+            <MenuItem
+              button={false}
+              dense
+              key={menuItemKey}
+            >
               <Divider
                 className={classes.divider}
                 variant="fullWidth"
