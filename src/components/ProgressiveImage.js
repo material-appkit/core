@@ -341,6 +341,7 @@ class Image extends React.Component {
               ref={this.imageRef}
               objectFit={this.props.objectFit}
               onLoad={this.handleImageLoaded}
+              onClick={this.props.onClick}
               onError={this.props.onError}
               itemProp={itemProp}
               loading={loading}
@@ -368,6 +369,7 @@ Image.propTypes = {
   placeholderClassName: PropTypes.string,
   backgroundColor: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   objectFit: PropTypes.oneOf(['fill', 'contain', 'cover', 'scale-down', 'none']),
+  onClick: PropTypes.func,
   onLoad: PropTypes.func,
   onError: PropTypes.func,
   onStartLoad: PropTypes.func,
