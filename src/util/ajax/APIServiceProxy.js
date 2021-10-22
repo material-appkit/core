@@ -34,15 +34,7 @@ export default class APIServiceProxy extends NativeServiceProxy {
    * @returns {String}
    */
   static getBaseURL() {
-    const baseUrl = (
-      process.env.REACT_APP_API_URL ||
-      process.env.GATSBY_API_URL
-    );
-    if (!baseUrl) {
-      throw new Error('Expecting an environment variable of name "REACT_APP_API_URL" or "GATSBY_API_URL"');
-    }
-
-    return baseUrl;
+    return process.env.REACT_APP_API_URL || process.env.GATSBY_API_URL || '';
   }
 
 
