@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useTheme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -72,3 +72,22 @@ export function useTraceUpdate(props) {
     prev.current = props;
   });
 }
+
+
+/**
+ * Utility hook to enable throwing of errors from asynchronous callbacks
+ * which will be captured by error boundaries.
+ *
+ * See: https://medium.com/trabe/catching-asynchronous-errors-in-react-using-error-boundaries-5e8a5fd7b971
+ *
+ * @returns {function}
+ */
+export const useAsyncError = () => {
+  const [_, setError] = useState();
+
+  return useCallback((e) => {
+    setError(() => {
+      throw e;
+    });
+  }, [setError]);
+};

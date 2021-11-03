@@ -30,4 +30,11 @@ Object.defineProperty(exports, "useTraceUpdate", {
   },
 });
 
+Object.defineProperty(exports, "useAsyncError", {
+  enumerable: true,
+  get: function get() {
+    return _hooks.useAsyncError;
+  },
+});
+
 const _hooks = _interopRequireDefault(require("./hooks"));
