@@ -1,7 +1,7 @@
 {
   "author": "Allan Hart",
   "name": "@material-appkit/core",
-  "version": "2.9.995",
+  "version": "2.9.996",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "homepage": "https://material-appkit.com/",
   "keywords": [
@@ -18,21 +18,21 @@
     "url" : "https://github.com/material-appkit"
   },
   "dependencies": {
-    "js-cookie": "^2.2.1",
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.debounce": "^4.0.8",
-    "lodash.isequal": "^4.5.0",
-    "path-to-regexp": "^6.2.0",
-    "query-string": "^7.0.0",
-    "react-virtualized-auto-sizer": "^1.0.2",
-    "react-window": "^1.8.5"
+    "js-cookie": "latest",
+    "lodash.clonedeep": "latest",
+    "lodash.debounce": "latest",
+    "lodash.isequal": "latest",
+    "lodash.merge": "latest",
+    "path-to-regexp": "latest",
+    "query-string": "latest",
+    "react-virtualized-auto-sizer": "latest",
+    "react-window": "latest"
   },
 
   "peerDependencies": {
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
-    "notistack": "^1.0.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   }
