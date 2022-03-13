@@ -78,7 +78,7 @@ ChoiceListItem.propTypes = {
 
 // -----------------------------------------------------------------------------
 function ChoiceList(props) {
-  const { choices, value, variant } = props;
+  const { choices, defaultExpanded, value, variant } = props;
   const [fieldValueLabel, setFieldValueLabel] = useState(null);
   const [selection, setSelection] = useState(new Set());
 
@@ -143,7 +143,7 @@ function ChoiceList(props) {
 
   return (
     <ExpandableBox
-      defaultExpanded={Boolean(value === null || (value && value.length))}
+      defaultExpanded={Boolean(defaultExpanded || value === null || (value && value.length))}
       label={props.label}
       valueLabel={fieldValueLabel}
     >
@@ -172,6 +172,7 @@ function ChoiceList(props) {
 
 ChoiceList.propTypes = {
   choices: PropTypes.array.isRequired,
+  defaultExpanded: PropTypes.bool,
   label: PropTypes.string,
   nullLabel: PropTypes.string,
   onSelectionChange: PropTypes.func.isRequired,
@@ -183,4 +184,4 @@ ChoiceList.defaultProps = {
   variant: 'multiple',
 };
 
-export default ChoiceList;
+export default React.memo(ChoiceList);
