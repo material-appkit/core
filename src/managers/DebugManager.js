@@ -76,7 +76,7 @@ class DebugManager extends React.PureComponent {
           inputRef={this.textFieldRef}
           fullWidth
           multiline
-          rows={6}
+          minRows={6}
           variant="outlined"
         />
       </div>
