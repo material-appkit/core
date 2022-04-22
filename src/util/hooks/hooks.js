@@ -25,7 +25,7 @@ export function useInit(initFunc, disposer) {
   useEffect(() => {
     initFunc();
 
-    return disposer;
+    return disposer || undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
