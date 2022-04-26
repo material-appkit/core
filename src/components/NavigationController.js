@@ -1,13 +1,7 @@
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
-import React, {
-  Fragment,
-  Suspense,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { Route } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
