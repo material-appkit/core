@@ -40,3 +40,13 @@ export default class NotificationManager {
     this.defaultCenter.removeObserver(notificationObserver, notificationName, notificationSender);
   }
 }
+
+
+/**
+ * Generic class that may be registered to perform the given callback in response to a notification
+ */
+export class NotificationObserver {
+  constructor(callback) {
+    this.callback = callback;
+  }
+}
