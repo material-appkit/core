@@ -3,6 +3,7 @@ import React, { Fragment, useCallback, useState } from 'react';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Fade from '@material-ui/core/Fade';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
@@ -123,6 +124,7 @@ function PaginationControl(props) {
           keepMounted
           open={Boolean(pageSizeAnchorEl)}
           onClose={handlePageSizeMenuClose}
+          TransitionComponent={Fade}
         >
           {pageSizeChoices.map((value) => (
             <MenuItem
@@ -143,7 +145,6 @@ function PaginationControl(props) {
       </Typography>
     );
   }
-
 
   return (
     <Box display="flex" alignItems="center">

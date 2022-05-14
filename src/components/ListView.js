@@ -1,9 +1,3 @@
-/**
-*
-* ListView
-*
-*/
-
 import clsx from 'clsx';
 
 import isEqual from 'lodash.isequal';
@@ -23,6 +17,7 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
@@ -30,8 +25,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Pagination from '@material-ui/lab/Pagination';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+// import Tabs from '@material-ui/core/Tabs';
+// import Tab from '@material-ui/core/Tab';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -119,6 +114,7 @@ function SortControl(props) {
           vertical: 'top',
           horizontal: 'center',
         }}
+        TransitionComponent={Fade}
       >
         {makeChoices(choices).map((sortChoice) => (
           <MenuItem
@@ -229,6 +225,7 @@ function SelectionControl(props) {
         id="selection-menu"
         open={Boolean(selectMenuEl)}
         onClose={() => handleSelectionMenuDismiss(null)}
+        TransitionComponent={Fade}
       >
         <MenuItem onClick={() => handleSelectionMenuDismiss('all')}>
           Select All
