@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Divider from '@material-ui/core/Divider';
+import Fade from '@material-ui/core/Fade';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
@@ -105,9 +106,12 @@ ContextMenu.propTypes = {
   dense: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
   menuItemArrangement: PropTypes.array.isRequired,
+  TransitionComponent: PropTypes.elementType,
 };
 
 ContextMenu.defaultProps = {
   dense: false,
+  TransitionComponent: Fade,
+
 };
 export default ContextMenu;
