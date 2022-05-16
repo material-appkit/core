@@ -48,10 +48,12 @@ export function slugify(str) {
  * The given `string` without suffix `value`
  */
 export function rstrip(str, value) {
-  const lastIndex = string.lastIndexOf(value);
-  if (lastIndex !== -1) {
-    return str.substring(0, lastIndex);
+  const lastIndex = str.lastIndexOf(value);
+  if (lastIndex === -1) {
+    throw new Error(`${value} not found in ${str}`);
   }
+
+  return str.substring(0, lastIndex);
 }
 
 /**
