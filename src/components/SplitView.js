@@ -10,9 +10,11 @@ function SplitView(props) {
     layout,
     placement,
     scrollContent,
+    style,
   } = props;
 
   const splitViewStyle = {
+    ...style,
     height: '100%',
   };
 
@@ -142,11 +144,13 @@ SplitView.propTypes = {
   layout: PropTypes.oneOf(['grid', 'position']),
   placement: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
   scrollContent: PropTypes.bool,
+  style: PropTypes.object,
 };
 
 SplitView.defaultProps = {
   layout: 'position',
   scrollContent: false,
+  style: {},
 };
 
 export default React.memo(SplitView);
