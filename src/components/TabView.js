@@ -2,7 +2,12 @@ import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Navigate, Routes, Route, Link as RouterLink } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  Link as RouterLink,
+  useLocation,
+} from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -15,7 +20,7 @@ const styles = makeStyles((theme) => ({
     height: '100%',
   },
 
-  activeTabContainer: {
+  tabContainer: {
     flex: 1,
     overflow: 'auto',
   },
@@ -32,6 +37,7 @@ const styles = makeStyles((theme) => ({
 
 function TabView(props) {
   const classes = styles();
+  const location = useLocation();
 
   const {
     basePath,
@@ -43,20 +49,19 @@ function TabView(props) {
     ...rest
   } = props;
 
-  // const currentLocationPath = location.pathname;
+  const currentLocationPath = location.pathname;
 
-  const [selectedTabIndex, setSelectedTabIndex] = useState(null);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(false);
   const [activeTabConfig, setActiveTabConfig] = useState(null);
   const activeTabViewRef = useRef(null);
 
-  // useEffect(() => {
-  //   const currentLocationPath = location.pathname;
-  //   tabArrangement.forEach((tabConfig, tabIndex) => {
-  //     if (currentLocationPath === tabConfig.path) {
-  //       setSelectedTabIndex(tabIndex);
-  //     }
-  //   });
-  // }, [currentLocationPath, tabArrangement]);
+  useEffect(() => {
+    tabArrangement.forEach((tabConfig, tabIndex) => {
+      if (currentLocationPath === tabConfig.path) {
+        setSelectedTabIndex(tabIndex);
+      }
+    });
+  }, [currentLocationPath, tabArrangement]);
 
 
   useEffect(() => {
@@ -70,8 +75,6 @@ function TabView(props) {
     if (onTabUnmount) {
       onTabUnmount(activeTabConfig);
     }
-
-    setSelectedTabIndex(index);
   }, [activeTabConfig, onTabUnmount]);
 
 
@@ -94,28 +97,15 @@ function TabView(props) {
   }, [activeTabConfig, onTabConfig]);
 
 
-  let activeTab = null;
-  const activeTabContainerClassNames = [classes.activeTabContainer];
+  const tabContainerClasses = [classes.tabContainer];
   if (activeTabConfig) {
-    activeTab = (
-      <activeTabConfig.component
-        onConfig={handleTabConfig}
-        onMount={handleTabMount}
-        onUpdate={onUpdate}
-        mountPath={activeTabConfig.path}
-        containerRef={activeTabViewRef}
-        {...(activeTabConfig.componentProps || {})}
-        {...rest}
-      />
-    );
-
-    activeTabContainerClassNames.push(activeTabConfig.containerClassName);
+    tabContainerClasses.push(activeTabConfig.containerClassName);
   }
 
   return (
     <div className={classes.container}>
       <Tabs
-        value={0}
+        value={selectedTabIndex}
         className={classes.tabs}
         indicatorColor="primary"
         onChange={handleTabChange}
@@ -134,7 +124,7 @@ function TabView(props) {
       </Tabs>
 
 
-      <div className={clsx(activeTabContainerClassNames)} ref={activeTabViewRef}>
+      <div className={clsx(tabContainerClasses)} ref={activeTabViewRef}>
         <Routes>
           {tabArrangement.map((tabConfig) => {
             const Component = tabConfig.component;
@@ -158,7 +148,6 @@ function TabView(props) {
               />
             );
           })}
-          <Route path="*" element={<Navigate to={basePath} />} />
         </Routes>
       </div>
     </div>
