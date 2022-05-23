@@ -43,6 +43,7 @@ function TabView(props) {
     ...rest
   } = props;
 
+  const currentLocationPath = location.pathname;
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(null);
   const [activeTabConfig, setActiveTabConfig] = useState(null);
@@ -55,7 +56,7 @@ function TabView(props) {
         setSelectedTabIndex(tabIndex);
       }
     });
-  }, [tabArrangement]);
+  }, [currentLocationPath, tabArrangement]);
 
 
   useEffect(() => {
