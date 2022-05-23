@@ -79,36 +79,34 @@ function TabView(props) {
 
 
   useEffect(() => {
-    if (selectedTabIndex !== null) {
-      setActiveTabConfig(tabArrangement[selectedTabIndex]);
+    let _activeTabConfig = null;
+    if (selectedTabIndex !== false) {
+      _activeTabConfig = tabArrangement[selectedTabIndex];
     }
-  }, [tabArrangement, selectedTabIndex]);
+    setActiveTabConfig(_activeTabConfig);
+  }, [selectedTabIndex, tabArrangement]);
 
 
   const handleTabChange = useCallback((e, index) => {
     if (onTabChange) {
-      onTabChange(activeTabConfig);
+      onTabChange(tabArrangement[index]);
     }
-  }, [activeTabConfig, onTabChange]);
+
+    if (onTabConfig) {
+      onTabConfig(tabArrangement[index]);
+    }
+  }, [onTabChange, onTabConfig, tabArrangement]);
 
 
   const handleTabMount = useCallback((tabContext) => {
     if (onTabMount) {
-      onTabMount({
-        ...(activeTabConfig || {}),
-        ...tabContext
-      });
+      onTabMount(tabContext);
     }
   }, [activeTabConfig, onTabMount]);
 
   const handleTabUnmount = useCallback((tabContext) => {
-    console.log('tab unmount');
-
     if (onTabUnmount) {
-      onTabUnmount({
-        ...(activeTabConfig || {}),
-        ...tabContext
-      });
+      onTabUnmount(tabContext);
     }
   }, [activeTabConfig, onTabUnmount]);
 
