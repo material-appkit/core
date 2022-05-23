@@ -34,16 +34,18 @@ const styles = makeStyles((theme) => ({
 }));
 
 
-
 function TabView(props) {
   const classes = styles();
   const location = useLocation();
 
   const {
     basePath,
-    onTabConfig,
+    onMount,
+    onUnmount,
     onTabMount,
     onTabUnmount,
+    onTabChange,
+    onTabConfig,
     onUpdate,
     tabArrangement,
     ...rest
@@ -54,6 +56,18 @@ function TabView(props) {
   const [selectedTabIndex, setSelectedTabIndex] = useState(false);
   const [activeTabConfig, setActiveTabConfig] = useState(null);
   const activeTabViewRef = useRef(null);
+
+  useEffect(() => {
+    if (onMount) {
+      onMount();
+    }
+
+    return () => {
+      if (onUnmount) {
+        onUnmount();
+      }
+    }
+  }, [onMount, onUnmount]);
 
   useEffect(() => {
     tabArrangement.forEach((tabConfig, tabIndex) => {
@@ -72,25 +86,36 @@ function TabView(props) {
 
 
   const handleTabChange = useCallback((e, index) => {
-    if (onTabUnmount) {
-      onTabUnmount(activeTabConfig);
+    if (onTabChange) {
+      onTabChange(activeTabConfig);
     }
-  }, [activeTabConfig, onTabUnmount]);
+  }, [activeTabConfig, onTabChange]);
 
 
   const handleTabMount = useCallback((tabContext) => {
     if (onTabMount) {
       onTabMount({
-        ...activeTabConfig,
+        ...(activeTabConfig || {}),
         ...tabContext
       });
     }
   }, [activeTabConfig, onTabMount]);
 
+  const handleTabUnmount = useCallback((tabContext) => {
+    console.log('tab unmount');
+
+    if (onTabUnmount) {
+      onTabUnmount({
+        ...(activeTabConfig || {}),
+        ...tabContext
+      });
+    }
+  }, [activeTabConfig, onTabUnmount]);
+
   const handleTabConfig = useCallback((tabContext) => {
     if (onTabConfig) {
       onTabConfig({
-        ...activeTabConfig,
+        ...(activeTabConfig || {}),
         ...tabContext
       });
     }
@@ -140,6 +165,7 @@ function TabView(props) {
                     containerRef={activeTabViewRef}
                     onConfig={handleTabConfig}
                     onMount={handleTabMount}
+                    onUnmount={handleTabUnmount}
                     onUpdate={onUpdate}
                     {...componentProps}
                     {...rest}
@@ -156,9 +182,12 @@ function TabView(props) {
 
 TabView.propTypes = {
   onUpdate: PropTypes.func,
+  onMount: PropTypes.func,
+  onUnmount: PropTypes.func,
   onTabMount: PropTypes.func,
-  onTabConfig: PropTypes.func,
   onTabUnmount: PropTypes.func,
+  onTabConfig: PropTypes.func,
+  onTabChange: PropTypes.func,
   tabArrangement: PropTypes.array.isRequired,
 };
 
