@@ -138,7 +138,6 @@ SplitView.propTypes = {
   bar: PropTypes.object.isRequired,
   barSize: PropTypes.number.isRequired,
   barClassName: PropTypes.string,
-  children: PropTypes.object,
   classes: PropTypes.object,
   contentClassName: PropTypes.string,
   layout: PropTypes.oneOf(['grid', 'position']),
