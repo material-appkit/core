@@ -27,7 +27,7 @@ const styles = makeStyles((theme) => ({
 
   tabs: {
     backgroundColor: theme.palette.grey[50],
-    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+    borderBottom: `1px solid ${theme.palette.divider}`,
     position: 'relative',
     zIndex: theme.zIndex.appBar,
   },
@@ -189,4 +189,4 @@ TabView.propTypes = {
   tabArrangement: PropTypes.array.isRequired,
 };
 
-export default TabView;
+export default React.memo(TabView);
