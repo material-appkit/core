@@ -46,8 +46,19 @@ export default class NotificationManager {
  * Generic class that may be registered to perform the given callback in response to a notification
  */
 export class NotificationObserver {
-  constructor(callback, context) {
-    this.callback = callback;
+  constructor(callbacks, context) {
+    if (typeof(callbacks) !== 'object') {
+      throw new Error('Expected first argument to be a dictionary of callbacks');
+    }
+
+    Object.keys(callbacks).forEach((callbackName) => {
+      const callback = callbacks[callbackName];
+      if (typeof(callback) !== 'function') {
+        throw new Error(`Invalid callback argument: ${callbackName}:${callback}`);
+      }
+      this[callbackName] = callback;
+    });
+
     this.context = context;
   }
 }
