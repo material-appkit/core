@@ -46,7 +46,8 @@ export default class NotificationManager {
  * Generic class that may be registered to perform the given callback in response to a notification
  */
 export class NotificationObserver {
-  constructor(callback) {
+  constructor(callback, context) {
     this.callback = callback;
+    this.context = context;
   }
 }
