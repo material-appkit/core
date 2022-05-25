@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, useEffect, useState } from 'react';
-import { Route, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';

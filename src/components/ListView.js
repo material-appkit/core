@@ -758,14 +758,14 @@ function ListView(props) {
       return;
     }
 
-    onConfig( {
+    onConfig({
       extendSelection,
       updateItem: handleItemUpdate,
       renderedItems,
       setRenderedItems: handleSetRenderedItems,
       selection,
       selectionDisabled,
-    })
+    });
   }, [
     renderedItems,
     selection,

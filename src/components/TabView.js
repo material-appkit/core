@@ -2,11 +2,16 @@ import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  Link as RouterLink,
+  useLocation,
+} from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 const styles = makeStyles((theme) => ({
   container: {
@@ -15,29 +20,32 @@ const styles = makeStyles((theme) => ({
     height: '100%',
   },
 
-  activeTabContainer: {
+  tabContainer: {
     flex: 1,
     overflow: 'auto',
   },
 
   tabs: {
     backgroundColor: theme.palette.grey[50],
-    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+    borderBottom: `1px solid ${theme.palette.divider}`,
     position: 'relative',
     zIndex: theme.zIndex.appBar,
   },
 }));
 
 
-
 function TabView(props) {
   const classes = styles();
+  const location = useLocation();
 
   const {
-    location,
-    onTabConfig,
+    basePath,
+    onMount,
+    onUnmount,
     onTabMount,
     onTabUnmount,
+    onTabChange,
+    onTabConfig,
     onUpdate,
     tabArrangement,
     ...rest
@@ -45,12 +53,23 @@ function TabView(props) {
 
   const currentLocationPath = location.pathname;
 
-  const [selectedTabIndex, setSelectedTabIndex] = useState(null);
+  const [selectedTabIndex, setSelectedTabIndex] = useState(false);
   const [activeTabConfig, setActiveTabConfig] = useState(null);
   const activeTabViewRef = useRef(null);
 
   useEffect(() => {
-    const currentLocationPath = location.pathname;
+    if (onMount) {
+      onMount();
+    }
+
+    return () => {
+      if (onUnmount) {
+        onUnmount();
+      }
+    }
+  }, [onMount, onUnmount]);
+
+  useEffect(() => {
     tabArrangement.forEach((tabConfig, tabIndex) => {
       if (currentLocationPath === tabConfig.path) {
         setSelectedTabIndex(tabIndex);
@@ -60,94 +79,114 @@ function TabView(props) {
 
 
   useEffect(() => {
-    if (selectedTabIndex !== null) {
-      setActiveTabConfig(tabArrangement[selectedTabIndex]);
+    let _activeTabConfig = null;
+    if (selectedTabIndex !== false) {
+      _activeTabConfig = tabArrangement[selectedTabIndex];
     }
-  }, [tabArrangement, selectedTabIndex]);
+    setActiveTabConfig(_activeTabConfig);
+  }, [selectedTabIndex, tabArrangement]);
 
 
   const handleTabChange = useCallback((e, index) => {
-    if (onTabUnmount) {
-      onTabUnmount(activeTabConfig);
+    if (onTabChange) {
+      onTabChange(tabArrangement[index]);
     }
 
-    setSelectedTabIndex(index);
-  }, [activeTabConfig, onTabUnmount]);
+    if (onTabConfig) {
+      onTabConfig(tabArrangement[index]);
+    }
+  }, [onTabChange, onTabConfig, tabArrangement]);
+
 
   const handleTabMount = useCallback((tabContext) => {
     if (onTabMount) {
-      onTabMount({
-        ...activeTabConfig,
-        ...tabContext
-      });
+      onTabMount(tabContext);
     }
   }, [activeTabConfig, onTabMount]);
+
+  const handleTabUnmount = useCallback((tabContext) => {
+    if (onTabUnmount) {
+      onTabUnmount(tabContext);
+    }
+  }, [activeTabConfig, onTabUnmount]);
 
   const handleTabConfig = useCallback((tabContext) => {
     if (onTabConfig) {
       onTabConfig({
-        ...activeTabConfig,
+        ...(activeTabConfig || {}),
         ...tabContext
       });
     }
   }, [activeTabConfig, onTabConfig]);
 
 
-  let activeTab = null;
-  const activeTabContainerClassNames = [classes.activeTabContainer];
+  const tabContainerClasses = [classes.tabContainer];
   if (activeTabConfig) {
-    activeTab = (
-      <activeTabConfig.component
-        onConfig={handleTabConfig}
-        onMount={handleTabMount}
-        onUpdate={onUpdate}
-        mountPath={activeTabConfig.path}
-        containerRef={activeTabViewRef}
-        {...(activeTabConfig.componentProps || {})}
-        {...rest}
-      />
-    );
-
-    activeTabContainerClassNames.push(activeTabConfig.containerClassName);
+    tabContainerClasses.push(activeTabConfig.containerClassName);
   }
 
   return (
     <div className={classes.container}>
-      {(selectedTabIndex !== null) &&
-        <Tabs
-          value={selectedTabIndex}
-          className={classes.tabs}
-          indicatorColor="primary"
-          onChange={handleTabChange}
-          scrollButtons="auto"
-          textColor="primary"
-          variant="scrollable"
-        >
-          {tabArrangement.map((tabConfig) => (
-            <Tab
-              key={tabConfig.path}
-              component={Link}
-              to={tabConfig.path}
-              label={tabConfig.label}
-            />
-          ))}
-        </Tabs>
-      }
+      <Tabs
+        value={selectedTabIndex}
+        className={classes.tabs}
+        indicatorColor="primary"
+        onChange={handleTabChange}
+        scrollButtons="auto"
+        textColor="primary"
+        variant="scrollable"
+      >
+        {tabArrangement.map((tabConfig) => (
+          <Tab
+            key={tabConfig.path}
+            component={RouterLink}
+            to={tabConfig.path}
+            label={tabConfig.label}
+          />
+        ))}
+      </Tabs>
 
-      <div className={clsx(activeTabContainerClassNames)} ref={activeTabViewRef}>
-        {activeTab}
+
+      <div className={clsx(tabContainerClasses)} ref={activeTabViewRef}>
+        <Routes>
+          {tabArrangement.map((tabConfig) => {
+            const Component = tabConfig.component;
+            const componentProps = tabConfig.componentProps || {};
+            const routePath = tabConfig.path;
+
+            return (
+              <Route
+                key={routePath}
+                path={routePath.substring(routePath.indexOf(basePath))}
+                element={(
+                  <Component
+                    containerRef={activeTabViewRef}
+                    onConfig={handleTabConfig}
+                    onMount={handleTabMount}
+                    onUnmount={handleTabUnmount}
+                    onUpdate={onUpdate}
+                    {...componentProps}
+                    {...rest}
+                  />
+                )}
+              />
+            );
+          })}
+        </Routes>
       </div>
     </div>
   );
 }
 
 TabView.propTypes = {
-  location: PropTypes.object.isRequired,
   onUpdate: PropTypes.func,
+  onMount: PropTypes.func,
+  onUnmount: PropTypes.func,
   onTabMount: PropTypes.func,
-  onTabConfig: PropTypes.func,
   onTabUnmount: PropTypes.func,
+  onTabConfig: PropTypes.func,
+  onTabChange: PropTypes.func,
   tabArrangement: PropTypes.array.isRequired,
 };
 
-export default TabView;
+export default React.memo(TabView);
