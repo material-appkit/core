@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
@@ -8,10 +7,11 @@ import React, {
   useCallback,
   useEffect,
   useRef,
+  useMemo,
   useState,
 } from 'react';
 
-import { VariableSizeList, VariableSizeGrid } from 'react-window';
+import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import Button from '@material-ui/core/Button';
@@ -25,8 +25,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Pagination from '@material-ui/lab/Pagination';
-// import Tabs from '@material-ui/core/Tabs';
-// import Tab from '@material-ui/core/Tab';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -324,14 +322,20 @@ function ListView(props) {
   const [measuring, setMeasuring] = useState(false);
   const itemHeights = useRef(null);
 
-  const toolbarItemsRef = useRef({});
-
   // Derived properties
 
   // The view is assumed to be 'loading' whenever a fetchRequestContext is set.
   const loading = !!fetchRequestContext;
 
   const ordering = appliedFilterParams ? appliedFilterParams[orderingParamName] : null;
+
+  // ---------------------------------------------------------------------------
+  const itemCount = useMemo(() => {
+    if (paginationInfo) {
+      return paginationInfo.total;
+    }
+    return renderedItems ? renderedItems.length : undefined;
+  }, [renderedItems, paginationInfo]);
 
   // ---------------------------------------------------------------------------
   // Selection Management
@@ -391,17 +395,17 @@ function ListView(props) {
   // ---------------------------------------------------------------------------
   // Pagination
   // ---------------------------------------------------------------------------
-  const setPage = (value) => {
-    if (onPageChange) {
-      onPageChange(value);
-    }
-  };
-
-  const setPageSize = (value) => {
-    if (onPageSizeChange) {
-      onPageSizeChange(value);
-    }
-  };
+  // const setPage = (value) => {
+  //   if (onPageChange) {
+  //     onPageChange(value);
+  //   }
+  // };
+  //
+  // const setPageSize = (value) => {
+  //   if (onPageSizeChange) {
+  //     onPageSizeChange(value);
+  //   }
+  // };
 
   // ---------------------------------------------------------------------------
 
@@ -476,13 +480,13 @@ function ListView(props) {
    * @param item
    * Helper function to locate the index of the given item
    */
-  const findItemIndex = (sourceItem) => {
+  const findItemIndex = useCallback((sourceItem) => {
     const sourceItemKey = keyForItem(sourceItem);
 
     return renderedItems.findIndex((targetItem) => (
       keyForItem(targetItem) === sourceItemKey
     ));
-  };
+  }, [renderedItems]);
 
 
   /**
@@ -490,7 +494,7 @@ function ListView(props) {
    * @param item
    * Helper function to add the given item to the beginning of the list
    */
-  const addItem = (item) => {
+  const addItem = useCallback((item) => {
     const updatedItems = [...renderedItems];
     updatedItems.unshift(item);
     setRenderedItems(updatedItems);
@@ -500,7 +504,7 @@ function ListView(props) {
       updatedPaginationInfo.total += 1;
       setPaginationInfo(updatedPaginationInfo);
     }
-  };
+  }, [paginationInfo, renderedItems]);
 
 
   /**
@@ -508,7 +512,7 @@ function ListView(props) {
    * @param item
    * Helper function to remove the given item from the list
    */
-  const removeItem = (item) => {
+  const removeItem = useCallback((item) => {
     const sourceItemIndex = findItemIndex(item);
 
     if (selection.has(item)) {
@@ -533,7 +537,7 @@ function ListView(props) {
       updatedPaginationInfo.total -= 1;
       setPaginationInfo(updatedPaginationInfo);
     }
-  };
+  }, [paginationInfo, renderedItems, selection]);
 
 
   /**
@@ -542,7 +546,7 @@ function ListView(props) {
    * @param newItem
    * Helper function to replace the item 'oldItem' with the given 'newItem'
    */
-  const updateItem = (source, target) => {
+  const updateItem = useCallback((source, target) => {
     const sourceItemIndex = findItemIndex(source);
     if (sourceItemIndex === -1) {
       // This situation is most likely to occur when a record has been updated
@@ -560,17 +564,17 @@ function ListView(props) {
     const updatedItems = [...renderedItems];
     updatedItems[sourceItemIndex] = target;
     setRenderedItems(updatedItems);
-  };
+  }, [findItemIndex, renderedItems, selection]);
 
 
-  const updateToolbarItems = (change) => {
-    const newToolbarItems = { ...toolbarItemsRef.current, ...change };
-    toolbarItemsRef.current = newToolbarItems;
-
-    if (onToolbarChange) {
-      onToolbarChange(newToolbarItems);
-    }
-  };
+  // const updateToolbarItems = (change) => {
+  //   const newToolbarItems = { ...toolbarItemsRef.current, ...change };
+  //   toolbarItemsRef.current = newToolbarItems;
+  //
+  //   if (onToolbarChange) {
+  //     onToolbarChange(newToolbarItems);
+  //   }
+  // };
 
   // ---------------------------------------------------------------------------
 
@@ -672,6 +676,7 @@ function ListView(props) {
   /**
    * Update the selectionControl toolbarItem when selection mode is enabled/disabled
    */
+/*
   useEffect(() => {
     const updatedToolbarItems = {};
 
@@ -726,30 +731,64 @@ function ListView(props) {
 
     updateToolbarItems(updatedToolbarItems);
   }, [paginationInfo, renderedItems, selection, selectionDisabled]);
+*/
 
+  // useEffect(() => {
+  //   if (!(orderable && filterMetadata)) {
+  //     return;
+  //   }
+  //
+  //   const orderingFields = filterMetadata.ordering_fields;
+  //   if (!(orderingFields && orderingFields.length)) {
+  //     return;
+  //   }
+  //
+  //   const updatedToobarItems = {
+  //     sortControl: (
+  //       <SortControl
+  //         choices={orderingFields}
+  //         selectedOrdering={ordering}
+  //         onDismiss={handleSortDialogDismiss}
+  //       />
+  //     )
+  //   };
+  //
+  // }, [filterMetadata, orderable, ordering]);
 
-  useEffect(() => {
-    if (!(orderable && filterMetadata)) {
-      return;
+  // ---------------------------------------------------------------------------
+  const constructToolbarItem = useCallback((itemType, context) => {
+    switch (itemType) {
+      case 'paginationControl':
+        return (
+          <PaginationControl
+            {...paginationControlProps}
+            context={context}
+            key={itemType}
+            paginationInfo={paginationInfo}
+            count={itemCount}
+          />
+        );
+      case 'paginationListControl':
+        return paginationInfo ? (
+          <Pagination
+            key={itemType}
+            count={paginationInfo.total_pages}
+            page={paginationInfo.current_page}
+            onChange={(e, value) => context.onPageChange(value)}
+            {...paginationListControlProps}
+          />
+        ) : null;
+      default:
+        throw new Error(`Unknown toolbar item type: ${itemType}`);
     }
+  }, [
+    itemCount,
+    paginationInfo,
+    paginationControlProps,
+    paginationListControlProps,
+  ]);
 
-    const orderingFields = filterMetadata.ordering_fields;
-    if (!(orderingFields && orderingFields.length)) {
-      return;
-    }
-
-    updateToolbarItems({
-      sortControl: (
-        <SortControl
-          choices={orderingFields}
-          selectedOrdering={ordering}
-          onDismiss={handleSortDialogDismiss}
-        />
-      )
-    });
-  }, [filterMetadata, orderable, ordering]);
-
-
+  // ---------------------------------------------------------------------------
   /**
    * Invoke the onConfig callback when any of the exposed state properties are affected.
    */
@@ -759,17 +798,15 @@ function ListView(props) {
     }
 
     onConfig({
+      constructToolbarItem,
       extendSelection,
       updateItem: handleItemUpdate,
-      renderedItems,
       setRenderedItems: handleSetRenderedItems,
-      selection,
-      selectionDisabled,
     });
   }, [
-    renderedItems,
-    selection,
-    selectionDisabled,
+    constructToolbarItem,
+    extendSelection,
+    // renderedItems,
   ]);
 
   // useEffect(() => {
@@ -835,7 +872,7 @@ function ListView(props) {
   };
 
 
-  const handleItemUpdate = (change) => {
+  const handleItemUpdate = useCallback((change) => {
     if (!renderedItems) {
       return;
     }
@@ -847,13 +884,13 @@ function ListView(props) {
     } else {
       updateItem(change.old, change.new);
     }
-  };
+  }, [removeItem, addItem, updateItem]);
 
-  const handleSetRenderedItems = (items) => {
+
+  const handleSetRenderedItems = useCallback((items) => {
     setSelection(new Set());
-
     setRenderedItems(items);
-  };
+  }, []);
 
 
   // ---------------------------------------------------------------------------
@@ -1119,7 +1156,7 @@ ListView.propTypes = {
   onPageChange: PropTypes.func,
   onPageSizeChange: PropTypes.func,
   onSelectionChange: PropTypes.func,
-  onToolbarChange: PropTypes.func,
+  // onToolbarChange: PropTypes.func,
 
   orderable: PropTypes.bool,
   orderingParamName: PropTypes.string,
@@ -1144,8 +1181,6 @@ ListView.propTypes = {
 
   tileItemComponent: PropTypes.elementType,
   tileItemComponentFunc: PropTypes.func,
-
-  urlUpdateFunc: PropTypes.func,
 
   windowed: PropTypes.bool,
   windowedListItemHeight: PropTypes.number,
