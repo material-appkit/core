@@ -297,6 +297,8 @@ function ListView(props) {
     filterMetadata,
     filterParams,
     filterParamTransformer,
+    itemIdKey,
+    itemLinkKey,
     items,
     itemContextMenuArrangement,
     itemContextProvider,
@@ -313,7 +315,6 @@ function ListView(props) {
     onOrderingChange,
     onPageChange,
     onPageSizeChange,
-    onToolbarChange,
     orderable,
     orderingParamName,
     paginationControlProps,
@@ -366,7 +367,7 @@ function ListView(props) {
   // ---------------------------------------------------------------------------
   const selection = props.selection || uncontrolledSelection;
 
-  const setSelection = (updatedSelection) => {
+  const setSelection = useCallback((updatedSelection) => {
     if (!props.selection) {
       setUncontrolledSelection(updatedSelection);
     }
@@ -374,15 +375,14 @@ function ListView(props) {
     if (props.onSelectionChange) {
       props.onSelectionChange(updatedSelection);
     }
-  };
+  }, [props]);
 
 
-  const updateSelection = (item) => {
+  const updateSelection = useCallback((item) => {
     const itemId = keyForItem(item);
     const selectedItem = setFind(selection, (i) => keyForItem(i) === itemId);
 
-    let newSelection = null;
-
+    let newSelection;
     if (selectionMode === 'single') {
       newSelection = new Set();
       if (!selectedItem) {
@@ -396,9 +396,8 @@ function ListView(props) {
         newSelection.add(item);
       }
     }
-
     setSelection(newSelection);
-  };
+  }, [selection]);
 
 
   /**
@@ -413,7 +412,7 @@ function ListView(props) {
 
     updateSelection(item);
 
-  }, [selection, renderedItems]);
+  }, [selection, renderedItems, updateSelection]);
 
   // ---------------------------------------------------------------------------
 
@@ -421,23 +420,21 @@ function ListView(props) {
    * @param item
    * @returns {*} Unique identifier of given item
    */
-  const keyForItem = (item) => {
-    const { itemIdKey } = props;
+  const keyForItem = useCallback((item) => {
     return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
-  };
+  }, [itemIdKey]);
 
   /**
    *
    * @param item
    * @returns {*} Path item should link to
    */
-  const pathForItem = (item) => {
-    const { itemLinkKey } = props;
+  const pathForItem = useCallback((item) => {
     if (!itemLinkKey) {
       return null;
     }
     return (typeof itemLinkKey === 'function') ? itemLinkKey(item) : item[itemLinkKey];
-  };
+  }, [itemLinkKey]);
 
 
   /**
@@ -573,16 +570,6 @@ function ListView(props) {
     updatedItems[sourceItemIndex] = target;
     setRenderedItems(updatedItems);
   }, [findItemIndex, renderedItems, selection]);
-
-
-  // const updateToolbarItems = (change) => {
-  //   const newToolbarItems = { ...toolbarItemsRef.current, ...change };
-  //   toolbarItemsRef.current = newToolbarItems;
-  //
-  //   if (onToolbarChange) {
-  //     onToolbarChange(newToolbarItems);
-  //   }
-  // };
 
   // ---------------------------------------------------------------------------
 
@@ -844,41 +831,6 @@ function ListView(props) {
     extendSelection,
     // renderedItems,
   ]);
-
-  // useEffect(() => {
-  //   if (subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
-  //    const newToolbarItems = { ...toolbarItems };
-  //     newToolbarItems.tabsControl = (
-  //       <Tabs
-  //         style={{ flex: 1 }}
-  //         onChange={(e, tabIndex) => { setSelectedSubsetArrangementIndex(tabIndex); }}
-  //         scrollButtons="auto"
-  //         value={selectedSubsetArrangementIndex}
-  //         variant="scrollable"
-  //       >
-  //         {props.subsetFilterArrangement.map((subsetInfo) => (
-  //           <Tab key={subsetInfo.label} label={subsetInfo.label} />
-  //         ))}
-  //       </Tabs>
-  //     );
-  //     setToolbarItems(newToolbarItems);
-  //   }
-  //
-
-  //   // Let the querystring params determine the initially selected tab
-  //   if (subsetFilterArrangement) {
-  //     let initialSubsetArrangementIndex = -1;
-  //
-  //     const initialSubsetLabel = qsParams[props.subsetParamName];
-  //     if (initialSubsetLabel) {
-  //       initialSubsetArrangementIndex = subsetFilterArrangement.findIndex(
-  //         (arrangementInfo) => arrangementInfo.label === initialSubsetLabel
-  //       );
-  //     }
-  //     initialSubsetArrangementIndex = Math.max(0, initialSubsetArrangementIndex);
-  //     setSelectedSubsetArrangementIndex(initialSubsetArrangementIndex);
-  //   }
-  // }, [subsetFilterArrangement]);
 
 
   // ---------------------------------------------------------------------------
