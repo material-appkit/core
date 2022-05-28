@@ -12,9 +12,8 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import SearchIcon from '@material-ui/icons/Search';
 
-import AttributedTextField from './AttributedTextField';
+import SearchField from './widgets/SearchField';
 import EditDialog from './EditDialog';
 import ListView from './ListView';
 import Spacer from './Spacer';
@@ -23,8 +22,8 @@ import Spacer from './Spacer';
 const styles = makeStyles((theme) => ({
   filterFieldContainer: {
     backgroundColor: theme.palette.background.paper,
-    borderBottom: `2px solid ${theme.palette.divider}`,
-    padding: theme.spacing(1, 2),
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    padding: theme.spacing(0, 1),
   },
 
   fullHeight: {
@@ -127,7 +126,7 @@ function ListViewDialog(props) {
       ...appliedFilterParams,
       [searchFilterParam]: value
     });
-  }, []);
+  }, [appliedFilterParams, searchFilterParam]);
 
   //----------------------------------------------------------------------------
   const handleKeyDown = useCallback((e) => {
@@ -219,17 +218,14 @@ function ListViewDialog(props) {
             value={0}
           />
 
-          {props.searchFilterParam &&
+          {searchFilterParam &&
             <Box className={classes.filterFieldContainer}>
-              <AttributedTextField
-                autoFocus
+              <SearchField
                 fullWidth
-                margin="dense"
                 onChange={handleSearchFieldChange}
-                onChangeDelay={500}
+                margin="none"
                 propagateChangeEvent={false}
-                StartIcon={SearchIcon}
-                variant="outlined"
+                size="small"
               />
             </Box>
           }
