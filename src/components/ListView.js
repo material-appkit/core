@@ -741,27 +741,6 @@ function ListView(props) {
   }, [paginationInfo, renderedItems, selection, selectionDisabled]);
 */
 
-  // useEffect(() => {
-  //   if (!(orderable && filterMetadata)) {
-  //     return;
-  //   }
-  //
-  //   const orderingFields = filterMetadata.ordering_fields;
-  //   if (!(orderingFields && orderingFields.length)) {
-  //     return;
-  //   }
-  //
-  //   const updatedToobarItems = {
-  //     sortControl: (
-  //       <SortControl
-  //         choices={orderingFields}
-  //         selectedOrdering={ordering}
-  //         onDismiss={handleSortDialogDismiss}
-  //       />
-  //     )
-  //   };
-  //
-  // }, [filterMetadata, orderable, ordering]);
 
   // ---------------------------------------------------------------------------
   const constructToolbarItem = useCallback((itemType, context) => {
@@ -787,10 +766,15 @@ function ListView(props) {
         );
 
       case 'paginationControl':
+        let paginationControlLabel = null;
+        if (displaySelectionCount && !selectionDisabled && selectionMode && itemCount !== null) {
+          paginationControlLabel = `${selection.size} of ${itemCount} selected`;
+        }
         return (
           <PaginationControl
             {...paginationControlProps}
             key={itemType}
+            label={paginationControlLabel}
             paginationInfo={paginationInfo}
             count={itemCount}
           />
@@ -825,6 +809,7 @@ function ListView(props) {
         throw new Error(`Unknown toolbar item type: ${itemType}`);
     }
   }, [
+    displaySelectionCount,
     itemCount,
     orderable,
     filterMetadata,
@@ -833,6 +818,7 @@ function ListView(props) {
     paginationInfo,
     paginationControlProps,
     paginationListControlProps,
+    selection,
     selectionDisabled,
     selectionMenu,
     selectionMode,
@@ -900,19 +886,18 @@ function ListView(props) {
    * Respond to selection menu by updating selection accordingly
    */
   const handleSelectionMenuItemClick = useCallback((action) => {
-    console.log(action);
-    // switch (action) {
-    //   case 'all':
-    //     const newSelection = new Set(selection);
-    //     renderedItems.forEach((item) => newSelection.add(item));
-    //     setSelection(newSelection);
-    //     break;
-    //   case 'none':
-    //     setSelection(new Set());
-    //     break;
-    //   default:
-    //     throw new Error(`Unsupported selection action: ${action}`);
-    // }
+    switch (action) {
+      case 'all':
+        const newSelection = new Set(selection);
+        renderedItems.forEach((item) => newSelection.add(item));
+        setSelection(newSelection);
+        break;
+      case 'none':
+        setSelection(new Set());
+        break;
+      default:
+        throw new Error(`Unsupported selection action: ${action}`);
+    }
   }, []);
 
 
