@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
-import { useSearchParams } from "react-router-dom";
 
 import React, {
   Fragment,
@@ -70,10 +69,14 @@ function SortControl(props) {
   const {
     choices,
     orderingParamName,
+    searchParams,
+    setSearchParams,
   } = props;
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeOrdering = searchParams.get(orderingParamName);
+  let activeOrdering = undefined;
+  if (searchParams) {
+    activeOrdering = searchParams.get(orderingParamName);
+  }
 
   const [sortControlEl, setSortControlEl] = useState(null);
 
@@ -128,6 +131,8 @@ function SortControl(props) {
 SortControl.propTypes = {
   choices: PropTypes.array.isRequired,
   orderingParamName: PropTypes.string.isRequired,
+  searchParams: PropTypes.object,
+  setSearchParams: PropTypes.func,
 };
 
 
@@ -246,10 +251,8 @@ SelectionControl.propTypes = {
 
 //------------------------------------------------------------------------------
 function PaginationListControl(props) {
-  const { paginationInfo, ...paginationProps } = props;
+  const { paginationInfo, searchParams, setSearchParams, ...paginationProps } = props;
   const { total_pages, current_page } = paginationInfo;
-
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const handlePaginationChange = useCallback((e, value) => {
     const updatedSearchParams = new URLSearchParams(searchParams);
@@ -269,6 +272,8 @@ function PaginationListControl(props) {
 
 PaginationListControl.propTypes = {
   paginationInfo: PropTypes.object.isRequired,
+  searchParams: PropTypes.object,
+  setSearchParams: PropTypes.func,
 };
 
 //------------------------------------------------------------------------------
@@ -291,6 +296,7 @@ function ListView(props) {
   const styles = listViewStyles();
 
   const {
+    bindToolbarItemsToSearchParams,
     classes,
     displayMode,
     displaySelectionCount,
@@ -325,6 +331,8 @@ function ListView(props) {
     selectionInitializer,
     selectionMenu,
     selectionMode,
+    searchParams,
+    setSearchParams,
     src,
     subsetFilterArrangement,
     tileItemComponent,
@@ -338,7 +346,6 @@ function ListView(props) {
   const [renderedItems, setRenderedItems] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [paginationInfo, setPaginationInfo] = useState(null);
-  const [selectedSubsetArrangementIndex, setSelectedSubsetArrangementIndex] = useState(null);
   const [uncontrolledSelection, setUncontrolledSelection] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(props.selectionDisabled);
 
@@ -572,7 +579,6 @@ function ListView(props) {
   }, [findItemIndex, renderedItems, selection]);
 
   // ---------------------------------------------------------------------------
-
   /**
    * Initialization
    */
@@ -668,69 +674,10 @@ function ListView(props) {
   }, [appliedFilterParams, src]);
 
 
-  /**
-   * Update the selectionControl toolbarItem when selection mode is enabled/disabled
-   */
-/*
-  useEffect(() => {
-    const updatedToolbarItems = {};
-
-    updatedToolbarItems.selectionControl = (
-      <SelectionControl
-        onClick={() => {
-          // When the selection control button is clicked, toggle selection mode.
-          setSelectionDisabled(!selectionDisabled);
-
-          // _Always_ clear current selection when selection mode is toggled
-          setSelection(new Set());
-        }}
-        onSelectionMenuItemClick={handleSelectionMenuItemClick}
-        selectionDisabled={selectionDisabled}
-        selectionMenu={selectionMenu}
-      />
-    );
-
-    const appliedPaginationControlProps = { ...paginationControlProps };
-
-    let totalCount = null;
-    if (paginationInfo) {
-      totalCount = paginationInfo.total;
-
-      Object.assign(appliedPaginationControlProps, {
-        page: paginationInfo.current_page - 1,
-        pageSize: paginationInfo.per_page,
-        onPageChange: (value) => setPage(value + 1),
-        onPageSizeChange: (value) => setPageSize(value),
-      });
-
-      updatedToolbarItems.paginationListControl = (
-        <Pagination
-          count={paginationInfo.total_pages}
-          page={paginationInfo.current_page}
-          onChange={(e, value) => setPage(value)}
-          {...paginationListControlProps}
-        />
-      );
-    } else {
-      totalCount = renderedItems ? renderedItems.length : null;
-    }
-
-    appliedPaginationControlProps.count = totalCount;
-    if (displaySelectionCount && !selectionDisabled && selectionMode && totalCount !== null) {
-      appliedPaginationControlProps.pageLabel = `${selection.size} of ${totalCount} selected`;
-    }
-
-    updatedToolbarItems.paginationControl = (
-      <PaginationControl {...appliedPaginationControlProps} />
-    );
-
-    updateToolbarItems(updatedToolbarItems);
-  }, [paginationInfo, renderedItems, selection, selectionDisabled]);
-*/
-
-
   // ---------------------------------------------------------------------------
   const constructToolbarItem = useCallback((itemType, context) => {
+    const commonToolbarItemProps = { searchParams, setSearchParams };
+
     switch (itemType) {
       case 'selectionControl':
         if (!selectionMode) {
@@ -749,6 +696,7 @@ function ListView(props) {
             onSelectionMenuItemClick={handleSelectionMenuItemClick}
             selectionDisabled={selectionDisabled}
             selectionMenu={selectionMenu}
+            {...commonToolbarItemProps}
           />
         );
 
@@ -764,6 +712,7 @@ function ListView(props) {
             label={paginationControlLabel}
             paginationInfo={paginationInfo}
             count={itemCount}
+            {...commonToolbarItemProps}
           />
         );
 
@@ -773,6 +722,7 @@ function ListView(props) {
             {...paginationListControlProps}
             key={itemType}
             paginationInfo={paginationInfo}
+            {...commonToolbarItemProps}
           />
         ) : null;
 
@@ -789,6 +739,7 @@ function ListView(props) {
             choices={orderingFields}
             key="sort-control"
             orderingParamName={orderingParamName}
+            {...commonToolbarItemProps}
           />
         );
 
@@ -796,6 +747,7 @@ function ListView(props) {
         throw new Error(`Unknown toolbar item type: ${itemType}`);
     }
   }, [
+    bindToolbarItemsToSearchParams,
     displaySelectionCount,
     itemCount,
     orderable,
@@ -1137,7 +1089,6 @@ ListView.propTypes = {
   onPageChange: PropTypes.func,
   onPageSizeChange: PropTypes.func,
   onSelectionChange: PropTypes.func,
-  // onToolbarChange: PropTypes.func,
 
   orderable: PropTypes.bool,
   orderingParamName: PropTypes.string,
@@ -1146,6 +1097,9 @@ ListView.propTypes = {
   PlaceholderComponent: PropTypes.elementType,
 
   responseTransformer: PropTypes.func,
+
+  searchParams: PropTypes.object,
+  setSearchParams: PropTypes.func,
 
   selection: PropTypes.object,
   selectionDisabled: PropTypes.bool,

@@ -1,12 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -22,15 +15,15 @@ import CloseIcon from '@material-ui/icons/Close';
 import SearchIcon from '@material-ui/icons/Search';
 
 import AttributedTextField from './AttributedTextField';
-import Spacer from './Spacer';
-
 import EditDialog from './EditDialog';
 import ListView from './ListView';
+import Spacer from './Spacer';
+
 
 const styles = makeStyles((theme) => ({
   filterFieldContainer: {
     backgroundColor: theme.palette.background.paper,
-    borderBottom: `2px solid ${theme.palette.grey[200]}`,
+    borderBottom: `2px solid ${theme.palette.divider}`,
     padding: theme.spacing(1, 2),
   },
 
@@ -86,16 +79,16 @@ function ListViewDialog(props) {
     title,
     ...listViewProps
   } = props;
-  
 
   const [listViewConfig, setListViewConfig] = useState(null);
-  const [listViewToolbarItems, setListViewToolbarItems] = useState(null);
+  const [listViewSelection, setListViewSelection] = useState(null);
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
-  const [dialogTitle, setDialogTitle] = useState(() => (
+
+  const dialogTitle = useMemo(() => (
     typeof(title) === 'function' ? title() : title
-  ));
+  ), [title]);
 
   const dialogRef = useRef(null);
 
@@ -116,6 +109,8 @@ function ListViewDialog(props) {
 
   //----------------------------------------------------------------------------
   const handleSelectionChange = (selection) => {
+    setListViewSelection(selection);
+
     if (commitOnSelect) {
       onDismiss(Array.from(selection));
     }
@@ -157,12 +152,47 @@ function ListViewDialog(props) {
     listViewConfig.extendSelection(record);
   };
 
+  const dialogActions = useMemo(() => {
+    let paginationControl = null;
+    if (listViewConfig) {
+      paginationControl = listViewConfig.constructToolbarItem('paginationControl');
+    }
+
+    return (
+      <DialogActions
+        className={classes.dialogActions}
+        disableSpacing
+      >
+        {apiCreateUrl &&
+          <Button onClick={() => setAddDialogIsOpen(true)}>
+            Create
+          </Button>
+        }
+
+        {paginationControl}
+
+        <Spacer />
+
+        {!commitOnSelect &&
+          <Button
+            color="primary"
+            disabled={!(listViewSelection && listViewSelection.size)}
+            onClick={() => commit()}
+          >
+            Choose
+          </Button>
+        }
+      </DialogActions>
+    );
+  }, [listViewConfig]);
+
   //----------------------------------------------------------------------------
   return (
     <Fragment>
-      <Dialog open
+      <Dialog
+        open
         classes={fullHeight ? { paper: classes.fullHeight } : null}
-        onClose={() => { onDismiss(null); }}
+        onClose={() => onDismiss(null)}
         onKeyDown={handleKeyDown}
         ref={dialogRef}
         {...dialogProps}
@@ -174,9 +204,9 @@ function ListViewDialog(props) {
                 {dialogTitle}
               </Typography>
 
-              {(selectionMode === 'multiple' && listViewConfig) &&
+              {(selectionMode === 'multiple' && listViewSelection) &&
                 <Typography variant="subtitle2" color="textSecondary">
-                  {`${listViewConfig.selection.size} selected`}
+                  {`${listViewSelection.size} selected`}
                 </Typography>
               }
             </Box>
@@ -206,12 +236,6 @@ function ListViewDialog(props) {
               />
             </Box>
           }
-
-          {(listViewToolbarItems && listViewToolbarItems.tabsControl) &&
-            <Box className={classes.tabsControlContainer}>
-              {listViewToolbarItems.tabsControl}
-            </Box>
-          }
         </DialogTitle>
 
         <DialogContent className={classes.dialogContent}>
@@ -229,40 +253,13 @@ function ListViewDialog(props) {
             onLoadComplete={() => setLoading(false)}
             onPageChange={handlePageChange}
             onSelectionChange={handleSelectionChange}
-            onToolbarChange={setListViewToolbarItems}
             selectionDisabled={false}
             selectionMode={commitOnSelect ? 'single' : selectionMode}
             selectOnClick
           />
         </DialogContent>
 
-        <DialogActions
-          className={classes.dialogActions}
-          disableSpacing
-        >
-          {apiCreateUrl &&
-            <Button onClick={() => { setAddDialogIsOpen(true); }}>
-              Create
-            </Button>
-          }
-
-          {(listViewToolbarItems && listViewToolbarItems.paginationControl) ? (
-            listViewToolbarItems.paginationControl
-          ) : (
-            <Spacer />
-          )}
-
-          {!commitOnSelect &&
-            <Button
-              color="primary"
-              disabled={!(listViewConfig && listViewConfig.selection.size)}
-              key="commitButton"
-              onClick={() => commit()}
-            >
-              Choose
-            </Button>
-          }
-        </DialogActions>
+        {dialogActions}
       </Dialog>
 
       {addDialogIsOpen &&

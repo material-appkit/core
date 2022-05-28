@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useState } from 'react';
-import { useSearchParams } from "react-router-dom";
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -31,7 +30,6 @@ const styles = makeStyles((theme) => ({
 
 function PaginationControl(props) {
   const classes = styles();
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const {
     count,
@@ -39,6 +37,8 @@ function PaginationControl(props) {
     onPageSizeChange,
     paginationInfo,
     pageSizeChoices,
+    searchParams,
+    setSearchParams,
   } = props;
 
   const [pageSizeAnchorEl, setPageSizeAnchorEl] = useState(null);
@@ -179,6 +179,8 @@ PaginationControl.propTypes = {
   paginationInfo: PropTypes.object,
   onPageChange: PropTypes.func,
   onPageSizeChange: PropTypes.func,
+  searchParams: PropTypes.object,
+  setSearchParams: PropTypes.func,
 };
 
 
