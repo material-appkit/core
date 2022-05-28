@@ -15,18 +15,16 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const styles = makeStyles((theme) => ({
   label: {
+    color: theme.palette.text.secondary,
+    fontSize: 'inherit',
     fontWeight: 500,
     padding: theme.spacing(0, 2),
   },
 
-  pageStepButton: {
-    padding: theme.spacing(0.75),
-  },
-
   pageSizeSelectButton: {
+    color: theme.palette.text.secondary,
     minWidth: 'unset',
-    paddingLeft: theme.spacing(0.5),
-    paddingRight: theme.spacing(0.5),
+    padding: theme.spacing(0, 1),
   },
 }));
 
@@ -37,39 +35,73 @@ function PaginationControl(props) {
     count,
     onPageChange,
     onPageSizeChange,
-    page,
-    pageLabel,
-    pageSize,
+    paginationInfo,
     pageSizeChoices,
-    typographyProps,
+    searchParams,
+    setSearchParams,
   } = props;
 
   const [pageSizeAnchorEl, setPageSizeAnchorEl] = useState(null);
+
+  let page, pageSize;
+  if (paginationInfo) {
+    page = paginationInfo.current_page;
+    pageSize = paginationInfo.per_page;
+  } else {
+    page = props.page;
+    pageSize = props.pageSize;
+  }
+
+  const handlePreviousButtonClick = useCallback(() => {
+    const previousPageIndex = page - 1;
+    if (searchParams && setSearchParams) {
+      const updatedSearchParams = new URLSearchParams(searchParams);
+      updatedSearchParams.set('page', previousPageIndex);
+      setSearchParams(updatedSearchParams);
+    } else if (onPageChange) {
+      onPageChange(previousPageIndex);
+    }
+  }, [onPageChange, page, searchParams, setSearchParams]);
+
+
+  const handleNextButtonClick = useCallback(() => {
+    const nextPageIndex = page + 1;
+    if (searchParams && setSearchParams) {
+      const updatedSearchParams = new URLSearchParams(searchParams);
+      updatedSearchParams.set('page', nextPageIndex);
+      setSearchParams(updatedSearchParams);
+    } else if (onPageChange) {
+      onPageChange(nextPageIndex);
+    }
+  }, [onPageChange, page, searchParams, setSearchParams]);
 
 
   const handlePageSizeButtonClick = useCallback((e) => {
     setPageSizeAnchorEl(e.currentTarget);
   }, []);
 
-
-  const handlePageSizeMenuClose = useCallback(() => {
+  const handlePageSizeMenuItemClick = useCallback((value) => () => {
+    if (value) {
+      if (searchParams && setSearchParams) {
+        const updatedSearchParams = new URLSearchParams(searchParams);
+        updatedSearchParams.set('page', 1);
+        updatedSearchParams.set('page_size', value);
+        setSearchParams(updatedSearchParams);
+      } else if (onPageSizeChange) {
+        onPageSizeChange(value);
+      }
+    }
     setPageSizeAnchorEl(null);
-  }, []);
-
-
-  const handlePageSizeMenuItemClick = (value) => {
-    onPageSizeChange(value);
-    handlePageSizeMenuClose();
-  };
+  }, [onPageSizeChange, searchParams, setSearchParams]);
 
 
   let previousPageButton = null;
   let nextPageButton = null;
 
-  let labelText = count !== null ? `${count} items` : '---';
+  let labelText = count !== undefined ? `${count} items` : '---';
 
   if (pageSize) {
-    const offset = page * pageSize;
+    const offset = (page - 1) * pageSize;
 
     if (count) {
       labelText = `${offset + 1} - ${Math.min(offset + pageSize, count)} of ${count}`;
@@ -77,9 +109,9 @@ function PaginationControl(props) {
 
     previousPageButton = (
       <IconButton
-        className={classes.pageStepButton}
-        disabled={page <= 0 }
-        onClick={() => onPageChange(page - 1)}
+        disabled={page <= 1}
+        onClick={handlePreviousButtonClick}
+        size="small"
       >
         <ChevronLeftIcon />
       </IconButton>
@@ -87,49 +119,44 @@ function PaginationControl(props) {
 
     nextPageButton = (
       <IconButton
-        className={classes.pageStepButton}
         disabled={!((offset + pageSize) < count)}
-        onClick={() => onPageChange(page + 1)}
+        onClick={handleNextButtonClick}
+        size="small"
       >
         <ChevronRightIcon />
       </IconButton>
-    )
+    );
   }
 
-
-  if (pageLabel) {
+  if (props.label) {
     // An explicitly provided label takes precedence over all
-    labelText = pageLabel;
+    labelText = props.label;
   }
 
-
-  let pageControl = null;
+  let pageControl;
   if (pageSize && pageSizeChoices && pageSizeChoices.length > 1) {
     pageControl = (
       <Fragment>
         <Link
-          aria-controls="page-size-menu"
           aria-haspopup="true"
           onClick={handlePageSizeButtonClick}
           className={classes.pageSizeSelectButton}
           component={Button}
-          {...typographyProps}
         >
           {labelText}
         </Link>
 
         <Menu
-          id="page-size-menu"
           anchorEl={pageSizeAnchorEl}
           keepMounted
           open={Boolean(pageSizeAnchorEl)}
-          onClose={handlePageSizeMenuClose}
+          onClose={handlePageSizeMenuItemClick(null)}
           TransitionComponent={Fade}
         >
           {pageSizeChoices.map((value) => (
             <MenuItem
               key={value}
-              onClick={() => handlePageSizeMenuItemClick(value)}
+              onClick={handlePageSizeMenuItemClick(value)}
               selected={value === pageSize}
             >
               {value}
@@ -140,7 +167,7 @@ function PaginationControl(props) {
     );
   } else {
     pageControl = (
-      <Typography className={classes.label} {...typographyProps}>
+      <Typography className={classes.label}>
         {labelText}
       </Typography>
     );
@@ -149,9 +176,7 @@ function PaginationControl(props) {
   return (
     <Box display="flex" alignItems="center">
       {previousPageButton}
-
       {pageControl}
-
       {nextPageButton}
     </Box>
   );
@@ -159,22 +184,14 @@ function PaginationControl(props) {
 
 PaginationControl.propTypes = {
   count: PropTypes.number,
-  page: PropTypes.number,
-  pageLabel: PropTypes.string,
-  pageSize: PropTypes.number,
-  pageSizeChoices: PropTypes.array.isRequired,
+  label: PropTypes.string,
+  pageSizeChoices: PropTypes.array,
+  paginationInfo: PropTypes.object,
   onPageChange: PropTypes.func,
   onPageSizeChange: PropTypes.func,
-  totalPages: PropTypes.number,
-  typographyProps: PropTypes.object,
+  searchParams: PropTypes.object,
+  setSearchParams: PropTypes.func,
 };
 
-PaginationControl.defaultProps = {
-  page: 0,
-  typographyProps: {
-    color: 'textSecondary',
-    variant: 'subtitle2',
-  }
-};
 
 export default React.memo(PaginationControl);

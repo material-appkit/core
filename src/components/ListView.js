@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
@@ -8,10 +7,11 @@ import React, {
   useCallback,
   useEffect,
   useRef,
+  useMemo,
   useState,
 } from 'react';
 
-import { VariableSizeList, VariableSizeGrid } from 'react-window';
+import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import Button from '@material-ui/core/Button';
@@ -25,8 +25,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Pagination from '@material-ui/lab/Pagination';
-// import Tabs from '@material-ui/core/Tabs';
-// import Tab from '@material-ui/core/Tab';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -70,42 +68,42 @@ const transformFetchItemsResponse = (res, itemTransformer) => {
 function SortControl(props) {
   const {
     choices,
-    onDismiss,
-    selectedOrdering,
+    orderingParamName,
+    searchParams,
+    setSearchParams,
   } = props;
+
+  let activeOrdering = undefined;
+  if (searchParams) {
+    activeOrdering = searchParams.get(orderingParamName);
+  }
 
   const [sortControlEl, setSortControlEl] = useState(null);
 
-  let orderingLabel = '';
-  choices.forEach((choice) => {
-    if (choice[0] === selectedOrdering) {
-      orderingLabel = choice[1];
+  const dismissMenu = useCallback((choice) => (e) => {
+    if (choice) {
+      const updatedSearchParams = new URLSearchParams(searchParams);
+      updatedSearchParams.set(orderingParamName, choice.value);
+      setSearchParams(updatedSearchParams);
     }
-  });
-
-  const dismissMenu = (choice) => {
     setSortControlEl(null);
-    onDismiss(choice);
-  };
+  }, [orderingParamName, searchParams, setSearchParams]);
 
   return (
     <Fragment>
-      <Tooltip title={`Ordered by: ${orderingLabel}`}>
-        <IconButton
-          color="primary"
-          onClick={(e) => setSortControlEl(e.currentTarget)}
-          style={{ borderRadius: 0 }}
-        >
-          <SortIcon />
-        </IconButton>
-      </Tooltip>
+      <IconButton
+        color="primary"
+        onClick={(e) => setSortControlEl(e.currentTarget)}
+        style={{ borderRadius: 0 }}
+      >
+        <SortIcon />
+      </IconButton>
 
       <Menu
         anchorEl={sortControlEl}
         getContentAnchorEl={null}
-        id="sort-menu"
         open={Boolean(sortControlEl)}
-        onClose={() => dismissMenu(null)}
+        onClose={dismissMenu(null)}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
@@ -119,8 +117,8 @@ function SortControl(props) {
         {makeChoices(choices).map((sortChoice) => (
           <MenuItem
             key={sortChoice.value}
-            onClick={() => dismissMenu(sortChoice)}
-            selected={sortChoice.value === selectedOrdering}
+            onClick={dismissMenu(sortChoice)}
+            selected={sortChoice.value === activeOrdering}
           >
             {sortChoice.label}
           </MenuItem>
@@ -132,8 +130,9 @@ function SortControl(props) {
 
 SortControl.propTypes = {
   choices: PropTypes.array.isRequired,
-  onDismiss: PropTypes.func.isRequired,
-  selectedOrdering: PropTypes.string,
+  orderingParamName: PropTypes.string.isRequired,
+  searchParams: PropTypes.object,
+  setSearchParams: PropTypes.func,
 };
 
 
@@ -163,28 +162,34 @@ const selectionControlStyles = makeStyles((theme) => ({
 }));
 
 function SelectionControl(props) {
-  const [selectMenuEl, setSelectMenuEl] = useState(null);
-  const { selectionDisabled } = props;
-
-
-  const handleSelectionMenuDismiss = (choice) => {
-    setSelectMenuEl(null);
-
-    if (choice) {
-      props.onSelectionMenuItemClick(choice);
-    }
-  };
-
   const classes = selectionControlStyles();
 
-  if (!props.selectionMenu) {
+  const {
+    onClick,
+    onSelectionMenuItemClick,
+    selectionDisabled,
+    selectionMenu,
+  } = props;
+
+  const [selectMenuEl, setSelectMenuEl] = useState(null);
+
+
+  const handleSelectionMenuDismiss = useCallback((choice) => (e) => {
+    if (choice) {
+      onSelectionMenuItemClick(choice);
+    }
+    setSelectMenuEl(null);
+  }, [onSelectionMenuItemClick]);
+
+
+  if (!selectionMenu) {
     return (
       <ToolbarItem
         control={(
           <IconButton
             className={classes.button}
             color={selectionDisabled ? 'default' : 'primary' }
-            onClick={props.onClick}
+            onClick={onClick}
           >
             <GpsFixedIcon />
           </IconButton>
@@ -203,7 +208,7 @@ function SelectionControl(props) {
               root: classes.buttonGroupButton,
               outlined: selectionDisabled ? classes.disabled : classes.enabled,
             }}
-            onClick={props.onClick}
+            onClick={onClick}
             variant="outlined"
           >
             <GpsFixedIcon />
@@ -222,15 +227,14 @@ function SelectionControl(props) {
 
       <Menu
         anchorEl={selectMenuEl}
-        id="selection-menu"
         open={Boolean(selectMenuEl)}
-        onClose={() => handleSelectionMenuDismiss(null)}
+        onClose={handleSelectionMenuDismiss(null)}
         TransitionComponent={Fade}
       >
-        <MenuItem onClick={() => handleSelectionMenuDismiss('all')}>
+        <MenuItem onClick={handleSelectionMenuDismiss('all')}>
           Select All
         </MenuItem>
-        <MenuItem onClick={() => handleSelectionMenuDismiss('none')}>
+        <MenuItem onClick={handleSelectionMenuDismiss('none')}>
           Deselect All
         </MenuItem>
       </Menu>
@@ -245,6 +249,32 @@ SelectionControl.propTypes = {
   onSelectionMenuItemClick: PropTypes.func.isRequired,
 };
 
+//------------------------------------------------------------------------------
+function PaginationListControl(props) {
+  const { paginationInfo, searchParams, setSearchParams, ...paginationProps } = props;
+  const { total_pages, current_page } = paginationInfo;
+
+  const handlePaginationChange = useCallback((e, value) => {
+    const updatedSearchParams = new URLSearchParams(searchParams);
+    updatedSearchParams.set('page', value);
+    setSearchParams(updatedSearchParams);
+  }, [searchParams, setSearchParams]);
+
+  return (
+    <Pagination
+      count={total_pages}
+      page={current_page}
+      onChange={handlePaginationChange}
+      {...paginationProps}
+    />
+  );
+}
+
+PaginationListControl.propTypes = {
+  paginationInfo: PropTypes.object.isRequired,
+  searchParams: PropTypes.object,
+  setSearchParams: PropTypes.func,
+};
 
 //------------------------------------------------------------------------------
 const listViewStyles = makeStyles((theme) => ({
@@ -266,12 +296,15 @@ function ListView(props) {
   const styles = listViewStyles();
 
   const {
+    bindToolbarItemsToSearchParams,
     classes,
     displayMode,
     displaySelectionCount,
     filterMetadata,
     filterParams,
     filterParamTransformer,
+    itemIdKey,
+    itemLinkKey,
     items,
     itemContextMenuArrangement,
     itemContextProvider,
@@ -288,10 +321,8 @@ function ListView(props) {
     onOrderingChange,
     onPageChange,
     onPageSizeChange,
-    onToolbarChange,
     orderable,
     orderingParamName,
-    paginated,
     paginationControlProps,
     paginationListControlProps,
     PlaceholderComponent,
@@ -300,6 +331,8 @@ function ListView(props) {
     selectionInitializer,
     selectionMenu,
     selectionMode,
+    searchParams,
+    setSearchParams,
     src,
     subsetFilterArrangement,
     tileItemComponent,
@@ -313,7 +346,6 @@ function ListView(props) {
   const [renderedItems, setRenderedItems] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [paginationInfo, setPaginationInfo] = useState(null);
-  const [selectedSubsetArrangementIndex, setSelectedSubsetArrangementIndex] = useState(null);
   const [uncontrolledSelection, setUncontrolledSelection] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(props.selectionDisabled);
 
@@ -324,21 +356,25 @@ function ListView(props) {
   const [measuring, setMeasuring] = useState(false);
   const itemHeights = useRef(null);
 
-  const toolbarItemsRef = useRef({});
-
   // Derived properties
 
   // The view is assumed to be 'loading' whenever a fetchRequestContext is set.
   const loading = !!fetchRequestContext;
 
-  const ordering = appliedFilterParams ? appliedFilterParams[orderingParamName] : null;
+  // ---------------------------------------------------------------------------
+  const itemCount = useMemo(() => {
+    if (paginationInfo) {
+      return paginationInfo.total;
+    }
+    return renderedItems ? renderedItems.length : undefined;
+  }, [renderedItems, paginationInfo]);
 
   // ---------------------------------------------------------------------------
   // Selection Management
   // ---------------------------------------------------------------------------
   const selection = props.selection || uncontrolledSelection;
 
-  const setSelection = (updatedSelection) => {
+  const setSelection = useCallback((updatedSelection) => {
     if (!props.selection) {
       setUncontrolledSelection(updatedSelection);
     }
@@ -346,15 +382,14 @@ function ListView(props) {
     if (props.onSelectionChange) {
       props.onSelectionChange(updatedSelection);
     }
-  };
+  }, [props]);
 
 
-  const updateSelection = (item) => {
+  const updateSelection = useCallback((item) => {
     const itemId = keyForItem(item);
     const selectedItem = setFind(selection, (i) => keyForItem(i) === itemId);
 
-    let newSelection = null;
-
+    let newSelection;
     if (selectionMode === 'single') {
       newSelection = new Set();
       if (!selectedItem) {
@@ -368,9 +403,8 @@ function ListView(props) {
         newSelection.add(item);
       }
     }
-
     setSelection(newSelection);
-  };
+  }, [selection]);
 
 
   /**
@@ -385,23 +419,7 @@ function ListView(props) {
 
     updateSelection(item);
 
-  }, [selection, renderedItems]);
-
-
-  // ---------------------------------------------------------------------------
-  // Pagination
-  // ---------------------------------------------------------------------------
-  const setPage = (value) => {
-    if (onPageChange) {
-      onPageChange(value);
-    }
-  };
-
-  const setPageSize = (value) => {
-    if (onPageSizeChange) {
-      onPageSizeChange(value);
-    }
-  };
+  }, [selection, renderedItems, updateSelection]);
 
   // ---------------------------------------------------------------------------
 
@@ -409,23 +427,21 @@ function ListView(props) {
    * @param item
    * @returns {*} Unique identifier of given item
    */
-  const keyForItem = (item) => {
-    const { itemIdKey } = props;
+  const keyForItem = useCallback((item) => {
     return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
-  };
+  }, [itemIdKey]);
 
   /**
    *
    * @param item
    * @returns {*} Path item should link to
    */
-  const pathForItem = (item) => {
-    const { itemLinkKey } = props;
+  const pathForItem = useCallback((item) => {
     if (!itemLinkKey) {
       return null;
     }
     return (typeof itemLinkKey === 'function') ? itemLinkKey(item) : item[itemLinkKey];
-  };
+  }, [itemLinkKey]);
 
 
   /**
@@ -476,13 +492,13 @@ function ListView(props) {
    * @param item
    * Helper function to locate the index of the given item
    */
-  const findItemIndex = (sourceItem) => {
+  const findItemIndex = useCallback((sourceItem) => {
     const sourceItemKey = keyForItem(sourceItem);
 
     return renderedItems.findIndex((targetItem) => (
       keyForItem(targetItem) === sourceItemKey
     ));
-  };
+  }, [renderedItems]);
 
 
   /**
@@ -490,7 +506,7 @@ function ListView(props) {
    * @param item
    * Helper function to add the given item to the beginning of the list
    */
-  const addItem = (item) => {
+  const addItem = useCallback((item) => {
     const updatedItems = [...renderedItems];
     updatedItems.unshift(item);
     setRenderedItems(updatedItems);
@@ -500,7 +516,7 @@ function ListView(props) {
       updatedPaginationInfo.total += 1;
       setPaginationInfo(updatedPaginationInfo);
     }
-  };
+  }, [paginationInfo, renderedItems]);
 
 
   /**
@@ -508,7 +524,7 @@ function ListView(props) {
    * @param item
    * Helper function to remove the given item from the list
    */
-  const removeItem = (item) => {
+  const removeItem = useCallback((item) => {
     const sourceItemIndex = findItemIndex(item);
 
     if (selection.has(item)) {
@@ -533,7 +549,7 @@ function ListView(props) {
       updatedPaginationInfo.total -= 1;
       setPaginationInfo(updatedPaginationInfo);
     }
-  };
+  }, [paginationInfo, renderedItems, selection]);
 
 
   /**
@@ -542,7 +558,7 @@ function ListView(props) {
    * @param newItem
    * Helper function to replace the item 'oldItem' with the given 'newItem'
    */
-  const updateItem = (source, target) => {
+  const updateItem = useCallback((source, target) => {
     const sourceItemIndex = findItemIndex(source);
     if (sourceItemIndex === -1) {
       // This situation is most likely to occur when a record has been updated
@@ -560,20 +576,9 @@ function ListView(props) {
     const updatedItems = [...renderedItems];
     updatedItems[sourceItemIndex] = target;
     setRenderedItems(updatedItems);
-  };
-
-
-  const updateToolbarItems = (change) => {
-    const newToolbarItems = { ...toolbarItemsRef.current, ...change };
-    toolbarItemsRef.current = newToolbarItems;
-
-    if (onToolbarChange) {
-      onToolbarChange(newToolbarItems);
-    }
-  };
+  }, [findItemIndex, renderedItems, selection]);
 
   // ---------------------------------------------------------------------------
-
   /**
    * Initialization
    */
@@ -669,87 +674,100 @@ function ListView(props) {
   }, [appliedFilterParams, src]);
 
 
-  /**
-   * Update the selectionControl toolbarItem when selection mode is enabled/disabled
-   */
-  useEffect(() => {
-    const updatedToolbarItems = {};
+  // ---------------------------------------------------------------------------
+  const constructToolbarItem = useCallback((itemType, context) => {
+    const commonToolbarItemProps = { searchParams, setSearchParams };
 
-    updatedToolbarItems.selectionControl = (
-      <SelectionControl
-        onClick={() => {
-          // When the selection control button is clicked, toggle selection mode.
-          setSelectionDisabled(!selectionDisabled);
+    switch (itemType) {
+      case 'selectionControl':
+        if (!selectionMode) {
+          return null;
+        }
 
-          // _Always_ clear current selection when selection mode is toggled
-          setSelection(new Set());
-        }}
-        onSelectionMenuItemClick={handleSelectionMenuItemClick}
-        selectionDisabled={selectionDisabled}
-        selectionMenu={selectionMenu}
-      />
-    );
+        return (
+          <SelectionControl
+            key="selection-control"
+            onClick={() => {
+              // When the selection control button is clicked, toggle selection mode.
+              setSelectionDisabled(!selectionDisabled);
+              // _Always_ clear current selection when selection mode is toggled
+              setSelection(new Set());
+            }}
+            onSelectionMenuItemClick={handleSelectionMenuItemClick}
+            selectionDisabled={selectionDisabled}
+            selectionMenu={selectionMenu}
+            {...commonToolbarItemProps}
+          />
+        );
 
-    const appliedPaginationControlProps = { ...paginationControlProps };
+      case 'paginationControl':
+        let paginationControlLabel = null;
+        if (displaySelectionCount && !selectionDisabled && selectionMode && itemCount !== null) {
+          paginationControlLabel = `${selection.size} of ${itemCount} selected`;
+        }
+        return (
+          <PaginationControl
+            {...paginationControlProps}
+            key={itemType}
+            label={paginationControlLabel}
+            paginationInfo={paginationInfo}
+            count={itemCount}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
+            {...commonToolbarItemProps}
+          />
+        );
 
-    let totalCount = null;
-    if (paginationInfo) {
-      totalCount = paginationInfo.total;
+      case 'paginationListControl':
+        return paginationInfo ? (
+          <PaginationListControl
+            {...paginationListControlProps}
+            key={itemType}
+            paginationInfo={paginationInfo}
+            {...commonToolbarItemProps}
+          />
+        ) : null;
 
-      Object.assign(appliedPaginationControlProps, {
-        page: paginationInfo.current_page - 1,
-        pageSize: paginationInfo.per_page,
-        onPageChange: (value) => setPage(value + 1),
-        onPageSizeChange: (value) => setPageSize(value),
-      });
+      case 'sortControl':
+        if (!(orderable && filterMetadata)) {
+          return null;
+        }
+        const orderingFields = filterMetadata.ordering_fields;
+        if (!(orderingFields && orderingFields.length)) {
+          return null;
+        }
+        return (
+          <SortControl
+            choices={orderingFields}
+            key="sort-control"
+            orderingParamName={orderingParamName}
+            {...commonToolbarItemProps}
+          />
+        );
 
-      updatedToolbarItems.paginationListControl = (
-        <Pagination
-          count={paginationInfo.total_pages}
-          page={paginationInfo.current_page}
-          onChange={(e, value) => setPage(value)}
-          {...paginationListControlProps}
-        />
-      );
-    } else {
-      totalCount = renderedItems ? renderedItems.length : null;
+      default:
+        throw new Error(`Unknown toolbar item type: ${itemType}`);
     }
+  }, [
+    bindToolbarItemsToSearchParams,
+    displaySelectionCount,
+    itemCount,
+    orderable,
+    filterMetadata,
+    handleSelectionMenuItemClick,
+    onPageChange,
+    onPageSizeChange,
+    orderingParamName,
+    paginationInfo,
+    paginationControlProps,
+    paginationListControlProps,
+    selection,
+    selectionDisabled,
+    selectionMenu,
+    selectionMode,
+  ]);
 
-    appliedPaginationControlProps.count = totalCount;
-    if (displaySelectionCount && !selectionDisabled && selectionMode && totalCount !== null) {
-      appliedPaginationControlProps.pageLabel = `${selection.size} of ${totalCount} selected`;
-    }
-
-    updatedToolbarItems.paginationControl = (
-      <PaginationControl {...appliedPaginationControlProps} />
-    );
-
-    updateToolbarItems(updatedToolbarItems);
-  }, [paginationInfo, renderedItems, selection, selectionDisabled]);
-
-
-  useEffect(() => {
-    if (!(orderable && filterMetadata)) {
-      return;
-    }
-
-    const orderingFields = filterMetadata.ordering_fields;
-    if (!(orderingFields && orderingFields.length)) {
-      return;
-    }
-
-    updateToolbarItems({
-      sortControl: (
-        <SortControl
-          choices={orderingFields}
-          selectedOrdering={ordering}
-          onDismiss={handleSortDialogDismiss}
-        />
-      )
-    });
-  }, [filterMetadata, orderable, ordering]);
-
-
+  // ---------------------------------------------------------------------------
   /**
    * Invoke the onConfig callback when any of the exposed state properties are affected.
    */
@@ -759,60 +777,23 @@ function ListView(props) {
     }
 
     onConfig({
+      constructToolbarItem,
       extendSelection,
       updateItem: handleItemUpdate,
-      renderedItems,
       setRenderedItems: handleSetRenderedItems,
-      selection,
-      selectionDisabled,
     });
   }, [
-    renderedItems,
-    selection,
-    selectionDisabled,
+    constructToolbarItem,
+    extendSelection,
+    // renderedItems,
   ]);
-
-  // useEffect(() => {
-  //   if (subsetFilterArrangement && (selectedSubsetArrangementIndex !== null)) {
-  //    const newToolbarItems = { ...toolbarItems };
-  //     newToolbarItems.tabsControl = (
-  //       <Tabs
-  //         style={{ flex: 1 }}
-  //         onChange={(e, tabIndex) => { setSelectedSubsetArrangementIndex(tabIndex); }}
-  //         scrollButtons="auto"
-  //         value={selectedSubsetArrangementIndex}
-  //         variant="scrollable"
-  //       >
-  //         {props.subsetFilterArrangement.map((subsetInfo) => (
-  //           <Tab key={subsetInfo.label} label={subsetInfo.label} />
-  //         ))}
-  //       </Tabs>
-  //     );
-  //     setToolbarItems(newToolbarItems);
-  //   }
-  //
-
-  //   // Let the querystring params determine the initially selected tab
-  //   if (subsetFilterArrangement) {
-  //     let initialSubsetArrangementIndex = -1;
-  //
-  //     const initialSubsetLabel = qsParams[props.subsetParamName];
-  //     if (initialSubsetLabel) {
-  //       initialSubsetArrangementIndex = subsetFilterArrangement.findIndex(
-  //         (arrangementInfo) => arrangementInfo.label === initialSubsetLabel
-  //       );
-  //     }
-  //     initialSubsetArrangementIndex = Math.max(0, initialSubsetArrangementIndex);
-  //     setSelectedSubsetArrangementIndex(initialSubsetArrangementIndex);
-  //   }
-  // }, [subsetFilterArrangement]);
 
 
   // ---------------------------------------------------------------------------
   /**
    * Respond to selection menu by updating selection accordingly
    */
-  const handleSelectionMenuItemClick = (action) => {
+  const handleSelectionMenuItemClick = useCallback((action) => {
     switch (action) {
       case 'all':
         const newSelection = new Set(selection);
@@ -825,17 +806,10 @@ function ListView(props) {
       default:
         throw new Error(`Unsupported selection action: ${action}`);
     }
-  };
+  }, []);
 
 
-  const handleSortDialogDismiss = (choice) => {
-    if (onOrderingChange) {
-      onOrderingChange(choice);
-    }
-  };
-
-
-  const handleItemUpdate = (change) => {
+  const handleItemUpdate = useCallback((change) => {
     if (!renderedItems) {
       return;
     }
@@ -847,13 +821,13 @@ function ListView(props) {
     } else {
       updateItem(change.old, change.new);
     }
-  };
+  }, [removeItem, addItem, updateItem]);
 
-  const handleSetRenderedItems = (items) => {
+
+  const handleSetRenderedItems = useCallback((items) => {
     setSelection(new Set());
-
     setRenderedItems(items);
-  };
+  }, []);
 
 
   // ---------------------------------------------------------------------------
@@ -1119,16 +1093,17 @@ ListView.propTypes = {
   onPageChange: PropTypes.func,
   onPageSizeChange: PropTypes.func,
   onSelectionChange: PropTypes.func,
-  onToolbarChange: PropTypes.func,
 
   orderable: PropTypes.bool,
   orderingParamName: PropTypes.string,
-  paginated: PropTypes.bool,
   paginationListControlProps: PropTypes.object,
 
   PlaceholderComponent: PropTypes.elementType,
 
   responseTransformer: PropTypes.func,
+
+  searchParams: PropTypes.object,
+  setSearchParams: PropTypes.func,
 
   selection: PropTypes.object,
   selectionDisabled: PropTypes.bool,
@@ -1145,8 +1120,6 @@ ListView.propTypes = {
   tileItemComponent: PropTypes.elementType,
   tileItemComponentFunc: PropTypes.func,
 
-  urlUpdateFunc: PropTypes.func,
-
   windowed: PropTypes.bool,
   windowedListItemHeight: PropTypes.number,
 };
@@ -1161,7 +1134,6 @@ ListView.defaultProps = {
   loadingVariant: 'linear',
   orderable: true,
   orderingParamName: 'order',
-  paginated: false,
   paginationControlProps: {
     pageSizeChoices: [10, 20, 50, 100],
   },
