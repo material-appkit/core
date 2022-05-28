@@ -157,28 +157,34 @@ const selectionControlStyles = makeStyles((theme) => ({
 }));
 
 function SelectionControl(props) {
-  const [selectMenuEl, setSelectMenuEl] = useState(null);
-  const { selectionDisabled } = props;
-
-
-  const handleSelectionMenuDismiss = (choice) => {
-    setSelectMenuEl(null);
-
-    if (choice) {
-      props.onSelectionMenuItemClick(choice);
-    }
-  };
-
   const classes = selectionControlStyles();
 
-  if (!props.selectionMenu) {
+  const {
+    onClick,
+    onSelectionMenuItemClick,
+    selectionDisabled,
+    selectionMenu,
+  } = props;
+
+  const [selectMenuEl, setSelectMenuEl] = useState(null);
+
+
+  const handleSelectionMenuDismiss = useCallback((choice) => (e) => {
+    if (choice) {
+      onSelectionMenuItemClick(choice);
+    }
+    setSelectMenuEl(null);
+  }, [onSelectionMenuItemClick]);
+
+
+  if (!selectionMenu) {
     return (
       <ToolbarItem
         control={(
           <IconButton
             className={classes.button}
             color={selectionDisabled ? 'default' : 'primary' }
-            onClick={props.onClick}
+            onClick={onClick}
           >
             <GpsFixedIcon />
           </IconButton>
@@ -197,7 +203,7 @@ function SelectionControl(props) {
               root: classes.buttonGroupButton,
               outlined: selectionDisabled ? classes.disabled : classes.enabled,
             }}
-            onClick={props.onClick}
+            onClick={onClick}
             variant="outlined"
           >
             <GpsFixedIcon />
@@ -216,15 +222,14 @@ function SelectionControl(props) {
 
       <Menu
         anchorEl={selectMenuEl}
-        id="selection-menu"
         open={Boolean(selectMenuEl)}
-        onClose={() => handleSelectionMenuDismiss(null)}
+        onClose={handleSelectionMenuDismiss(null)}
         TransitionComponent={Fade}
       >
-        <MenuItem onClick={() => handleSelectionMenuDismiss('all')}>
+        <MenuItem onClick={handleSelectionMenuDismiss('all')}>
           Select All
         </MenuItem>
-        <MenuItem onClick={() => handleSelectionMenuDismiss('none')}>
+        <MenuItem onClick={handleSelectionMenuDismiss('none')}>
           Deselect All
         </MenuItem>
       </Menu>
@@ -348,8 +353,6 @@ function ListView(props) {
   // The view is assumed to be 'loading' whenever a fetchRequestContext is set.
   const loading = !!fetchRequestContext;
 
-  const ordering = appliedFilterParams ? appliedFilterParams[orderingParamName] : null;
-
   // ---------------------------------------------------------------------------
   const itemCount = useMemo(() => {
     if (paginationInfo) {
@@ -411,22 +414,6 @@ function ListView(props) {
     updateSelection(item);
 
   }, [selection, renderedItems]);
-
-
-  // ---------------------------------------------------------------------------
-  // Pagination
-  // ---------------------------------------------------------------------------
-  // const setPage = (value) => {
-  //   if (onPageChange) {
-  //     onPageChange(value);
-  //   }
-  // };
-  //
-  // const setPageSize = (value) => {
-  //   if (onPageSizeChange) {
-  //     onPageSizeChange(value);
-  //   }
-  // };
 
   // ---------------------------------------------------------------------------
 
@@ -779,6 +766,26 @@ function ListView(props) {
   // ---------------------------------------------------------------------------
   const constructToolbarItem = useCallback((itemType, context) => {
     switch (itemType) {
+      case 'selectionControl':
+        if (!selectionMode) {
+          return null;
+        }
+
+        return (
+          <SelectionControl
+            key="selection-control"
+            onClick={() => {
+              // When the selection control button is clicked, toggle selection mode.
+              setSelectionDisabled(!selectionDisabled);
+              // _Always_ clear current selection when selection mode is toggled
+              setSelection(new Set());
+            }}
+            onSelectionMenuItemClick={handleSelectionMenuItemClick}
+            selectionDisabled={selectionDisabled}
+            selectionMenu={selectionMenu}
+          />
+        );
+
       case 'paginationControl':
         return (
           <PaginationControl
@@ -788,6 +795,7 @@ function ListView(props) {
             count={itemCount}
           />
         );
+
       case 'paginationListControl':
         return paginationInfo ? (
           <PaginationListControl
@@ -796,6 +804,7 @@ function ListView(props) {
             paginationInfo={paginationInfo}
           />
         ) : null;
+
       case 'sortControl':
         if (!(orderable && filterMetadata)) {
           return null;
@@ -811,6 +820,7 @@ function ListView(props) {
             orderingParamName={orderingParamName}
           />
         );
+
       default:
         throw new Error(`Unknown toolbar item type: ${itemType}`);
     }
@@ -818,10 +828,14 @@ function ListView(props) {
     itemCount,
     orderable,
     filterMetadata,
+    handleSelectionMenuItemClick,
     orderingParamName,
     paginationInfo,
     paginationControlProps,
     paginationListControlProps,
+    selectionDisabled,
+    selectionMenu,
+    selectionMode,
   ]);
 
   // ---------------------------------------------------------------------------
@@ -885,20 +899,21 @@ function ListView(props) {
   /**
    * Respond to selection menu by updating selection accordingly
    */
-  // const handleSelectionMenuItemClick = (action) => {
-  //   switch (action) {
-  //     case 'all':
-  //       const newSelection = new Set(selection);
-  //       renderedItems.forEach((item) => newSelection.add(item));
-  //       setSelection(newSelection);
-  //       break;
-  //     case 'none':
-  //       setSelection(new Set());
-  //       break;
-  //     default:
-  //       throw new Error(`Unsupported selection action: ${action}`);
-  //   }
-  // };
+  const handleSelectionMenuItemClick = useCallback((action) => {
+    console.log(action);
+    // switch (action) {
+    //   case 'all':
+    //     const newSelection = new Set(selection);
+    //     renderedItems.forEach((item) => newSelection.add(item));
+    //     setSelection(newSelection);
+    //     break;
+    //   case 'none':
+    //     setSelection(new Set());
+    //     break;
+    //   default:
+    //     throw new Error(`Unsupported selection action: ${action}`);
+    // }
+  }, []);
 
 
   const handleItemUpdate = useCallback((change) => {
