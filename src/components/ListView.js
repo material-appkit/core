@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
+import { useSearchParams } from "react-router-dom";
 
 import React, {
   Fragment,
@@ -243,6 +244,32 @@ SelectionControl.propTypes = {
   onSelectionMenuItemClick: PropTypes.func.isRequired,
 };
 
+//------------------------------------------------------------------------------
+function PaginationListControl(props) {
+  const { paginationInfo, ...paginationProps } = props;
+  const { total_pages, current_page } = paginationInfo;
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const handlePaginationChange = useCallback((e, value) => {
+    const updatedSearchParams = new URLSearchParams(searchParams);
+    updatedSearchParams.set('page', value);
+    setSearchParams(updatedSearchParams);
+  }, [searchParams, setSearchParams]);
+
+  return (
+    <Pagination
+      count={total_pages}
+      page={current_page}
+      onChange={handlePaginationChange}
+      {...paginationProps}
+    />
+  );
+}
+
+PaginationListControl.propTypes = {
+  paginationInfo: PropTypes.object.isRequired,
+};
 
 //------------------------------------------------------------------------------
 const listViewStyles = makeStyles((theme) => ({
@@ -289,7 +316,6 @@ function ListView(props) {
     onToolbarChange,
     orderable,
     orderingParamName,
-    paginated,
     paginationControlProps,
     paginationListControlProps,
     PlaceholderComponent,
@@ -770,12 +796,10 @@ function ListView(props) {
         );
       case 'paginationListControl':
         return paginationInfo ? (
-          <Pagination
-            key={itemType}
-            count={paginationInfo.total_pages}
-            page={paginationInfo.current_page}
-            onChange={(e, value) => context.onPageChange(value)}
+          <PaginationListControl
             {...paginationListControlProps}
+            key={itemType}
+            paginationInfo={paginationInfo}
           />
         ) : null;
       default:
@@ -1160,7 +1184,6 @@ ListView.propTypes = {
 
   orderable: PropTypes.bool,
   orderingParamName: PropTypes.string,
-  paginated: PropTypes.bool,
   paginationListControlProps: PropTypes.object,
 
   PlaceholderComponent: PropTypes.elementType,
@@ -1196,7 +1219,6 @@ ListView.defaultProps = {
   loadingVariant: 'linear',
   orderable: true,
   orderingParamName: 'order',
-  paginated: false,
   paginationControlProps: {
     pageSizeChoices: [10, 20, 50, 100],
   },
