@@ -69,42 +69,38 @@ const transformFetchItemsResponse = (res, itemTransformer) => {
 function SortControl(props) {
   const {
     choices,
-    onDismiss,
-    selectedOrdering,
+    orderingParamName,
   } = props;
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeOrdering = searchParams.get(orderingParamName);
 
   const [sortControlEl, setSortControlEl] = useState(null);
 
-  let orderingLabel = '';
-  choices.forEach((choice) => {
-    if (choice[0] === selectedOrdering) {
-      orderingLabel = choice[1];
+  const dismissMenu = useCallback((choice) => (e) => {
+    if (choice) {
+      const updatedSearchParams = new URLSearchParams(searchParams);
+      updatedSearchParams.set(orderingParamName, choice.value);
+      setSearchParams(updatedSearchParams);
     }
-  });
-
-  const dismissMenu = (choice) => {
     setSortControlEl(null);
-    onDismiss(choice);
-  };
+  }, [orderingParamName, searchParams, setSearchParams]);
 
   return (
     <Fragment>
-      <Tooltip title={`Ordered by: ${orderingLabel}`}>
-        <IconButton
-          color="primary"
-          onClick={(e) => setSortControlEl(e.currentTarget)}
-          style={{ borderRadius: 0 }}
-        >
-          <SortIcon />
-        </IconButton>
-      </Tooltip>
+      <IconButton
+        color="primary"
+        onClick={(e) => setSortControlEl(e.currentTarget)}
+        style={{ borderRadius: 0 }}
+      >
+        <SortIcon />
+      </IconButton>
 
       <Menu
         anchorEl={sortControlEl}
         getContentAnchorEl={null}
-        id="sort-menu"
         open={Boolean(sortControlEl)}
-        onClose={() => dismissMenu(null)}
+        onClose={dismissMenu(null)}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'center',
@@ -118,8 +114,8 @@ function SortControl(props) {
         {makeChoices(choices).map((sortChoice) => (
           <MenuItem
             key={sortChoice.value}
-            onClick={() => dismissMenu(sortChoice)}
-            selected={sortChoice.value === selectedOrdering}
+            onClick={dismissMenu(sortChoice)}
+            selected={sortChoice.value === activeOrdering}
           >
             {sortChoice.label}
           </MenuItem>
@@ -131,8 +127,7 @@ function SortControl(props) {
 
 SortControl.propTypes = {
   choices: PropTypes.array.isRequired,
-  onDismiss: PropTypes.func.isRequired,
-  selectedOrdering: PropTypes.string,
+  orderingParamName: PropTypes.string.isRequired,
 };
 
 
@@ -788,7 +783,6 @@ function ListView(props) {
         return (
           <PaginationControl
             {...paginationControlProps}
-            context={context}
             key={itemType}
             paginationInfo={paginationInfo}
             count={itemCount}
@@ -802,11 +796,29 @@ function ListView(props) {
             paginationInfo={paginationInfo}
           />
         ) : null;
+      case 'sortControl':
+        if (!(orderable && filterMetadata)) {
+          return null;
+        }
+        const orderingFields = filterMetadata.ordering_fields;
+        if (!(orderingFields && orderingFields.length)) {
+          return null;
+        }
+        return (
+          <SortControl
+            choices={orderingFields}
+            key="sort-control"
+            orderingParamName={orderingParamName}
+          />
+        );
       default:
         throw new Error(`Unknown toolbar item type: ${itemType}`);
     }
   }, [
     itemCount,
+    orderable,
+    filterMetadata,
+    orderingParamName,
     paginationInfo,
     paginationControlProps,
     paginationListControlProps,
@@ -873,27 +885,20 @@ function ListView(props) {
   /**
    * Respond to selection menu by updating selection accordingly
    */
-  const handleSelectionMenuItemClick = (action) => {
-    switch (action) {
-      case 'all':
-        const newSelection = new Set(selection);
-        renderedItems.forEach((item) => newSelection.add(item));
-        setSelection(newSelection);
-        break;
-      case 'none':
-        setSelection(new Set());
-        break;
-      default:
-        throw new Error(`Unsupported selection action: ${action}`);
-    }
-  };
-
-
-  const handleSortDialogDismiss = (choice) => {
-    if (onOrderingChange) {
-      onOrderingChange(choice);
-    }
-  };
+  // const handleSelectionMenuItemClick = (action) => {
+  //   switch (action) {
+  //     case 'all':
+  //       const newSelection = new Set(selection);
+  //       renderedItems.forEach((item) => newSelection.add(item));
+  //       setSelection(newSelection);
+  //       break;
+  //     case 'none':
+  //       setSelection(new Set());
+  //       break;
+  //     default:
+  //       throw new Error(`Unsupported selection action: ${action}`);
+  //   }
+  // };
 
 
   const handleItemUpdate = useCallback((change) => {
