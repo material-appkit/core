@@ -43,7 +43,6 @@ function PaginationControl(props) {
 
   const [pageSizeAnchorEl, setPageSizeAnchorEl] = useState(null);
 
-
   let page, pageSize;
   if (paginationInfo) {
     page = paginationInfo.current_page;
@@ -54,17 +53,27 @@ function PaginationControl(props) {
   }
 
   const handlePreviousButtonClick = useCallback(() => {
-    const updatedSearchParams = new URLSearchParams(searchParams);
-    updatedSearchParams.set('page', page - 1);
-    setSearchParams(updatedSearchParams);
-  }, [page, searchParams, setSearchParams]);
+    const previousPageIndex = page - 1;
+    if (searchParams && setSearchParams) {
+      const updatedSearchParams = new URLSearchParams(searchParams);
+      updatedSearchParams.set('page', previousPageIndex);
+      setSearchParams(updatedSearchParams);
+    } else if (onPageChange) {
+      onPageChange(previousPageIndex);
+    }
+  }, [onPageChange, page, searchParams, setSearchParams]);
 
 
   const handleNextButtonClick = useCallback(() => {
-    const updatedSearchParams = new URLSearchParams(searchParams);
-    updatedSearchParams.set('page', page + 1);
-    setSearchParams(updatedSearchParams);
-  }, [page, searchParams, setSearchParams]);
+    const nextPageIndex = page + 1;
+    if (searchParams && setSearchParams) {
+      const updatedSearchParams = new URLSearchParams(searchParams);
+      updatedSearchParams.set('page', nextPageIndex);
+      setSearchParams(updatedSearchParams);
+    } else if (onPageChange) {
+      onPageChange(nextPageIndex);
+    }
+  }, [onPageChange, page, searchParams, setSearchParams]);
 
 
   const handlePageSizeButtonClick = useCallback((e) => {
@@ -73,14 +82,17 @@ function PaginationControl(props) {
 
   const handlePageSizeMenuItemClick = useCallback((value) => () => {
     if (value) {
-      const updatedSearchParams = new URLSearchParams(searchParams);
-      updatedSearchParams.set('page', 1);
-      updatedSearchParams.set('page_size', value);
-      setSearchParams(updatedSearchParams);
-    // onPageSizeChange(value);
+      if (searchParams && setSearchParams) {
+        const updatedSearchParams = new URLSearchParams(searchParams);
+        updatedSearchParams.set('page', 1);
+        updatedSearchParams.set('page_size', value);
+        setSearchParams(updatedSearchParams);
+      } else if (onPageSizeChange) {
+        onPageSizeChange(value);
+      }
     }
     setPageSizeAnchorEl(null);
-  }, [searchParams, setSearchParams]);
+  }, [onPageSizeChange, searchParams, setSearchParams]);
 
 
   let previousPageButton = null;
@@ -172,10 +184,8 @@ function PaginationControl(props) {
 
 PaginationControl.propTypes = {
   count: PropTypes.number,
-  page: PropTypes.number,
   label: PropTypes.string,
-  pageSize: PropTypes.number,
-  pageSizeChoices: PropTypes.array.isRequired,
+  pageSizeChoices: PropTypes.array,
   paginationInfo: PropTypes.object,
   onPageChange: PropTypes.func,
   onPageSizeChange: PropTypes.func,

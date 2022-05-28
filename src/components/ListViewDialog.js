@@ -85,6 +85,7 @@ function ListViewDialog(props) {
   const [loading, setLoading] = useState(false);
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
+  const [paginationControlProps] = useState({});
 
   const dialogTitle = useMemo(() => (
     typeof(title) === 'function' ? title() : title
@@ -92,7 +93,7 @@ function ListViewDialog(props) {
 
   const dialogRef = useRef(null);
 
-
+  //----------------------------------------------------------------------------
   useEffect(() => {
     if (filterParams) {
       setAppliedFilterParams(filterParams);
@@ -102,27 +103,23 @@ function ListViewDialog(props) {
   }, [filterParams]);
 
   //----------------------------------------------------------------------------
-  const commit = () => {
-    const selection = Array.from(listViewConfig.selection);
-    onDismiss(selection);
-  };
+  const commit = useCallback(() => {
+    onDismiss(Array.from(listViewSelection));
+  }, [listViewSelection, onDismiss]);
 
   //----------------------------------------------------------------------------
-  const handleSelectionChange = (selection) => {
+  const handleSelectionChange = useCallback((selection) => {
     setListViewSelection(selection);
 
     if (commitOnSelect) {
       onDismiss(Array.from(selection));
     }
-  };
+  }, [commitOnSelect, onDismiss]);
 
   //----------------------------------------------------------------------------
-  const handlePageChange = (page) => {
-    setAppliedFilterParams({
-      ...appliedFilterParams,
-      page
-    });
-  };
+  const handlePageChange = useCallback((page) => {
+    setAppliedFilterParams({ ...appliedFilterParams, page });
+  }, []);
 
   //----------------------------------------------------------------------------
   const handleSearchFieldChange = useCallback((value) => {
@@ -133,14 +130,14 @@ function ListViewDialog(props) {
   }, []);
 
   //----------------------------------------------------------------------------
-  const handleKeyDown = (e) => {
+  const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
 
       commit();
     }
-  };
+  }, [commit]);
 
   //----------------------------------------------------------------------------
   const handleEditDialogClose = () => {
@@ -177,7 +174,7 @@ function ListViewDialog(props) {
           <Button
             color="primary"
             disabled={!(listViewSelection && listViewSelection.size)}
-            onClick={() => commit()}
+            onClick={commit}
           >
             Choose
           </Button>
@@ -253,6 +250,7 @@ function ListViewDialog(props) {
             onLoadComplete={() => setLoading(false)}
             onPageChange={handlePageChange}
             onSelectionChange={handleSelectionChange}
+            paginationControlProps={paginationControlProps}
             selectionDisabled={false}
             selectionMode={commitOnSelect ? 'single' : selectionMode}
             selectOnClick

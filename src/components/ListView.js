@@ -712,6 +712,8 @@ function ListView(props) {
             label={paginationControlLabel}
             paginationInfo={paginationInfo}
             count={itemCount}
+            onPageChange={onPageChange}
+            onPageSizeChange={onPageSizeChange}
             {...commonToolbarItemProps}
           />
         );
@@ -753,6 +755,8 @@ function ListView(props) {
     orderable,
     filterMetadata,
     handleSelectionMenuItemClick,
+    onPageChange,
+    onPageSizeChange,
     orderingParamName,
     paginationInfo,
     paginationControlProps,
