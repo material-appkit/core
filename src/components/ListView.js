@@ -675,6 +675,26 @@ function ListView(props) {
 
 
   // ---------------------------------------------------------------------------
+  /**
+   * Respond to selection menu by updating selection accordingly
+   */
+  const handleSelectionMenuItemClick = useCallback((action) => {
+    switch (action) {
+      case 'all':
+        const newSelection = new Set(selection);
+        renderedItems.forEach((item) => newSelection.add(item));
+        setSelection(newSelection);
+        break;
+      case 'none':
+        setSelection(new Set());
+        break;
+      default:
+        throw new Error(`Unsupported selection action: ${action}`);
+    }
+  }, []);
+
+
+  // ---------------------------------------------------------------------------
   const constructToolbarItem = useCallback((itemType, context) => {
     const commonToolbarItemProps = { searchParams, setSearchParams };
 
@@ -761,6 +781,8 @@ function ListView(props) {
     paginationInfo,
     paginationControlProps,
     paginationListControlProps,
+    searchParams,
+    setSearchParams,
     selection,
     selectionDisabled,
     selectionMenu,
@@ -787,26 +809,6 @@ function ListView(props) {
     extendSelection,
     // renderedItems,
   ]);
-
-
-  // ---------------------------------------------------------------------------
-  /**
-   * Respond to selection menu by updating selection accordingly
-   */
-  const handleSelectionMenuItemClick = useCallback((action) => {
-    switch (action) {
-      case 'all':
-        const newSelection = new Set(selection);
-        renderedItems.forEach((item) => newSelection.add(item));
-        setSelection(newSelection);
-        break;
-      case 'none':
-        setSelection(new Set());
-        break;
-      default:
-        throw new Error(`Unsupported selection action: ${action}`);
-    }
-  }, []);
 
 
   const handleItemUpdate = useCallback((change) => {
