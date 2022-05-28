@@ -2,12 +2,7 @@ import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Routes,
-  Route,
-  Link as RouterLink,
-  useLocation,
-} from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -36,7 +31,10 @@ const styles = makeStyles((theme) => ({
 
 function TabView(props) {
   const classes = styles();
+
   const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const {
     basePath,
@@ -88,14 +86,23 @@ function TabView(props) {
 
 
   const handleTabChange = useCallback((e, index) => {
+    const tabInfo = tabArrangement[index];
+    navigate(`${tabInfo.path}?${searchParams.toString()}`);
+
     if (onTabChange) {
-      onTabChange(tabArrangement[index]);
+      onTabChange(tabInfo);
     }
 
     if (onTabConfig) {
-      onTabConfig(tabArrangement[index]);
+      onTabConfig(tabInfo);
     }
-  }, [onTabChange, onTabConfig, tabArrangement]);
+  }, [
+    onTabChange,
+    onTabConfig,
+    navigate,
+    searchParams,
+    tabArrangement
+  ]);
 
 
   const handleTabMount = useCallback((tabContext) => {
@@ -137,12 +144,7 @@ function TabView(props) {
         variant="scrollable"
       >
         {tabArrangement.map((tabConfig) => (
-          <Tab
-            key={tabConfig.path}
-            component={RouterLink}
-            to={tabConfig.path}
-            label={tabConfig.label}
-          />
+          <Tab key={tabConfig.path} label={tabConfig.label} />
         ))}
       </Tabs>
 
@@ -152,12 +154,11 @@ function TabView(props) {
           {tabArrangement.map((tabConfig) => {
             const Component = tabConfig.component;
             const componentProps = tabConfig.componentProps || {};
-            const routePath = tabConfig.path;
 
             return (
               <Route
-                key={routePath}
-                path={routePath.substring(routePath.indexOf(basePath))}
+                key={tabConfig.path}
+                path={tabConfig.path.substring(tabConfig.path.indexOf(basePath))}
                 element={(
                   <Component
                     containerRef={activeTabViewRef}
