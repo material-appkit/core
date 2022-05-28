@@ -23,6 +23,7 @@ const styles = makeStyles((theme) => ({
   },
 
   pageSizeSelectButton: {
+    color: theme.palette.text.secondary,
     minWidth: 'unset',
     padding: theme.spacing(0, 1),
   },
@@ -58,26 +59,28 @@ function PaginationControl(props) {
     setSearchParams(updatedSearchParams);
   }, [page, searchParams, setSearchParams]);
 
+
   const handleNextButtonClick = useCallback(() => {
     const updatedSearchParams = new URLSearchParams(searchParams);
     updatedSearchParams.set('page', page + 1);
     setSearchParams(updatedSearchParams);
   }, [page, searchParams, setSearchParams]);
 
+
   const handlePageSizeButtonClick = useCallback((e) => {
     setPageSizeAnchorEl(e.currentTarget);
   }, []);
 
-
-  const handlePageSizeMenuClose = useCallback(() => {
+  const handlePageSizeMenuItemClick = useCallback((value) => () => {
+    if (value) {
+      const updatedSearchParams = new URLSearchParams(searchParams);
+      updatedSearchParams.set('page', 1);
+      updatedSearchParams.set('page_size', value);
+      setSearchParams(updatedSearchParams);
+    // onPageSizeChange(value);
+    }
     setPageSizeAnchorEl(null);
-  }, []);
-
-
-  const handlePageSizeMenuItemClick = (value) => {
-    onPageSizeChange(value);
-    handlePageSizeMenuClose();
-  };
+  }, [searchParams, setSearchParams]);
 
 
   let previousPageButton = null;
@@ -118,12 +121,11 @@ function PaginationControl(props) {
     labelText = props.label;
   }
 
-  let pageControl = null;
+  let pageControl;
   if (pageSize && pageSizeChoices && pageSizeChoices.length > 1) {
     pageControl = (
       <Fragment>
         <Link
-          aria-controls="page-size-menu"
           aria-haspopup="true"
           onClick={handlePageSizeButtonClick}
           className={classes.pageSizeSelectButton}
@@ -133,17 +135,16 @@ function PaginationControl(props) {
         </Link>
 
         <Menu
-          id="page-size-menu"
           anchorEl={pageSizeAnchorEl}
           keepMounted
           open={Boolean(pageSizeAnchorEl)}
-          onClose={handlePageSizeMenuClose}
+          onClose={handlePageSizeMenuItemClick(null)}
           TransitionComponent={Fade}
         >
           {pageSizeChoices.map((value) => (
             <MenuItem
               key={value}
-              onClick={() => handlePageSizeMenuItemClick(value)}
+              onClick={handlePageSizeMenuItemClick(value)}
               selected={value === pageSize}
             >
               {value}
