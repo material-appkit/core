@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -40,13 +40,23 @@ const styles = makeStyles((theme) => ({
 
 function FormDialog(props) {
   const classes = styles();
+
   const {
+    activityLabel,
+    cancelButtonTitle,
+    commitButtonTitle,
+    contentText,
+    deleteButtonTitle,
     endpoint,
     errors,
+    extraFormData,
+    fieldArrangement,
+    maxWidth,
     representedObject,
     onDelete,
     onDismiss,
     onError,
+    title,
   } = props;
 
   const [loading, setLoading] = useState(false);
@@ -58,15 +68,16 @@ function FormDialog(props) {
   }, [errors]);
 
 
-  const handleFormChange = (e) => {
+  const handleFormChange = useCallback((e) => {
     const fieldName = e.target.name;
     setFieldErrors({ ...fieldErrors, [fieldName]: null });
-  };
+  }, []);
 
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = useCallback((e) => {
     e.preventDefault();
-    const formData = formToObject(e.target);
+
+    const formData = Object.assign({}, formToObject(e.target), extraFormData);
 
     if (endpoint) {
       setLoading(true);
@@ -85,21 +96,21 @@ function FormDialog(props) {
     } else {
       onDismiss(formData);
     }
-  };
+  }, [endpoint, onDismiss, onError, representedObject]);
 
 
-  const handleDeleteButtonClick = async() => {
+  const handleDeleteButtonClick = useCallback(() => {
     setLoading(true);
     onDelete().then(() => {
       onDismiss(null);
     }).catch((err) => {
-      setLoading(false);
-
       if (onError) {
         onError(err);
       }
+    }).finally(() => {
+      setLoading(false);
     });
-  };
+  }, [onDelete, onError]);
 
 
   let leftActionControl  = null;
@@ -108,17 +119,17 @@ function FormDialog(props) {
       <div className={classes.leftActionControl}>
         <CircularProgress size={20} />
         <Typography className={classes.activityLabel} variant="subtitle2">
-          {props.activityLabel}
+          {activityLabel}
         </Typography>
       </div>
     );
-  } else if (props.onDelete) {
+  } else if (onDelete) {
     leftActionControl = (
       <Button
         className={classes.deleteButton}
         onClick={handleDeleteButtonClick}
       >
-        {props.deleteButtonTitle}
+        {deleteButtonTitle}
       </Button>
     )
   }
@@ -127,7 +138,7 @@ function FormDialog(props) {
     <Dialog
       open
       fullWidth
-      maxWidth={props.maxWidth}
+      maxWidth={maxWidth}
       PaperProps={{
         component: 'form',
         onChange: handleFormChange,
@@ -136,18 +147,18 @@ function FormDialog(props) {
     >
       <DialogTitle disableTypography>
         <Typography variant="h4">
-          {props.title}
+          {title}
         </Typography>
       </DialogTitle>
 
       <DialogContent dividers>
-        {props.contentText &&
+        {contentText &&
           <DialogContentText>
-            {props.contentText}
+            {contentText}
           </DialogContentText>
         }
 
-        {props.fieldArrangement.map((fieldInfo) => {
+        {fieldArrangement.map((fieldInfo) => {
           let textFieldProps = fieldInfo;
           if (typeof(fieldInfo) === 'string') {
             textFieldProps = {
@@ -183,8 +194,8 @@ function FormDialog(props) {
 
         <Spacer />
 
-        <Button onClick={() => props.onDismiss(null)}>
-          {props.cancelButtonTitle}
+        <Button onClick={() => onDismiss(null)}>
+          {cancelButtonTitle}
         </Button>
 
         <Button
@@ -192,7 +203,7 @@ function FormDialog(props) {
           disabled={loading}
           type="submit"
         >
-          {props.commitButtonTitle}
+          {commitButtonTitle}
         </Button>
       </DialogActions>
     </Dialog>
@@ -205,6 +216,7 @@ FormDialog.propTypes = {
   commitButtonTitle: PropTypes.string,
   contentText: PropTypes.string,
   errors: PropTypes.object,
+  extraFormData: PropTypes.object,
   onDelete: PropTypes.func,
   fieldArrangement: PropTypes.array.isRequired,
   endpoint: PropTypes.string,
@@ -220,6 +232,7 @@ FormDialog.defaultProps = {
   cancelButtonTitle: 'Cancel',
   commitButtonTitle: 'Save',
   deleteButtonTitle: 'Delete',
+  extraFormData: {},
   maxWidth: 'sm',
 };
 
