@@ -3,7 +3,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React from 'react';
 
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -11,6 +11,7 @@ import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { valueForKeyPath } from "../util/object";
 import { isValue } from '../util/value';
 
 const getWidgetType = (fieldInfo) => {
@@ -141,9 +142,16 @@ function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
     variant: "outlined",
   };
 
-  if (fieldInfo.choices) {
+  let selectOptions = null;
+  const fieldChoices = fieldInfo.choices || valueForKeyPath(fieldInfo, 'ui.widget.choices');
+
+  if (fieldChoices) {
     textFieldProps.select = true;
     textFieldProps.SelectProps = { native: true };
+    selectOptions = fieldChoices.map((choice) => (
+      <option key={choice.value} value={choice.value}>{choice.label}</option>
+    ));
+    selectOptions.unshift(<option key='empty'>--------</option>);
   }
 
   if (widgetType === 'textarea') {
@@ -170,16 +178,7 @@ function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
 
   return (
     <TextField {...textFieldProps }>
-      {fieldInfo.choices &&
-        <Fragment>
-          <option />
-          {fieldInfo.choices.map((choice) => (
-            <option key={choice.value} value={choice.value}>
-              {choice.label}
-            </option>
-          ))}
-        </Fragment>
-      }
+      {selectOptions}
     </TextField>
   );
 }
