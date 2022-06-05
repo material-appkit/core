@@ -71,12 +71,12 @@ export function valueForKeyPath(object, keyPath) {
   while (keys.length) {
     const key = keys.shift();
 
-    // If the encoutnered property doesn't exist, bail out.
+    // If the encountered property doesn't exist, bail out.
     if (value === null || value === undefined || value.hasOwnProperty(key) === false) {
       return null;
     }
 
-    if (Array.isArray(value[key])) {
+    if (Array.isArray(value[key]) && keys.length) {
       // If at some point along the keypath an array is encountered,
       // let the array implementation of 'valueForKeyPath' be used
       // for the remainder of the keys
