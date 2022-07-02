@@ -4,6 +4,12 @@ import { isWidthUp } from '@material-ui/core/withWidth';
 
 import { timestamp } from '../util/date';
 
+const DEFAULT_DIALOG_CONFIG = {
+  reasonsToClose: ['escapeKeyDown'],
+  fullScreenBreakpoint: 'md',
+  size: 'sm',
+};
+
 
 class DialogManager extends React.PureComponent {
   static init(ContextType) {
@@ -34,7 +40,10 @@ class DialogManager extends React.PureComponent {
 
   __enqueueDialog = (dialogConfig) => {
     const updatedDialogs = new Map(this.state.dialogs);
-    updatedDialogs.set(dialogConfig.id, dialogConfig);
+    updatedDialogs.set(dialogConfig.id, {
+      ...DEFAULT_DIALOG_CONFIG,
+      ...dialogConfig
+    });
     this.setState({ dialogs: updatedDialogs });
   };
 
@@ -45,10 +54,12 @@ class DialogManager extends React.PureComponent {
   }
 
   handleDialogClose = (dialogId) => (e, reason) => {
-    if (reason === 'escapeKeyDown') {
-      const dialogConfig = this.state.dialogs.get(dialogId);
-      if (dialogConfig.onDismiss) {
-        dialogConfig.onDismiss(null);
+    const dialogConfig = this.state.dialogs.get(dialogId);
+    const { onDismiss, reasonsToClose } = dialogConfig;
+
+    if (Array.isArray(reasonsToClose) && reasonsToClose.indexOf(reason) !== -1)  {
+      if (onDismiss) {
+        onDismiss(null);
       }
 
       this.__destroyDialog(dialogId);
@@ -92,7 +103,7 @@ class DialogManager extends React.PureComponent {
         dialogProps.fullScreen = true;
       } else {
         dialogProps.fullWidth = true;
-        dialogProps.maxWidth = size || 'sm';
+        dialogProps.maxWidth = size;
 
         if (fullHeight) {
           dialogProps.PaperProps = {
