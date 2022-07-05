@@ -47,7 +47,7 @@ const propertyListItemStyles = makeStyles(
 );
 
 function PropertyListItem(props) {
-  const { fieldInfo, label, representedObject } = props;
+  const { fieldInfo, label, labelClassName, representedObject } = props;
   const classes = propertyListItemStyles();
 
   //----------------------------------------------------------------------------
@@ -76,7 +76,7 @@ function PropertyListItem(props) {
   } else {
     labelComponent = (
       <Typography
-        className={classes.label}
+        className={clsx(classes.label, labelClassName)}
         style={{
           minWidth: props.minLabelWidth,
           maxWidth: props.maxLabelWidth,
@@ -164,6 +164,7 @@ PropertyListItem.propTypes = {
   fontSize: PropTypes.number,
   Icon: PropTypes.elementType,
   label: PropTypes.string,
+  labelClassName: PropTypes.string,
   listItemAlignment: PropTypes.string,
   listItemPadding: PropTypes.number,
   minLabelWidth: PropTypes.number,
@@ -208,6 +209,7 @@ function PropertyList(props) {
             fieldInfo={fieldInfo}
             key={`${fieldLabel}-${fieldInfo.keyPath || fieldInfo.name}`}
             label={fieldLabel}
+            labelClassName={fieldInfo.labelClassName}
             {...propertyListItemProps}
           />
         );
