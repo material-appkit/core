@@ -1,16 +1,18 @@
 import debounce from 'lodash.debounce';
 
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
+import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import MuiTextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
-
 import CancelIcon from '@material-ui/icons/Cancel';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 
-const styles = makeStyles({
+const styles = makeStyles((theme) => ({
   containedInputLabelShrink: {
     transform: 'translate(14px, 8px) scale(0.75) !important',
   },
@@ -18,7 +20,21 @@ const styles = makeStyles({
   containedInputInput: {
     padding: `24px 14px 12px 14px`,
   },
-});
+
+  fieldContainer: {
+    position: 'relative',
+  },
+
+  statusIndicatorContainer: {
+    position: 'absolute',
+    right: 4,
+    top: 4,
+  },
+
+  statusIcon: {
+    fontSize: theme.typography.pxToRem(16),
+  },
+}));
 
 function AttributedTextField(props) {
   const classes = styles();
@@ -31,6 +47,7 @@ function AttributedTextField(props) {
     onChangeDelay,
     propagateChangeEvent,
     StartIcon,
+    status,
     value,
     valueTransformer,
     variant,
@@ -38,6 +55,20 @@ function AttributedTextField(props) {
   } = props;
 
   const [fieldValue, setFieldValue] = useState(value);
+
+
+  const statusIndicator = useMemo(() => {
+    switch (status) {
+      case 'working':
+        return <CircularProgress size={14} disableShrink />;
+      case 'valid':
+        return <CheckIcon className={classes.statusIcon} color="primary" />;
+      case 'invalid':
+        return <CloseIcon className={classes.statusIcon} color="error" />;
+      default:
+        return null;
+    }
+  }, [classes, status]);
 
 
   useEffect(() => {
@@ -128,14 +159,22 @@ function AttributedTextField(props) {
   }
 
   return (
-    <MuiTextField
-      InputProps={FinalInputProps}
-      InputLabelProps={FinalInputLabelProps}
-      onChange={handleFieldChange}
-      value={fieldValue}
-      variant={derivedVariant}
-      {...textFieldProps}
-    />
+    <div className={classes.fieldContainer}>
+      {statusIndicator &&
+        <span className={classes.statusIndicatorContainer}>
+          {statusIndicator}
+        </span>
+      }
+
+      <MuiTextField
+        InputProps={FinalInputProps}
+        InputLabelProps={FinalInputLabelProps}
+        onChange={handleFieldChange}
+        value={fieldValue}
+        variant={derivedVariant}
+        {...textFieldProps}
+      />
+    </div>
   );
 }
 
@@ -145,6 +184,7 @@ AttributedTextField.propTypes = {
   onChangeDelay: PropTypes.number,
   propagateChangeEvent: PropTypes.bool,
   StartIcon: PropTypes.elementType,
+  status: PropTypes.oneOf(['working', 'valid', 'invalid']),
   value: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
