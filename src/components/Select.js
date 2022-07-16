@@ -156,6 +156,7 @@ function Select(props) {
     <Autocomplete
       classes={autocompleteClasses}
       disabled={disabled || loading}
+      disableClearable={!isClearable}
       onChange={handleAutocompleteChange}
       options={activeOptions}
       getOptionLabel={(option) => option ? option[labelKey] : '------'}
