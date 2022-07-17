@@ -2,11 +2,13 @@ import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { Outlet, Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { makeStyles } from '@material-ui/core/styles';
+
+import { lastPathComponent } from '../util/path';
 
 const styles = makeStyles((theme) => ({
   container: {
@@ -69,11 +71,13 @@ function TabView(props) {
 
   useEffect(() => {
     tabArrangement.forEach((tabConfig, tabIndex) => {
-      if (currentLocationPath === tabConfig.path) {
+      if ((tabConfig.index && currentLocationPath === basePath) ||
+          (`${basePath}/${tabConfig.path}` === currentLocationPath)
+      ) {
         setSelectedTabIndex(tabIndex);
       }
     });
-  }, [currentLocationPath, tabArrangement]);
+  }, [basePath, currentLocationPath, tabArrangement]);
 
 
   useEffect(() => {
@@ -85,9 +89,10 @@ function TabView(props) {
   }, [selectedTabIndex, tabArrangement]);
 
 
-  const handleTabChange = useCallback((e, index) => {
-    const tabInfo = tabArrangement[index];
-    navigate(`${tabInfo.path}?${searchParams.toString()}`);
+  const handleTabChange = useCallback((e, tabIndex) => {
+    const tabInfo = tabArrangement[tabIndex];
+    const pathname = tabInfo.index ? basePath : `${basePath}/${tabInfo.path}`;
+    navigate(`${pathname}?${searchParams.toString()}`);
 
     if (onTabChange) {
       onTabChange(tabInfo);
@@ -97,6 +102,7 @@ function TabView(props) {
       onTabConfig(tabInfo);
     }
   }, [
+    basePath,
     onTabChange,
     onTabConfig,
     navigate,
@@ -127,12 +133,14 @@ function TabView(props) {
   }, [activeTabConfig, onTabConfig]);
 
 
+  // ---------------------------------------------------------------------------
+
   const tabContainerClasses = [classes.tabContainer];
   if (activeTabConfig) {
     tabContainerClasses.push(activeTabConfig.containerClassName);
   }
 
-  return (
+  const tabViewContainer = (
     <div className={classes.container}>
       <Tabs
         value={selectedTabIndex}
@@ -144,38 +152,54 @@ function TabView(props) {
         variant="scrollable"
       >
         {tabArrangement.map((tabConfig) => (
-          <Tab key={tabConfig.path} label={tabConfig.label} />
+          <Tab
+            key={tabConfig.index ? basePath : tabConfig.path}
+            label={tabConfig.label}
+          />
         ))}
       </Tabs>
 
-
-      <div className={clsx(tabContainerClasses)} ref={activeTabViewRef}>
-        <Routes>
-          {tabArrangement.map((tabConfig) => {
-            const Component = tabConfig.component;
-            const componentProps = tabConfig.componentProps || {};
-
-            return (
-              <Route
-                key={tabConfig.path}
-                path={tabConfig.path.substring(tabConfig.path.indexOf(basePath))}
-                element={(
-                  <Component
-                    containerRef={activeTabViewRef}
-                    onConfig={handleTabConfig}
-                    onMount={handleTabMount}
-                    onUnmount={handleTabUnmount}
-                    onUpdate={onUpdate}
-                    {...componentProps}
-                    {...rest}
-                  />
-                )}
-              />
-            );
-          })}
-        </Routes>
+      <div className={clsx(tabContainerClasses)}>
+        <Outlet />
       </div>
     </div>
+  );
+
+  return (
+    <Routes>
+      <Route
+        path={lastPathComponent(basePath)}
+        element={tabViewContainer}
+      >
+        {tabArrangement.map((tabConfig) => {
+          const Component = tabConfig.component;
+          const componentProps = tabConfig.componentProps || {};
+          let routeProps;
+          if (tabConfig.index) {
+            routeProps = { key: basePath, index: true };
+          } else {
+            routeProps = { key: tabConfig.path, path: tabConfig.path };
+          }
+
+          return (
+            <Route
+              element={(
+                <Component
+                  containerRef={activeTabViewRef}
+                  onConfig={handleTabConfig}
+                  onMount={handleTabMount}
+                  onUnmount={handleTabUnmount}
+                  onUpdate={onUpdate}
+                  {...componentProps}
+                  {...rest}
+                />
+              )}
+              {...routeProps}
+            />
+          );
+        })}
+      </Route>
+    </Routes>
   );
 }
 
