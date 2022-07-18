@@ -22,7 +22,7 @@ const styles = makeStyles((theme) => ({
 
   listItemSecondaryActionTop: {
     right: theme.spacing(0.75),
-    top: theme.spacing(0.5),
+    top: theme.spacing(0.75),
     transform: 'initial',
   },
 }));
