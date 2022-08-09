@@ -14,6 +14,7 @@ import React, {
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
+import Alert from '@material-ui/lab/Alert';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -26,10 +27,8 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Pagination from '@material-ui/lab/Pagination';
 import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ErrorIcon from '@material-ui/icons/Error';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import SortIcon from '@material-ui/icons/Sort';
 
@@ -954,10 +953,9 @@ function ListView(props) {
   if (loadError) {
     return (
       <div className={styles.centeredContentContainer}>
-        <ErrorIcon fontSize="large" />
-        <Typography>
+        <Alert severity="error">
           Failed to load data.
-        </Typography>
+        </Alert>
       </div>
     );
   }
@@ -967,16 +965,10 @@ function ListView(props) {
   }
 
   if (!renderedItems.length) {
-    if (props.emptyListPlaceholder !== undefined) {
-      return props.emptyListPlaceholder;
-    }
-
     return (
-      <div className={styles.centeredContentContainer}>
-        <Typography>
-          No items to display
-        </Typography>
-      </div>
+      <Alert severity="info">
+        {props.emptyListPlaceholderText}
+      </Alert>
     );
   }
 
@@ -1060,7 +1052,7 @@ ListView.propTypes = {
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
   displaySelectionCount: PropTypes.bool,
 
-  emptyListPlaceholder: PropTypes.element,
+  emptyListPlaceholderText: PropTypes.string,
 
   filterParams: PropTypes.object,
   filterMetadata: PropTypes.object,
@@ -1129,6 +1121,7 @@ ListView.propTypes = {
 ListView.defaultProps = {
   classes: {},
   displaySelectionCount: true,
+  emptyListPlaceholderText: 'No items to display',
   filterParams: {},
   items: null,
   itemIdKey: 'id',
