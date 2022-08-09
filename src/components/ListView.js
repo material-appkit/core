@@ -952,11 +952,9 @@ function ListView(props) {
   //----------------------------------------------------------------------------
   if (loadError) {
     return (
-      <div className={styles.centeredContentContainer}>
-        <Alert severity="error">
-          Failed to load data.
-        </Alert>
-      </div>
+      <Alert severity="error">
+        Failed to load data.
+      </Alert>
     );
   }
 
