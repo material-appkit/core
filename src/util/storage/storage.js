@@ -1,6 +1,4 @@
 export function storageOfType(type) {
-  let storage = null;
-
   try {
     return window[type];
   } catch (e) {
