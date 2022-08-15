@@ -16,6 +16,18 @@ import ServiceAgent from '../util/ServiceAgent';
 import Form from './Form';
 import Spacer from './Spacer';
 
+const DEFAULT_LABELS = {
+  ADD: 'Add',
+  CANCEL: 'Cancel',
+  DELETE: 'Delete',
+  E_CREATE_DUPLICATE_RECORD: 'Refused to create duplicate record',
+  SAVE: 'Save',
+  SAVING: 'Saving...',
+  SAVE_FAIL_NOTIFICATION: 'Unable to save',
+  UPDATE: 'Update',
+}
+
+
 const styles = makeStyles((theme) => ({
   paper: {
     minWidth: 320,
@@ -55,13 +67,18 @@ function EditDialog(props) {
     onLoad,
     onSave,
     persistedObject,
-    ...rest
+    ...extraFormProps
   } = props;
 
   const formRef = useRef(null);
   const [saving, setSaving] = useState(false);
 
-  let detailUrl = rest.apiDetailUrl;
+  const composedLabels = {
+    ...DEFAULT_LABELS,
+    ...(labels || {})
+  };
+
+  let detailUrl = extraFormProps.apiDetailUrl;
   if (persistedObject && persistedObject.url) {
     detailUrl = persistedObject.url;
   }
@@ -72,9 +89,9 @@ function EditDialog(props) {
   } else {
     title = entityType;
     if (detailUrl) {
-      title = `${labels.UPDATE} ${title}`;
+      title = `${composedLabels.UPDATE} ${title}`;
     } else {
-      title = `${labels.ADD} ${title}`;
+      title = `${composedLabels.ADD} ${title}`;
     }
   }
 
@@ -118,13 +135,13 @@ function EditDialog(props) {
   const handleFormError = (err) => {
     setSaving(false);
 
-    let errorMessage = labels.SAVE_FAIL_NOTIFICATION;
+    let errorMessage = composedLabels.SAVE_FAIL_NOTIFICATION;
 
     const errors = err.response ? err.response.jsonData : {};
     Object.keys(errors).forEach((errorKey) => {
       const errorValue = errors[errorKey];
-      if (labels[errorValue]) {
-        errorMessage = labels[errorValue];
+      if (composedLabels[errorValue]) {
+        errorMessage = composedLabels[errorValue];
       }
     });
 
@@ -190,7 +207,7 @@ function EditDialog(props) {
           onError={handleFormError}
           persistedObject={persistedObject}
           {...FormProps}
-          {...rest}
+          {...extraFormProps}
         />
       </DialogContent>
 
@@ -200,22 +217,23 @@ function EditDialog(props) {
             className={classes.deleteButton}
             onClick={handleDeleteButtonClick}
           >
-            {labels.DELETE}
+            {composedLabels.DELETE}
           </Button>
         }
 
         <Spacer />
 
         <Button onClick={() => dismiss()}>
-          {labels.CANCEL}
+          {composedLabels.CANCEL}
         </Button>
 
         <Button
           color="primary"
           disabled={saving}
           onClick={() => formRef.current.save()}
+          variant="contained"
         >
-          {saving ? labels.SAVING : labels.SAVE}
+          {saving ? composedLabels.SAVING : composedLabels.SAVE}
         </Button>
       </DialogActions>
     </Dialog>
@@ -243,16 +261,6 @@ EditDialog.defaultProps = {
   canDelete: true,
   commitOnEnter: true,
   FormProps: {},
-  labels: {
-    ADD: 'Add',
-    CANCEL: 'Cancel',
-    DELETE: 'Delete',
-    E_CREATE_DUPLICATE_RECORD: 'Refused to create duplicate record',
-    SAVE: 'Save',
-    SAVING: 'Saving...',
-    SAVE_FAIL_NOTIFICATION: 'Unable to save',
-    UPDATE: 'Update',
-  },
 };
 
 export default EditDialog;
