@@ -1,8 +1,12 @@
 import PropTypes from 'prop-types';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
+import Avatar from '@material-ui/core/Avatar';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+
 import { valueForKeyPath } from '../util/object';
 
 import ListViewItem, {
@@ -12,33 +16,72 @@ import ListViewItem, {
 
 
 function SimpleListItem(props) {
-  const { primaryField, secondaryField, ...rest } = props;
+  const { avatarField, primaryField, secondaryField, ...rest } = props;
 
-  let primary = null;
-  if (primaryField) {
+  const avatar = useMemo(() => {
+    if (!avatarField) {
+      return null;
+    }
+
+    let avatarContent = null;
+    if (typeof(avatarField) === 'function') {
+      avatarContent = avatarField(props.item);
+    } else {
+      avatarContent = (
+        <Avatar src={valueForKeyPath(props.item, avatarField)} />
+      );
+    }
+
+    return <ListItemAvatar>{avatarContent}</ListItemAvatar>;
+  }, [avatarField]);
+
+  const primary = useMemo(() => {
+    if (!primaryField) {
+      return null;
+    }
+
     if (typeof(primaryField) === 'function') {
-      primary = primaryField(props.item);
+      return primaryField(props.item);
     } else {
-      primary = valueForKeyPath(props.item, primaryField);
+      return (
+        <Typography variant="body1" component="span" display="block">
+          {valueForKeyPath(props.item, primaryField)}
+        </Typography>
+      );
     }
-  }
+  }, [primaryField]);
 
-  let secondary = null;
-  if (secondaryField) {
-    if (typeof(secondaryField) === 'function') {
-      secondary = secondaryField(props.item);
-    } else {
-      secondary = valueForKeyPath(props.item, secondaryField);
+  const secondary = useMemo(() => {
+    if (!secondaryField) {
+      return null;
     }
-  }
+
+    if (typeof(secondaryField) === 'function') {
+      return secondaryField(props.item);
+    } else {
+      return (
+        <Typography variant="body2" color="textSecondary" display="block">
+          {valueForKeyPath(props.item, secondaryField)}
+        </Typography>
+      );
+    }
+  }, [secondaryField]);
+
 
   return (
     <ListViewItem {...listItemProps(rest)}>
-      <ListItemText primary={primary} secondary={secondary} />
+      {avatar}
+
+      <ListItemText
+        disableTypography
+        primary={primary}
+        secondary={secondary}
+      />
     </ListViewItem>
   );
 }
 SimpleListItem.propTypes = {
+  avatarField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   primaryField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   secondaryField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   ...commonPropTypes,
