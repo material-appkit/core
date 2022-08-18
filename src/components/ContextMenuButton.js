@@ -25,7 +25,7 @@ function ContextMenuButton(props) {
     setMenuIsOpen(false);
   }, []);
 
-  if (!menuItemArrangement && menuItemArrangement.length) {
+  if (!(menuItemArrangement && menuItemArrangement.length)) {
     return null;
   }
 
