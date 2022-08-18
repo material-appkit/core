@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useRef, useState } from 'react';
 
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -18,12 +18,16 @@ function ContextMenuButton(props) {
   const menuAnchorRef = useRef(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
-  const handleContextMenuClose = (event) => {
+  const handleContextMenuClose = useCallback((event) => {
     if (menuAnchorRef.current && menuAnchorRef.current.contains(event.target)) {
       return;
     }
     setMenuIsOpen(false);
-  };
+  }, []);
+
+  if (!menuItemArrangement && menuItemArrangement.length) {
+    return null;
+  }
 
   return (
     <Fragment>
@@ -54,7 +58,7 @@ ContextMenuButton.propTypes = {
   dense: PropTypes.bool,
   Icon: PropTypes.elementType,
   iconClassName: PropTypes.string,
-  menuItemArrangement: PropTypes.array.isRequired,
+  menuItemArrangement: PropTypes.array,
 };
 
 ContextMenuButton.defaultProps = {
