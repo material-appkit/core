@@ -55,6 +55,7 @@ SearchField.propTypes = {
 };
 
 SearchField.defaultProps = {
+  fullWidth: true,
   margin: 'dense',
   onChangeDelay: 400,
   placeholder: 'Search...',
