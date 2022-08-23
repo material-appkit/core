@@ -291,6 +291,20 @@ const listViewStyles = makeStyles((theme) => ({
   }
 }));
 
+
+const coerceFilterParams = (params) => {
+  const coercedParams = { ...params };
+  Object.keys(coercedParams).forEach((paramName) => {
+    // Let params specified as arrays (typically M2M relationships)
+    // be cast to comma-separated strings
+    if (Array.isArray(coercedParams[paramName])) {
+      coercedParams[paramName] = coercedParams[paramName].join(',');
+    }
+  });
+
+  return coercedParams;
+};
+
 function ListView(props) {
   const styles = listViewStyles();
 
@@ -472,20 +486,6 @@ function ListView(props) {
   };
 
 
-  const coerceFilterParams = (params) => {
-    const coercedParams = { ...params };
-    Object.keys(coercedParams).forEach((paramName) => {
-      // Let params specified as arrays (typically M2M relationships)
-      // be cast to comma-separated strings
-      if (Array.isArray(coercedParams[paramName])) {
-        coercedParams[paramName] = coercedParams[paramName].join(',');
-      }
-    });
-
-    return coercedParams;
-  };
-
-
   /**
    *
    * @param item
@@ -624,7 +624,7 @@ function ListView(props) {
     if (!isEqual(params, appliedFilterParams)) {
       setAppliedFilterParams(params);
     }
-  }, [filterParams]);
+  }, [filterParams, filterParamTransformer]);
 
 
   /**
