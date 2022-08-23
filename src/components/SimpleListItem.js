@@ -16,7 +16,13 @@ import ListViewItem, {
 
 
 function SimpleListItem(props) {
-  const { avatarField, primaryField, secondaryField, ...rest } = props;
+  const {
+    disableTypography,
+    avatarField,
+    primaryField,
+    secondaryField,
+    ...rest
+  } = props;
 
   const avatar = useMemo(() => {
     if (!avatarField) {
@@ -35,6 +41,7 @@ function SimpleListItem(props) {
     return <ListItemAvatar>{avatarContent}</ListItemAvatar>;
   }, [avatarField]);
 
+
   const primary = useMemo(() => {
     if (!primaryField) {
       return null;
@@ -42,14 +49,21 @@ function SimpleListItem(props) {
 
     if (typeof(primaryField) === 'function') {
       return primaryField(props.item);
-    } else {
+    }
+
+    const fieldValue = valueForKeyPath(props.item, primaryField);
+
+    if (disableTypography) {
       return (
         <Typography variant="body1" component="span" display="block">
-          {valueForKeyPath(props.item, primaryField)}
+          {fieldValue}
         </Typography>
       );
     }
-  }, [primaryField]);
+
+    return fieldValue;
+
+  }, [disableTypography, primaryField]);
 
   const secondary = useMemo(() => {
     if (!secondaryField) {
@@ -58,22 +72,26 @@ function SimpleListItem(props) {
 
     if (typeof(secondaryField) === 'function') {
       return secondaryField(props.item);
-    } else {
+    }
+
+    const fieldValue = valueForKeyPath(props.item, secondaryField);
+    if (disableTypography) {
       return (
         <Typography variant="body2" color="textSecondary" display="block">
-          {valueForKeyPath(props.item, secondaryField)}
+          {fieldValue}
         </Typography>
       );
     }
-  }, [secondaryField]);
 
+    return fieldValue;
+  }, [disableTypography, secondaryField]);
 
   return (
     <ListViewItem {...listItemProps(rest)}>
       {avatar}
 
       <ListItemText
-        disableTypography
+        disableTypography={disableTypography}
         primary={primary}
         secondary={secondary}
       />
@@ -81,6 +99,7 @@ function SimpleListItem(props) {
   );
 }
 SimpleListItem.propTypes = {
+  disableTypography: PropTypes.bool,
   avatarField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   primaryField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   secondaryField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
