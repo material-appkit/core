@@ -208,4 +208,4 @@ Select.defaultProps = {
   variant: 'standard',
 };
 
-export default Select;
+export default React.memo(Select);
