@@ -115,13 +115,13 @@ function TabView(props) {
     if (onTabMount) {
       onTabMount(tabContext);
     }
-  }, [activeTabConfig, onTabMount]);
+  }, [onTabMount]);
 
   const handleTabUnmount = useCallback((tabContext) => {
     if (onTabUnmount) {
       onTabUnmount(tabContext);
     }
-  }, [activeTabConfig, onTabUnmount]);
+  }, [onTabUnmount]);
 
   const handleTabConfig = useCallback((tabContext) => {
     if (onTabConfig) {
