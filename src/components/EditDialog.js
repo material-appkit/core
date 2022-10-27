@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
 import AlertManager from '../managers/AlertManager';
+import NotificationManager from '../managers/NotificationManager';
 import SnackbarManager from '../managers/SnackbarManager';
 import ServiceAgent from '../util/ServiceAgent';
 
@@ -83,7 +84,7 @@ function EditDialog(props) {
     detailUrl = persistedObject.url;
   }
 
-  let title = null;
+  let title;
   if (props.title) {
     title = props.title;
   } else {
@@ -124,6 +125,12 @@ function EditDialog(props) {
 
   const handleFormSave = (representedObject, response) => {
     setSaving(false);
+
+    NotificationManager.postNotification('recordDidSave', null, {
+      operation: detailUrl ? 'update' : 'create',
+      preUpdate: persistedObject,
+      postUpdate: representedObject,
+    });
 
     if (onSave) {
       onSave(representedObject, response);
