@@ -46,6 +46,7 @@ function FormDialog(props) {
     cancelButtonTitle,
     commitButtonTitle,
     contentText,
+    defaultValues,
     deleteButtonTitle,
     endpoint,
     errors,
@@ -177,7 +178,9 @@ function FormDialog(props) {
             textFieldProps.label = titleCase(fieldName);
           }
 
-          if (representedObject) {
+          if (defaultValues) {
+            textFieldProps.defaultValue = defaultValues[fieldName];
+          } else if (representedObject) {
             textFieldProps.defaultValue = representedObject[fieldName];
           }
 
@@ -220,6 +223,7 @@ FormDialog.propTypes = {
   cancelButtonTitle: PropTypes.string,
   commitButtonTitle: PropTypes.string,
   contentText: PropTypes.string,
+  defaultValues: PropTypes.object,
   errors: PropTypes.object,
   extraFormData: PropTypes.object,
   onDelete: PropTypes.func,
