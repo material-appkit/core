@@ -81,6 +81,8 @@ function FormDialog(props) {
 
     if (endpoint) {
       setLoading(true);
+      setFieldErrors({});
+
       const requestMethod = representedObject ? 'PATCH' : 'POST';
       ServiceAgent.request(requestMethod, endpoint, formData)
         .then((res) => {
@@ -88,6 +90,9 @@ function FormDialog(props) {
         })
         .catch((err) => {
           setLoading(false);
+          if (err.response && err.response.jsonData) {
+            setFieldErrors(err.response.jsonData);
+          }
 
           if (onError) {
             onError(err);
