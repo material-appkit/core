@@ -3,9 +3,6 @@ export function now() {
 }
 
 export function timestamp(referenceDate) {
-  if (referenceDate) {
-    return referenceDate.getTime();
-  }
-
-  return now().getTime();
+  return (referenceDate || now()).getTime();
 }
+
