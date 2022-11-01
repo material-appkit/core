@@ -800,12 +800,14 @@ function ListView(props) {
     onConfig({
       constructToolbarItem,
       extendSelection,
-      updateItem: handleItemUpdate,
+      selectionDisabled,
       setRenderedItems: handleSetRenderedItems,
+      updateItem: handleItemUpdate,
     });
   }, [
     constructToolbarItem,
     extendSelection,
+    selectionDisabled,
     // renderedItems,
   ]);
 
