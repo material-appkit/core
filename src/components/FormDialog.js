@@ -190,7 +190,7 @@ function FormDialog(props) {
               helperText={fieldErrors[fieldName]}
               fullWidth
               key={fieldName}
-              margin="dense"
+              margin="normal"
               {...textFieldProps}
             />
           );
@@ -210,6 +210,7 @@ function FormDialog(props) {
           color="primary"
           disabled={loading}
           type="submit"
+          variant="contained"
         >
           {commitButtonTitle}
         </Button>
