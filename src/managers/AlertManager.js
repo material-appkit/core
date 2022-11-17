@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React from 'react';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -20,7 +20,7 @@ import FormDialog from '../components/FormDialog';
 import { timestamp } from '../util/date';
 
 const TITLE_ICON_MAP = {
-  'confirm': HelpIcon,
+  'default': HelpIcon,
   'error': ErrorIcon,
   'info': InfoIcon,
   'warn': WarningIcon,
@@ -62,11 +62,11 @@ function AlertDialog({ alertInfo, onDismiss }) {
     onDismiss(true, alertInfo);
   };
 
-  const handleDialogClose = useCallback((e, reason) => {
+  const handleDialogClose = (e, reason) => {
     if (reason === 'escapeKeyDown') {
       cancel();
     }
-  }, []);
+  };
 
 
   const handleKeyPress = (e) => {
@@ -75,7 +75,7 @@ function AlertDialog({ alertInfo, onDismiss }) {
     }
   };
 
-  const TitleIcon = TITLE_ICON_MAP[alertInfo.type];
+  const TitleIcon = TITLE_ICON_MAP[alertInfo.variant];
 
   return (
     <Dialog
@@ -94,7 +94,7 @@ function AlertDialog({ alertInfo, onDismiss }) {
       }
 
       <DialogContent className={classes.dialogContent}>
-        <TitleIcon className={clsx([classes.titleIcon, alertInfo.type])} />
+        <TitleIcon className={clsx([classes.titleIcon, alertInfo.variant])} />
 
         {alertInfo.description &&
           <DialogContentText className={classes.dialogContentText}>
@@ -115,6 +115,7 @@ function AlertDialog({ alertInfo, onDismiss }) {
         <Button
           color="primary"
           onClick={() => commit()}
+          variant="contained"
         >
           {alertInfo.confirmButtonTitle || 'OK'}
         </Button>
@@ -147,7 +148,6 @@ class AlertManager extends React.PureComponent {
   }
 
   // ---------------------------------------------------------------------------
-
   static prompt(promptInfo) {
     AlertManager.__instance.__enqueuePrompt({
       ...promptInfo,
@@ -172,29 +172,29 @@ class AlertManager extends React.PureComponent {
   };
 
   // ---------------------------------------------------------------------------
-
-  static _enqueueAlert(alertInfo, type) {
+  static _enqueueAlert(alertInfo, type, variant) {
     AlertManager.__instance.__enqueueAlert({
       ...alertInfo,
       type,
+      variant,
       key: timestamp(),
     });
   }
 
   static info(alertInfo) {
-    this._enqueueAlert(alertInfo, 'info');
+    this._enqueueAlert(alertInfo, 'prompt', 'info');
   }
 
   static warn(alertInfo) {
-    this._enqueueAlert(alertInfo, 'warn');
+    this._enqueueAlert(alertInfo, 'prompt', 'warn');
   }
 
   static error(alertInfo) {
-    this._enqueueAlert(alertInfo, 'error');
+    this._enqueueAlert(alertInfo, 'prompt', 'error');
   }
 
-  static confirm(alertInfo) {
-    this._enqueueAlert(alertInfo, 'confirm');
+  static confirm(alertInfo, variant) {
+    this._enqueueAlert(alertInfo, 'confirm', variant || 'default');
   }
 
   __enqueueAlert = (alertInfo) => {
@@ -214,8 +214,6 @@ class AlertManager extends React.PureComponent {
   };
 
   // ---------------------------------------------------------------------------
-
-
   render() {
     const { alertQueue, promptQueue } = this.state;
 
@@ -234,10 +232,10 @@ class AlertManager extends React.PureComponent {
       const { key, fieldName, title } = promptInfo;
       dialogs.push(
         <FormDialog
-          key={key}
-          title={title}
           fieldArrangement={[fieldName]}
+          key={key}
           onDismiss={this.handleFormDialogDismiss(promptInfo)}
+          title={title}
         />
       );
     })
