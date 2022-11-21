@@ -20,6 +20,7 @@ const styles = makeStyles((theme) => ({
   tabContainer: {
     flex: 1,
     overflow: 'auto',
+    overscrollBehavior: 'contain',
   },
 
   tabs: {
