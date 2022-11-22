@@ -24,6 +24,7 @@ const styles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
     fontWeight: 500,
     fontFamily: theme.typography.fontFamily,
+    fontSize: theme.typography.fontSize,
     minWidth: 'unset',
     padding: theme.spacing(1),
 
