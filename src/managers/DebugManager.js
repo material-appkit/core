@@ -76,7 +76,8 @@ class DebugManager extends React.PureComponent {
           inputRef={this.textFieldRef}
           fullWidth
           multiline
-          minRows={6}
+          minRows={8}
+          maxRows={8}
           variant="outlined"
         />
       </div>
@@ -95,7 +96,7 @@ export default withStyles((theme) => ({
     backgroundColor: theme.palette.grey[50],
     padding: theme.spacing(0, 2, 2, 2),
 
-    position: 'absolute',
+    position: 'fixed',
     bottom: 0,
     left: 0,
     right: 0,
@@ -113,13 +114,13 @@ export default withStyles((theme) => ({
 
   textField: {
     backgroundColor: theme.palette.common.white,
-    height: '100%',
   },
 
   textArea: {
-    alignItems: 'flex-start',
+    // alignItems: 'flex-start',
     fontSize: theme.typography.pxToRem(12),
-    padding: theme.spacing(1),
+    // height: '100%',
+    // padding: theme.spacing(1),
   },
 
 
