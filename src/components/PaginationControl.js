@@ -2,10 +2,9 @@ import PropTypes from 'prop-types';
 import React, { Fragment, useCallback, useState } from 'react';
 
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import ButtonBase from '@material-ui/core/ButtonBase';
 import Fade from '@material-ui/core/Fade';
 import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
@@ -23,8 +22,14 @@ const styles = makeStyles((theme) => ({
 
   pageSizeSelectButton: {
     color: theme.palette.text.secondary,
+    fontWeight: 500,
+    fontFamily: theme.typography.fontFamily,
     minWidth: 'unset',
-    padding: theme.spacing(0, 1),
+    padding: theme.spacing(1),
+
+    '&:hover': {
+      textDecoration: 'underline',
+    },
   },
 }));
 
@@ -137,14 +142,13 @@ function PaginationControl(props) {
   if (pageSize && pageSizeChoices && pageSizeChoices.length > 1) {
     pageControl = (
       <Fragment>
-        <Link
+        <ButtonBase
           aria-haspopup="true"
           onClick={handlePageSizeButtonClick}
           className={classes.pageSizeSelectButton}
-          component={Button}
         >
           {labelText}
-        </Link>
+        </ButtonBase>
 
         <Menu
           anchorEl={pageSizeAnchorEl}
