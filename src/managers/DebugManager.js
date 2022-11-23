@@ -34,6 +34,8 @@ class DebugManager extends React.PureComponent {
   }
 
   static log(message) {
+    DebugManager.show();
+
     const textField = DebugManager.__instance.textFieldRef.current;
     textField.value += `${message}\n`;
     textField.scrollTo(0, 1e10);
