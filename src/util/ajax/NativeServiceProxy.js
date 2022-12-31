@@ -1,5 +1,3 @@
-import qs from 'query-string';
-
 import AbstractServiceProxy from './AbstractServiceProxy';
 
 /**
@@ -31,7 +29,8 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       }
 
       if (method === 'GET' || method === 'OPTIONS') {
-        requestURL = `${requestURL}?${qs.stringify(params)}`;
+        const searchParams = new URLSearchParams(params);
+        requestURL = `${requestURL}?${searchParams.toString()}`;
       } else {
         if (requestParams instanceof FormData) {
           fetchOptions.body = requestParams;

@@ -1,7 +1,7 @@
 {
   "author": "Allan Hart",
   "name": "@material-appkit/core",
-  "version": "2.9.998",
+  "version": "2.9.999",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "homepage": "https://material-appkit.com/",
   "keywords": [
@@ -24,7 +24,6 @@
     "lodash.isequal": "latest",
     "lodash.merge": "latest",
     "path-to-regexp": "latest",
-    "query-string": "latest",
     "react-virtualized-auto-sizer": "latest",
     "react-window": "latest"
   },

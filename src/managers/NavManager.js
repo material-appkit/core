@@ -1,4 +1,3 @@
-import qs from 'query-string';
 import { createBrowserHistory } from 'history';
 
 import { isSet } from '../util/value';
@@ -41,7 +40,8 @@ class NavManager {
    * @static
    */
   static get qsParams() {
-    return qs.parse(this.currentLocation.search);
+    const searchParams = new URLSearchParams(this.currentLocation.search);
+    return Object.fromEntries(searchParams);
   }
 
 
@@ -75,7 +75,10 @@ class NavManager {
    */
   static setUrlParams(params, pathname, replace, state) {
     const currentLocation = this.currentLocation;
-    const qsParams = params || qs.parse(currentLocation.search);
+    let qsParams = params;
+    if (!qsParams) {
+      qsParams = NavManager.qsParams;
+    }
 
     // Filter out any null/undefined parameters
     const filteredParams = {};
@@ -87,7 +90,8 @@ class NavManager {
     });
 
     const currentPathname = currentLocation.pathname;
-    const querystring = qs.stringify(filteredParams);
+    const searchParams = new URLSearchParams(filteredParams);
+    const querystring = searchParams.toString();
     const url = `${pathname || currentPathname}?${querystring}`;
 
     if (replace) {
