@@ -29,11 +29,10 @@ export function include(base, routes) {
 }
 
 export function lastPathComponent(path) {
-  const pathComponents = path.split('/');
-  const pathComponentCount = pathComponents.length;
-  if (!pathComponentCount) {
-    return null;
-  }
+  let pathComponents = path.split('/');
 
-  return pathComponents[pathComponentCount - 1];
+  // Filter out any empty path components
+  pathComponents = pathComponents.filter((pathComponent) => pathComponent.length);
+
+  return pathComponents.length ? pathComponents.pop() : null;
 }
