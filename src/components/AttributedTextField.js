@@ -158,8 +158,13 @@ function AttributedTextField(props) {
     ) : null;
   }
 
+  const fieldContainerStyles = {};
+  if (textFieldProps.fullWidth) {
+    fieldContainerStyles['width'] = '100%';
+  }
+
   return (
-    <div className={classes.fieldContainer}>
+    <div className={classes.fieldContainer} style={fieldContainerStyles}>
       {statusIndicator &&
         <span className={classes.statusIndicatorContainer}>
           {statusIndicator}
