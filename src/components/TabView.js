@@ -1,7 +1,13 @@
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Outlet, Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
 import Tabs from '@material-ui/core/Tabs';
@@ -55,7 +61,6 @@ function TabView(props) {
   const currentLocationPath = location.pathname;
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(false);
-  const [activeTabConfig, setActiveTabConfig] = useState(null);
   const activeTabViewRef = useRef(null);
 
   useEffect(() => {
@@ -81,12 +86,12 @@ function TabView(props) {
   }, [basePath, currentLocationPath, tabArrangement]);
 
 
-  useEffect(() => {
-    let _activeTabConfig = null;
-    if (selectedTabIndex !== false) {
-      _activeTabConfig = tabArrangement[selectedTabIndex];
+  const activeTabConfig = useMemo(() => {
+    if (selectedTabIndex === false) {
+      return null;
     }
-    setActiveTabConfig(_activeTabConfig);
+
+    return tabArrangement[selectedTabIndex];
   }, [selectedTabIndex, tabArrangement]);
 
 
