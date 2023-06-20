@@ -243,7 +243,7 @@ FormDialog.defaultProps = {
   commitButtonTitle: 'Save',
   deleteButtonTitle: 'Delete',
   extraFormData: {},
-  maxWidth: 'sm',
+  maxWidth: 'xs',
 };
 
 export default FormDialog;
