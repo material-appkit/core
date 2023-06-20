@@ -51,4 +51,12 @@ Object.defineProperty(exports, "pluck", {
   },
 });
 
+Object.defineProperty(exports, "replaceObject", {
+  enumerable: true,
+  get: function get() {
+    return _set.replaceObject;
+  },
+});
+
+
 const _set = _interopRequireDefault(require("./set"));

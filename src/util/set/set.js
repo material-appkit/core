@@ -61,3 +61,14 @@ export function pluck(set) {
   }
   return null;
 }
+
+export function replaceObject(set, fieldName, value) {
+  for (const obj of set) {
+    if (obj[fieldName] === value[fieldName]) {
+      set.delete(obj);
+      set.add(value);
+      return;
+    }
+  }
+}
+
