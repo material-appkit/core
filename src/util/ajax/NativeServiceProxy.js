@@ -216,7 +216,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
     }
 
     for (const fileInfo of filesInfoList) {
-      formData.append(fileInfo.name, fileInfo.file);
+      formData.append(fileInfo.fieldName, fileInfo.file, fileInfo.fileName);
     }
 
     return this.request('POST', endpoint, formData, context, headers);
