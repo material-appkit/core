@@ -61,7 +61,7 @@ Object.defineProperty(exports, "replaceObject", {
 Object.defineProperty(exports, "removeObject", {
   enumerable: true,
   get: function get() {
-    return _set.replaceObject;
+    return _set.removeObject;
   },
 });
 
