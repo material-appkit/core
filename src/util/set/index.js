@@ -58,5 +58,12 @@ Object.defineProperty(exports, "replaceObject", {
   },
 });
 
+Object.defineProperty(exports, "removeObject", {
+  enumerable: true,
+  get: function get() {
+    return _set.replaceObject;
+  },
+});
+
 
 const _set = _interopRequireDefault(require("./set"));

@@ -72,3 +72,13 @@ export function replaceObject(set, fieldName, value) {
   }
 }
 
+export function removeObject(set, fieldName, value) {
+  for (const obj of set) {
+    if (obj[fieldName] === value[fieldName]) {
+      set.delete(obj);
+      return;
+    }
+  }
+}
+
+
