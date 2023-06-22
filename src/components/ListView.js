@@ -3,7 +3,6 @@ import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
 import React, {
-  Fragment,
   useCallback,
   useEffect,
   useRef,
@@ -22,6 +21,7 @@ import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -30,6 +30,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
+import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import SortIcon from '@material-ui/icons/Sort';
 
 import ServiceAgent from '../util/ServiceAgent';
@@ -89,7 +91,7 @@ function SortControl(props) {
   }, [orderingParamName, searchParams, setSearchParams]);
 
   return (
-    <Fragment>
+    <>
       <IconButton
         color="primary"
         onClick={(e) => setSortControlEl(e.currentTarget)}
@@ -113,17 +115,30 @@ function SortControl(props) {
         }}
         TransitionComponent={Fade}
       >
-        {makeChoices(choices).map((sortChoice) => (
-          <MenuItem
-            key={sortChoice.value}
-            onClick={dismissMenu(sortChoice)}
-            selected={sortChoice.value === activeOrdering}
-          >
-            {sortChoice.label}
-          </MenuItem>
-        ))}
+        {makeChoices(choices).map((sortChoice, choiceIndex) => {
+          let selected;
+          if (activeOrdering) {
+            selected = sortChoice.value === activeOrdering;
+          } else {
+            selected = choiceIndex === 0;
+          }
+
+          return (
+            <MenuItem
+              key={sortChoice.value}
+              onClick={dismissMenu(sortChoice)}
+              selected={selected}
+            >
+              <ListItemIcon>
+                {selected ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon /> }
+              </ListItemIcon>
+
+              {sortChoice.label}
+            </MenuItem>
+          );
+        })}
       </Menu>
-    </Fragment>
+    </>
   );
 }
 
@@ -199,7 +214,7 @@ function SelectionControl(props) {
   }
 
   return (
-    <Fragment>
+    <>
       <ButtonGroup>
         <Tooltip title={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}>
           <Button
@@ -237,7 +252,7 @@ function SelectionControl(props) {
           Deselect All
         </MenuItem>
       </Menu>
-    </Fragment>
+    </>
   );
 }
 
