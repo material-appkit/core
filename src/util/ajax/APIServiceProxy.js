@@ -2,12 +2,6 @@ import StorageManager from '../../managers/StorageManager';
 
 import NativeServiceProxy from './NativeServiceProxy';
 
-const DEFAULT_REQUEST_HEADERS = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
-};
-
-
 /**
  *
  */
@@ -87,10 +81,12 @@ export default class APIServiceProxy extends NativeServiceProxy {
    * @returns {Object}
    */
   static getRequestHeaders(headers, params) {
-    const requestHeaders = { ...DEFAULT_REQUEST_HEADERS };
+    const requestHeaders = {
+      'Accept': 'application/json'
+    };
 
-    if (params instanceof FormData) {
-      delete requestHeaders['Content-Type'];
+    if (!(params instanceof FormData)) {
+      requestHeaders['Content-Type'] = 'application/json';
     }
 
     if (headers) {
