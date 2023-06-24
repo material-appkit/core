@@ -35,6 +35,12 @@ const styles = makeStyles((theme) => ({
     position: 'relative',
     zIndex: theme.zIndex.appBar,
   },
+
+  tabsDense: {
+    '& .MuiTab-root': {
+      minWidth: 72,
+    },
+  }
 }));
 
 
@@ -47,6 +53,7 @@ function TabView(props) {
 
   const {
     basePath,
+    dense,
     onMount,
     onUnmount,
     onTabMount,
@@ -150,7 +157,7 @@ function TabView(props) {
     <div className={classes.container}>
       <Tabs
         value={selectedTabIndex}
-        className={classes.tabs}
+        className={clsx(classes.tabs, dense ? classes.tabsDense : null)}
         indicatorColor="primary"
         onChange={handleTabChange}
         scrollButtons="auto"
@@ -210,6 +217,8 @@ function TabView(props) {
 }
 
 TabView.propTypes = {
+  basePath: PropTypes.string,
+  dense: PropTypes.bool,
   onUpdate: PropTypes.func,
   onMount: PropTypes.func,
   onUnmount: PropTypes.func,
@@ -219,5 +228,10 @@ TabView.propTypes = {
   onTabChange: PropTypes.func,
   tabArrangement: PropTypes.array.isRequired,
 };
+
+TabView.defaultProps = {
+  dense: false,
+};
+
 
 export default React.memo(TabView);
