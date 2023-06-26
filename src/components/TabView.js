@@ -37,8 +37,10 @@ const styles = makeStyles((theme) => ({
   },
 
   tabsDense: {
-    '& .MuiTab-root': {
-      minWidth: 72,
+    [theme.breakpoints.up('md')]: {
+      '& .MuiTab-root': {
+        minWidth: 120,
+      },
     },
   }
 }));
