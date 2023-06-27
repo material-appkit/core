@@ -36,3 +36,13 @@ export function lastPathComponent(path) {
 
   return pathComponents.length ? pathComponents.pop() : null;
 }
+
+
+export function firstPathComponent(path) {
+  let pathComponents = path.split('/');
+
+  // Filter out any empty path components
+  pathComponents = pathComponents.filter((pathComponent) => pathComponent.length);
+
+  return pathComponents.length ? pathComponents.shift() : null;
+}
