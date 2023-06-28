@@ -753,14 +753,18 @@ function ListView(props) {
         );
 
       case 'paginationListControl':
-        return paginationInfo ? (
+        if (!paginationInfo || paginationInfo.total_pages === 1) {
+          return null;
+        }
+
+        return (
           <PaginationListControl
             {...paginationListControlProps}
             key={itemType}
             paginationInfo={paginationInfo}
             {...commonToolbarItemProps}
           />
-        ) : null;
+        );
 
       case 'sortControl':
         if (!(orderable && filterMetadata)) {
