@@ -113,7 +113,7 @@ function AlertDialog({ alertInfo, onDismiss }) {
         }
 
         <Button
-          color="primary"
+          color={alertInfo.variant === 'warn' ? 'secondary' : 'primary'}
           onClick={() => commit()}
           variant="contained"
         >
