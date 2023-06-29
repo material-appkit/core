@@ -58,7 +58,6 @@ function EditDialog(props) {
 
   const {
     canDelete,
-    commitOnEnter,
     FormProps,
     entityType,
     labels,
@@ -173,18 +172,6 @@ function EditDialog(props) {
     });
   };
 
-  const handleKeyUp = useCallback((e) => {
-    if (e.key === 'Enter') {
-      // Intercept the "Enter" key in order to prevent the dialog form
-      // (as well as any underlying forms) from being automatically
-      // submitted.
-      e.preventDefault();
-      e.stopPropagation();
-
-      // Explicitly submit our own form
-      formRef.current.save();
-    }
-  }, []);
 
   const handleDialogClose = useCallback((e, reason) => {
     if (reason === 'escapeKeyDown') {
@@ -196,7 +183,6 @@ function EditDialog(props) {
     <Dialog
       classes={{ paper: classes.paper }}
       onClose={handleDialogClose}
-      onKeyUp={commitOnEnter ? handleKeyUp : null}
       open
     >
       <DialogTitle className={classes.dialogTitle} disableTypography>
@@ -251,7 +237,6 @@ EditDialog.propTypes = {
   apiCreateUrl: PropTypes.string,
   apiDetailUrl: PropTypes.string,
   canDelete: PropTypes.bool,
-  commitOnEnter: PropTypes.bool,
   entityType: PropTypes.string,
   FormProps: PropTypes.object,
   labels: PropTypes.object,
@@ -266,7 +251,6 @@ EditDialog.propTypes = {
 
 EditDialog.defaultProps = {
   canDelete: true,
-  commitOnEnter: true,
   FormProps: {},
 };
 
