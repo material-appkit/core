@@ -1,18 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import CloseIcon from '@material-ui/icons/Close';
 
+import SimpleDialog from "./SimpleDialog";
 import SearchField from './widgets/SearchField';
 import EditDialog from './EditDialog';
 import ListView from './ListView';
@@ -21,13 +13,8 @@ import Spacer from './Spacer';
 
 const styles = makeStyles((theme) => ({
   filterFieldContainer: {
-    backgroundColor: theme.palette.background.paper,
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    padding: theme.spacing(0, 1),
-  },
-
-  fullHeight: {
-    height: `calc(100% - ${theme.spacing(12)}px)`,
+    backgroundColor: theme.palette.grey[100],
+    padding: theme.spacing(0.5, 2),
   },
 
   dialogTitle: {
@@ -52,7 +39,7 @@ const styles = makeStyles((theme) => ({
   },
 
   dialogActions: {
-    borderTop: `1px solid ${theme.palette.grey[300]}`,
+    flexDirection: 'row !important',
     justifyContent: 'space-between',
   },
 
@@ -90,8 +77,6 @@ function ListViewDialog(props) {
     typeof(title) === 'function' ? title() : title
   ), [title]);
 
-  const dialogRef = useRef(null);
-
   //----------------------------------------------------------------------------
   useEffect(() => {
     if (filterParams) {
@@ -100,6 +85,11 @@ function ListViewDialog(props) {
       setAppliedFilterParams({});
     }
   }, [filterParams]);
+
+  //
+  const handleDialogClose = useCallback(() => {
+    onDismiss(null);
+  }, [onDismiss]);
 
   //----------------------------------------------------------------------------
   const commit = useCallback(() => {
@@ -155,10 +145,7 @@ function ListViewDialog(props) {
     }
 
     return (
-      <DialogActions
-        className={classes.dialogActions}
-        disableSpacing
-      >
+      <>
         {apiCreateUrl &&
           <Button onClick={() => setAddDialogIsOpen(true)}>
             Create
@@ -178,83 +165,69 @@ function ListViewDialog(props) {
             Choose
           </Button>
         }
-      </DialogActions>
+      </>
     );
   }, [listViewConfig]);
 
   //----------------------------------------------------------------------------
+  let subtitle = null;
+  if (selectionMode === 'multiple' && listViewSelection) {
+    subtitle = `${listViewSelection.size} selected`;
+  }
+
+  let searchControl = null;
+  if (searchFilterParam) {
+    searchControl = (
+      <div className={classes.filterFieldContainer}>
+        <SearchField
+          clearable
+          fullWidth
+          onChange={handleSearchFieldChange}
+          margin="none"
+          propagateChangeEvent={false}
+          size="small"
+        />
+      </div>
+    );
+  }
+
   return (
-    <Fragment>
-      <Dialog
+    <>
+      <SimpleDialog
         open
-        classes={fullHeight ? { paper: classes.fullHeight } : null}
-        onClose={() => onDismiss(null)}
+        classes={{
+          dialogContent: classes.dialogContent,
+          dialogActions: classes.dialogActions,
+        }}
+        loading={loading}
+        title={dialogTitle}
+        subtitle={subtitle}
         onKeyDown={handleKeyDown}
-        ref={dialogRef}
+        onClose={handleDialogClose}
+        actions={dialogActions}
         {...dialogProps}
       >
-        <DialogTitle className={classes.dialogTitle} disableTypography>
-          <Box className={classes.dialogTitleContentContainer}>
-            <Box flex="1">
-              <Typography component="h3" className={classes.dialogTitleContent}>
-                {dialogTitle}
-              </Typography>
-
-              {(selectionMode === 'multiple' && listViewSelection) &&
-                <Typography variant="subtitle2" color="textSecondary">
-                  {`${listViewSelection.size} selected`}
-                </Typography>
-              }
-            </Box>
-
-            <IconButton onClick={() => onDismiss(null)} edge="end">
-              <CloseIcon />
-            </IconButton>
-          </Box>
-
-          <LinearProgress
-            className={classes.progressBar}
-            variant={loading ? 'indeterminate' : 'determinate'}
-            value={0}
-          />
-
-          {searchFilterParam &&
-            <Box className={classes.filterFieldContainer}>
-              <SearchField
-                fullWidth
-                onChange={handleSearchFieldChange}
-                margin="none"
-                propagateChangeEvent={false}
-                size="small"
-              />
-            </Box>
-          }
-        </DialogTitle>
-
-        <DialogContent className={classes.dialogContent}>
-          <ListView
-            {...listViewProps}
-            displaySelectionCount={false}
-            filterParams={appliedFilterParams}
-            listItemProps={{
-              ...(listItemProps || {}),
-              commitOnSelect: props.commitOnSelect,
-            }}
-            loadingVariant="circular"
-            onConfig={setListViewConfig}
-            onLoad={() => setLoading(true)}
-            onLoadComplete={() => setLoading(false)}
-            onPageChange={handlePageChange}
-            onSelectionChange={handleSelectionChange}
-            paginationControlProps={paginationControlProps}
-            selectionDisabled={false}
-            selectionMode={commitOnSelect ? 'single' : selectionMode}
-            selectOnClick
-          />
-        </DialogContent>
-
-        {dialogActions}
-      </Dialog>
+        {searchControl}
+        <ListView
+          {...listViewProps}
+          displaySelectionCount={false}
+          filterParams={appliedFilterParams}
+          listItemProps={{
+            ...(listItemProps || {}),
+            commitOnSelect: props.commitOnSelect,
+          }}
+          loadingVariant="circular"
+          onConfig={setListViewConfig}
+          onLoad={() => setLoading(true)}
+          onLoadComplete={() => setLoading(false)}
+          onPageChange={handlePageChange}
+          onSelectionChange={handleSelectionChange}
+          paginationControlProps={paginationControlProps}
+          selectionDisabled={false}
+          selectionMode={commitOnSelect ? 'single' : selectionMode}
+          selectOnClick
+        />
+      </SimpleDialog>
 
       {addDialogIsOpen &&
         <EditDialog
@@ -265,7 +238,7 @@ function ListViewDialog(props) {
           {...props.editDialogProps}
         />
       }
-    </Fragment>
+    </>
   );
 }
 
@@ -283,7 +256,6 @@ ListViewDialog.propTypes = {
 
 ListViewDialog.defaultProps = {
   commitOnSelect: false,
-  dialogProps: { fullWidth: true },
   fullHeight: true,
   selectionMode: 'multiple',
 };
