@@ -487,7 +487,7 @@ function ListView(props) {
 
     return {
       contextMenuItemArrangement: itemContextMenuArrangement,
-      key: itemIndex,
+      key: itemKey,
       item,
       onSelectionChange: (item) => updateSelection(item),
       selected,
