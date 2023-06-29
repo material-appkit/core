@@ -477,7 +477,7 @@ function ListView(props) {
    * @param item
    * @returns Object containing properties to supply to the list item
    */
-  const itemProps = (item) => {
+  const itemProps = (item, itemIndex) => {
     const itemKey = keyForItem(item);
 
     const itemContext = itemContextProvider ? itemContextProvider(item) : {};
@@ -486,7 +486,7 @@ function ListView(props) {
 
     return {
       contextMenuItemArrangement: itemContextMenuArrangement,
-      key: itemKey,
+      key: itemIndex,
       item,
       onSelectionChange: (item) => updateSelection(item),
       selected,
@@ -612,6 +612,7 @@ function ListView(props) {
    */
   useEffect(() => {
     setSelectionDisabled(true);
+    setSelection(new Set());
 
     if (items) {
       setRenderedItems(items);
@@ -923,7 +924,7 @@ function ListView(props) {
       <ListItemComponent
         onMount={onMount}
         style={style}
-        {...itemProps(item)}
+        {...itemProps(item, itemIndex)}
       />
     );
   };
@@ -935,7 +936,7 @@ function ListView(props) {
       <TileItemComponent
         onMount={onMount}
         style={style}
-        {...itemProps(item)}
+        {...itemProps(item, itemIndex)}
       />
     );
   };
