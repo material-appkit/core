@@ -349,6 +349,7 @@ function ListView(props) {
     onOrderingChange,
     onPageChange,
     onPageSizeChange,
+    onSelectionChange,
     orderable,
     orderingParamName,
     paginationControlProps,
@@ -356,6 +357,7 @@ function ListView(props) {
     PlaceholderComponent,
     responseTransformer,
     selectOnClick,
+    selection,
     selectionInitializer,
     selectionMenu,
     selectionMode,
@@ -400,22 +402,22 @@ function ListView(props) {
   // ---------------------------------------------------------------------------
   // Selection Management
   // ---------------------------------------------------------------------------
-  const selection = props.selection || uncontrolledSelection;
+  const selectedItems = selection || uncontrolledSelection;
 
   const setSelection = useCallback((updatedSelection) => {
-    if (!props.selection) {
+    if (!selection) {
       setUncontrolledSelection(updatedSelection);
     }
 
-    if (props.onSelectionChange) {
-      props.onSelectionChange(updatedSelection);
+    if (onSelectionChange) {
+      onSelectionChange(updatedSelection);
     }
-  }, [props]);
+  }, [selection, onSelectionChange]);
 
 
   const updateSelection = useCallback((item) => {
     const itemId = keyForItem(item);
-    const selectedItem = setFind(selection, (i) => keyForItem(i) === itemId);
+    const selectedItem = setFind(selectedItems, (i) => keyForItem(i) === itemId);
 
     let newSelection;
     if (selectionMode === 'single') {
@@ -424,7 +426,7 @@ function ListView(props) {
         newSelection.add(item);
       }
     } else {
-      newSelection = new Set(selection);
+      newSelection = new Set(selectedItems);
       if (selectedItem) {
         newSelection.delete(selectedItem);
       } else {
@@ -432,7 +434,7 @@ function ListView(props) {
       }
     }
     setSelection(newSelection);
-  }, [selection]);
+  }, [selectedItems]);
 
 
   /**
@@ -446,8 +448,7 @@ function ListView(props) {
     setRenderedItems(updatedItems);
 
     updateSelection(item);
-
-  }, [selection, renderedItems, updateSelection]);
+  }, [renderedItems, updateSelection]);
 
   // ---------------------------------------------------------------------------
 
@@ -482,7 +483,7 @@ function ListView(props) {
 
     const itemContext = itemContextProvider ? itemContextProvider(item) : {};
 
-    const selected = Boolean(setFind(selection, (i) => keyForItem(i) === itemKey));
+    const selected = Boolean(setFind(selectedItems, (i) => keyForItem(i) === itemKey));
 
     return {
       contextMenuItemArrangement: itemContextMenuArrangement,
@@ -541,9 +542,9 @@ function ListView(props) {
   const removeItem = useCallback((item) => {
     const sourceItemIndex = findItemIndex(item);
 
-    if (selection.has(item)) {
+    if (selectedItems.has(item)) {
       // Remove the item from selection if present
-      const newSelection = new Set(selection);
+      const newSelection = new Set(selectedItems);
       newSelection.delete(item);
       setSelection(newSelection);
     }
@@ -563,7 +564,7 @@ function ListView(props) {
       updatedPaginationInfo.total -= 1;
       setPaginationInfo(updatedPaginationInfo);
     }
-  }, [paginationInfo, renderedItems, selection]);
+  }, [paginationInfo, renderedItems, selectedItems]);
 
 
   /**
@@ -580,8 +581,8 @@ function ListView(props) {
       return;
     }
 
-    if (selection.has(source)) {
-      const newSelection = new Set(selection);
+    if (selectedItems.has(source)) {
+      const newSelection = new Set(selectedItems);
       newSelection.delete(source);
       newSelection.add(target);
       setSelection(newSelection);
@@ -590,7 +591,7 @@ function ListView(props) {
     const updatedItems = [...renderedItems];
     updatedItems[sourceItemIndex] = target;
     setRenderedItems(updatedItems);
-  }, [findItemIndex, renderedItems, selection]);
+  }, [findItemIndex, renderedItems, selectedItems]);
 
   // ---------------------------------------------------------------------------
   /**
@@ -695,7 +696,7 @@ function ListView(props) {
   const handleSelectionMenuItemClick = useCallback((action) => {
     switch (action) {
       case 'all':
-        const newSelection = new Set(selection);
+        const newSelection = new Set(selectedItems);
         renderedItems.forEach((item) => newSelection.add(item));
         setSelection(newSelection);
         break;
@@ -705,7 +706,7 @@ function ListView(props) {
       default:
         throw new Error(`Unsupported selection action: ${action}`);
     }
-  }, []);
+  }, [selectedItems]);
 
 
   // ---------------------------------------------------------------------------
@@ -737,7 +738,7 @@ function ListView(props) {
       case 'paginationControl':
         let paginationControlLabel = null;
         if (displaySelectionCount && !selectionDisabled && selectionMode && itemCount !== null) {
-          paginationControlLabel = `${selection.size} of ${itemCount} selected`;
+          paginationControlLabel = `${selectedItems.size} of ${itemCount} selected`;
         }
         return (
           <PaginationControl
@@ -801,7 +802,7 @@ function ListView(props) {
     paginationListControlProps,
     searchParams,
     setSearchParams,
-    selection,
+    selectedItems,
     selectionDisabled,
     selectionMenu,
     selectionMode,
