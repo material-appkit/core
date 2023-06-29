@@ -611,13 +611,8 @@ function ListView(props) {
    * immediately.
    */
   useEffect(() => {
-    setSelectionDisabled(true);
-    setSelection(new Set());
-
-    if (items) {
-      setRenderedItems(items);
-    }
-  }, [items, src]);
+    setRenderedItems(items);
+  }, [items]);
 
   /**
    * When the supplied filter params are changed, OR the pagnation/ordering
