@@ -16,14 +16,14 @@ import { titleCase } from '../util/string';
 
 //----------------------------------------------------------------------------
 // Helper function that renders a given value or list of values
-function renderValue(value, fieldInfo) {
+function renderValue(value, fieldInfo, obj) {
   if (Array.isArray(value)) {
-    return value.map((item, i) => renderValue(item, fieldInfo));
+    return value.map((item, i) => renderValue(item, fieldInfo, obj));
   }
 
   let renderedValue = value;
   if (fieldInfo.transform) {
-    renderedValue = fieldInfo.transform(value);
+    renderedValue = fieldInfo.transform(value, obj);
   }
 
   const valueType = typeof(renderedValue);
@@ -51,7 +51,7 @@ function PropertyListItem(props) {
   const classes = propertyListItemStyles();
 
   //----------------------------------------------------------------------------
-  let value = null;
+  let value;
   if (fieldInfo.keyPath) {
     value = valueForKeyPath(representedObject, fieldInfo.keyPath);
   } else {
@@ -66,7 +66,7 @@ function PropertyListItem(props) {
     return null;
   }
 
-  let labelComponent = null;
+  let labelComponent;
   if (fieldInfo.Icon) {
     labelComponent = (
       <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
@@ -88,7 +88,6 @@ function PropertyListItem(props) {
     );
   }
 
-
   let listItemTextPrimary = null;
   if (Array.isArray(value)) {
     listItemTextPrimary = (
@@ -96,7 +95,7 @@ function PropertyListItem(props) {
         disablePadding
         className={fieldInfo.inline ? classes.inlineNestedList : classes.nestedList}
       >
-        {renderValue(value, fieldInfo).map((nestedValue, i) => (
+        {renderValue(value, fieldInfo, representedObject).map((nestedValue, i) => (
           <ListItem
             className={classes.nestedListItem}
             disableGutters
@@ -108,7 +107,7 @@ function PropertyListItem(props) {
       </List>
     )
   } else {
-    const renderedValue = renderValue(value, fieldInfo);
+    const renderedValue = renderValue(value, fieldInfo, representedObject);
     if (renderedValue) {
       let PrimaryComponent = Fragment;
       const primaryComponentProps = {};
@@ -125,7 +124,7 @@ function PropertyListItem(props) {
 
       listItemTextPrimary = (
         <PrimaryComponent {...primaryComponentProps}>
-          {renderValue(value, fieldInfo)}
+          {renderValue(value, fieldInfo, representedObject)}
         </PrimaryComponent>
       );
     }
