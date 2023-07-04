@@ -161,6 +161,7 @@ function ListViewDialog(props) {
             color="primary"
             disabled={!(listViewSelection && listViewSelection.size)}
             onClick={commit}
+            variant="contained"
           >
             Choose
           </Button>
