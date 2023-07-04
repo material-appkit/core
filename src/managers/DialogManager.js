@@ -1,21 +1,13 @@
 import React  from 'react';
 
-import { isWidthUp } from '@material-ui/core/withWidth';
-
 import { timestamp } from '../util/date';
 
 const DEFAULT_DIALOG_CONFIG = {
   reasonsToClose: ['escapeKeyDown'],
-  fullScreenBreakpoint: 'md',
-  size: 'sm',
 };
 
 
 class DialogManager extends React.PureComponent {
-  static init(ContextType) {
-    this.contextType = ContextType;
-  }
-
   constructor(props) {
     super(props);
 
@@ -78,17 +70,10 @@ class DialogManager extends React.PureComponent {
   // ---------------------------------------------------------------------------
   render() {
     const dialogEntries = Array.from(this.state.dialogs.entries());
-    const { breakpoint } = this.context;
 
     return dialogEntries.map((entry) => {
       const [dialogId, dialogConfig] = entry;
-      const {
-        DialogComponent,
-        context,
-        fullHeight,
-        fullScreenBreakpoint,
-        size,
-      } = dialogConfig;
+      const { DialogComponent, context } = dialogConfig;
 
       const dialogProps = {
         ...(context || {}),
@@ -98,24 +83,9 @@ class DialogManager extends React.PureComponent {
         open: true,
       };
 
-      const isFullScreen = !isWidthUp(fullScreenBreakpoint, breakpoint);
-      if (isFullScreen) {
-        dialogProps.fullScreen = true;
-      } else {
-        dialogProps.fullWidth = true;
-        dialogProps.maxWidth = size;
-
-        if (fullHeight) {
-          dialogProps.PaperProps = {
-            style: { height: 'calc(100% - 64px)' },
-          };
-        }
-      }
-
       return <DialogComponent {...dialogProps} />;
     });
   }
 }
 
 export default DialogManager;
-
