@@ -60,8 +60,6 @@ function SimpleDialog(props) {
     appliedPaperProps.style = { height };
   }
 
-  console.log(dialogActionsProps);
-
   return (
     <Dialog
       fullScreen={fullScreen}
