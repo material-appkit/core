@@ -3,7 +3,7 @@ import React  from 'react';
 import { timestamp } from '../util/date';
 
 const DEFAULT_DIALOG_CONFIG = {
-  reasonsToClose: ['escapeKeyDown'],
+  reasonsToClose: ['closeButtonClick', 'escapeKeyDown'],
 };
 
 
