@@ -38,7 +38,6 @@ const alertStyles = makeStyles((theme) => ({
 
   dialogContentText: {
     fontSize: theme.typography.pxToRem(16),
-    marginTop: theme.spacing(1),
   },
 
   titleIcon: {
@@ -80,10 +79,11 @@ function AlertDialog({ alertInfo, onDismiss }) {
   return (
     <Dialog
       fullWidth={true}
-      maxWidth='sm'
+      maxWidth='xs'
       open
       onClose={handleDialogClose}
       onKeyPress={handleKeyPress}
+      {...(alertInfo.dialogProps || {})}
     >
       {alertInfo.title &&
         <DialogTitle disableTypography>
