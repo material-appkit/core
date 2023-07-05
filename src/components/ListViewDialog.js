@@ -58,6 +58,7 @@ function ListViewDialog(props) {
     filterParams,
     dialogProps,
     fullHeight,
+    maxWidth,
     onDismiss,
     listItemProps,
     searchFilterParam,
@@ -201,6 +202,7 @@ function ListViewDialog(props) {
           dialogActions: classes.dialogActions,
         }}
         loading={loading}
+        maxWidth={maxWidth}
         title={dialogTitle}
         subtitle={subtitle}
         onKeyDown={handleKeyDown}
@@ -249,6 +251,7 @@ ListViewDialog.propTypes = {
   dialogProps: PropTypes.object,
   entityType: PropTypes.string,
   fullHeight: PropTypes.bool,
+  maxWidth: PropTypes.string,
   onDismiss: PropTypes.func,
   searchFilterParam: PropTypes.string,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
@@ -258,6 +261,7 @@ ListViewDialog.propTypes = {
 ListViewDialog.defaultProps = {
   commitOnSelect: false,
   fullHeight: true,
+  maxWidth: 'xs',
   selectionMode: 'multiple',
 };
 
