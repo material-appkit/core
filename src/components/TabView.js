@@ -36,11 +36,9 @@ const styles = makeStyles((theme) => ({
     zIndex: theme.zIndex.appBar,
   },
 
-  tabsDense: {
-    [theme.breakpoints.up('md')]: {
-      '& .MuiTab-root': {
-        minWidth: 120,
-      },
+  tabsFullWidth: {
+    '& .MuiTab-root': {
+      minWidth: 'unset',
     },
   }
 }));
@@ -55,7 +53,6 @@ function TabView(props) {
 
   const {
     basePath,
-    dense,
     onMount,
     onUnmount,
     onTabMount,
@@ -64,6 +61,7 @@ function TabView(props) {
     onTabConfig,
     onUpdate,
     tabArrangement,
+    tabsProps,
     ...rest
   } = props;
 
@@ -155,16 +153,22 @@ function TabView(props) {
     tabContainerClasses.push(activeTabConfig.containerClassName);
   }
 
+  const tabsClasses = [classes.tabs];
+  if (tabsProps.variant === 'fullWidth') {
+    console.log('here');
+    tabsClasses.push(classes.tabsFullWidth);
+  }
+
   const tabViewContainer = (
     <div className={classes.container}>
       <Tabs
         value={selectedTabIndex}
-        className={clsx(classes.tabs, dense ? classes.tabsDense : null)}
+        className={clsx(tabsClasses)}
         indicatorColor="primary"
         onChange={handleTabChange}
         scrollButtons="auto"
         textColor="primary"
-        variant="scrollable"
+        {...tabsProps}
       >
         {tabArrangement.map((tabConfig) => (
           <Tab
@@ -220,7 +224,6 @@ function TabView(props) {
 
 TabView.propTypes = {
   basePath: PropTypes.string,
-  dense: PropTypes.bool,
   onUpdate: PropTypes.func,
   onMount: PropTypes.func,
   onUnmount: PropTypes.func,
@@ -229,10 +232,11 @@ TabView.propTypes = {
   onTabConfig: PropTypes.func,
   onTabChange: PropTypes.func,
   tabArrangement: PropTypes.array.isRequired,
+  tabsProps: PropTypes.object,
 };
 
 TabView.defaultProps = {
-  dense: false,
+  tabsProps: {},
 };
 
 
