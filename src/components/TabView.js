@@ -155,7 +155,6 @@ function TabView(props) {
 
   const tabsClasses = [classes.tabs];
   if (tabsProps.variant === 'fullWidth') {
-    console.log('here');
     tabsClasses.push(classes.tabsFullWidth);
   }
 
