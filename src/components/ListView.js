@@ -613,7 +613,11 @@ function ListView(props) {
    */
   useEffect(() => {
     setRenderedItems(items);
-  }, [items]);
+
+    if (selectionInitializer) {
+      setSelection(selectionInitializer(items));
+    }
+  }, [items, selectionInitializer]);
 
   /**
    * When the supplied filter params are changed, OR the pagnation/ordering
