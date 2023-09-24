@@ -128,19 +128,20 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
    * @returns {Promise}
    */
   request(method, ...args) {
-    let endpoint, params, context, headers, cacheVersion;
+    let endpoint, params, context, headers, cacheVersion, authenticate;
     if (typeof(args[0]) === 'object') {
       endpoint = args[0].endpoint;
       params = args[0].params;
       context = args[0].context;
       headers = args[0].headers;
       cacheVersion = args[0].cacheVersion;
+      authenticate = args[0].authenticate ?? true;
     } else {
       [endpoint, params, context, headers, cacheVersion] = args;
     }
 
     return new Promise((resolve, reject) => {
-      const requestHeaders = this.constructor.getRequestHeaders(headers, params);
+      const requestHeaders = this.constructor.getRequestHeaders(headers, params, authenticate);
       const requestInfo = this.requestInfo(method, endpoint, params, requestHeaders, cacheVersion);
 
       if (context) {

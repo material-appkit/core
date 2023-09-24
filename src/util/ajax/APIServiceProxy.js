@@ -80,7 +80,7 @@ export default class APIServiceProxy extends NativeServiceProxy {
    * @static
    * @returns {Object}
    */
-  static getRequestHeaders(headers, params) {
+  static getRequestHeaders(headers, params, authenticate) {
     const requestHeaders = {
       'Accept': 'application/json'
     };
@@ -93,9 +93,11 @@ export default class APIServiceProxy extends NativeServiceProxy {
       Object.assign(requestHeaders, headers);
     }
 
-    const accessToken = this.getAccessToken();
-    if (accessToken) {
-      requestHeaders.Authorization = `Bearer ${accessToken}`;
+    if (authenticate) {
+      const accessToken = this.getAccessToken();
+      if (accessToken) {
+        requestHeaders.Authorization = `Bearer ${accessToken}`;
+      }
     }
 
     const csrfToken = StorageManager.getCookie('csrftoken');
