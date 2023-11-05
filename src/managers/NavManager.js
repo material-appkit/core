@@ -1,4 +1,4 @@
-import { createBrowserHistory } from 'history';
+// import { createBrowserHistory } from 'history';
 
 import { isSet } from '../util/value';
 
@@ -16,8 +16,8 @@ class NavManager {
    * @static
    */
   static initialize(options) {
-    const historyBaseName = options.basename || process.env.REACT_APP_URL_BASENAME;
-    this.history = createBrowserHistory({ basename: historyBaseName });
+    // const historyBaseName = options.basename || process.env.REACT_APP_URL_BASENAME;
+    // this.history = createBrowserHistory({ basename: historyBaseName });
   }
 
   /**
