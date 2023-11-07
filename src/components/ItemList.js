@@ -302,7 +302,7 @@ class ItemList extends React.PureComponent {
             this.removeRecord(item);
           }
         },
-      });
+      }, 'warn');
     } else {
       this.removeRecord(item);
     }

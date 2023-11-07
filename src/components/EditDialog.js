@@ -169,7 +169,7 @@ function EditDialog(props) {
           deleteRepresentedObject();
         }
       },
-    });
+    }, 'warn');
   };
 
 
