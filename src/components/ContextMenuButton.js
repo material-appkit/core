@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import ContextMenu from './ContextMenu';
@@ -12,6 +14,7 @@ function ContextMenuButton(props) {
     dense,
     Icon,
     iconClassName,
+    label,
     menuItemArrangement,
   } = props;
 
@@ -29,27 +32,42 @@ function ContextMenuButton(props) {
     return null;
   }
 
-  return (
-    <Fragment>
+  let control;
+  if (label) {
+    control = (
+      <Button
+        endIcon={<ExpandMoreIcon />}
+        onClick={() => setMenuIsOpen(true)}
+        ref={menuAnchorRef}
+        {...buttonProps}
+      >
+        {label}
+      </Button>
+    );
+  } else {
+    control = (
       <IconButton
-        aria-owns={menuIsOpen ? 'context-menu' : undefined}
-        aria-haspopup="true"
-        onClick={(e) => setMenuIsOpen(true)}
+        onClick={() => setMenuIsOpen(true)}
         ref={menuAnchorRef}
         {...buttonProps}
       >
         <Icon className={iconClassName} />
       </IconButton>
+    );
+  }
+
+  return (
+    <>
+      {control}
 
       <ContextMenu
         anchorEl={menuAnchorRef.current}
         dense={dense}
         menuItemArrangement={menuItemArrangement}
-        id="context-menu"
         onClose={handleContextMenuClose}
         open={menuIsOpen}
       />
-    </Fragment>
+    </>
   );
 }
 
@@ -58,6 +76,7 @@ ContextMenuButton.propTypes = {
   dense: PropTypes.bool,
   Icon: PropTypes.elementType,
   iconClassName: PropTypes.string,
+  label: PropTypes.string,
   menuItemArrangement: PropTypes.array,
 };
 
