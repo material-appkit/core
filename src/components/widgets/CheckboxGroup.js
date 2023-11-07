@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Button from '@material-ui/core/Button';
@@ -19,6 +19,7 @@ import EditDialog from '../EditDialog';
 import ServiceAgent from '../../util/ServiceAgent';
 import { arrayToObject } from '../../util/array';
 import { useInit } from '../../util/hooks';
+import { valueForKeyPath } from '../../util/object';
 
 
 const styles = makeStyles((theme) => ({
@@ -59,7 +60,13 @@ function createChoice(item, field_map) {
 function CheckboxGroupWidget(props) {
   const { fieldInfo, label } = props;
 
-  const [choices, setChoices] = useState(fieldInfo.choices || null);
+  const [choices, setChoices] = useState(() => {
+    if (fieldInfo.choices) {
+      return fieldInfo.choices;
+    }
+
+    return valueForKeyPath(fieldInfo, 'ui.widget.choices');
+  });
   const [addDialogIsOpen, setAddDialogIsOpen] = useState(false);
 
   const choiceLabelMap = choices ? arrayToObject(choices, 'label') : {};
@@ -80,16 +87,16 @@ function CheckboxGroupWidget(props) {
   }
 
   useInit(async() => {
-    if (fieldInfo.choices) {
-      setChoices(fieldInfo.choices);
-    } else if (apiListUrl) {
-      const filterParams = widgetInfo.filter_params || {};
-      const res = await ServiceAgent.get(apiListUrl, filterParams);
-      setChoices(res.jsonData.map(
-        (item) => createChoice(item, widgetInfo.choice_map)
-      ));
-    } else {
-      throw new Error('"choices" or "related_endpoint" must be present in fieldInfo');
+    if (!choices) {
+      if (apiListUrl) {
+        const filterParams = widgetInfo.filter_params || {};
+        const res = await ServiceAgent.get(apiListUrl, filterParams);
+        setChoices(res.jsonData.map(
+          (item) => createChoice(item, widgetInfo.choice_map)
+        ));
+      } else {
+        throw new Error('"choices" or "related_endpoint" must be present in fieldInfo');
+      }
     }
   });
 
@@ -185,7 +192,7 @@ function CheckboxGroupWidget(props) {
         }
 
         {choices ? (
-          <Fragment>
+          <>
             <FormGroup {...formGroupProps}>
               {choices.map((choice) => {
                 const formControlLabelStyle = {};
@@ -225,7 +232,7 @@ function CheckboxGroupWidget(props) {
             </FormGroup>
 
             {(apiListUrl && widgetInfo.create_endpoint) &&
-              <Fragment>
+              <>
                 <Button
                   color="primary"
                   onClick={() => { setAddDialogIsOpen(true); }}
@@ -244,9 +251,9 @@ function CheckboxGroupWidget(props) {
                     onSave={handleEditDialogSave}
                   />
                 }
-              </Fragment>
+              </>
             }
-          </Fragment>
+          </>
         ) : (
           <Box display="flex" alignItems="center" height={30}>
             <LinearProgress className={classes.linearProgress} />
