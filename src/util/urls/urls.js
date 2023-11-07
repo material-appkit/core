@@ -1,4 +1,5 @@
 import { pathToRegexp, compile } from 'path-to-regexp';
+import { rstrip } from '../string';
 
 const cache = {};
 const cacheLimit = 10000;
@@ -64,7 +65,9 @@ export function matchPath(pathname, options = {}) {
     });
     const match = regexp.exec(pathname);
 
-    if (!match) return null;
+    if (!match) {
+      return null;
+    }
 
     const [url, ...values] = match;
     const isExact = pathname === url;
@@ -90,7 +93,7 @@ export function matchPath(pathname, options = {}) {
  * @returns {String}
  */
 export function reverse(path, params) {
-  const toPath = compile(path);
+  const toPath = compile(rstrip(path, '/*'));
   return toPath(params);
 }
 
@@ -104,7 +107,7 @@ export function reverse(path, params) {
 export function matchesForPath(pathname, routes) {
   const matches = [];
   routes.forEach((routeInfo) => {
-    const currentMatch = matchPath(pathname, { path: routeInfo.path });
+    const currentMatch = matchPath(rstrip(routeInfo.path, '/*'), pathname);
     if (currentMatch) {
       matches.push({...currentMatch, ...routeInfo });
     }
