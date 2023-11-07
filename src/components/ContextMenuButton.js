@@ -11,6 +11,7 @@ import ContextMenu from './ContextMenu';
 function ContextMenuButton(props) {
   const {
     buttonProps,
+    contextMenuProps,
     dense,
     Icon,
     iconClassName,
@@ -63,9 +64,11 @@ function ContextMenuButton(props) {
       <ContextMenu
         anchorEl={menuAnchorRef.current}
         dense={dense}
+        getContentAnchorEl={null}
         menuItemArrangement={menuItemArrangement}
         onClose={handleContextMenuClose}
         open={menuIsOpen}
+        {...contextMenuProps}
       />
     </>
   );
@@ -73,6 +76,7 @@ function ContextMenuButton(props) {
 
 ContextMenuButton.propTypes = {
   buttonProps: PropTypes.object,
+  contextMenuProps: PropTypes.object,
   dense: PropTypes.bool,
   Icon: PropTypes.elementType,
   iconClassName: PropTypes.string,
@@ -82,6 +86,7 @@ ContextMenuButton.propTypes = {
 
 ContextMenuButton.defaultProps = {
   buttonProps: {},
+  contextMenuProps: {},
   dense: false,
   Icon: MoreVertIcon,
 };
