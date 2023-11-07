@@ -1,7 +1,6 @@
-import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Navigate, Routes, Route } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -9,9 +8,9 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import ContextMenu from './ContextMenu';
+// import ContextMenu from './ContextMenu';
 import SplitView from './SplitView';
-import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
+// import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
 
 const styles = makeStyles((theme) => {
   const defaultNavigationControllerTheme = {
@@ -52,75 +51,43 @@ function NavigationController(props) {
   const {
     defaultRoute,
     onViewDidMount,
-    onViewDidAppear,
     onViewDidUpdate,
     onViewWillUnmount,
     routes,
+    setPageTitle,
     splitViewProps,
   } = props;
-  const matches = [];
 
   const theme = useTheme();
   const classes = styles();
 
   const [contextMenuButtonEl, setContextMenuButtonEl] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const [topbarConfigMap, setTopbarConfigMap] = useState({});
-  const [activeTopBarConfig, setActiveTopBarConfig] = useState({});
-
-  const viewControllerMapRef = useRef({});
+  const [toolbarItems, setToolbarItems] = useState([]);
 
 
-  useEffect(() => {
-    if (matches.length) {
-      setSelectedIndex(matches.length - 1);
-    } else {
-      setSelectedIndex(null);
-    }
-  }, [matches]);
-
-
-  useEffect(() => {
-    if (selectedIndex !== null) {
-      const currentPath = matches[selectedIndex].path;
-      const viewController = viewControllerMapRef.current[currentPath];
-      if (viewController) {
-        viewDidAppear(viewController, currentPath);
-      }
-    }
-  }, [selectedIndex]);
-
-
-  useEffect(() => {
-    if (selectedIndex !== null && selectedIndex < matches.length) {
-      const activeMatch = matches[selectedIndex];
-      setActiveTopBarConfig(topbarConfigMap[activeMatch.path] || {});
-    }
-  }, [selectedIndex, topbarConfigMap]);
-
-
-  const updateTopbarConfig = (viewControllerProps, path) => {
-    const topbarConfig = topbarConfigMap[path];
-
-    const newTopbarConfig = {
-      title: viewControllerProps.title,
-      rightBarItem: viewControllerProps.rightBarItem,
-      toolbarItems: viewControllerProps.toolbarItems,
-      contextMenuItems: viewControllerProps.contextMenuItems,
-    };
-
-    if (!isEqual(newTopbarConfig, topbarConfig)) {
-      const newTopbarConfigMap = { ...topbarConfigMap };
-      newTopbarConfigMap[path] = newTopbarConfig;
-      setTopbarConfigMap(newTopbarConfigMap);
-    }
-  };
+  // const updateTopbarConfig = (viewControllerProps, path) => {
+  //   const topbarConfig = topbarConfigMap[path];
+  //
+  //   const newTopbarConfig = {
+  //     title: viewControllerProps.title,
+  //     rightBarItem: viewControllerProps.rightBarItem,
+  //     toolbarItems: viewControllerProps.toolbarItems,
+  //     contextMenuItems: viewControllerProps.contextMenuItems,
+  //   };
+  //
+  //   if (!isEqual(newTopbarConfig, topbarConfig)) {
+  //     const newTopbarConfigMap = { ...topbarConfigMap };
+  //     newTopbarConfigMap[path] = newTopbarConfig;
+  //     setTopbarConfigMap(newTopbarConfigMap);
+  //   }
+  // };
 
 
    const viewDidMount = (viewController, path) => {
-    viewControllerMapRef.current[path] = viewController;
-
-    updateTopbarConfig(viewController.props, path);
+     console.log('view did mount', path);
+     if (viewController.props.title) {
+       setPageTitle(viewController.props.title);
+     }
 
     if (viewController.props.onViewDidMount) {
       viewController.props.onViewDidMount(path);
@@ -129,29 +96,11 @@ function NavigationController(props) {
     if (onViewDidMount) {
       onViewDidMount(viewController, path);
     }
-
-    if (selectedIndex !== null && selectedIndex < matches.length) {
-      const match = matches[selectedIndex];
-      if (match.path === path) {
-        viewDidAppear(viewController, path);
-      }
-    }
-  };
-
-
-  const viewDidAppear = (viewController, path) => {
-    if (viewController.props.onViewDidAppear) {
-      viewController.props.onViewDidAppear(path);
-    }
-
-    if (onViewDidAppear) {
-      onViewDidAppear(viewController, path);
-    }
   };
 
 
   const viewDidUpdate = (viewController, path) => {
-    updateTopbarConfig(viewController.props, path);
+    console.log('view did update', path);
 
     if (viewController.props.onViewDidUpdate) {
       viewController.props.onViewDidUpdate(path);
@@ -164,12 +113,6 @@ function NavigationController(props) {
 
 
   const viewWillUnmount = (viewController, path) => {
-    delete viewControllerMapRef.current[path];
-
-    const newTopbarConfigMap = { ...topbarConfigMap };
-    delete newTopbarConfigMap[path];
-    setTopbarConfigMap(newTopbarConfigMap);
-
     if (viewController.props.onViewWillUnmount) {
       viewController.props.onViewWillUnmount(path);
     }
@@ -180,33 +123,33 @@ function NavigationController(props) {
   };
 
 
+  // ---------------------------------------------------------------------------
   let appBarHeight = theme.navigationController.navbarHeight;
 
   let contextToolbar = null;
-  if (activeTopBarConfig.toolbarItems) {
-    contextToolbar = (
-      <Toolbar className={classes.toolBar} disableGutters variant="dense">
-        {activeTopBarConfig.toolbarItems}
-      </Toolbar>
-    );
-    appBarHeight += theme.navigationController.toolbarHeight;
-  }
+  // if (activeTopBarConfig.toolbarItems) {
+  //   contextToolbar = (
+  //     <Toolbar className={classes.toolBar} disableGutters variant="dense">
+  //       {activeTopBarConfig.toolbarItems}
+  //     </Toolbar>
+  //   );
+  //   appBarHeight += theme.navigationController.toolbarHeight;
+  // }
 
   return (
     <SplitView
       bar={(
-        <AppBar
-          color="default"
-          elevation={0}
-          position="static"
-        >
+        <AppBar color="default" elevation={0} position="static">
           <Toolbar className={classes.navBar} disableGutters>
+            {toolbarItems}
+            {/*
             <NavigationControllerBreadcrumbs
-              matches={matches}
+              matches={[]}
               onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
               separator="›"
-              topbarConfigMap={topbarConfigMap}
+              topbarConfigMap={{}}
             />
+
 
             {activeTopBarConfig.contextMenuItems &&
               <ContextMenu
@@ -228,6 +171,7 @@ function NavigationController(props) {
             }
 
             {activeTopBarConfig.rightBarItem}
+            */}
           </Toolbar>
 
           {contextToolbar}
@@ -252,16 +196,15 @@ function NavigationController(props) {
                     onUnmount={viewWillUnmount}
                     onUpdate={viewDidUpdate}
                     mountPath={routeInfo.path}
+                    setPageTitle={setPageTitle}
+                    setToolbarItems={setToolbarItems}
                   />
                 </Suspense>
               } />
             );
           })}
 
-          <Route
-            path="*"
-            element={<Navigate to={defaultRoute} replace />}
-          />
+          <Route path="*" element={<Navigate to={defaultRoute} replace />} />
         </Routes>
       </div>
     </SplitView>
@@ -271,10 +214,10 @@ function NavigationController(props) {
 NavigationController.propTypes = {
   defaultRoute: PropTypes.string,
   routes: PropTypes.array.isRequired,
-  onViewDidAppear: PropTypes.func,
   onViewDidMount: PropTypes.func,
   onViewDidUpdate: PropTypes.func,
   onViewWillUnmount: PropTypes.func,
+  setPageTitle: PropTypes.func,
   splitViewProps: PropTypes.object,
 };
 
