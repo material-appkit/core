@@ -8,9 +8,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-// import ContextMenu from './ContextMenu';
 import SplitView from './SplitView';
-// import NavigationControllerBreadcrumbs from './NavigationControllerBreadcrumbs';
 
 const styles = makeStyles((theme) => {
   const defaultNavigationControllerTheme = {
@@ -61,30 +59,10 @@ function NavigationController(props) {
   const theme = useTheme();
   const classes = styles();
 
-  const [contextMenuButtonEl, setContextMenuButtonEl] = useState(null);
-  const [toolbarItems, setToolbarItems] = useState([]);
-
-
-  // const updateTopbarConfig = (viewControllerProps, path) => {
-  //   const topbarConfig = topbarConfigMap[path];
-  //
-  //   const newTopbarConfig = {
-  //     title: viewControllerProps.title,
-  //     rightBarItem: viewControllerProps.rightBarItem,
-  //     toolbarItems: viewControllerProps.toolbarItems,
-  //     contextMenuItems: viewControllerProps.contextMenuItems,
-  //   };
-  //
-  //   if (!isEqual(newTopbarConfig, topbarConfig)) {
-  //     const newTopbarConfigMap = { ...topbarConfigMap };
-  //     newTopbarConfigMap[path] = newTopbarConfig;
-  //     setTopbarConfigMap(newTopbarConfigMap);
-  //   }
-  // };
+  const [toolbarItems, setToolbarItems] = useState(null);
 
 
    const viewDidMount = (viewController, path) => {
-     console.log('view did mount', path);
      if (viewController.props.title) {
        setPageTitle(viewController.props.title);
      }
@@ -100,8 +78,6 @@ function NavigationController(props) {
 
 
   const viewDidUpdate = (viewController, path) => {
-    console.log('view did update', path);
-
     if (viewController.props.onViewDidUpdate) {
       viewController.props.onViewDidUpdate(path);
     }
@@ -142,36 +118,6 @@ function NavigationController(props) {
         <AppBar color="default" elevation={0} position="static">
           <Toolbar className={classes.navBar} disableGutters>
             {toolbarItems}
-            {/*
-            <NavigationControllerBreadcrumbs
-              matches={[]}
-              onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
-              separator="›"
-              topbarConfigMap={{}}
-            />
-
-
-            {activeTopBarConfig.contextMenuItems &&
-              <ContextMenu
-                anchorEl={contextMenuButtonEl}
-                id="context-menu"
-                getContentAnchorEl={null}
-                open={Boolean(contextMenuButtonEl)}
-                onClose={() => { setContextMenuButtonEl(null); }}
-                menuItemArrangement={activeTopBarConfig.contextMenuItems}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'center',
-                }}
-              />
-            }
-
-            {activeTopBarConfig.rightBarItem}
-            */}
           </Toolbar>
 
           {contextToolbar}
