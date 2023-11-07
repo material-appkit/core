@@ -13,6 +13,8 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { valueForKeyPath } from "../util/object";
 import { isValue } from '../util/value';
+import { titleCase } from '../util/string';
+
 
 const getWidgetType = (fieldInfo) => {
   const { widget } = fieldInfo.ui;
@@ -26,13 +28,13 @@ const getWidgetType = (fieldInfo) => {
 };
 
 const getWidgetLabel = (fieldInfo) => {
-  const { label, widget } = fieldInfo.ui;
+  let { label, widget } = fieldInfo.ui;
 
   if (widget && typeof(widget) === 'object' && widget.label) {
-    return widget.label;
+    label = widget.label;
   }
 
-  return label;
+  return titleCase(label);
 };
 
 //------------------------------------------------------------------------------
@@ -171,8 +173,8 @@ function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
     textFieldProps.select = true;
     textFieldProps.SelectProps = { native: true };
     fieldInfo.choices = [
-      { 'label': 'Yes', value: 'true' },
-      { 'label': 'No', value: 'false' },
+      { label: 'Yes', value: 'true' },
+      { label: 'No', value: 'false' },
     ]
   }
 
@@ -211,10 +213,11 @@ function FormField(props) {
   }
 
   Object.assign(commonFieldProps, {
-    error: errorText ? true : false,
+    error: !!errorText,
     helperText: errorText || fieldInfo.ui.help,
     label: widgetLabel,
   });
+
 
   //----------------------------------------------------------------------------
   const handleFieldChange = (value) => {
