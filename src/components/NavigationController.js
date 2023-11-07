@@ -2,7 +2,7 @@ import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
 import React, { Suspense, useEffect, useRef, useState } from 'react';
-import { Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -49,7 +49,7 @@ const styles = makeStyles((theme) => {
 
 
 function NavigationController(props) {
-  const { location, matches } = props;
+  const { matches } = props;
 
   const theme = useTheme();
   const classes = styles();
@@ -183,7 +183,6 @@ function NavigationController(props) {
     appBarHeight += theme.navigationController.toolbarHeight;
   }
 
-
   return (
     <SplitView
       bar={(
@@ -194,7 +193,6 @@ function NavigationController(props) {
         >
           <Toolbar className={classes.navBar} disableGutters>
             <NavigationControllerBreadcrumbs
-              location={location}
               matches={props.matches}
               onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
               separator="›"
@@ -231,43 +229,32 @@ function NavigationController(props) {
       {...props.splitViewProps}
     >
       <div className={classes.navigationControllerViewContainer}>
-        {matches.map((routeInfo, i) => {
-          const componentProps = routeInfo.componentProps || {};
+        <Routes>
+          {matches.map((routeInfo) => {
+            const { path, Component } = routeInfo;
+            const componentProps = routeInfo.componentProps || {};
 
-          return (
-            <div
-              className={classes.viewControllerContainer}
-              style={{ display: (i === selectedIndex) ? 'block' : 'none' }}
-              key={routeInfo.path}
-            >
-              <Suspense
-                fallback={<LinearProgress className={classes.loadingProgressBar} />}
-              >
-                <Route
-                  key={routeInfo.path}
-                  path={routeInfo.path}
-                  render={(props) => (
-                    <routeInfo.component
-                      {...props}
-                      {...componentProps}
-                      onMount={viewDidMount}
-                      onUnmount={viewWillUnmount}
-                      onUpdate={viewDidUpdate}
-                      mountPath={routeInfo.path}
-                    />
-                  )}
-                />
-              </Suspense>
-            </div>
-          );
-        })}
+            return (
+              <Route key={path} path={path} element={
+                <Suspense fallback={<LinearProgress className={classes.loadingProgressBar} />}>
+                  <Component
+                    {...componentProps}
+                    onMount={viewDidMount}
+                    onUnmount={viewWillUnmount}
+                    onUpdate={viewDidUpdate}
+                    mountPath={routeInfo.path}
+                  />
+                </Suspense>
+              } />
+            );
+          })}
+        </Routes>
       </div>
     </SplitView>
   );
 }
 
 NavigationController.propTypes = {
-  location: PropTypes.object.isRequired,
   matches: PropTypes.array.isRequired,
   onViewDidAppear: PropTypes.func,
   onViewDidMount: PropTypes.func,

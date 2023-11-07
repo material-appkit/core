@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import React, { Fragment, Component } from 'react';
-import { Route } from 'react-router-dom';
+import React, { Component } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,16 +28,15 @@ const styles = makeStyles((theme) => {
 
 
 function NavigationControllerBreadcrumbs(props) {
+  const classes = styles();
+  const location = useLocation();
+
   const {
-    location,
     matches,
     topbarConfigMap,
     onContextMenuButtonClick,
     ...attributes
   } = props;
-
-
-  const classes = styles();
 
   return (
     <Breadcrumbs
@@ -63,7 +62,6 @@ function NavigationControllerBreadcrumbs(props) {
 }
 
 NavigationControllerBreadcrumbs.propTypes = {
-  location: PropTypes.object.isRequired,
   matches: PropTypes.array.isRequired,
   onContextMenuButtonClick: PropTypes.func.isRequired,
   topbarConfigMap: PropTypes.object.isRequired,
