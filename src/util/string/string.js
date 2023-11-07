@@ -50,7 +50,7 @@ export function slugify(str) {
 export function rstrip(str, value) {
   const lastIndex = str.lastIndexOf(value);
   if (lastIndex === -1) {
-    throw new Error(`${value} not found in ${str}`);
+    return str;
   }
 
   return str.substring(0, lastIndex);
