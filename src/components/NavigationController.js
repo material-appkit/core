@@ -2,7 +2,7 @@ import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
 import React, { Suspense, useEffect, useRef, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Navigate, Routes, Route } from 'react-router-dom';
 
 import AppBar from '@material-ui/core/AppBar';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -49,7 +49,16 @@ const styles = makeStyles((theme) => {
 
 
 function NavigationController(props) {
-  const { matches } = props;
+  const {
+    defaultRoute,
+    onViewDidMount,
+    onViewDidAppear,
+    onViewDidUpdate,
+    onViewWillUnmount,
+    routes,
+    splitViewProps,
+  } = props;
+  const matches = [];
 
   const theme = useTheme();
   const classes = styles();
@@ -117,8 +126,8 @@ function NavigationController(props) {
       viewController.props.onViewDidMount(path);
     }
 
-    if (props.onViewDidMount) {
-      props.onViewDidMount(viewController, path);
+    if (onViewDidMount) {
+      onViewDidMount(viewController, path);
     }
 
     if (selectedIndex !== null && selectedIndex < matches.length) {
@@ -135,8 +144,8 @@ function NavigationController(props) {
       viewController.props.onViewDidAppear(path);
     }
 
-    if (props.onViewDidAppear) {
-      props.onViewDidAppear(viewController, path);
+    if (onViewDidAppear) {
+      onViewDidAppear(viewController, path);
     }
   };
 
@@ -148,8 +157,8 @@ function NavigationController(props) {
       viewController.props.onViewDidUpdate(path);
     }
 
-    if (props.onViewDidUpdate) {
-      props.onViewDidUpdate(viewController, path);
+    if (onViewDidUpdate) {
+      onViewDidUpdate(viewController, path);
     }
   };
 
@@ -165,8 +174,8 @@ function NavigationController(props) {
       viewController.props.onViewWillUnmount(path);
     }
 
-    if (props.onViewWillUnmount) {
-      props.onViewWillUnmount(viewController, path);
+    if (onViewWillUnmount) {
+      onViewWillUnmount(viewController, path);
     }
   };
 
@@ -193,7 +202,7 @@ function NavigationController(props) {
         >
           <Toolbar className={classes.navBar} disableGutters>
             <NavigationControllerBreadcrumbs
-              matches={props.matches}
+              matches={matches}
               onContextMenuButtonClick={(e) => { setContextMenuButtonEl(e.currentTarget); }}
               separator="›"
               topbarConfigMap={topbarConfigMap}
@@ -226,11 +235,11 @@ function NavigationController(props) {
       )}
       barSize={appBarHeight}
       placement="top"
-      {...props.splitViewProps}
+      {...splitViewProps}
     >
       <div className={classes.navigationControllerViewContainer}>
         <Routes>
-          {matches.map((routeInfo) => {
+          {routes.map((routeInfo) => {
             const { path, Component } = routeInfo;
             const componentProps = routeInfo.componentProps || {};
 
@@ -248,6 +257,11 @@ function NavigationController(props) {
               } />
             );
           })}
+
+          <Route
+            path="*"
+            element={<Navigate to={defaultRoute} replace />}
+          />
         </Routes>
       </div>
     </SplitView>
@@ -255,7 +269,8 @@ function NavigationController(props) {
 }
 
 NavigationController.propTypes = {
-  matches: PropTypes.array.isRequired,
+  defaultRoute: PropTypes.string,
+  routes: PropTypes.array.isRequired,
   onViewDidAppear: PropTypes.func,
   onViewDidMount: PropTypes.func,
   onViewDidUpdate: PropTypes.func,
@@ -264,8 +279,9 @@ NavigationController.propTypes = {
 };
 
 NavigationController.defaultProps = {
-  matches: [],
+  defaultRoute: '/',
+  routes: [],
   splitViewProps: {},
 };
 
-export default React.memo(NavigationController);
+export default NavigationController;
