@@ -44,7 +44,6 @@ ViewController.propTypes = {
   onUpdate: PropTypes.func,
   onUnmount: PropTypes.func,
   onViewDidMount: PropTypes.func,
-  onViewDidAppear: PropTypes.func,
   onViewDidUpdate: PropTypes.func,
   rightBarItem: PropTypes.element,
   toolbarItems: PropTypes.object,
