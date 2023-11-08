@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button';
@@ -193,7 +193,7 @@ ItemListItem.propTypes = {
   onChange: PropTypes.func,
   onEdit: PropTypes.func,
   onRemove: PropTypes.func,
-  titleKey: PropTypes.any.isRequired,
+  titleKey: PropTypes.any,
 };
 
 ItemListItem.defaultProps = {
@@ -388,7 +388,7 @@ class ItemList extends React.PureComponent {
     }
 
     return (
-      <Fragment>
+      <>
         <List disablePadding className={className}>
           {items.map((item) => (
             <ItemListItem
@@ -453,7 +453,7 @@ class ItemList extends React.PureComponent {
             {...editDialogProps}
           />
         }
-      </Fragment>
+      </>
     );
   }
 }
