@@ -60,6 +60,7 @@ function NavigationController(props) {
   const classes = styles();
 
   const [toolbarItems, setToolbarItems] = useState(null);
+  const [contextToolbarItems, setContextToolbarItems] = useState(null);
 
 
    const viewDidMount = (viewController, path) => {
@@ -103,14 +104,14 @@ function NavigationController(props) {
   let appBarHeight = theme.navigationController.navbarHeight;
 
   let contextToolbar = null;
-  // if (activeTopBarConfig.toolbarItems) {
-  //   contextToolbar = (
-  //     <Toolbar className={classes.toolBar} disableGutters variant="dense">
-  //       {activeTopBarConfig.toolbarItems}
-  //     </Toolbar>
-  //   );
-  //   appBarHeight += theme.navigationController.toolbarHeight;
-  // }
+  if (contextToolbarItems) {
+    contextToolbar = (
+      <Toolbar className={classes.toolBar} disableGutters variant="dense">
+        {contextToolbarItems}
+      </Toolbar>
+    );
+    appBarHeight += theme.navigationController.toolbarHeight;
+  }
 
   return (
     <SplitView
@@ -143,6 +144,7 @@ function NavigationController(props) {
                     mountPath={routeInfo.path}
                     setPageTitle={setPageTitle}
                     setToolbarItems={setToolbarItems}
+                    setContextToolbarItems={setContextToolbarItems}
                   />
                 </Suspense>
               } />
