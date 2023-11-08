@@ -3,6 +3,7 @@ import React, { useCallback, useRef, useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
@@ -42,7 +43,9 @@ function ContextMenuButton(props) {
         ref={menuAnchorRef}
         {...buttonProps}
       >
-        {label}
+        <Typography noWrap variant="button">
+          {label}
+        </Typography>
       </Button>
     );
   } else {
