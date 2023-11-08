@@ -86,14 +86,18 @@ function CheckboxGroupWidget(props) {
     apiListUrl = `${fieldInfo.related_endpoint.singular}/`;
   }
 
-  useInit(async() => {
-    if (!choices) {
+  useInit(() => {
+    async function loadChoices() {
+      const filterParams = widgetInfo.filter_params || {};
+      const res = await ServiceAgent.get(apiListUrl, filterParams);
+      setChoices(res.jsonData.map(
+        (item) => createChoice(item, widgetInfo.choice_map)
+      ));
+    }
+
+    if (!choices && apiListUrl) {
       if (apiListUrl) {
-        const filterParams = widgetInfo.filter_params || {};
-        const res = await ServiceAgent.get(apiListUrl, filterParams);
-        setChoices(res.jsonData.map(
-          (item) => createChoice(item, widgetInfo.choice_map)
-        ));
+        loadChoices();
       } else {
         throw new Error('"choices" or "related_endpoint" must be present in fieldInfo');
       }
