@@ -130,8 +130,7 @@ function NavigationController(props) {
       <div className={classes.navigationControllerViewContainer}>
         <Routes>
           {routes.map((routeInfo) => {
-            const { path, Component } = routeInfo;
-            const componentProps = routeInfo.componentProps || {};
+            const { path, Component, ...componentProps } = routeInfo;
 
             return (
               <Route key={path} path={path} element={
