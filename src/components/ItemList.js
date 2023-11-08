@@ -80,7 +80,7 @@ function ItemListItem(props) {
   const { editable, item, onChange } = props;
   const classes = itemListItemStyles();
 
-  let component = null;
+  let component;
   if (props.component) {
     // If a component class was explicitly provided, use it
     component = (
@@ -111,11 +111,13 @@ function ItemListItem(props) {
       componentProps.target = '_blank';
     }
 
-    let linkTitle = null;
-    if (typeof(props.titleKey) === 'function') {
-      linkTitle = props.titleKey(item);
-    } else {
-      linkTitle = valueForKeyPath(item, props.titleKey);
+    let linkTitle;
+    if (props.titleKey) {
+      if (typeof(props.titleKey) === 'function') {
+        linkTitle = props.titleKey(item);
+      } else {
+        linkTitle = valueForKeyPath(item, props.titleKey);
+      }
     }
 
     component = (
@@ -191,7 +193,7 @@ ItemListItem.propTypes = {
   onChange: PropTypes.func,
   onEdit: PropTypes.func,
   onRemove: PropTypes.func,
-  titleKey: PropTypes.any,
+  titleKey: PropTypes.any.isRequired,
 };
 
 ItemListItem.defaultProps = {
