@@ -57,7 +57,6 @@ function ListViewDialog(props) {
     commitOnSelect,
     filterParams,
     dialogProps,
-    fullHeight,
     maxWidth,
     onDismiss,
     listItemProps,
@@ -250,7 +249,6 @@ ListViewDialog.propTypes = {
   commitOnSelect: PropTypes.bool,
   dialogProps: PropTypes.object,
   entityType: PropTypes.string,
-  fullHeight: PropTypes.bool,
   maxWidth: PropTypes.string,
   onDismiss: PropTypes.func,
   searchFilterParam: PropTypes.string,
@@ -260,7 +258,6 @@ ListViewDialog.propTypes = {
 
 ListViewDialog.defaultProps = {
   commitOnSelect: false,
-  fullHeight: true,
   maxWidth: 'xs',
   selectionMode: 'multiple',
 };

@@ -412,7 +412,7 @@ class ItemList extends React.PureComponent {
         </List>
 
         {mode === 'edit' &&
-          <Fragment>
+          <>
             {onAdd &&
               <Button
                 color="primary"
@@ -428,6 +428,7 @@ class ItemList extends React.PureComponent {
               <ListViewDialog
                 apiCreateUrl={apiCreateUrl}
                 filterParams={filterParams}
+                dialogProps={{ height: '75%' }}
                 displayMode="list"
                 editDialogProps={editDialogProps}
                 entityType={entityType}
@@ -440,7 +441,7 @@ class ItemList extends React.PureComponent {
                 {...listDialogProps}
               />
             }
-          </Fragment>
+          </>
         }
 
         {this.state.editDialogOpen &&
