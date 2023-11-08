@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
+import Link from '@material-ui/core/Link';
 import MuiBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -22,6 +24,7 @@ const styles = makeStyles((theme) => {
     label: {
       fontSize: theme.typography.pxToRem(14),
       fontWeight: 500,
+      display: 'block',
     },
 
     breadcrumbButton: {
@@ -54,7 +57,7 @@ function Breadcrumb({ classes, breadcrumbInfo }) {
     info = { label: info };
   }
 
-  const { label, menuItemArrangement } = info;
+  const { label, menuItemArrangement, path } = info;
 
   if (menuItemArrangement && menuItemArrangement.length) {
     return (
@@ -81,11 +84,21 @@ function Breadcrumb({ classes, breadcrumbInfo }) {
     );
   }
 
-  return (
-    <Typography className={classes.label}>
+  let control = (
+    <Typography noWrap variant="button" className={classes.label}>
       {label}
     </Typography>
   );
+
+  if (path) {
+    control = (
+      <Link color="textPrimary" component={RouterLink} to={path}>
+        {control}
+      </Link>
+    );
+  }
+
+  return control;
 }
 
 
