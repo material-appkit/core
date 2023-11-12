@@ -14,8 +14,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { lastPathComponent } from '../util/path';
-
 const styles = makeStyles((theme) => ({
   container: {
     display: 'flex',
@@ -167,6 +165,7 @@ function TabView(props) {
         onChange={handleTabChange}
         scrollButtons="auto"
         textColor="primary"
+        variant="scrollable"
         {...tabsProps}
       >
         {tabArrangement.map((tabConfig) => (
@@ -185,10 +184,7 @@ function TabView(props) {
 
   return (
     <Routes>
-      <Route
-        path={lastPathComponent(basePath)}
-        element={tabViewContainer}
-      >
+      <Route element={tabViewContainer}>
         {tabArrangement.map((tabConfig) => {
           const Component = tabConfig.component;
           const componentProps = tabConfig.componentProps || {};
@@ -222,7 +218,7 @@ function TabView(props) {
 }
 
 TabView.propTypes = {
-  basePath: PropTypes.string,
+  basePath: PropTypes.string.isRequired,
   onUpdate: PropTypes.func,
   onMount: PropTypes.func,
   onUnmount: PropTypes.func,
