@@ -145,7 +145,15 @@ function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
   };
 
   let selectOptions = null;
-  const fieldChoices = fieldInfo.choices || valueForKeyPath(fieldInfo, 'ui.widget.choices');
+  let fieldChoices = fieldInfo.choices || valueForKeyPath(fieldInfo, 'ui.widget.choices');
+  if (fieldInfo.type === 'checkbox' && !fieldChoices) {
+    // Let boolean fields be rendered as a select element
+    // with Yes/No as choices.
+    fieldChoices = [
+      { label: 'Yes', value: 'true' },
+      { label: 'No', value: 'false' },
+    ];
+  }
 
   if (fieldChoices) {
     textFieldProps.select = true;
@@ -153,7 +161,10 @@ function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
     selectOptions = fieldChoices.map((choice) => (
       <option key={choice.value} value={choice.value}>{choice.label}</option>
     ));
-    selectOptions.unshift(<option key='empty'>--------</option>);
+
+    if (!valueForKeyPath(fieldInfo, 'validation.required')) {
+      selectOptions.unshift(<option key='empty'>--------</option>);
+    }
   }
 
   if (widgetType === 'textarea') {
@@ -165,17 +176,6 @@ function renderTextField(commonFieldProps, fieldInfo, fieldIndex, onChange) {
   if (fieldInfo.type === 'number') {
     // Let numbers be input in any form
     textFieldProps.inputProps = { min: 0, step: 'any' };
-  }
-
-  if (fieldInfo.type === 'checkbox') {
-    // Let boolean fields be rendered as a select element
-    // with Yes/No as choices.
-    textFieldProps.select = true;
-    textFieldProps.SelectProps = { native: true };
-    fieldInfo.choices = [
-      { label: 'Yes', value: 'true' },
-      { label: 'No', value: 'false' },
-    ]
   }
 
   return (
