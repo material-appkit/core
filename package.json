@@ -4,7 +4,7 @@
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "scripts": {
     "transpile": "babel src -d .",
-    "watch": "babel src -d . --watch",
+    "watch": "babel src -d . --watch --source-maps",
     "build": "babel src -d ./build"
   },
   "keywords": [
