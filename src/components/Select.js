@@ -49,8 +49,13 @@ function Select(props) {
 
   const normalizeOptions = useCallback((options) => {
     return options.map((option) => {
-      if (typeof(option) === 'string') {
-        return { [valueKey]: option, [labelKey]: option };
+      switch (typeof(option)) {
+        case 'string':
+          return { [valueKey]: option, [labelKey]: option };
+        case 'number':
+          return { [valueKey]: option, [labelKey]: `${option}` };
+        default:
+          return option;
       }
     });
   }, [labelKey, valueKey]);
