@@ -56,6 +56,16 @@ function Select(props) {
   }, [labelKey, valueKey]);
 
 
+  const getOptionLabel = useCallback((option) => {
+    return option ? option[labelKey] : '------';
+  }, [labelKey]);
+
+  const getOptionSelected = useCallback((option) => {
+    return option ? option[valueKey] === value : false;
+  }, [valueKey]);
+
+
+
   useEffect(() => {
     return () => {
       ServiceAgent.abortRequest(fetchRequestContextRef.current);
@@ -168,7 +178,8 @@ function Select(props) {
       disableClearable={!isClearable}
       onChange={handleAutocompleteChange}
       options={activeOptions}
-      getOptionLabel={(option) => option ? option[labelKey] : '------'}
+      getOptionLabel={getOptionLabel}
+      getOptionSelected={getOptionSelected}
       renderInput={(params) => {
         const { inputProps } = params;
         inputProps.placeholder = emptySelectionPlaceholder;
