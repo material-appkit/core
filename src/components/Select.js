@@ -4,7 +4,7 @@
 * See: https://material-ui.com/components/autocomplete/
 */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -47,6 +47,15 @@ function Select(props) {
 
   const shouldUseNativeSelect = !isWidthUp(nativeBreakpoint, width);
 
+  const normalizeOptions = useCallback((options) => {
+    return options.map((option) => {
+      if (typeof(option) === 'string') {
+        return { [valueKey]: option, [labelKey]: option };
+      }
+    });
+  }, [labelKey, valueKey]);
+
+
   useEffect(() => {
     return () => {
       ServiceAgent.abortRequest(fetchRequestContextRef.current);
@@ -59,7 +68,7 @@ function Select(props) {
     }
 
     if (options) {
-      setActiveOptions(options);
+      setActiveOptions(normalizeOptions(options));
     } else if (endpoint) {
       setLoading(true);
 
@@ -71,7 +80,7 @@ function Select(props) {
       fetchRequestContextRef.current = {};
       ServiceAgent.get(endpoint, requestParams, fetchRequestContextRef.current)
         .then((res) => {
-          setActiveOptions(res.jsonData);
+          setActiveOptions(normalizeOptions(res.jsonData));
         })
         .catch((err) => {
           if (onLoadError) {
@@ -82,7 +91,7 @@ function Select(props) {
           setLoading(false);
         });
     }
-  }, [endpoint, filterParams, options]);
+  }, [endpoint, filterParams, options, normalizeOptions]);
 
 
   useEffect(() => {
