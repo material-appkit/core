@@ -58,11 +58,11 @@ function Select(props) {
 
   const getOptionLabel = useCallback((option) => {
     return option ? option[labelKey] : '------';
-  }, [labelKey]);
+  }, [labelKey, value]);
 
   const getOptionSelected = useCallback((option) => {
     return option ? option[valueKey] === value : false;
-  }, [valueKey]);
+  }, [value, valueKey]);
 
 
 
