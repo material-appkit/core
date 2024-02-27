@@ -107,7 +107,7 @@ export function reverse(path, params) {
 export function matchesForPath(pathname, routes) {
   const matches = [];
   routes.forEach((routeInfo) => {
-    const currentMatch = matchPath(rstrip(routeInfo.path, '/*'), pathname);
+    const currentMatch = matchPath(pathname, rstrip(routeInfo.path, '/*'));
     if (currentMatch) {
       matches.push({...currentMatch, ...routeInfo });
     }
