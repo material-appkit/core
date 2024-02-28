@@ -13,11 +13,26 @@ export default class APIServiceProxy extends NativeServiceProxy {
   static getAccessTokenCookieName() {
     const cookieName = (
       process.env.REACT_APP_ACCESS_TOKEN_COOKIE_NAME ||
-      process.env.NEXT_PUBLIC_ACCESS_TOKEN_COOKIE_NAME ||
-      process.env.GATSBY_ACCESS_TOKEN_COOKIE_NAME
+      process.env.NEXT_PUBLIC_ACCESS_TOKEN_COOKIE_NAME
     );
     if (!cookieName) {
-      throw new Error('Expecting an environment variable of name "REACT_APP_ACCESS_TOKEN_COOKIE_NAME" or "NEXT_PUBLIC_ACCESS_TOKEN_COOKIE_NAME" OR "GATSBY_ACCESS_TOKEN_COOKIE_NAME"');
+      throw new Error('Expecting an environment variable of name "REACT_APP_ACCESS_TOKEN_COOKIE_NAME" or "NEXT_PUBLIC_ACCESS_TOKEN_COOKIE_NAME"');
+    }
+
+    return cookieName;
+  }
+
+  /**
+   * @static
+   * @returns {String}
+   */
+  static getRefreshTokenCookieName() {
+    const cookieName = (
+      process.env.REACT_APP_REFRESH_TOKEN_COOKIE_NAME ||
+      process.env.NEXT_PUBLIC_REFRESH_TOKEN_COOKIE_NAME
+    );
+    if (!cookieName) {
+      throw new Error('Expecting an environment variable of name "REACT_APP_REFRESH_TOKEN_COOKIE_NAME" or "NEXT_PUBLIC_REFRESH_TOKEN_COOKIE_NAME"');
     }
 
     return cookieName;
@@ -31,7 +46,6 @@ export default class APIServiceProxy extends NativeServiceProxy {
   static getBaseURL() {
     return process.env.REACT_APP_API_URL
       || process.env.NEXT_PUBLIC_API_URL
-      || process.env.GATSBY_API_URL
       || '';
   }
 
@@ -43,8 +57,7 @@ export default class APIServiceProxy extends NativeServiceProxy {
   static getBaseURLPrefix() {
     const urlPrefix = (
       process.env.REACT_APP_API_ENDPOINT_PREFIX ||
-      process.env.NEXT_PUBLIC_API_ENDPOINT_PREFIX ||
-      process.env.GATSBY_API_ENDPOINT_PREFIX
+      process.env.NEXT_PUBLIC_API_ENDPOINT_PREFIX
     );
     if (!urlPrefix) {
       throw new Error('Expecting an environment variable of name "REACT_APP_API_ENDPOINT_PREFIX" or "NEXT_PUBLIC_API_ENDPOINT_PREFIX" or "GATSBY_API_ENDPOINT_PREFIX"');
@@ -59,9 +72,8 @@ export default class APIServiceProxy extends NativeServiceProxy {
    * @returns {String}
    */
   static getAccessToken() {
-    return StorageManager.localValue(this.getAccessTokenCookieName());
+    return StorageManager.getCookie(this.getAccessTokenCookieName());
   }
-
 
   /**
    * @static
@@ -69,9 +81,30 @@ export default class APIServiceProxy extends NativeServiceProxy {
   static setAccessToken(value) {
     const cookieName = this.getAccessTokenCookieName();
     if (value) {
-      StorageManager.setLocalValue(cookieName, value);
+      StorageManager.setCookie(cookieName, value);
     } else {
-      StorageManager.removeLocalValue(cookieName);
+      StorageManager.removeCookie(cookieName);
+    }
+  }
+
+
+  /**
+   * @static
+   * @returns {String}
+   */
+  static getRefreshToken() {
+    return StorageManager.getCookie(this.getRefreshTokenCookieName());
+  }
+
+  /**
+   * @static
+   */
+  static setRefreshToken(value) {
+    const cookieName = this.getRefreshTokenCookieName();
+    if (value) {
+      StorageManager.setCookie(cookieName, value);
+    } else {
+      StorageManager.removeCookie(cookieName);
     }
   }
 
