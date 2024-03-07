@@ -80,10 +80,11 @@ export default class APIServiceProxy extends NativeServiceProxy {
    */
   static setAccessToken(value) {
     const cookieName = this.getAccessTokenCookieName();
+    const cookieOptions = { expires: 1 };
     if (value) {
-      StorageManager.setCookie(cookieName, value);
+      StorageManager.setCookie(cookieName, value, cookieOptions);
     } else {
-      StorageManager.removeCookie(cookieName);
+      StorageManager.removeCookie(cookieName, cookieOptions);
     }
   }
 
@@ -101,10 +102,11 @@ export default class APIServiceProxy extends NativeServiceProxy {
    */
   static setRefreshToken(value) {
     const cookieName = this.getRefreshTokenCookieName();
+    const cookieOptions = { expires: 7 };
     if (value) {
-      StorageManager.setCookie(cookieName, value);
+      StorageManager.setCookie(cookieName, value, cookieOptions);
     } else {
-      StorageManager.removeCookie(cookieName);
+      StorageManager.removeCookie(cookieName, cookieOptions);
     }
   }
 
