@@ -80,7 +80,7 @@ export default class APIServiceProxy extends NativeServiceProxy {
    */
   static setAccessToken(value) {
     const cookieName = this.getAccessTokenCookieName();
-    const cookieOptions = { expires: 1 };
+    const cookieOptions = { expires: 7 };
     if (value) {
       StorageManager.setCookie(cookieName, value, cookieOptions);
     } else {
