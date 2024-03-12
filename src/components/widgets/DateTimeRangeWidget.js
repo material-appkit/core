@@ -16,12 +16,15 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
+import DateWidget from './DateWidget';
+
+
 
 
 class DateTimeRangeWidget extends React.PureComponent {
-  static toRepresentation(value) {
-    return value ? value.url : null;
-  }
+  // static toRepresentation(value) {
+  //   return value ? value.url : null;
+  // }
 
   constructor(props) {
     super(props);
@@ -41,20 +44,15 @@ class DateTimeRangeWidget extends React.PureComponent {
     } = this.props;
 
     return (
-      <Box className={classes.splitStack} component="fieldset" display="flex" alignItems="center" justifyContent="space-between" width="100%">
-        <FormControl margin="none">
-          <InputLabel shrink>
-            Start
-          </InputLabel>
-          <Input />
-        </FormControl>
-
-        <FormControl margin="none">
-          <InputLabel shrink>
-            End
-          </InputLabel>
-          <Input />
-        </FormControl>
+      <Box component="fieldset" display="flex" flexDirection="column" gridGap={16}>
+        <DateWidget
+          fieldInfo={{ type: 'date_and_time' }}
+          label="Start"
+        />
+        <DateWidget
+          fieldInfo={{ type: 'date_and_time' }}
+          label="End"
+        />
       </Box>
     );
   }

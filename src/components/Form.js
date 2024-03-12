@@ -7,6 +7,7 @@ import React from 'react';
 import FormFieldSet from './FormFieldSet';
 
 import CheckboxGroupWidget from './widgets/CheckboxGroup';
+import DateWidget from './widgets/DateWidget';
 import DateTimeRangeWidget from './widgets/DateTimeRangeWidget';
 import ItemListWidget from './widgets/ItemList';
 import ModelSelectWidget from './widgets/ModelSelect';
@@ -92,6 +93,7 @@ export const getFieldMetadataMap = (metadata) => {
 class Form extends React.PureComponent {
   static widgetClassMap = {
     'checkboxgroup': CheckboxGroupWidget,
+    'date': DateWidget,
     'datetimerange': DateTimeRangeWidget,
     'itemlist': ItemListWidget,
     'modelselect': ModelSelectWidget,
