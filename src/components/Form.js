@@ -4,8 +4,10 @@ import cloneDeep from 'lodash.clonedeep';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import CheckboxGroupWidget from './widgets/CheckboxGroup';
 import FormFieldSet from './FormFieldSet';
+
+import CheckboxGroupWidget from './widgets/CheckboxGroup';
+import DateTimeRangeWidget from './widgets/DateTimeRangeWidget';
 import ItemListWidget from './widgets/ItemList';
 import ModelSelectWidget from './widgets/ModelSelect';
 import RadioGroupWidget from './widgets/RadioGroup';
@@ -90,6 +92,7 @@ export const getFieldMetadataMap = (metadata) => {
 class Form extends React.PureComponent {
   static widgetClassMap = {
     'checkboxgroup': CheckboxGroupWidget,
+    'datetimerange': DateTimeRangeWidget,
     'itemlist': ItemListWidget,
     'modelselect': ModelSelectWidget,
     'radiogroup': RadioGroupWidget,
