@@ -53,6 +53,7 @@ const styles = makeStyles((theme) => ({
   },
 }));
 
+
 function EditDialog(props) {
   const classes = styles();
 
@@ -96,7 +97,7 @@ function EditDialog(props) {
   }
 
   const dismiss = useCallback(() => {
-    onClose(this);
+    onClose(null);
   }, [onClose]);
 
 
