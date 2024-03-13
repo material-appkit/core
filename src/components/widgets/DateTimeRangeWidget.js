@@ -4,8 +4,10 @@
 *
 */
 
+import dayjs from 'dayjs';
+
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import Box from '@material-ui/core/Box';
 // import Button from '@material-ui/core/Button';
@@ -47,13 +49,13 @@ function DateTimeRangeWidget(props) {
         fieldInfo={{ type: 'date_and_time' }}
         label="Start"
         onChange={handleDateChange('lower')}
-        value={dateRange.start}
+        value={dateRange.lower}
       />
       <DateWidget
         fieldInfo={{ type: 'date_and_time' }}
         label="End"
         onChange={handleDateChange('upper')}
-        value={dateRange.end}
+        value={dateRange.upper}
       />
     </Box>
   );
@@ -66,17 +68,30 @@ DateTimeRangeWidget.fromRepresentation = (value, fieldInfo) => {
     upper: null,
   };
 
-  if (!value) {
-    return repr;
+  if (value) {
+    if (value.lower) {
+      repr.lower = dayjs(value.lower);
+    }
+    if (value.upper) {
+      repr.upper = dayjs(value.upper);
+    }
   }
+
+  return repr;
 };
 
 
 DateTimeRangeWidget.toRepresentation = (value, fieldInfo) => {
-  return {
-    lower: value.lower ? value.lower.toISOString() : null,
-    upper: value.upper ? value.upper.toISOString() : null,
+  const repr = {};
+
+  if (value.lower) {
+    repr.lower = value.lower.toISOString();
   }
+  if (value.upper) {
+    repr.upper = value.upper.toISOString();
+  }
+
+  return repr;
 };
 
 
