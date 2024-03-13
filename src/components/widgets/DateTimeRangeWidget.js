@@ -9,24 +9,18 @@ import dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
+import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
-// import Button from '@material-ui/core/Button';
-// import FormControl from '@material-ui/core/FormControl';
-// import IconButton from '@material-ui/core/IconButton';
-// import Input from '@material-ui/core/Input';
-// import InputLabel from '@material-ui/core/InputLabel';
-// import { withStyles } from '@material-ui/core/styles';
-// import CloseIcon from '@material-ui/icons/Close';
+import Typography from '@material-ui/core/Typography';
 
 import DateWidget from './DateWidget';
-
-
 
 
 function DateTimeRangeWidget(props) {
   const {
     error,
     fieldInfo,
+    helperText,
     label,
     onChange,
     value,
@@ -45,6 +39,10 @@ function DateTimeRangeWidget(props) {
 
   return (
     <Box component="fieldset" display="flex" flexDirection="column" gridGap={16}>
+      {error && helperText && (
+        <Alert severity="error">{helperText[0]}</Alert>
+      )}
+
       <DateWidget
         fieldInfo={{ type: 'date_and_time' }}
         label="Start"
@@ -96,12 +94,17 @@ DateTimeRangeWidget.toRepresentation = (value, fieldInfo) => {
 
 
 DateTimeRangeWidget.propTypes = {
+  error: PropTypes.bool,
+  helperText: PropTypes.array,
   label: PropTypes.string,
   titleKey: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.string,
   ]),
-  value: PropTypes.any,
+  value: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.string,
+  ]),
 };
 
 
