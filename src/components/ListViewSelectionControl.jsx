@@ -108,8 +108,11 @@ function ListViewSelectionControl(props) {
 
       <Menu
         anchorEl={selectMenuEl}
+        getContentAnchorEl={null}
         open={Boolean(selectMenuEl)}
         onClose={handleSelectionMenuDismiss(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
         TransitionComponent={Fade}
       >
         <MenuItem onClick={handleSelectionMenuDismiss('all')}>

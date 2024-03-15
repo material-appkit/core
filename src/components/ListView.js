@@ -20,6 +20,7 @@ import { filterEmptyValues } from '../util/object';
 import { find as setFind } from '../util/set';
 
 import ListViewSelectionControl from "./ListViewSelectionControl";
+import ListViewActionMenuControl from "./ListViewActionMenuControl";
 import SortControl from './SortControl';
 import PaginationControl from './PaginationControl';
 
@@ -479,6 +480,12 @@ function ListView(props) {
     const commonToolbarItemProps = { searchParams, setSearchParams, ...extraControlProps };
 
     switch (itemType) {
+      case 'actionMenuControl':
+        return (
+          <ListViewActionMenuControl
+            key="action-menu-control"
+          />
+        );
       case 'selectionControl':
         if (!selectionMode) {
           return null;

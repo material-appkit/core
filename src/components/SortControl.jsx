@@ -54,14 +54,8 @@ function SortControl(props) {
         getContentAnchorEl={null}
         open={Boolean(sortControlEl)}
         onClose={dismissMenu(null)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
         TransitionComponent={Fade}
       >
         {makeChoices(choices).map((sortChoice, choiceIndex) => {
