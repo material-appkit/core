@@ -2,45 +2,28 @@ import clsx from 'clsx';
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import Alert from '@material-ui/lab/Alert';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Pagination from '@material-ui/lab/Pagination';
-import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
-import SortIcon from '@material-ui/icons/Sort';
 
 import ServiceAgent from '../util/ServiceAgent';
-import { makeChoices } from '../util/array';
 import { filterEmptyValues } from '../util/object';
 import { find as setFind } from '../util/set';
 
+import ListViewSelectionControl from "./ListViewSelectionControl";
+import ListViewActionMenuControl from "./ListViewActionMenuControl";
+import SortControl from './SortControl';
 import PaginationControl from './PaginationControl';
-import ToolbarItem from './ToolbarItem';
+
 
 //------------------------------------------------------------------------------
 // Utility Functions
@@ -64,204 +47,6 @@ const transformFetchItemsResponse = (res, itemTransformer) => {
   return transformedData;
 };
 
-
-//------------------------------------------------------------------------------
-function SortControl(props) {
-  const {
-    choices,
-    orderingParamName,
-    searchParams,
-    setSearchParams,
-  } = props;
-
-  let activeOrdering = undefined;
-  if (searchParams) {
-    activeOrdering = searchParams.get(orderingParamName);
-  }
-
-  const [sortControlEl, setSortControlEl] = useState(null);
-
-  const dismissMenu = useCallback((choice) => (e) => {
-    if (choice) {
-      const updatedSearchParams = new URLSearchParams(searchParams);
-      updatedSearchParams.set(orderingParamName, choice.value);
-      setSearchParams(updatedSearchParams);
-    }
-    setSortControlEl(null);
-  }, [orderingParamName, searchParams, setSearchParams]);
-
-  return (
-    <>
-      <IconButton
-        color="primary"
-        onClick={(e) => setSortControlEl(e.currentTarget)}
-        style={{ borderRadius: 0 }}
-      >
-        <SortIcon />
-      </IconButton>
-
-      <Menu
-        anchorEl={sortControlEl}
-        getContentAnchorEl={null}
-        open={Boolean(sortControlEl)}
-        onClose={dismissMenu(null)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        TransitionComponent={Fade}
-      >
-        {makeChoices(choices).map((sortChoice, choiceIndex) => {
-          let selected;
-          if (activeOrdering) {
-            selected = sortChoice.value === activeOrdering;
-          } else {
-            selected = choiceIndex === 0;
-          }
-
-          return (
-            <MenuItem
-              key={sortChoice.value}
-              onClick={dismissMenu(sortChoice)}
-              selected={selected}
-            >
-              <ListItemIcon>
-                {selected ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon /> }
-              </ListItemIcon>
-
-              {sortChoice.label}
-            </MenuItem>
-          );
-        })}
-      </Menu>
-    </>
-  );
-}
-
-SortControl.propTypes = {
-  choices: PropTypes.array.isRequired,
-  orderingParamName: PropTypes.string.isRequired,
-  searchParams: PropTypes.object,
-  setSearchParams: PropTypes.func,
-};
-
-
-//------------------------------------------------------------------------------
-const selectionControlStyles = makeStyles((theme) => ({
-  button: {
-    padding: theme.spacing(1),
-  },
-
-  buttonGroupButton: {
-    padding: theme.spacing(0.5, 1),
-  },
-
-  menuButton: {
-    borderColor: `${theme.palette.grey[400]} !important`,
-    minWidth: 0,
-    padding: 0,
-  },
-
-  disabled: {
-    color: theme.palette.text.secondary,
-  },
-
-  enabled: {
-    color: theme.palette.primary.main,
-  },
-}));
-
-function SelectionControl(props) {
-  const classes = selectionControlStyles();
-
-  const {
-    onClick,
-    onSelectionMenuItemClick,
-    selectionDisabled,
-    selectionMenu,
-  } = props;
-
-  const [selectMenuEl, setSelectMenuEl] = useState(null);
-
-
-  const handleSelectionMenuDismiss = useCallback((choice) => (e) => {
-    if (choice) {
-      onSelectionMenuItemClick(choice);
-    }
-    setSelectMenuEl(null);
-  }, [onSelectionMenuItemClick]);
-
-
-  if (!selectionMenu) {
-    return (
-      <ToolbarItem
-        control={(
-          <IconButton
-            className={classes.button}
-            color={selectionDisabled ? 'default' : 'primary' }
-            onClick={onClick}
-          >
-            <GpsFixedIcon />
-          </IconButton>
-        )}
-        tooltip={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}
-      />
-    );
-  }
-
-  return (
-    <>
-      <ButtonGroup>
-        <Tooltip title={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}>
-          <Button
-            classes={{
-              root: classes.buttonGroupButton,
-              outlined: selectionDisabled ? classes.disabled : classes.enabled,
-            }}
-            onClick={onClick}
-            variant="outlined"
-          >
-            <GpsFixedIcon />
-          </Button>
-        </Tooltip>
-
-        <Button
-          className={classes.menuButton}
-          disabled={selectionDisabled}
-          onClick={(e) => setSelectMenuEl(e.currentTarget)}
-          size="small"
-        >
-          <ArrowDropDownIcon />
-        </Button>
-      </ButtonGroup>
-
-      <Menu
-        anchorEl={selectMenuEl}
-        open={Boolean(selectMenuEl)}
-        onClose={handleSelectionMenuDismiss(null)}
-        TransitionComponent={Fade}
-      >
-        <MenuItem onClick={handleSelectionMenuDismiss('all')}>
-          Select All
-        </MenuItem>
-        <MenuItem onClick={handleSelectionMenuDismiss('none')}>
-          Deselect All
-        </MenuItem>
-      </Menu>
-    </>
-  );
-}
-
-SelectionControl.propTypes = {
-  selectionDisabled: PropTypes.bool.isRequired,
-  selectionMenu: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired,
-  onSelectionMenuItemClick: PropTypes.func.isRequired,
-};
 
 //------------------------------------------------------------------------------
 function PaginationListControl(props) {
@@ -324,11 +109,11 @@ function ListView(props) {
   const styles = listViewStyles();
 
   const {
+    actionMenuItemArrangement,
     bindToolbarItemsToSearchParams,
     classes,
     displayMode,
     displaySelectionCount,
-    filterMetadata,
     filterParams,
     filterParamTransformer,
     itemIdKey,
@@ -349,7 +134,7 @@ function ListView(props) {
     onPageChange,
     onPageSizeChange,
     onSelectionChange,
-    orderable,
+    orderingFields,
     orderingParamName,
     paginationControlProps,
     paginationListControlProps,
@@ -358,12 +143,10 @@ function ListView(props) {
     selectOnClick,
     selection,
     selectionInitializer,
-    selectionMenu,
     selectionMode,
     searchParams,
     setSearchParams,
     src,
-    subsetFilterArrangement,
     tileItemComponent,
     tileItemComponentFunc,
     windowed,
@@ -477,7 +260,7 @@ function ListView(props) {
    * @param item
    * @returns Object containing properties to supply to the list item
    */
-  const itemProps = (item, itemIndex) => {
+  const itemProps = (item) => {
     const itemKey = keyForItem(item);
 
     const itemContext = itemContextProvider ? itemContextProvider(item) : {};
@@ -693,48 +476,53 @@ function ListView(props) {
 
 
   // ---------------------------------------------------------------------------
-  /**
-   * Respond to selection menu by updating selection accordingly
-   */
-  const handleSelectionMenuItemClick = useCallback((action) => {
-    switch (action) {
-      case 'all':
-        const newSelection = new Set(selectedItems);
-        renderedItems.forEach((item) => newSelection.add(item));
-        setSelection(newSelection);
-        break;
-      case 'none':
-        setSelection(new Set());
-        break;
-      default:
-        throw new Error(`Unsupported selection action: ${action}`);
-    }
-  }, [selectedItems]);
-
-
-  // ---------------------------------------------------------------------------
-  const constructToolbarItem = useCallback((itemType, context) => {
-    const commonToolbarItemProps = { searchParams, setSearchParams };
+  const constructToolbarItem = useCallback((itemType, options) => {
+    const extraControlProps = {...(options || {})};
+    const commonToolbarItemProps = { searchParams, setSearchParams, ...extraControlProps };
 
     switch (itemType) {
+      case 'actionMenuControl':
+        if (!(selectedItems && actionMenuItemArrangement)) {
+          return null;
+        }
+
+        return (
+          <ListViewActionMenuControl
+            key="action-menu-control"
+            getMenuItemArrangement={actionMenuItemArrangement}
+            selection={selectedItems}
+          />
+        );
       case 'selectionControl':
         if (!selectionMode) {
           return null;
         }
 
         return (
-          <SelectionControl
+          <ListViewSelectionControl
             key="selection-control"
-            onClick={() => {
+            onToggle={() => {
               // When the selection control button is clicked, toggle selection mode.
               setSelectionDisabled(!selectionDisabled);
               // _Always_ clear current selection when selection mode is toggled
               setSelection(new Set());
             }}
-            onSelectionMenuItemClick={handleSelectionMenuItemClick}
+            onSelectionMenuItemClick={(action) => {
+              switch (action) {
+                case 'all':
+                  const newSelection = new Set(selectedItems);
+                  renderedItems.forEach((item) => newSelection.add(item));
+                  setSelection(newSelection);
+                  break;
+                case 'none':
+                  setSelection(new Set());
+                  break;
+                default:
+                  throw new Error(`Unsupported selection action: ${action}`);
+              }
+            }}
             selectionDisabled={selectionDisabled}
-            selectionMenu={selectionMenu}
-            {...commonToolbarItemProps}
+            {...extraControlProps}
           />
         );
 
@@ -771,13 +559,10 @@ function ListView(props) {
         );
 
       case 'sortControl':
-        if (!(orderable && filterMetadata)) {
-          return null;
-        }
-        const orderingFields = filterMetadata.ordering_fields;
         if (!(orderingFields && orderingFields.length)) {
           return null;
         }
+
         return (
           <SortControl
             choices={orderingFields}
@@ -791,12 +576,11 @@ function ListView(props) {
         throw new Error(`Unknown toolbar item type: ${itemType}`);
     }
   }, [
+    actionMenuItemArrangement,
     bindToolbarItemsToSearchParams,
     displaySelectionCount,
     itemCount,
-    orderable,
-    filterMetadata,
-    handleSelectionMenuItemClick,
+    orderingFields,
     onPageChange,
     onPageSizeChange,
     orderingParamName,
@@ -807,7 +591,6 @@ function ListView(props) {
     setSearchParams,
     selectedItems,
     selectionDisabled,
-    selectionMenu,
     selectionMode,
   ]);
 
@@ -1070,6 +853,7 @@ function ListView(props) {
 
 
 ListView.propTypes = {
+  actionMenuItemArrangement: PropTypes.func,
   classes: PropTypes.object,
 
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
@@ -1078,7 +862,6 @@ ListView.propTypes = {
   emptyListPlaceholderText: PropTypes.string,
 
   filterParams: PropTypes.object,
-  filterMetadata: PropTypes.object,
   filterParamTransformer: PropTypes.func,
 
   items: PropTypes.array,
@@ -1100,8 +883,6 @@ ListView.propTypes = {
   listItemSelectionControl: PropTypes.bool,
   loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
 
-  location: PropTypes.object,
-
   onConfig: PropTypes.func,
   onLoad: PropTypes.func,
   onLoadComplete: PropTypes.func,
@@ -1110,7 +891,7 @@ ListView.propTypes = {
   onPageSizeChange: PropTypes.func,
   onSelectionChange: PropTypes.func,
 
-  orderable: PropTypes.bool,
+  orderingFields: PropTypes.array,
   orderingParamName: PropTypes.string,
   paginationListControlProps: PropTypes.object,
 
@@ -1125,13 +906,11 @@ ListView.propTypes = {
   selectionDisabled: PropTypes.bool,
   selectionInitializer: PropTypes.func,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  selectionMenu: PropTypes.bool,
   selectOnClick: PropTypes.bool,
 
   src: PropTypes.string,
 
   subsetParamName: PropTypes.string,
-  subsetFilterArrangement: PropTypes.array,
 
   tileItemComponent: PropTypes.elementType,
   tileItemComponentFunc: PropTypes.func,
@@ -1149,7 +928,6 @@ ListView.defaultProps = {
   itemIdKey: 'id',
   listItemSelectionControl: true,
   loadingVariant: 'linear',
-  orderable: true,
   orderingParamName: 'order',
   paginationControlProps: {
     pageSizeChoices: [10, 20, 50, 100],
@@ -1160,7 +938,6 @@ ListView.defaultProps = {
   },
 
   selectionDisabled: true,
-  selectionMenu: false,
   selectOnClick: false,
   subsetParamName: 'subset',
   windowed: false,
