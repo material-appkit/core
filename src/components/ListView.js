@@ -9,26 +9,18 @@ import AutoSizer from 'react-virtualized-auto-sizer';
 
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Pagination from '@material-ui/lab/Pagination';
 import { makeStyles } from '@material-ui/core/styles';
-import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
-import SortIcon from '@material-ui/icons/Sort';
 
 import ServiceAgent from '../util/ServiceAgent';
-import { makeChoices } from '../util/array';
 import { filterEmptyValues } from '../util/object';
 import { find as setFind } from '../util/set';
 
 import ListViewSelectionControl from "./ListViewSelectionControl";
+import SortControl from './SortControl';
 import PaginationControl from './PaginationControl';
 
 
@@ -52,91 +44,6 @@ const transformFetchItemsResponse = (res, itemTransformer) => {
   }
 
   return transformedData;
-};
-
-
-//------------------------------------------------------------------------------
-function SortControl(props) {
-  const {
-    choices,
-    orderingParamName,
-    searchParams,
-    setSearchParams,
-  } = props;
-
-  let activeOrdering = undefined;
-  if (searchParams) {
-    activeOrdering = searchParams.get(orderingParamName);
-  }
-
-  const [sortControlEl, setSortControlEl] = useState(null);
-
-  const dismissMenu = useCallback((choice) => (e) => {
-    if (choice) {
-      const updatedSearchParams = new URLSearchParams(searchParams);
-      updatedSearchParams.set(orderingParamName, choice.value);
-      setSearchParams(updatedSearchParams);
-    }
-    setSortControlEl(null);
-  }, [orderingParamName, searchParams, setSearchParams]);
-
-  return (
-    <>
-      <IconButton
-        color="primary"
-        onClick={(e) => setSortControlEl(e.currentTarget)}
-        style={{ borderRadius: 0 }}
-      >
-        <SortIcon />
-      </IconButton>
-
-      <Menu
-        anchorEl={sortControlEl}
-        getContentAnchorEl={null}
-        open={Boolean(sortControlEl)}
-        onClose={dismissMenu(null)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-        TransitionComponent={Fade}
-      >
-        {makeChoices(choices).map((sortChoice, choiceIndex) => {
-          let selected;
-          if (activeOrdering) {
-            selected = sortChoice.value === activeOrdering;
-          } else {
-            selected = choiceIndex === 0;
-          }
-
-          return (
-            <MenuItem
-              key={sortChoice.value}
-              onClick={dismissMenu(sortChoice)}
-              selected={selected}
-            >
-              <ListItemIcon>
-                {selected ? <RadioButtonCheckedIcon /> : <RadioButtonUncheckedIcon /> }
-              </ListItemIcon>
-
-              {sortChoice.label}
-            </MenuItem>
-          );
-        })}
-      </Menu>
-    </>
-  );
-}
-
-SortControl.propTypes = {
-  choices: PropTypes.array.isRequired,
-  orderingParamName: PropTypes.string.isRequired,
-  searchParams: PropTypes.object,
-  setSearchParams: PropTypes.func,
 };
 
 
@@ -567,30 +474,9 @@ function ListView(props) {
 
 
   // ---------------------------------------------------------------------------
-  /**
-   * Respond to selection menu by updating selection accordingly
-   */
-  const handleSelectionMenuItemClick = useCallback((action) => {
-    switch (action) {
-      case 'all':
-        const newSelection = new Set(selectedItems);
-        renderedItems.forEach((item) => newSelection.add(item));
-        setSelection(newSelection);
-        break;
-      case 'none':
-        setSelection(new Set());
-        break;
-      default:
-        throw new Error(`Unsupported selection action: ${action}`);
-    }
-  }, [selectedItems]);
-
-
-  // ---------------------------------------------------------------------------
   const constructToolbarItem = useCallback((itemType, options) => {
     const extraControlProps = {...(options || {})};
     const commonToolbarItemProps = { searchParams, setSearchParams, ...extraControlProps };
-
 
     switch (itemType) {
       case 'selectionControl':
