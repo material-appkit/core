@@ -8,8 +8,6 @@ import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 
 import Alert from '@material-ui/lab/Alert';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
@@ -20,10 +18,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Pagination from '@material-ui/lab/Pagination';
-import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import SortIcon from '@material-ui/icons/Sort';
@@ -33,8 +28,9 @@ import { makeChoices } from '../util/array';
 import { filterEmptyValues } from '../util/object';
 import { find as setFind } from '../util/set';
 
+import ListViewSelectionControl from "./ListViewSelectionControl";
 import PaginationControl from './PaginationControl';
-import ToolbarItem from './ToolbarItem';
+
 
 //------------------------------------------------------------------------------
 // Utility Functions
@@ -143,100 +139,6 @@ SortControl.propTypes = {
   setSearchParams: PropTypes.func,
 };
 
-
-//------------------------------------------------------------------------------
-const selectionControlStyles = makeStyles((theme) => ({
-  button: {
-    padding: theme.spacing(1),
-  },
-
-  buttonGroupButton: {
-    padding: theme.spacing(0.5, 1),
-  },
-
-  menuButton: {
-    borderColor: `${theme.palette.grey[400]} !important`,
-    minWidth: 0,
-    padding: 0,
-  },
-
-  disabled: {
-    color: theme.palette.text.secondary,
-  },
-
-  enabled: {
-    color: theme.palette.primary.main,
-  },
-}));
-
-function SelectionControl(props) {
-  const classes = selectionControlStyles();
-
-  const {
-    onClick,
-    onSelectionMenuItemClick,
-    selectionDisabled,
-  } = props;
-
-  const [selectMenuEl, setSelectMenuEl] = useState(null);
-
-
-  const handleSelectionMenuDismiss = useCallback((choice) => (e) => {
-    if (choice) {
-      onSelectionMenuItemClick(choice);
-    }
-    setSelectMenuEl(null);
-  }, [onSelectionMenuItemClick]);
-
-
-  return (
-    <>
-      <ButtonGroup>
-        <Tooltip title={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}>
-          <Button
-            classes={{
-              root: classes.buttonGroupButton,
-              outlined: selectionDisabled ? classes.disabled : classes.enabled,
-            }}
-            onClick={onClick}
-            variant="outlined"
-          >
-            <GpsFixedIcon />
-          </Button>
-        </Tooltip>
-
-        <Button
-          className={classes.menuButton}
-          disabled={selectionDisabled}
-          onClick={(e) => setSelectMenuEl(e.currentTarget)}
-          size="small"
-        >
-          <ArrowDropDownIcon />
-        </Button>
-      </ButtonGroup>
-
-      <Menu
-        anchorEl={selectMenuEl}
-        open={Boolean(selectMenuEl)}
-        onClose={handleSelectionMenuDismiss(null)}
-        TransitionComponent={Fade}
-      >
-        <MenuItem onClick={handleSelectionMenuDismiss('all')}>
-          Select All
-        </MenuItem>
-        <MenuItem onClick={handleSelectionMenuDismiss('none')}>
-          Deselect All
-        </MenuItem>
-      </Menu>
-    </>
-  );
-}
-
-SelectionControl.propTypes = {
-  selectionDisabled: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired,
-  onSelectionMenuItemClick: PropTypes.func.isRequired,
-};
 
 //------------------------------------------------------------------------------
 function PaginationListControl(props) {
@@ -449,7 +351,7 @@ function ListView(props) {
    * @param item
    * @returns Object containing properties to supply to the list item
    */
-  const itemProps = (item, itemIndex) => {
+  const itemProps = (item) => {
     const itemKey = keyForItem(item);
 
     const itemContext = itemContextProvider ? itemContextProvider(item) : {};
@@ -685,7 +587,7 @@ function ListView(props) {
 
 
   // ---------------------------------------------------------------------------
-  const constructToolbarItem = useCallback((itemType, context) => {
+  const constructToolbarItem = useCallback((itemType, options) => {
     const commonToolbarItemProps = { searchParams, setSearchParams };
 
     switch (itemType) {
@@ -695,9 +597,9 @@ function ListView(props) {
         }
 
         return (
-          <SelectionControl
+          <ListViewSelectionControl
             key="selection-control"
-            onClick={() => {
+            onToggle={() => {
               // When the selection control button is clicked, toggle selection mode.
               setSelectionDisabled(!selectionDisabled);
               // _Always_ clear current selection when selection mode is toggled
@@ -705,7 +607,6 @@ function ListView(props) {
             }}
             onSelectionMenuItemClick={handleSelectionMenuItemClick}
             selectionDisabled={selectionDisabled}
-            {...commonToolbarItemProps}
           />
         );
 
