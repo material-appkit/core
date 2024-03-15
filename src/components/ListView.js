@@ -588,7 +588,9 @@ function ListView(props) {
 
   // ---------------------------------------------------------------------------
   const constructToolbarItem = useCallback((itemType, options) => {
-    const commonToolbarItemProps = { searchParams, setSearchParams };
+    const extraControlProps = {...(options || {})};
+    const commonToolbarItemProps = { searchParams, setSearchParams, ...extraControlProps };
+
 
     switch (itemType) {
       case 'selectionControl':
@@ -605,8 +607,22 @@ function ListView(props) {
               // _Always_ clear current selection when selection mode is toggled
               setSelection(new Set());
             }}
-            onSelectionMenuItemClick={handleSelectionMenuItemClick}
+            onSelectionMenuItemClick={(action) => {
+              switch (action) {
+                case 'all':
+                  const newSelection = new Set(selectedItems);
+                  renderedItems.forEach((item) => newSelection.add(item));
+                  setSelection(newSelection);
+                  break;
+                case 'none':
+                  setSelection(new Set());
+                  break;
+                default:
+                  throw new Error(`Unsupported selection action: ${action}`);
+              }
+            }}
             selectionDisabled={selectionDisabled}
+            {...extraControlProps}
           />
         );
 
@@ -664,7 +680,6 @@ function ListView(props) {
     displaySelectionCount,
     itemCount,
     orderingFields,
-    handleSelectionMenuItemClick,
     onPageChange,
     onPageSizeChange,
     orderingParamName,

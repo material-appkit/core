@@ -44,10 +44,10 @@ function ListViewSelectionControl(props) {
   const classes = styles();
 
   const {
+    disableSelectionMenu,
     onSelectionMenuItemClick,
     onToggle,
     selectionDisabled,
-    selectionMenu,
   } = props;
 
   const [selectMenuEl, setSelectMenuEl] = useState(null);
@@ -63,7 +63,7 @@ function ListViewSelectionControl(props) {
   }, [onSelectionMenuItemClick]);
 
 
-  if (!selectionMenu) {
+  if (disableSelectionMenu) {
     return (
       <ToolbarItem
         control={(
@@ -124,14 +124,14 @@ function ListViewSelectionControl(props) {
 }
 
 ListViewSelectionControl.propTypes = {
+  disableSelectionMenu: PropTypes.bool,
   selectionDisabled: PropTypes.bool.isRequired,
-  selectionMenu: PropTypes.bool,
   onToggle: PropTypes.func.isRequired,
   onSelectionMenuItemClick: PropTypes.func.isRequired,
 };
 
 ListViewSelectionControl.defaultProps = {
-  selectionMenu: false,
+  disableSelectionMenu: false,
 };
 
 export default ListViewSelectionControl;
