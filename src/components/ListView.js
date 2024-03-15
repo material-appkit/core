@@ -2,13 +2,7 @@ import clsx from 'clsx';
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { VariableSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
@@ -182,7 +176,6 @@ function SelectionControl(props) {
     onClick,
     onSelectionMenuItemClick,
     selectionDisabled,
-    selectionMenu,
   } = props;
 
   const [selectMenuEl, setSelectMenuEl] = useState(null);
@@ -195,23 +188,6 @@ function SelectionControl(props) {
     setSelectMenuEl(null);
   }, [onSelectionMenuItemClick]);
 
-
-  if (!selectionMenu) {
-    return (
-      <ToolbarItem
-        control={(
-          <IconButton
-            className={classes.button}
-            color={selectionDisabled ? 'default' : 'primary' }
-            onClick={onClick}
-          >
-            <GpsFixedIcon />
-          </IconButton>
-        )}
-        tooltip={`Selection mode is: ${selectionDisabled ? 'Off' : 'On'}`}
-      />
-    );
-  }
 
   return (
     <>
@@ -258,7 +234,6 @@ function SelectionControl(props) {
 
 SelectionControl.propTypes = {
   selectionDisabled: PropTypes.bool.isRequired,
-  selectionMenu: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onSelectionMenuItemClick: PropTypes.func.isRequired,
 };
@@ -328,7 +303,6 @@ function ListView(props) {
     classes,
     displayMode,
     displaySelectionCount,
-    filterMetadata,
     filterParams,
     filterParamTransformer,
     itemIdKey,
@@ -349,7 +323,7 @@ function ListView(props) {
     onPageChange,
     onPageSizeChange,
     onSelectionChange,
-    orderable,
+    orderingFields,
     orderingParamName,
     paginationControlProps,
     paginationListControlProps,
@@ -358,12 +332,10 @@ function ListView(props) {
     selectOnClick,
     selection,
     selectionInitializer,
-    selectionMenu,
     selectionMode,
     searchParams,
     setSearchParams,
     src,
-    subsetFilterArrangement,
     tileItemComponent,
     tileItemComponentFunc,
     windowed,
@@ -733,7 +705,6 @@ function ListView(props) {
             }}
             onSelectionMenuItemClick={handleSelectionMenuItemClick}
             selectionDisabled={selectionDisabled}
-            selectionMenu={selectionMenu}
             {...commonToolbarItemProps}
           />
         );
@@ -771,13 +742,10 @@ function ListView(props) {
         );
 
       case 'sortControl':
-        if (!(orderable && filterMetadata)) {
-          return null;
-        }
-        const orderingFields = filterMetadata.ordering_fields;
         if (!(orderingFields && orderingFields.length)) {
           return null;
         }
+
         return (
           <SortControl
             choices={orderingFields}
@@ -794,8 +762,7 @@ function ListView(props) {
     bindToolbarItemsToSearchParams,
     displaySelectionCount,
     itemCount,
-    orderable,
-    filterMetadata,
+    orderingFields,
     handleSelectionMenuItemClick,
     onPageChange,
     onPageSizeChange,
@@ -807,7 +774,6 @@ function ListView(props) {
     setSearchParams,
     selectedItems,
     selectionDisabled,
-    selectionMenu,
     selectionMode,
   ]);
 
@@ -1078,7 +1044,6 @@ ListView.propTypes = {
   emptyListPlaceholderText: PropTypes.string,
 
   filterParams: PropTypes.object,
-  filterMetadata: PropTypes.object,
   filterParamTransformer: PropTypes.func,
 
   items: PropTypes.array,
@@ -1110,7 +1075,7 @@ ListView.propTypes = {
   onPageSizeChange: PropTypes.func,
   onSelectionChange: PropTypes.func,
 
-  orderable: PropTypes.bool,
+  orderingFields: PropTypes.array,
   orderingParamName: PropTypes.string,
   paginationListControlProps: PropTypes.object,
 
@@ -1125,13 +1090,11 @@ ListView.propTypes = {
   selectionDisabled: PropTypes.bool,
   selectionInitializer: PropTypes.func,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  selectionMenu: PropTypes.bool,
   selectOnClick: PropTypes.bool,
 
   src: PropTypes.string,
 
   subsetParamName: PropTypes.string,
-  subsetFilterArrangement: PropTypes.array,
 
   tileItemComponent: PropTypes.elementType,
   tileItemComponentFunc: PropTypes.func,
@@ -1149,7 +1112,6 @@ ListView.defaultProps = {
   itemIdKey: 'id',
   listItemSelectionControl: true,
   loadingVariant: 'linear',
-  orderable: true,
   orderingParamName: 'order',
   paginationControlProps: {
     pageSizeChoices: [10, 20, 50, 100],
@@ -1160,7 +1122,6 @@ ListView.defaultProps = {
   },
 
   selectionDisabled: true,
-  selectionMenu: false,
   selectOnClick: false,
   subsetParamName: 'subset',
   windowed: false,
