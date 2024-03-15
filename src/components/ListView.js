@@ -109,6 +109,7 @@ function ListView(props) {
   const styles = listViewStyles();
 
   const {
+    actionMenuItemArrangement,
     bindToolbarItemsToSearchParams,
     classes,
     displayMode,
@@ -481,9 +482,15 @@ function ListView(props) {
 
     switch (itemType) {
       case 'actionMenuControl':
+        if (!(selectedItems && actionMenuItemArrangement)) {
+          return null;
+        }
+
         return (
           <ListViewActionMenuControl
             key="action-menu-control"
+            getMenuItemArrangement={actionMenuItemArrangement}
+            selection={selectedItems}
           />
         );
       case 'selectionControl':
@@ -569,6 +576,7 @@ function ListView(props) {
         throw new Error(`Unknown toolbar item type: ${itemType}`);
     }
   }, [
+    actionMenuItemArrangement,
     bindToolbarItemsToSearchParams,
     displaySelectionCount,
     itemCount,
@@ -845,6 +853,7 @@ function ListView(props) {
 
 
 ListView.propTypes = {
+  actionMenuItemArrangement: PropTypes.func,
   classes: PropTypes.object,
 
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
@@ -873,8 +882,6 @@ ListView.propTypes = {
   listItemProps: PropTypes.object,
   listItemSelectionControl: PropTypes.bool,
   loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
-
-  location: PropTypes.object,
 
   onConfig: PropTypes.func,
   onLoad: PropTypes.func,
