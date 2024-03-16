@@ -232,6 +232,15 @@ function ListView(props) {
     updateSelection(item);
   }, [renderedItems, updateSelection]);
 
+  /**
+   * Clear the selection
+   * Exported: yes
+   */
+  const disableSelection = useCallback(() => {
+    setSelection(new Set());
+    setSelectionDisabled(true);
+  }, []);
+
   // ---------------------------------------------------------------------------
 
   /**
@@ -605,6 +614,7 @@ function ListView(props) {
 
     onConfig({
       constructToolbarItem,
+      disableSelection,
       extendSelection,
       selectionDisabled,
       setRenderedItems: handleSetRenderedItems,
@@ -612,9 +622,9 @@ function ListView(props) {
     });
   }, [
     constructToolbarItem,
+    disableSelection,
     extendSelection,
     selectionDisabled,
-    // renderedItems,
   ]);
 
 
