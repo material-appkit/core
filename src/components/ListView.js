@@ -77,6 +77,10 @@ PaginationListControl.propTypes = {
 
 //------------------------------------------------------------------------------
 const listViewStyles = makeStyles((theme) => ({
+  listView: {
+    overflow: 'auto',
+  },
+
   centeredContentContainer: {
     alignItems: 'center',
     display: 'flex',
@@ -791,7 +795,7 @@ function ListView(props) {
   let view = null;
 
   if (displayMode === 'list') {
-    const listViewClassNames = [];
+    const listViewClassNames = [styles.listView];
     if (loading) {
       listViewClassNames.push(classes.listViewLoading);
     }
