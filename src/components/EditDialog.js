@@ -60,6 +60,7 @@ function EditDialog(props) {
   const {
     canDelete,
     FormProps,
+    dismiss,
     entityType,
     labels,
     onClose,
@@ -96,9 +97,15 @@ function EditDialog(props) {
     }
   }
 
-  const dismiss = useCallback(() => {
-    onClose(null);
-  }, [onClose]);
+  const dismissDialog = useCallback(() => {
+    if (dismiss) {
+      dismiss(null);
+    } else if (onClose) {
+      onClose(null);
+    } else {
+      throw new Error('EditDialog requires prop "dismiss" or "onClose"');
+    }
+  }, [dismiss, onClose]);
 
 
   const deleteRepresentedObject = async() => {
@@ -108,7 +115,7 @@ function EditDialog(props) {
       onDelete(persistedObject);
     }
 
-    dismiss();
+    dismissDialog();
   };
 
 
@@ -136,7 +143,7 @@ function EditDialog(props) {
       onSave(representedObject, response);
     }
 
-    dismiss();
+    dismissDialog();
   };
 
   const handleFormError = (err) => {
@@ -176,9 +183,16 @@ function EditDialog(props) {
 
   const handleDialogClose = useCallback((e, reason) => {
     if (reason === 'escapeKeyDown') {
-      dismiss();
+      dismissDialog();
     }
   }, []);
+
+  let commitButtonLabel;
+  if (saving) {
+    commitButtonLabel = composedLabels.SAVING;
+  } else {
+    commitButtonLabel = persistedObject ? composedLabels.SAVE : composedLabels.ADD;
+  }
 
   return (
     <Dialog
@@ -217,7 +231,7 @@ function EditDialog(props) {
 
         <Spacer />
 
-        <Button onClick={() => dismiss()}>
+        <Button onClick={() => dismissDialog()}>
           {composedLabels.CANCEL}
         </Button>
 
@@ -227,7 +241,7 @@ function EditDialog(props) {
           onClick={() => formRef.current.save()}
           variant="contained"
         >
-          {saving ? composedLabels.SAVING : composedLabels.SAVE}
+          {commitButtonLabel}
         </Button>
       </DialogActions>
     </Dialog>
