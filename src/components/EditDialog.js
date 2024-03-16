@@ -265,7 +265,7 @@ EditDialog.propTypes = {
 };
 
 EditDialog.defaultProps = {
-  canDelete: true,
+  canDelete: false,
   FormProps: {},
 };
 
