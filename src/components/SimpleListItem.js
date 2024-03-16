@@ -19,6 +19,7 @@ function SimpleListItem(props) {
   const {
     disableTypography,
     avatarField,
+    avatarProps,
     primaryField,
     secondaryField,
     ...rest
@@ -29,17 +30,19 @@ function SimpleListItem(props) {
       return null;
     }
 
-    let avatarContent = null;
+    let avatarContent;
     if (typeof(avatarField) === 'function') {
       avatarContent = avatarField(props.item);
     } else {
       avatarContent = (
-        <Avatar src={valueForKeyPath(props.item, avatarField)} />
+        <Avatar {...avatarProps}
+          src={valueForKeyPath(props.item, avatarField)}
+        />
       );
     }
 
     return <ListItemAvatar>{avatarContent}</ListItemAvatar>;
-  }, [avatarField]);
+  }, [avatarField, avatarProps]);
 
 
   const primary = useMemo(() => {
@@ -99,13 +102,21 @@ function SimpleListItem(props) {
   );
 }
 SimpleListItem.propTypes = {
-  disableTypography: PropTypes.bool,
+  ...commonPropTypes,
+
+  avatarProps: PropTypes.object,
   avatarField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+
+  disableTypography: PropTypes.bool,
   primaryField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
   secondaryField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-  ...commonPropTypes,
 };
 
+SimpleListItem.defaultProps = {
+  avatarProps: {
+    variant: 'rounded',
+  }
+}
 
 // -----------------------------------------------------------------------------
-export default React.memo(SimpleListItem);
+export default SimpleListItem;
