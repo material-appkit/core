@@ -63,7 +63,7 @@ function ListViewSelectionControl(props) {
   }, [onSelectionMenuItemClick]);
 
 
-  if (disableSelectionMenu) {
+  if (selectionDisabled || disableSelectionMenu) {
     return (
       <ToolbarItem
         control={(
