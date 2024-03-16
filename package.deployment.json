@@ -1,7 +1,7 @@
 {
   "author": "Allan Hart",
   "name": "@material-appkit/core",
-  "version": "2.9.999",
+  "version": "3.0.0",
   "description": "A collection of generic components and utilities designed to boost frontend development productivity.",
   "homepage": "https://material-appkit.com/",
   "keywords": [
