@@ -97,11 +97,11 @@ function EditDialog(props) {
     }
   }
 
-  const dismissDialog = useCallback(() => {
+  const dismissDialog = useCallback((value = null) => {
     if (dismiss) {
-      dismiss(null);
+      dismiss(value);
     } else if (onClose) {
-      onClose(null);
+      onClose(value);
     } else {
       throw new Error('EditDialog requires prop "dismiss" or "onClose"');
     }
@@ -143,7 +143,7 @@ function EditDialog(props) {
       onSave(representedObject, response);
     }
 
-    dismissDialog();
+    dismissDialog(representedObject);
   };
 
   const handleFormError = (err) => {
