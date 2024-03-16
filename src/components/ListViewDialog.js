@@ -57,6 +57,7 @@ function ListViewDialog(props) {
     commitOnSelect,
     filterParams,
     dialogProps,
+    dismiss,
     maxWidth,
     onDismiss,
     listItemProps,
@@ -86,24 +87,30 @@ function ListViewDialog(props) {
     }
   }, [filterParams]);
 
-  //
-  const handleDialogClose = useCallback(() => {
-    onDismiss(null);
-  }, [onDismiss]);
+  const dismissDialog = useCallback((value = null) => {
+    if (dismiss) {
+      dismiss(value);
+    } else if (onDismiss) {
+      onDismiss(value);
+    } else {
+      throw new Error('ListViewDialog requires prop "dismiss" or "onDismiss"');
+    }
+  }, [dismiss, onDismiss]);
+
 
   //----------------------------------------------------------------------------
   const commit = useCallback(() => {
-    onDismiss(Array.from(listViewSelection));
-  }, [listViewSelection, onDismiss]);
+    dismissDialog(Array.from(listViewSelection));
+  }, [listViewSelection, dismissDialog]);
 
   //----------------------------------------------------------------------------
   const handleSelectionChange = useCallback((selection) => {
     setListViewSelection(selection);
 
     if (commitOnSelect) {
-      onDismiss(Array.from(selection));
+      dismissDialog(Array.from(selection));
     }
-  }, [commitOnSelect, onDismiss]);
+  }, [commitOnSelect, dismissDialog]);
 
   //----------------------------------------------------------------------------
   const handlePageChange = useCallback((page) => {
@@ -205,7 +212,7 @@ function ListViewDialog(props) {
         title={dialogTitle}
         subtitle={subtitle}
         onKeyDown={handleKeyDown}
-        onClose={handleDialogClose}
+        onClose={() => dismissDialog()}
         actions={dialogActions}
         {...dialogProps}
       >
