@@ -438,6 +438,9 @@ function ListView(props) {
 
     if (!isEqual(params, appliedFilterParams)) {
       setAppliedFilterParams(params);
+
+      // Clear selection whenever we alter the filter params
+      setSelection(new Set());
     }
   }, [filterParams, filterParamTransformer]);
 
@@ -608,6 +611,11 @@ function ListView(props) {
   ]);
 
   // ---------------------------------------------------------------------------
+  const updateRenderedItems = useCallback((items) => {
+    setSelection(new Set());
+    setRenderedItems(items);
+  }, []);
+
   /**
    * Invoke the onConfig callback when any of the exposed state properties are affected.
    */
@@ -621,7 +629,7 @@ function ListView(props) {
       disableSelection,
       extendSelection,
       selectionDisabled,
-      setRenderedItems: handleSetRenderedItems,
+      setRenderedItems: updateRenderedItems,
       updateItem: handleItemUpdate,
     });
   }, [
@@ -629,6 +637,7 @@ function ListView(props) {
     disableSelection,
     extendSelection,
     selectionDisabled,
+    updateRenderedItems,
   ]);
 
 
@@ -645,12 +654,6 @@ function ListView(props) {
       updateItem(change.old, change.new);
     }
   }, [removeItem, addItem, updateItem]);
-
-
-  const handleSetRenderedItems = useCallback((items) => {
-    setSelection(new Set());
-    setRenderedItems(items);
-  }, []);
 
 
   // ---------------------------------------------------------------------------
