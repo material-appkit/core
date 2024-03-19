@@ -1,7 +1,7 @@
 import debounce from 'lodash.debounce';
 
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
@@ -82,38 +82,47 @@ function AttributedTextField(props) {
   }, [value]);
 
 
-  const delayedChangeHandlerRef = useRef(
-    debounce((v) => {
-      onChange(v);
-    }, onChangeDelay, { leading: false, trailing: true })
-  );
-
-
-  const updateFieldValue = (v, immediate) => {
-    let updatedValue = v;
-    if (valueTransformer) {
-      updatedValue = valueTransformer(updatedValue);
-    }
-
-    setFieldValue(updatedValue);
-
-    if (onChange) {
-      if (immediate || !onChangeDelay) {
-        onChange(updatedValue);
-      } else {
-        delayedChangeHandlerRef.current(updatedValue);
+  const delayedChangeHandler = useMemo(() => {
+    return debounce((v) => {
+      if (onChange) {
+        onChange(v);
       }
-    }
-  };
+    }, onChangeDelay, { leading: false, trailing: true });
+  }, [onChange, onChangeDelay]);
 
-  const handleFieldChange = (e) => {
+
+  const handleFieldChange = useCallback((e) => {
     if (!propagateChangeEvent) {
       e.stopPropagation();
     }
 
-    updateFieldValue(e.target.value);
-  };
+    const _fieldValue = e.target.value;
+    setFieldValue(_fieldValue);
 
+    let updatedValue = _fieldValue;
+    if (valueTransformer) {
+      updatedValue = valueTransformer(updatedValue);
+    }
+
+    if (onChange) {
+      if (onChangeDelay) {
+        delayedChangeHandler(updatedValue);
+      } else {
+        onChange(updatedValue)
+      }
+    }
+  }, [delayedChangeHandler, onChange, onChangeDelay, valueTransformer]);
+
+
+  const handleClearButtonClick = useCallback(() => {
+    setFieldValue('');
+
+    if (onChange) {
+      onChange('');
+    }
+  }, [onChange]);
+
+  // ---------------------------------------------------------------------------
 
   const FinalInputProps = InputProps ? {...InputProps} : {};
   const FinalInputLabelProps = InputLabelProps ? {...InputLabelProps} : {};
@@ -149,7 +158,7 @@ function AttributedTextField(props) {
       <InputAdornment position="end">
         <IconButton
           edge="end"
-          onClick={(e) => updateFieldValue('', true)}
+          onClick={handleClearButtonClick}
           size="small"
         >
         <CancelIcon fontSize="small" />
@@ -185,7 +194,7 @@ function AttributedTextField(props) {
 
 AttributedTextField.propTypes = {
   clearable: PropTypes.bool,
-  onTimeout: PropTypes.func,
+  onChange: PropTypes.func,
   onChangeDelay: PropTypes.number,
   propagateChangeEvent: PropTypes.bool,
   StartIcon: PropTypes.elementType,
