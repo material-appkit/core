@@ -28,26 +28,6 @@ const styles = makeStyles((theme) => ({
 }));
 
 // -----------------------------------------------------------------------------
-export const listItemProps = (props) => {
-  const {
-    onItemUpdate,
-    ...rest
-} = props;
-
-  return {
-    divider: true,
-    ...rest,
-  };
-};
-
-export const commonPropTypes = {
-  item: PropTypes.object,
-  onItemUpdate: PropTypes.func,
-  onMount: PropTypes.func,
-  onUnmount: PropTypes.func,
-};
-
-// -----------------------------------------------------------------------------
 function ListViewItem(props) {
   const classes = styles();
 
@@ -203,3 +183,11 @@ ListViewItem.propTypes = {
 };
 
 export default React.memo(ListViewItem);
+
+
+export const commonPropTypes = {
+  item: PropTypes.object,
+  onItemUpdate: PropTypes.func,
+  onMount: PropTypes.func,
+  onUnmount: PropTypes.func,
+};

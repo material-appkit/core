@@ -9,10 +9,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { valueForKeyPath } from '../util/object';
 
-import ListViewItem, {
-  listItemProps,
-  commonPropTypes,
-} from './ListViewItem';
+import ListViewItem, { commonPropTypes } from './ListViewItem';
 
 
 function SimpleListItem(props) {
@@ -22,7 +19,7 @@ function SimpleListItem(props) {
     avatarProps,
     primaryField,
     secondaryField,
-    ...rest
+    ...listItemProps
   } = props;
 
   const avatar = useMemo(() => {
@@ -90,7 +87,7 @@ function SimpleListItem(props) {
   }, [disableTypography, secondaryField]);
 
   return (
-    <ListViewItem {...listItemProps(rest)}>
+    <ListViewItem {...listItemProps}>
       {avatar}
 
       <ListItemText

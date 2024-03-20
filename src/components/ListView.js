@@ -126,6 +126,7 @@ function ListView(props) {
     itemContextMenuArrangement,
     itemContextProvider,
     itemTransformer,
+    listItemDivider,
     listItemComponent,
     listItemComponentFunc,
     listItemSelectionControl,
@@ -723,11 +724,20 @@ function ListView(props) {
       <ListItemComponent
         onMount={onMount}
         style={style}
+        divider={listItemDivider}
         {...itemProps(item, itemIndex)}
       />
     );
   };
 
+  /**
+   * Produce a grid cell from the given item
+   * @param item: Item to be rendered
+   * @param itemIndex: Array index of item being rendered
+   * @param style: Additional style params (primarily used in windowed mode)
+   * @param onMount: Optional callback to be invoked when the list item mounts
+   * @returns {JSX.Element}
+   */
   const renderTileItem = (item, itemIndex, style, onMount) => {
     const TileItemComponent = tileItemComponentFunc ? tileItemComponentFunc(item) : tileItemComponent;
 
@@ -875,7 +885,6 @@ ListView.propTypes = {
 
   displayMode: PropTypes.oneOf(['list', 'tile']).isRequired,
   displaySelectionCount: PropTypes.bool,
-
   emptyListPlaceholderText: PropTypes.string,
 
   filterParams: PropTypes.object,
@@ -896,6 +905,7 @@ ListView.propTypes = {
 
   listItemComponent: PropTypes.elementType,
   listItemComponentFunc: PropTypes.func,
+  listItemDivider: PropTypes.bool,
   listItemProps: PropTypes.object,
   listItemSelectionControl: PropTypes.bool,
   loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
@@ -943,6 +953,7 @@ ListView.defaultProps = {
   filterParams: {},
   items: null,
   itemIdKey: 'id',
+  listItemDivider: true,
   listItemSelectionControl: true,
   loadingVariant: 'linear',
   orderingParamName: 'order',
