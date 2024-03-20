@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -18,19 +18,41 @@ function ContextMenuButton(props) {
     iconClassName,
     label,
     menuItemArrangement,
+    representedObject,
   } = props;
 
-  const menuAnchorRef = useRef(null);
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
-  const handleContextMenuClose = useCallback((event) => {
-    if (menuAnchorRef.current && menuAnchorRef.current.contains(event.target)) {
-      return;
+  const menu = useMemo(() => {
+    if (!(menuAnchorEl && menuItemArrangement)) {
+      return null;
     }
-    setMenuIsOpen(false);
-  }, []);
 
-  if (!(menuItemArrangement && menuItemArrangement.length)) {
+    const menuItems = menuItemArrangement(representedObject);
+
+    return (
+      <ContextMenu
+        anchorEl={menuAnchorEl}
+        dense={dense}
+        getContentAnchorEl={null}
+        open
+        onClose={() => setMenuAnchorEl(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+        menuItemArrangement={menuItems}
+        {...contextMenuProps}
+      />
+    );
+  }, [
+    contextMenuProps,
+    dense,
+    menuItemArrangement,
+    menuAnchorEl,
+    representedObject
+  ]);
+
+
+  if (!menuItemArrangement) {
     return null;
   }
 
@@ -51,8 +73,7 @@ function ContextMenuButton(props) {
   } else {
     control = (
       <IconButton
-        onClick={() => setMenuIsOpen(true)}
-        ref={menuAnchorRef}
+        onClick={(e) => setMenuAnchorEl(menuAnchorEl ? null : e.target)}
         {...buttonProps}
       >
         <Icon className={iconClassName} />
@@ -63,16 +84,7 @@ function ContextMenuButton(props) {
   return (
     <>
       {control}
-
-      <ContextMenu
-        anchorEl={menuAnchorRef.current}
-        dense={dense}
-        getContentAnchorEl={null}
-        menuItemArrangement={menuItemArrangement}
-        onClose={handleContextMenuClose}
-        open={menuIsOpen}
-        {...contextMenuProps}
-      />
+      {menu}
     </>
   );
 }
@@ -84,7 +96,8 @@ ContextMenuButton.propTypes = {
   Icon: PropTypes.elementType,
   iconClassName: PropTypes.string,
   label: PropTypes.string,
-  menuItemArrangement: PropTypes.array,
+  menuItemArrangement: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
+  representedObject: PropTypes.object,
 };
 
 ContextMenuButton.defaultProps = {
@@ -94,4 +107,4 @@ ContextMenuButton.defaultProps = {
   Icon: MoreVertIcon,
 };
 
-export default React.memo(ContextMenuButton);
+export default ContextMenuButton;

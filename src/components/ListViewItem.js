@@ -120,7 +120,7 @@ function ListViewItem(props) {
 
   let secondaryListItemAction = null;
   if (secondaryActionControl || contextMenuItemArrangement) {
-    let secondaryListItemActionContent = null;
+    let secondaryListItemActionContent;
     const secondaryListItemClasses = [];
     if (secondaryActionPlacement === 'top') {
       secondaryListItemClasses.push(classes.listItemSecondaryActionTop);
@@ -129,15 +129,11 @@ function ListViewItem(props) {
     if (secondaryActionControl) {
       secondaryListItemActionContent = secondaryActionControl;
     } else {
-      let menuItemArrangement = contextMenuItemArrangement;
-      if (typeof(menuItemArrangement) === 'function') {
-        menuItemArrangement = menuItemArrangement(item);
-      }
       secondaryListItemActionContent = (
         <ContextMenuButton
           buttonProps={{ size: 'small' }}
           representedObject={item}
-          menuItemArrangement={menuItemArrangement}
+          menuItemArrangement={contextMenuItemArrangement}
         />
       );
     }
