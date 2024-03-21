@@ -28,7 +28,12 @@ function ContextMenuButton(props) {
       return null;
     }
 
-    const menuItems = menuItemArrangement(representedObject);
+    let menuItems;
+    if (typeof(menuItemArrangement) === 'function') {
+      menuItems = menuItemArrangement(representedObject);
+    } else {
+      menuItems = menuItemArrangement;
+    }
 
     return (
       <ContextMenu
