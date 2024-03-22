@@ -74,4 +74,11 @@ Object.defineProperty(exports, "concat", {
 });
 
 
+Object.defineProperty(exports, "sortByKey", {
+  enumerable: true,
+  get: function get() {
+    return _array.sortByKey;
+  },
+});
+
 const _array = _interopRequireDefault(require("./array"));

@@ -96,3 +96,11 @@ export function concat(/* arguments */) {
   return result;
 }
 
+export function sortByKey(array, key) {
+  return array.sort((objA, objB) => {
+    const valueA = `${objA[key]}`;
+    const valueB = `${objB[key]}`;
+    return valueA.localeCompare(valueB);
+  });
+}
+
