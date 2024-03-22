@@ -68,16 +68,6 @@ function Breadcrumb({ classes, breadcrumbInfo }) {
             endIcon: classes.breadCrumbButtonEndIcon,
           }
         }}
-        contextMenuProps={{
-          anchorOrigin: {
-            vertical: 'bottom',
-            horizontal: 'center',
-          },
-          transformOrigin: {
-            vertical: 'top',
-            horizontal: 'center',
-          }
-        }}
         label={label}
         menuItemArrangement={menuItemArrangement}
       />

@@ -11,6 +11,7 @@ import ContextMenu from './ContextMenu';
 
 function ContextMenuButton(props) {
   const {
+    anchorOrigin,
     buttonProps,
     contextMenuProps,
     dense,
@@ -19,6 +20,7 @@ function ContextMenuButton(props) {
     label,
     menuItemArrangement,
     representedObject,
+    transformOrigin,
   } = props;
 
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -38,13 +40,13 @@ function ContextMenuButton(props) {
     return (
       <ContextMenu
         anchorEl={menuAnchorEl}
+        anchorOrigin={anchorOrigin}
         dense={dense}
         getContentAnchorEl={null}
+        menuItemArrangement={menuItems}
         open
         onClose={() => setMenuAnchorEl(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-        menuItemArrangement={menuItems}
+        transformOrigin={transformOrigin}
         {...contextMenuProps}
       />
     );
@@ -95,6 +97,7 @@ function ContextMenuButton(props) {
 }
 
 ContextMenuButton.propTypes = {
+  anchorOrigin: PropTypes.object,
   buttonProps: PropTypes.object,
   contextMenuProps: PropTypes.object,
   dense: PropTypes.bool,
@@ -103,13 +106,16 @@ ContextMenuButton.propTypes = {
   label: PropTypes.string,
   menuItemArrangement: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
   representedObject: PropTypes.object,
+  transformOrigin: PropTypes.object,
 };
 
 ContextMenuButton.defaultProps = {
+  anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
   buttonProps: {},
   contextMenuProps: {},
   dense: false,
   Icon: MoreVertIcon,
+  transformOrigin: { vertical: 'top', horizontal: 'left' },
 };
 
 export default ContextMenuButton;
