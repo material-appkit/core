@@ -129,7 +129,6 @@ function ListView(props) {
     listItemDivider,
     listItemComponent,
     listItemComponentFunc,
-    listItemSelectionControl,
     listItemProps,
     loadingVariant,
     onConfig,
@@ -288,7 +287,6 @@ function ListView(props) {
       onSelectionChange: (item) => updateSelection(item),
       selected,
       selectOnClick,
-      selectionControl: listItemSelectionControl,
       selectionMode,
       selectionDisabled,
       to: pathForItem(item),
@@ -907,7 +905,6 @@ ListView.propTypes = {
   listItemComponentFunc: PropTypes.func,
   listItemDivider: PropTypes.bool,
   listItemProps: PropTypes.object,
-  listItemSelectionControl: PropTypes.bool,
   loadingVariant: PropTypes.oneOf(['circular', 'linear', 'placeholder']),
 
   onConfig: PropTypes.func,
@@ -954,7 +951,6 @@ ListView.defaultProps = {
   items: null,
   itemIdKey: 'id',
   listItemDivider: true,
-  listItemSelectionControl: true,
   loadingVariant: 'linear',
   orderingParamName: 'order',
   paginationControlProps: {

@@ -1,7 +1,5 @@
-import clsx from 'clsx';
-
 import PropTypes from 'prop-types';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItem from '@material-ui/core/ListItem';
@@ -11,8 +9,6 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import ContextMenuButton from './ContextMenuButton';
 
-import { useInit } from '../util/hooks';
-
 
 const styles = makeStyles((theme) => ({
   selectionControl: {
@@ -20,7 +16,11 @@ const styles = makeStyles((theme) => ({
     padding: theme.spacing(1),
   },
 
-  listItemSecondaryActionTop: {
+  secondaryActionTop: {
+    paddingRight: theme.spacing(2),
+  },
+
+  topSecondaryAction: {
     right: theme.spacing(0.75),
     top: theme.spacing(0.75),
     transform: 'initial',
@@ -42,7 +42,6 @@ function ListViewItem(props) {
     onUnmount,
     onSelectionChange,
     selected,
-    selectionControl,
     selectionDisabled,
     selectionMode,
     selectOnClick,
@@ -52,19 +51,24 @@ function ListViewItem(props) {
 
   const listItemRef = useRef(null);
 
-  useInit(() => {
+  useEffect(() => {
     if (onMount) {
       onMount(listItemRef.current, item);
     }
-  }, () => {
-    if (onUnmount) {
-      onUnmount(listItemRef.current, item);
+
+    return () => {
+      if (onUnmount) {
+        onUnmount(listItemRef.current, item);
+      }
     }
-  });
+  }, [item, onMount, onUnmount]);
 
 
   const listItemProps = {
-    className,
+    classes: {
+      root: className,
+      secondaryAction: secondaryActionPlacement === 'top' ? classes.secondaryActionTop : null,
+    },
     ref: listItemRef,
     ...rest
   };
@@ -99,37 +103,44 @@ function ListViewItem(props) {
     }
   }
 
-  const handleSelectionControlClick = (e) => {
-    e.preventDefault();
 
-    if (onSelectionChange) {
-      onSelectionChange(item);
-    }
-  };
-
-
+  const selectionControl = useMemo(() => {
   let SelectionComponent = null;
-  if (selectionMode && selectionControl && !selectionDisabled) {
-    if (selectionMode === 'multiple') {
-      SelectionComponent = Checkbox;
-    }
-    if (selectionMode === 'single') {
-      SelectionComponent = Radio;
-    }
-  }
-
-  let secondaryListItemAction = null;
-  if (secondaryActionControl || contextMenuItemArrangement) {
-    let secondaryListItemActionContent;
-    const secondaryListItemClasses = [];
-    if (secondaryActionPlacement === 'top') {
-      secondaryListItemClasses.push(classes.listItemSecondaryActionTop);
+    if (selectionMode && !selectionDisabled) {
+      if (selectionMode === 'multiple') {
+        SelectionComponent = Checkbox;
+      }
+      if (selectionMode === 'single') {
+        SelectionComponent = Radio;
+      }
     }
 
-    if (secondaryActionControl) {
-      secondaryListItemActionContent = secondaryActionControl;
-    } else {
-      secondaryListItemActionContent = (
+    if (!SelectionComponent) {
+      return null;
+    }
+
+    return (
+      <SelectionComponent
+        checked={selected}
+        className={classes.selectionControl}
+        disableRipple
+        edge="start"
+        onClick={(e) => {
+          e.preventDefault();
+
+          if (onSelectionChange) {
+            onSelectionChange(item);
+          }
+        }}
+      />
+    );
+  }, [classes, item, onSelectionChange, selectionMode, selected]);
+
+
+  const secondaryListItemAction = useMemo(() => {
+    let secondaryActionContent = secondaryActionControl;
+    if (!secondaryActionContent && contextMenuItemArrangement) {
+      secondaryActionContent = (
         <ContextMenuButton
           buttonProps={{ size: 'small' }}
           representedObject={item}
@@ -137,24 +148,29 @@ function ListViewItem(props) {
         />
       );
     }
-    secondaryListItemAction = (
-      <ListItemSecondaryAction className={clsx(secondaryListItemClasses)}>
-        {secondaryListItemActionContent}
+
+    if (!secondaryActionContent) {
+      return null;
+    }
+
+    return (
+      <ListItemSecondaryAction
+        className={secondaryActionPlacement === 'top' ? classes.topSecondaryAction : null}
+      >
+        {secondaryActionContent}
       </ListItemSecondaryAction>
     );
-  }
+  }, [
+    contextMenuItemArrangement,
+    item,
+    secondaryActionControl,
+    secondaryActionPlacement
+  ]);
+
 
   return (
     <ListItem {...listItemProps}>
-      {SelectionComponent !== null &&
-        <SelectionComponent
-          checked={selected}
-          className={classes.selectionControl}
-          disableRipple
-          edge="start"
-          onClick={handleSelectionControlClick}
-        />
-      }
+      {selectionControl}
       {props.children}
 
       {secondaryListItemAction}
@@ -171,14 +187,13 @@ ListViewItem.propTypes = {
   onItemClick: PropTypes.func,
   onSelectionChange: PropTypes.func,
   selected: PropTypes.bool,
-  selectionControl: PropTypes.bool,
   selectOnClick: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   selectionDisabled: PropTypes.bool.isRequired,
   to: PropTypes.string,
 };
 
-export default React.memo(ListViewItem);
+export default ListViewItem;
 
 
 export const commonPropTypes = {
