@@ -9,4 +9,11 @@ Object.defineProperty(exports, "parse", {
   },
 });
 
+Object.defineProperty(exports, "readVCF", {
+  enumerable: true,
+  get: function get() {
+    return _vcard.readVCF;
+  },
+});
+
 const _vcard = _interopRequireDefault(require("./vcard"));

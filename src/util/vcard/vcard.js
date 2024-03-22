@@ -226,3 +226,22 @@ export function parse(data, options) {
 
   return context.cards;
 }
+
+
+export function readVCF(file) {
+  return new Promise((resolve, reject) => {
+    try {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const vCard = parse(reader.result);
+        resolve(vCard);
+      }
+      reader.onerror = (err) => {
+        reject(err);
+      }
+      reader.readAsText(file);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
