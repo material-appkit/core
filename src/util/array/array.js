@@ -97,10 +97,8 @@ export function concat(/* arguments */) {
 }
 
 export function sortByKey(array, key) {
-  return array.sort((objA, objB) => {
-    const valueA = `${objA[key]}`;
-    const valueB = `${objB[key]}`;
-    return valueA.localeCompare(valueB);
-  });
+  return array.sort((objA, objB) =>
+    `${objA[key]}`.localeCompare(`${objB[key]}`)
+  );
 }
 
