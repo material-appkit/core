@@ -9,4 +9,11 @@ Object.defineProperty(exports, "intersection", {
   },
 });
 
+Object.defineProperty(exports, "containsPoint", {
+  enumerable: true,
+  get: function get() {
+    return _rect.containsPoint;
+  },
+});
+
 const _rect = _interopRequireDefault(require("./rect"));

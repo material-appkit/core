@@ -18,3 +18,9 @@ export function intersection(r1, r2) {
     height: intersectionY2 - intersectionY1,
   };
 }
+
+export function containsPoint(rect, point) {
+  const x = point.x - rect.left;
+  const y = point.y - rect.top;
+  return (x >= 0 && y >= 0 && x <= rect.width && y <= rect.height);
+}
