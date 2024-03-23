@@ -157,13 +157,13 @@ function ListView(props) {
     windowedListItemHeight,
   } = props;
 
-
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
   const [renderedItems, setRenderedItems] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [uncontrolledSelection, setUncontrolledSelection] = useState(new Set());
   const [selectionDisabled, setSelectionDisabled] = useState(props.selectionDisabled);
+  const [loadDate, setLoadDate] = useState(new Date());
 
   // Maintain a reference to the fetch request so it can be aborted
   // if this component is unmounted while it is in flight.
@@ -487,7 +487,7 @@ function ListView(props) {
         onLoadError(err);
       }
     });
-  }, [appliedFilterParams, src]);
+  }, [appliedFilterParams, loadDate, src]);
 
 
   // ---------------------------------------------------------------------------
@@ -610,11 +610,6 @@ function ListView(props) {
   ]);
 
   // ---------------------------------------------------------------------------
-  const updateRenderedItems = useCallback((items) => {
-    setSelection(new Set());
-    setRenderedItems(items);
-  }, []);
-
   /**
    * Invoke the onConfig callback when any of the exposed state properties are affected.
    */
@@ -627,8 +622,10 @@ function ListView(props) {
       constructToolbarItem,
       disableSelection,
       extendSelection,
+      reload: () => {
+        setLoadDate(new Date());
+      },
       selectionDisabled,
-      setRenderedItems: updateRenderedItems,
       updateItem: handleItemUpdate,
     });
   }, [
@@ -636,7 +633,6 @@ function ListView(props) {
     disableSelection,
     extendSelection,
     selectionDisabled,
-    updateRenderedItems,
   ]);
 
 
