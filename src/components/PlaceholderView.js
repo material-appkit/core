@@ -92,10 +92,10 @@ PlaceholderView.propTypes = {
 
 PlaceholderView.defaultProps = {
   border: true,
-  component: 'div',
+  component: Box,
   fullHeight: true,
   fullWidth: true,
   padding: 0,
 };
 
-export default React.memo(PlaceholderView);
+export default PlaceholderView;
