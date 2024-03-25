@@ -3,7 +3,7 @@
  * @see {@link https://github.com/ertant/vCard}
  *
  */
-const fieldPropertyMapping = {
+const FIELD_PROPERTY_MAPPING = {
   "TITLE": "title",
   "TEL": "telephone",
   "FN": "displayName",
@@ -18,8 +18,13 @@ const fieldPropertyMapping = {
   "PHOTO": "photo"
 };
 
+// If a given file is greater than 100KB, assume it is
+// not a valid VCF and ignore it.
+const MAX_ACCEPTED_FILE_SIZE = 1024 * 100;
+
+
 function lookupField(context, fieldName) {
-  var propertyName = fieldPropertyMapping[fieldName];
+  var propertyName = FIELD_PROPERTY_MAPPING[fieldName];
 
   if (!propertyName && fieldName !== 'BEGIN' && fieldName !== 'END') {
     context.info('define property name for ' + fieldName);
@@ -230,6 +235,13 @@ export function parse(data, options) {
 
 export function readVCF(file) {
   return new Promise((resolve, reject) => {
+    if (file.size > MAX_ACCEPTED_FILE_SIZE) {
+      reject(new Error('Cannot process files greater than 100KB'));
+    }
+    if (!file.name.toLowerCase().endsWith('.vcf')) {
+      reject(new Error('Only VCF files are supported'));
+    }
+
     try {
       const reader = new FileReader();
       reader.onload = () => {
