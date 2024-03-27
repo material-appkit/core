@@ -34,9 +34,9 @@ const styles = makeStyles((theme) => ({
     zIndex: theme.zIndex.appBar,
   },
 
-  tabsFullWidth: {
-    '& .MuiTab-root': {
-      minWidth: 'unset',
+  tab: {
+    [theme.breakpoints.down('md')]: {
+      minWidth: 90,
     },
   }
 }));
@@ -151,25 +151,20 @@ function TabView(props) {
     tabContainerClasses.push(activeTabConfig.containerClassName);
   }
 
-  const tabsClasses = [classes.tabs];
-  if (tabsProps.variant === 'fullWidth') {
-    tabsClasses.push(classes.tabsFullWidth);
-  }
-
   const tabViewContainer = (
     <div className={classes.container}>
       <Tabs
         value={selectedTabIndex}
-        className={clsx(tabsClasses)}
+        className={classes.tabs}
         indicatorColor="primary"
         onChange={handleTabChange}
         scrollButtons="auto"
         textColor="primary"
-        variant="scrollable"
         {...tabsProps}
       >
         {tabArrangement.map((tabConfig) => (
           <Tab
+            className={classes.tab}
             key={tabConfig.index ? basePath : tabConfig.path}
             label={tabConfig.label}
           />
@@ -231,7 +226,9 @@ TabView.propTypes = {
 };
 
 TabView.defaultProps = {
-  tabsProps: {},
+  tabsProps: {
+    variant: 'scrollable',
+  },
 };
 
 
