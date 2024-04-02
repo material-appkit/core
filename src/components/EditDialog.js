@@ -46,6 +46,11 @@ const styles = makeStyles((theme) => ({
 
   dialogContent: {
     overflow: 'visible',
+    padding: theme.spacing(1, 1),
+
+    [theme.breakpoints.up('md')]: {
+      padding: theme.spacing(1, 2),
+    },
   },
 
   deleteButton: {
