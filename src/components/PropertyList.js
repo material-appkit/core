@@ -7,6 +7,7 @@ import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -69,9 +70,11 @@ function PropertyListItem(props) {
   let labelComponent;
   if (fieldInfo.Icon) {
     labelComponent = (
-      <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
-        <fieldInfo.Icon className={classes.listItemIcon} />
-      </ListItemIcon>
+      <Tooltip title={label}>
+        <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
+          <fieldInfo.Icon className={classes.listItemIcon} />
+        </ListItemIcon>
+      </Tooltip>
     );
   } else {
     labelComponent = (
