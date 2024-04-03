@@ -1,9 +1,3 @@
-/**
-*
-* DateTimeField
-*
-*/
-
 import dayjs from 'dayjs';
 
 import React, { useState } from 'react';
@@ -11,132 +5,78 @@ import PropTypes from 'prop-types';
 
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
-import AlarmIcon from '@material-ui/icons/Alarm';
 
-import {
-  DateTimePicker,
-  KeyboardDatePicker,
-  KeyboardTimePicker,
-} from '@material-ui/pickers';
-
-
-// -----------------------------------------------------------------------------
-const dateTimeFieldStyles = makeStyles((theme) => ({
-  fieldContainer: {
-    width: '100%',
-  },
-}));
 
 function DateWidget(props) {
-  const classes = dateTimeFieldStyles();
+  const { fieldInfo, error, helperText, label, onChange, value } = props;
+  const { type, ui } = fieldInfo;
+  const widgetType = (ui && ui.widget) || type;
 
-  const [selectedDate, setSelectedDate] = useState(() => {
-    let initialDate = null;
-
-    if (props.value) {
-      initialDate = props.value;
-
-      if (typeof initialDate === 'string') {
-        initialDate = dayjs(initialDate);
-      }
-    }
-    return initialDate;
+  const [dateValue, setDateValue] = useState(() => {
+    return value ? value.format('YYYY-MM-DD') : ''
+  });
+  const [timeValue, setTimeValue] = useState(() => {
+    return value ? value.format('HH:mm:ss') : '00:00:00'
   });
 
 
-  const handleDateChange = (value) => {
-    setSelectedDate(value);
-
-    if (props.onChange) {
-      props.onChange(value);
-    }
-  };
-
-
-  const handleTimeChange = (value) => {
-    if (!(value && value.isValid())) {
+  const handleFieldChange = (fieldType) => (e) => {
+    const fieldValue = e.target.value;
+    if (!fieldValue) {
       return;
     }
 
-    value.year(selectedDate.year());
-    value.month(selectedDate.month());
-    value.date(selectedDate.date());
-    setSelectedDate(value);
+    let newDateValue = dateValue;
+    let newTimeValue = timeValue;
+    if (fieldType === 'date') {
+      setDateValue(fieldValue);
+      newDateValue = fieldValue;
+    } else {
+      setTimeValue(fieldValue);
+      newTimeValue = fieldValue;
+    }
 
-    if (props.onChange) {
-      props.onChange(value);
+    if (onChange) {
+      onChange(dayjs(`${newDateValue} ${newTimeValue}`))
     }
   };
 
+  const datePicker = (
+    <TextField
+      error={Boolean(error)}
+      fullWidth
+      helperText={helperText}
+      InputLabelProps={{ shrink: true }}
+      inputProps={{ pattern: "\d{4}-\d{2}-\d{2}" }}
+      label={`${label} Date`}
+      onChange={handleFieldChange('date')}
+      type="date"
+      value={dateValue}
+    />
+  );
 
-  const renderField = () => {
-    const { error, helperText } = props;
-    const { type, ui } = props.fieldInfo;
-    let widgetType = (ui && ui.widget) || type;
-
-    let dateLabel = props.label;
-    let DateComponent = null;
-    let dateComponentFormat = null;
-
-    switch (widgetType) {
-      case 'date':
-        DateComponent = KeyboardDatePicker;
-        dateComponentFormat = "YYYY/MM/DD";
-        break;
-      case 'datetime':
-        DateComponent = DateTimePicker;
-        dateComponentFormat = "YYYY/MM/DD hh:mma";
-        break;
-      case 'date_and_time':
-        DateComponent = KeyboardDatePicker;
-        dateComponentFormat = "YYYY/MM/DD";
-        dateLabel = `${dateLabel} Date`;
-        break;
-      default:
-        throw new Error(`Unsupported type: ${type}`);
-    }
-
-    const datePicker = (
-      <DateComponent
-        autoOk
-        error={Boolean(error)}
-        format={dateComponentFormat}
-        fullWidth
-        helperText={helperText}
-        label={dateLabel}
-        minutesStep={5}
-        onChange={handleDateChange}
-        value={selectedDate}
-      />
-    );
-
-    if (widgetType !== 'date_and_time') {
-      return datePicker;
-    }
-
-    return (
-      <Box display="grid" gridAutoFlow="column" gridGap={24} justifyContent="space-between">
-        {datePicker}
-
-        <KeyboardTimePicker
-          disabled={!selectedDate}
-          keyboardIcon={<AlarmIcon />}
-          label={`${props.label} Time`}
-          onChange={handleTimeChange}
-          minutesStep={5}
-          value={selectedDate}
-        />
-      </Box>
-    );
-  };
+  if (widgetType !== 'date_and_time') {
+    return datePicker;
+  }
 
   return (
-    <div className={classes.fieldContainer}>
-      {renderField()}
-    </div>
+    <Box display="grid" gridGap={20} gridTemplateColumns="1fr 1fr">
+      {datePicker}
+
+      <TextField
+        disabled={!value}
+        fullWidth
+        InputLabelProps={{ shrink: true }}
+        inputProps={{ step: 900 }}
+        label={`${label} Time`}
+        onChange={handleFieldChange('time')}
+        type="time"
+        value={timeValue}
+      />
+    </Box>
   );
 }
+
 
 DateWidget.toRepresentation = (value, fieldInfo) => {
   if (!value) {

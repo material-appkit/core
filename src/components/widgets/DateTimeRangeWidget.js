@@ -1,44 +1,26 @@
-/**
-*
-* DateTimeRangeWidget
-*
-*/
-
 import dayjs from 'dayjs';
 
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 
 import DateWidget from './DateWidget';
 
 
-function DateTimeRangeWidget(props) {
-  const {
-    error,
-    fieldInfo,
-    helperText,
-    label,
-    onChange,
-    value,
-  } = props;
-
-
+function DateTimeRangeWidget({ error, helperText, onChange, value }) {
   const [dateRange, setDateRange] = useState(value);
 
-
-  const handleDateChange = (property) => (value) => {
+  const handleDateChange = useCallback((property) => (value) => {
     const _dateRange = { ...dateRange, [property]: value };
     setDateRange(_dateRange);
     onChange(_dateRange);
-  };
+  }, [onChange]);
 
 
   return (
-    <Box component="fieldset" display="flex" flexDirection="column" gridGap={16}>
+    <Box component="fieldset" display="flex" flexDirection="column" gridGap={16} width="100%">
       {error && helperText && (
         <Alert severity="error">{helperText[0]}</Alert>
       )}
@@ -49,6 +31,7 @@ function DateTimeRangeWidget(props) {
         onChange={handleDateChange('lower')}
         value={dateRange.lower}
       />
+
       <DateWidget
         fieldInfo={{ type: 'date_and_time' }}
         label="End"
