@@ -9,8 +9,12 @@ import TextField from '@material-ui/core/TextField';
 
 function DateWidget(props) {
   const { fieldInfo, error, helperText, label, onChange, value } = props;
-  const { type, ui } = fieldInfo;
-  const widgetType = (ui && ui.widget) || type;
+
+  let widgetType = 'date';
+  if (fieldInfo) {
+    const { type, ui } = fieldInfo;
+    widgetType = (ui && ui.widget) || type;
+  }
 
   const [dateValue, setDateValue] = useState(() => {
     return value ? value.format('YYYY-MM-DD') : ''
@@ -96,7 +100,7 @@ DateWidget.toRepresentation = (value, fieldInfo) => {
 
 DateWidget.propTypes = {
   error: PropTypes.bool,
-  fieldInfo: PropTypes.object.isRequired,
+  fieldInfo: PropTypes.object,
   helperText: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   label: PropTypes.string,
   onChange: PropTypes.func,
