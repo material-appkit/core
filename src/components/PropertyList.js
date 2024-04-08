@@ -70,12 +70,17 @@ function PropertyListItem(props) {
   let labelComponent;
   if (fieldInfo.Icon) {
     labelComponent = (
-      <Tooltip title={label}>
-        <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
-          <fieldInfo.Icon className={classes.listItemIcon} />
-        </ListItemIcon>
-      </Tooltip>
+      <ListItemIcon classes={{ root: classes.listItemIconRoot }}>
+        <fieldInfo.Icon className={classes.listItemIcon} />
+      </ListItemIcon>
     );
+    if (label) {
+      labelComponent = (
+        <Tooltip title={label}>
+          {labelComponent}
+        </Tooltip>
+      )
+    }
   } else {
     labelComponent = (
       <Typography
