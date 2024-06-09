@@ -7,10 +7,10 @@ function SplitView(props) {
     bar,
     barSize,
     children,
-    layout,
+    layout = 'position',
     placement,
-    scrollContent,
-    style,
+    scrollContent = false,
+    style = {},
   } = props;
 
   const splitViewStyle = {
@@ -144,12 +144,6 @@ SplitView.propTypes = {
   placement: PropTypes.oneOf(['top', 'right', 'bottom', 'left']),
   scrollContent: PropTypes.bool,
   style: PropTypes.object,
-};
-
-SplitView.defaultProps = {
-  layout: 'position',
-  scrollContent: false,
-  style: {},
 };
 
 export default React.memo(SplitView);

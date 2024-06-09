@@ -59,7 +59,9 @@ function TabView(props) {
     onTabConfig,
     onUpdate,
     tabArrangement,
-    tabsProps,
+    tabsProps = {
+      variant: 'scrollable',
+    },
     ...rest
   } = props;
 
@@ -224,12 +226,5 @@ TabView.propTypes = {
   tabArrangement: PropTypes.array.isRequired,
   tabsProps: PropTypes.object,
 };
-
-TabView.defaultProps = {
-  tabsProps: {
-    variant: 'scrollable',
-  },
-};
-
 
 export default React.memo(TabView);

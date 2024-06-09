@@ -40,17 +40,17 @@ function AttributedTextField(props) {
   const classes = styles();
 
   const {
-    clearable,
+    clearable = false,
     InputLabelProps,
     InputProps,
     onChange,
-    onChangeDelay,
-    propagateChangeEvent,
+    onChangeDelay = 0,
+    propagateChangeEvent = true,
     StartIcon,
     status,
-    value,
+    value = '',
     valueTransformer,
-    variant,
+    variant = 'standard',
     ...textFieldProps
   } = props;
 
@@ -205,14 +205,6 @@ AttributedTextField.propTypes = {
   ]),
   valueTransformer: PropTypes.func,
   variant: PropTypes.oneOf(['contained', 'filled', 'outlined', 'standard']),
-};
-
-AttributedTextField.defaultProps = {
-  clearable: false,
-  onChangeDelay: 0,
-  propagateChangeEvent: true,
-  value: '',
-  variant: 'standard',
 };
 
 export default AttributedTextField;

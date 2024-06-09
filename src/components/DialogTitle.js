@@ -31,7 +31,11 @@ const styles = makeStyles((theme) => ({
 function DialogTitle(props) {
   const classes = styles();
 
-  const { closable, onCloseButtonClick, title } = props;
+  const {
+    closable = true,
+    onCloseButtonClick,
+    title
+  } = props;
 
   const handleCloseButtonClick = useCallback((e) => {
     onCloseButtonClick(e);
@@ -69,10 +73,6 @@ DialogTitle.propTypes = {
   closable: PropTypes.bool,
   onCloseButtonClick: PropTypes.func,
   title: PropTypes.string.isRequired,
-};
-
-DialogTitle.defaultProps = {
-  closable: true,
 };
 
 export default DialogTitle;

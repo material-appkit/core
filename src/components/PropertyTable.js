@@ -43,7 +43,7 @@ function PropertyTable(props) {
     onRowClick,
     onSelectionClick,
     selection,
-    striped,
+    striped = false,
   } = props;
 
   const [tableData, setTableData] = useState([]);
@@ -133,10 +133,6 @@ PropertyTable.propTypes = {
   onSelectionClick: PropTypes.func,
   selection: PropTypes.object,
   striped: PropTypes.bool,
-};
-
-PropertyTable.defaultProps = {
-  striped: false,
 };
 
 export default React.memo(PropertyTable);

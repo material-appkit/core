@@ -26,8 +26,16 @@ const styles = makeStyles(
 );
 
 function DataCard(props) {
-  const [mode, setMode] = useState('view');
   const classes = styles();
+
+  const {
+    variant = 'elevation',
+    contentBoxProps = { px: 2 },
+  } = props;
+
+
+  const [mode, setMode] = useState('view');
+
 
   const formRef = useRef(null);
 
@@ -77,9 +85,6 @@ function DataCard(props) {
     }, 2);
   };
 
-
-  const { variant } = props;
-
   const cardProps = {};
 
   const cardHeaderClasses = {
@@ -120,7 +125,7 @@ function DataCard(props) {
         subheader={props.subheader}
       />
       <CardContent classes={{ root: classes.cardContentRoot }}>
-        <Box {...props.contentBoxProps}>
+        <Box {...contentBoxProps}>
           {getActiveView()}
         </Box>
       </CardContent>
@@ -142,11 +147,6 @@ DataCard.propTypes = {
   subheader: PropTypes.string,
   title: PropTypes.string,
   variant: PropTypes.oneOf(['elevation', 'outlined', 'plain'])
-};
-
-DataCard.defaultProps = {
-  contentBoxProps: { px: 2 },
-  variant: 'elevation',
 };
 
 export default DataCard;

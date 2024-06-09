@@ -95,7 +95,11 @@ function Breadcrumb({ classes, breadcrumbInfo }) {
 function Breadcrumbs(props) {
   const classes = styles();
 
-  const { arrangement, ...breadcrumbsProps } = props;
+  const {
+    arrangement,
+    separator = '›',
+    ...breadcrumbsProps
+  } = props;
 
   return (
     <MuiBreadcrumbs
@@ -104,6 +108,7 @@ function Breadcrumbs(props) {
         ol: classes.list,
       }}
       role="tablist"
+      separator={separator}
       {...breadcrumbsProps}
     >
       {arrangement.map((breadcrumbInfo, index) => (
@@ -117,9 +122,5 @@ function Breadcrumbs(props) {
 Breadcrumbs.propTypes = {
   arrangement: PropTypes.array.isRequired,
 }
-
-Breadcrumbs.defaultProps = {
-  separator: "›",
-};
 
 export default Breadcrumbs;

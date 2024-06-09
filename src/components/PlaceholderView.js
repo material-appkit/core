@@ -32,13 +32,13 @@ const PlaceholderView = React.forwardRef((props, ref) => {
 
   const {
     aspectRatio,
-    border,
+    border = true,
     children,
-    component,
-    fullHeight,
-    fullWidth,
+    component = Box,
+    fullHeight = true,
+    fullWidth = true,
     height,
-    padding,
+    padding = 0,
     ...componentProps
   } = props;
 
@@ -88,14 +88,6 @@ PlaceholderView.propTypes = {
   fullWidth: PropTypes.bool,
   height: PropTypes.number,
   padding: PropTypes.number,
-};
-
-PlaceholderView.defaultProps = {
-  border: true,
-  component: Box,
-  fullHeight: true,
-  fullWidth: true,
-  padding: 0,
-};
+}
 
 export default PlaceholderView;

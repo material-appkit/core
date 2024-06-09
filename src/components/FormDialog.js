@@ -42,17 +42,17 @@ function FormDialog(props) {
   const classes = styles();
 
   const {
-    activityLabel,
-    cancelButtonTitle,
-    commitButtonTitle,
+    activityLabel = 'Working...',
+    cancelButtonTitle = 'Cancel',
+    commitButtonTitle = 'Save',
     contentText,
     defaultValues,
-    deleteButtonTitle,
+    deleteButtonTitle = 'Delete',
     endpoint,
     errors,
-    extraFormData,
+    extraFormData = {},
     fieldArrangement,
-    maxWidth,
+    maxWidth = 'xs',
     representedObject,
     onDelete,
     onDismiss,
@@ -235,15 +235,6 @@ FormDialog.propTypes = {
   maxWidth: PropTypes.string,
   representedObject: PropTypes.object,
   title: PropTypes.string,
-};
-
-FormDialog.defaultProps = {
-  activityLabel: 'Working...',
-  cancelButtonTitle: 'Cancel',
-  commitButtonTitle: 'Save',
-  deleteButtonTitle: 'Delete',
-  extraFormData: {},
-  maxWidth: 'xs',
 };
 
 export default FormDialog;

@@ -11,16 +11,16 @@ import ContextMenu from './ContextMenu';
 
 function ContextMenuButton(props) {
   const {
-    anchorOrigin,
-    buttonProps,
-    contextMenuProps,
-    dense,
-    Icon,
+    anchorOrigin = { vertical: 'bottom', horizontal: 'center' },
+    buttonProps = {},
+    contextMenuProps = {},
+    dense = false,
+    Icon = MoreVertIcon,
     iconClassName,
     label,
     menuItemArrangement,
     representedObject,
-    transformOrigin,
+    transformOrigin = { vertical: 'top', horizontal: 'left' },
   } = props;
 
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -107,15 +107,6 @@ ContextMenuButton.propTypes = {
   menuItemArrangement: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
   representedObject: PropTypes.object,
   transformOrigin: PropTypes.object,
-};
-
-ContextMenuButton.defaultProps = {
-  anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
-  buttonProps: {},
-  contextMenuProps: {},
-  dense: false,
-  Icon: MoreVertIcon,
-  transformOrigin: { vertical: 'top', horizontal: 'left' },
 };
 
 export default ContextMenuButton;

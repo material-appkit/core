@@ -63,8 +63,8 @@ function EditDialog(props) {
   const classes = styles();
 
   const {
-    canDelete,
-    FormProps,
+    canDelete = false,
+    FormProps = {},
     dismiss,
     entityType,
     labels,
@@ -267,11 +267,6 @@ EditDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   persistedObject: PropTypes.object,
   title: PropTypes.string,
-};
-
-EditDialog.defaultProps = {
-  canDelete: false,
-  FormProps: {},
 };
 
 export default EditDialog;

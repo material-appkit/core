@@ -25,9 +25,8 @@ export const getFieldNames = (metadata, fields) => {
   if (fields) {
     const fieldNames = [];
     fields.forEach((fieldInfo) => {
-      // Ignore anything to do with form layout
       if (fieldInfo === '---') {
-        ;
+        // Ignore anything to do with form layout
       }
       else if (Array.isArray(fieldInfo)) {
         fieldNames.push(...getFieldNames(metadata, fieldInfo));

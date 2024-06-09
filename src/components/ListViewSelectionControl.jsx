@@ -44,7 +44,7 @@ function ListViewSelectionControl(props) {
   const classes = styles();
 
   const {
-    disableSelectionMenu,
+    disableSelectionMenu = false,
     onSelectionMenuItemClick,
     onToggle,
     selectionDisabled,
@@ -131,10 +131,6 @@ ListViewSelectionControl.propTypes = {
   selectionDisabled: PropTypes.bool.isRequired,
   onToggle: PropTypes.func.isRequired,
   onSelectionMenuItemClick: PropTypes.func.isRequired,
-};
-
-ListViewSelectionControl.defaultProps = {
-  disableSelectionMenu: false,
 };
 
 export default ListViewSelectionControl;

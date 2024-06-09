@@ -39,7 +39,12 @@ const listItemStyles = makeStyles((theme) => ({
 
 function ChoiceListItem(props) {
   const classes = listItemStyles();
-  const { choice, selected, variant, ...listItemProps } = props;
+  const {
+    choice,
+    selected,
+    variant = 'multiple',
+    ...listItemProps
+  } = props;
 
   let IconComponent = null;
   let iconClassName = null;
@@ -178,10 +183,6 @@ ChoiceList.propTypes = {
   onSelectionChange: PropTypes.func.isRequired,
   value: PropTypes.string,
   variant: variantPropType,
-};
-
-ChoiceList.defaultProps = {
-  variant: 'multiple',
 };
 
 export default React.memo(ChoiceList);

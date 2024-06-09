@@ -16,7 +16,9 @@ function SimpleListItem(props) {
   const {
     disableTypography,
     avatarField,
-    avatarProps,
+    avatarProps = {
+      variant: 'rounded',
+    },
     primaryField,
     secondaryField,
     ...listItemProps
@@ -109,11 +111,4 @@ SimpleListItem.propTypes = {
   secondaryField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 };
 
-SimpleListItem.defaultProps = {
-  avatarProps: {
-    variant: 'rounded',
-  }
-}
-
-// -----------------------------------------------------------------------------
 export default SimpleListItem;

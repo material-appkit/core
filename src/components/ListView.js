@@ -115,22 +115,23 @@ function ListView(props) {
   const {
     actionMenuItemArrangement,
     bindToolbarItemsToSearchParams,
-    classes,
+    classes = {},
     displayMode,
-    displaySelectionCount,
-    filterParams,
+    displaySelectionCount = true,
+    emptyListPlaceholderText = 'No items to display',
+    filterParams = {},
     filterParamTransformer,
-    itemIdKey,
+    itemIdKey = 'id',
     itemLinkKey,
-    items,
+    items = null,
     itemContextMenuArrangement,
     itemContextProvider,
     itemTransformer,
-    listItemDivider,
+    listItemDivider = true,
     listItemComponent,
     listItemComponentFunc,
     listItemProps,
-    loadingVariant,
+    loadingVariant = 'linear',
     onConfig,
     onLoad,
     onLoadComplete,
@@ -139,12 +140,17 @@ function ListView(props) {
     onPageSizeChange,
     onSelectionChange,
     orderingFields,
-    orderingParamName,
-    paginationControlProps,
-    paginationListControlProps,
+    orderingParamName = 'order',
+    paginationControlProps = {
+      pageSizeChoices: [10, 20, 50, 100],
+    },
+    paginationListControlProps = {
+      shape: 'rounded',
+      variant: 'outlined',
+    },
     PlaceholderComponent,
     responseTransformer,
-    selectOnClick,
+    selectOnClick = false,
     selection,
     selectionInitializer,
     selectionMode,
@@ -153,8 +159,8 @@ function ListView(props) {
     src,
     tileItemComponent,
     tileItemComponentFunc,
-    windowed,
-    windowedListItemHeight,
+    windowed = false,
+    windowedListItemHeight = 0,
   } = props;
 
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
@@ -162,7 +168,7 @@ function ListView(props) {
   const [loadError, setLoadError] = useState(null);
   const [paginationInfo, setPaginationInfo] = useState(null);
   const [uncontrolledSelection, setUncontrolledSelection] = useState(new Set());
-  const [selectionDisabled, setSelectionDisabled] = useState(props.selectionDisabled);
+  const [selectionDisabled, setSelectionDisabled] = useState(props.selectionDisabled ?? true);
   const [loadDate, setLoadDate] = useState(new Date());
 
   // Maintain a reference to the fetch request so it can be aborted
@@ -794,7 +800,7 @@ function ListView(props) {
   if (!renderedItems.length) {
     return (
       <Alert severity="info">
-        {props.emptyListPlaceholderText}
+        {emptyListPlaceholderText}
       </Alert>
     );
   }
@@ -930,38 +936,11 @@ ListView.propTypes = {
 
   src: PropTypes.string,
 
-  subsetParamName: PropTypes.string,
-
   tileItemComponent: PropTypes.elementType,
   tileItemComponentFunc: PropTypes.func,
 
   windowed: PropTypes.bool,
   windowedListItemHeight: PropTypes.number,
-};
-
-ListView.defaultProps = {
-  classes: {},
-  displaySelectionCount: true,
-  emptyListPlaceholderText: 'No items to display',
-  filterParams: {},
-  items: null,
-  itemIdKey: 'id',
-  listItemDivider: true,
-  loadingVariant: 'linear',
-  orderingParamName: 'order',
-  paginationControlProps: {
-    pageSizeChoices: [10, 20, 50, 100],
-  },
-  paginationListControlProps: {
-    shape: 'rounded',
-    variant: 'outlined',
-  },
-
-  selectionDisabled: true,
-  selectOnClick: false,
-  subsetParamName: 'subset',
-  windowed: false,
-  windowedListItemHeight: 0,
 };
 
 export default ListView;

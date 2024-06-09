@@ -39,7 +39,11 @@ const styles = makeStyles((theme) => ({
 function ExpandableBox(props) {
   const classes = styles();
 
-  const [expanded, setExpanded] = useState(props.defaultExpanded);
+  const {
+    defaultExpanded = false,
+  } = props;
+
+  const [expanded, setExpanded] = useState(defaultExpanded);
 
   return (
     <div>
@@ -83,8 +87,5 @@ ExpandableBox.propTypes = {
   valueLabel: PropTypes.string,
 };
 
-ExpandableBox.defaultProps = {
-  defaultExpanded: false,
-};
 
 export default React.memo(ExpandableBox);

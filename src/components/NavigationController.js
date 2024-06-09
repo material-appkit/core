@@ -47,13 +47,13 @@ const styles = makeStyles((theme) => {
 
 function NavigationController(props) {
   const {
-    defaultRoute,
+    defaultRoute = '/',
     onViewDidMount,
     onViewDidUpdate,
     onViewWillUnmount,
-    routes,
+    routes = [],
     setPageTitle,
-    splitViewProps,
+    splitViewProps = {},
   } = props;
 
   const theme = useTheme();
@@ -166,12 +166,6 @@ NavigationController.propTypes = {
   onViewWillUnmount: PropTypes.func,
   setPageTitle: PropTypes.func,
   splitViewProps: PropTypes.object,
-};
-
-NavigationController.defaultProps = {
-  defaultRoute: '/',
-  routes: [],
-  splitViewProps: {},
 };
 
 export default NavigationController;

@@ -30,7 +30,12 @@ const styles = makeStyles((theme) => ({
 function ContextMenu(props) {
   const classes = styles();
 
-  const { dense, menuItemArrangement, ...menuProps } = props;
+  const {
+    dense = false,
+    menuItemArrangement,
+    TransitionComponent = Fade,
+    ...menuProps
+  } = props;
   const onClose = props.onClose;
 
 
@@ -128,7 +133,10 @@ function ContextMenu(props) {
   }, [dense, menuItemArrangement, onClose]);
 
   return (
-    <Menu {...menuProps}>
+    <Menu
+      TransitionComponent={TransitionComponent}
+      {...menuProps}
+    >
       {menuItems}
     </Menu>
   );
@@ -141,10 +149,5 @@ ContextMenu.propTypes = {
   TransitionComponent: PropTypes.elementType,
 };
 
-ContextMenu.defaultProps = {
-  dense: false,
-  TransitionComponent: Fade,
-
-};
 
 export default ContextMenu;

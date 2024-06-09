@@ -28,14 +28,16 @@ function SimpleDialog(props) {
 
   const {
     actions,
-    classes,
-    dialogActionsProps,
+    classes = {},
+    dialogActionsProps = { disableSpacing: true },
     dialogContentRef,
     dismiss,
-    fullscreenBreakpoint,
+    fullscreenBreakpoint = 'sm',
+    fullWidth = true,
     height,
     loading,
     onClose,
+    maxWidth = 'sm',
     PaperProps,
     subtitle,
     title,
@@ -63,7 +65,9 @@ function SimpleDialog(props) {
   return (
     <Dialog
       fullScreen={fullScreen}
+      fullWidth={fullWidth}
       onClose={onClose}
+      maxWidth={maxWidth}
       PaperProps={appliedPaperProps}
       TransitionComponent={fullScreen ? SlideUpTransition : undefined }
       TransitionProps={transitionProps}
@@ -135,14 +139,6 @@ SimpleDialog.propTypes = {
   titleIcon: PropTypes.element,
   titleAccessoryView: PropTypes.element,
   transitionProps: PropTypes.object,
-};
-
-SimpleDialog.defaultProps = {
-  classes: {},
-  dialogActionsProps: { disableSpacing: true },
-  fullscreenBreakpoint: 'sm',
-  fullWidth: true,
-  maxWidth: 'sm',
 };
 
 export default React.memo(SimpleDialog);

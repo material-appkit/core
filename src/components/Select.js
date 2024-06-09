@@ -21,19 +21,21 @@ function Select(props) {
   const {
     autocompleteClasses,
     disabled,
-    emptySelectionPlaceholder,
+    emptySelectionPlaceholder = '',
     endpoint,
     filterParams,
-    isClearable,
-    labelKey,
+    isClearable = true,
+    labelKey = 'label',
     nativeBreakpoint,
     onChange,
     onLoadError,
     options,
     placeholder,
-    SelectProps,
+    SelectProps = {},
+    size = 'medium',
     value,
-    valueKey,
+    valueKey = value,
+    variant = 'standard',
     ...textfieldProps
   } = props;
 
@@ -159,7 +161,9 @@ function Select(props) {
         onChange={handleNativeSelectChange}
         select
         SelectProps={{ ...SelectProps, native: true }}
+        size={size}
         value={selectedOption ? selectedOption[valueKey] : ''}
+        variant={variant}
         {...textfieldProps}
       >
         {isClearable &&
@@ -194,6 +198,8 @@ function Select(props) {
             {...textfieldProps}
             inputProps={inputProps}
             SelectProps={SelectProps}
+            size={size}
+            variant={variant}
           />
         );
       }}
@@ -221,16 +227,6 @@ Select.propTypes = {
   value: PropTypes.any,
   valueKey: PropTypes.string,
   variant: PropTypes.oneOf(['standard', 'outlined', 'filled']),
-};
-
-Select.defaultProps = {
-  emptySelectionPlaceholder: '',
-  isClearable: true,
-  labelKey: 'label',
-  SelectProps: {},
-  size: 'medium',
-  valueKey: 'value',
-  variant: 'standard',
 };
 
 export default React.memo(Select);

@@ -39,10 +39,10 @@ function MasterDetailView(props) {
     className,
     detailViewPlaceholder,
     DetailViewComponent,
-    detailViewProps,
+    detailViewProps = {},
     ListViewComponent,
     listViewContainerClassName,
-    listViewProps,
+    listViewProps = {},
     listViewSelectionInitializer,
     onDetailViewClose,
     onListViewSelectionChange,
@@ -137,11 +137,6 @@ MasterDetailView.propTypes = {
   onDetailViewClose: PropTypes.func,
   onListViewSelectionChange: PropTypes.func,
   showDetailView: PropTypes.bool.isRequired,
-};
-
-MasterDetailView.defaultProps = {
-  detailViewProps: {},
-  listViewProps: {},
 };
 
 export default React.memo(MasterDetailView);

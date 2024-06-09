@@ -54,15 +54,15 @@ function ListViewDialog(props) {
 
   const {
     apiCreateUrl,
-    commitOnSelect,
+    commitOnSelect = false,
     filterParams,
     dialogProps,
     dismiss,
-    maxWidth,
+    maxWidth = 'xs',
     onDismiss,
     listItemProps,
     searchFilterParam,
-    selectionMode,
+    selectionMode = 'multiple',
     title,
     ...listViewProps
   } = props;
@@ -261,12 +261,6 @@ ListViewDialog.propTypes = {
   searchFilterParam: PropTypes.string,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-};
-
-ListViewDialog.defaultProps = {
-  commitOnSelect: false,
-  maxWidth: 'xs',
-  selectionMode: 'multiple',
 };
 
 export default ListViewDialog;

@@ -29,18 +29,31 @@ const styles = makeStyles((theme) => ({
 function SearchField(props) {
   const classes = styles();
 
-  const { className, ...rest } = props;
+  const {
+    className,
+    fullWidth = true,
+    margin = 'dense',
+    onChangeDelay = 400,
+    placeholder = 'Search...',
+    variant = 'outlined',
+    ...rest
+  } = props;
 
   return (
     <AttributedTextField
       className={clsx(classes.textField, className)}
+      fullWidth={fullWidth}
       InputProps={{
         classes: {
           root: classes.inputRoot,
           adornedStart: classes.inputAdornedStart,
         },
       }}
+      margin={margin}
+      onChangeDelay={onChangeDelay}
+      placeholder={placeholder}
       StartIcon={SearchIcon}
+      variant={variant}
       {...rest}
     />
   )
@@ -52,14 +65,6 @@ SearchField.propTypes = {
   onChangeDelay: PropTypes.number,
   placeholder: PropTypes.string,
   value: PropTypes.string,
-};
-
-SearchField.defaultProps = {
-  fullWidth: true,
-  margin: 'dense',
-  onChangeDelay: 400,
-  placeholder: 'Search...',
-  variant: 'outlined',
 };
 
 export default SearchField;

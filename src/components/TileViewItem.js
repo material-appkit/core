@@ -59,6 +59,7 @@ function TileViewItem(props) {
   const {
     className,
     commitOnSelect,
+    component = 'span',
     secondaryActionPlacement,
     contextMenuItemArrangement,
     item,
@@ -72,7 +73,7 @@ function TileViewItem(props) {
     selectionMode,
     selectOnClick,
     secondaryActionControl,
-    sizes,
+    sizes = { xs: 12, sm: 6, md: 4, lg: 3, xl: 2 },
     ...rest
   } = props;
 
@@ -82,6 +83,7 @@ function TileViewItem(props) {
     ...sizes,
     ...rest,
     className: clsx(classes.gridItem, className),
+    component,
     onClick: (e) => {
       if (selectionMode && onSelectionChange) {
         onSelectionChange(item);

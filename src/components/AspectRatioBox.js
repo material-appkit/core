@@ -27,7 +27,7 @@ function AspectRatioBox(props) {
     aspectRatio,
     className,
     children,
-    Component
+    Component = 'div',
   } = props;
 
 
@@ -48,10 +48,6 @@ AspectRatioBox.propTypes = {
   Component: PropTypes.any,
   children: PropTypes.any,
   className: PropTypes.string,
-};
-
-AspectRatioBox.defaultProps = {
-  Component: 'div',
 };
 
 export default AspectRatioBox;
