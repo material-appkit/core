@@ -28,11 +28,12 @@ function SimpleDialog(props) {
 
   const {
     actions,
-    classes,
-    dialogActionsProps,
+    classes = {},
+    contentPadding = 16,
+    dialogActionsProps = { disableSpacing: true },
     dialogContentRef,
     dismiss,
-    fullscreenBreakpoint,
+    fullscreenBreakpoint = 'sm',
     height,
     loading,
     onClose,
@@ -96,9 +97,10 @@ function SimpleDialog(props) {
       </DialogTitle>
 
       <DialogContent
-        className={clsx(coreClasses.dialogContent, classes.dialogContent)}
+        className={classes.dialogContent}
         dividers
         ref={dialogContentRef}
+        style={{ padding: contentPadding }}
       >
         {props.children}
       </DialogContent>
@@ -120,6 +122,7 @@ SimpleDialog.propTypes = {
   actions: PropTypes.any,
   children: PropTypes.any,
   classes: PropTypes.object,
+  contentPadding: PropTypes.number,
   dialogActionsProps: PropTypes.object,
   dialogContentRef: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   dismiss: PropTypes.func,
@@ -138,11 +141,8 @@ SimpleDialog.propTypes = {
 };
 
 SimpleDialog.defaultProps = {
-  classes: {},
-  dialogActionsProps: { disableSpacing: true },
-  fullscreenBreakpoint: 'sm',
   fullWidth: true,
   maxWidth: 'sm',
 };
 
-export default React.memo(SimpleDialog);
+export default SimpleDialog;
