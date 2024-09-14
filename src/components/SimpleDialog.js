@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 
+import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -41,7 +42,7 @@ function SimpleDialog(props) {
     subtitle,
     title,
     titleIcon,
-    titleAccessoryView,
+    titleAccessoryView = null,
     transitionProps,
     ...dialogProps
   } = props;
@@ -74,26 +75,31 @@ function SimpleDialog(props) {
         className={clsx(coreClasses.dialogTitle, classes.dialogTitle)}
         disableTypography
       >
-        {titleIcon}
-        <div className={coreClasses.headingContainer}>
-          <Typography component="h1" variant="h3" className={classes.dialogHeading}>
-            {title}
-          </Typography>
-
-          {subtitle && (
-            <Typography className={coreClasses.dialogSubtitle}>
-              {subtitle}
+        <Box display="flex" alignItems="center" width="100%" px={2} py={1} gap={8}>
+          {titleIcon}
+          <div className={coreClasses.headingContainer}>
+            <Typography component="h1" variant="h3" className={classes.dialogHeading}>
+              {title}
             </Typography>
-          )}
-        </div>
 
-        <IconButton edge="end" onClick={handleCloseButtonClick}>
-          <CloseIcon />
-        </IconButton>
+            {subtitle && (
+              <Typography className={coreClasses.dialogSubtitle}>
+                {subtitle}
+              </Typography>
+            )}
+          </div>
+
+          <IconButton edge="end" onClick={handleCloseButtonClick}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        {titleAccessoryView}
 
         {loading &&
-          <LinearProgress className={coreClasses.loadingIndicator} />
+          <LinearProgress />
         }
+
       </DialogTitle>
 
       <DialogContent
