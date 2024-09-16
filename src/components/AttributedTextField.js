@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import debounce from 'lodash.debounce';
 
 import PropTypes from 'prop-types';
@@ -21,7 +22,7 @@ const styles = makeStyles((theme) => ({
     padding: `24px 14px 12px 14px`,
   },
 
-  fieldContainer: {
+  root: {
     position: 'relative',
   },
 
@@ -40,17 +41,19 @@ function AttributedTextField(props) {
   const classes = styles();
 
   const {
-    clearable,
+    className,
+    clearable = false,
     InputLabelProps,
     InputProps,
     onChange,
-    onChangeDelay,
-    propagateChangeEvent,
+    onChangeDelay = 0,
+    propagateChangeEvent = true,
     StartIcon,
     status,
-    value,
+    textfieldClassName,
+    value = '',
     valueTransformer,
-    variant,
+    variant = 'standard',
     ...textFieldProps
   } = props;
 
@@ -173,7 +176,10 @@ function AttributedTextField(props) {
   }
 
   return (
-    <div className={classes.fieldContainer} style={fieldContainerStyles}>
+    <div
+      className={clsx(classes.root, className)}
+      style={fieldContainerStyles}
+    >
       {statusIndicator &&
         <span className={classes.statusIndicatorContainer}>
           {statusIndicator}
@@ -181,6 +187,7 @@ function AttributedTextField(props) {
       }
 
       <MuiTextField
+        className={textfieldClassName}
         InputProps={FinalInputProps}
         InputLabelProps={FinalInputLabelProps}
         onChange={handleFieldChange}
@@ -193,26 +200,20 @@ function AttributedTextField(props) {
 }
 
 AttributedTextField.propTypes = {
+  className: PropTypes.string,
   clearable: PropTypes.bool,
   onChange: PropTypes.func,
   onChangeDelay: PropTypes.number,
   propagateChangeEvent: PropTypes.bool,
   StartIcon: PropTypes.elementType,
   status: PropTypes.oneOf(['working', 'valid', 'invalid']),
+  textfieldClassName: PropTypes.string,
   value: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
   ]),
   valueTransformer: PropTypes.func,
   variant: PropTypes.oneOf(['contained', 'filled', 'outlined', 'standard']),
-};
-
-AttributedTextField.defaultProps = {
-  clearable: false,
-  onChangeDelay: 0,
-  propagateChangeEvent: true,
-  value: '',
-  variant: 'standard',
 };
 
 export default AttributedTextField;
