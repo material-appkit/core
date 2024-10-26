@@ -11,6 +11,7 @@ import DateWidget from './widgets/DateWidget';
 import DateTimeRangeWidget from './widgets/DateTimeRangeWidget';
 import ItemListWidget from './widgets/ItemList';
 import ModelSelectWidget from './widgets/ModelSelect';
+import MoneyWidget from './widgets/MoneyWidget';
 import RadioGroupWidget from './widgets/RadioGroup';
 
 import ServiceAgent from '../util/ServiceAgent';
@@ -97,6 +98,7 @@ class Form extends React.PureComponent {
     'datetimerange': DateTimeRangeWidget,
     'itemlist': ItemListWidget,
     'modelselect': ModelSelectWidget,
+    'money': MoneyWidget,
     'radiogroup': RadioGroupWidget,
   };
 
