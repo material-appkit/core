@@ -48,6 +48,7 @@ function FormDialog(props) {
     contentText,
     defaultValues,
     deleteButtonTitle,
+    dismiss,
     endpoint,
     errors,
     extraFormData,
@@ -55,7 +56,7 @@ function FormDialog(props) {
     maxWidth,
     representedObject,
     onDelete,
-    onDismiss,
+    onClose,
     onError,
     title,
   } = props;
@@ -87,7 +88,11 @@ function FormDialog(props) {
       const requestMethod = representedObject ? 'PATCH' : 'POST';
       ServiceAgent.request(requestMethod, endpoint, formData)
         .then((res) => {
-          onDismiss(res.jsonData);
+          if (dismiss) {
+            dismiss(res.jsonData);
+          } else {
+            onClose(res.jsonData);
+          }
         })
         .catch((err) => {
           setLoading(false);
@@ -100,15 +105,19 @@ function FormDialog(props) {
           }
         });
     } else {
-      onDismiss(formData);
+      if (dismiss) {
+        dismiss(formData);
+      } else {
+        onClose(formData);
+      }
     }
-  }, [endpoint, onDismiss, onError, representedObject]);
+  }, [dismiss, endpoint, onClose, onError, representedObject]);
 
 
   const handleDeleteButtonClick = useCallback(() => {
     setLoading(true);
     onDelete().then(() => {
-      onDismiss(null);
+      onClose(null);
     }).catch((err) => {
       if (onError) {
         onError(err);
@@ -202,7 +211,7 @@ function FormDialog(props) {
 
         <Spacer />
 
-        <Button onClick={() => onDismiss(null)}>
+        <Button onClick={(e) => onClose(e, 'closeButtonClick')}>
           {cancelButtonTitle}
         </Button>
 
@@ -225,12 +234,13 @@ FormDialog.propTypes = {
   commitButtonTitle: PropTypes.string,
   contentText: PropTypes.string,
   defaultValues: PropTypes.object,
+  dismiss: PropTypes.func,
   errors: PropTypes.object,
   extraFormData: PropTypes.object,
   onDelete: PropTypes.func,
   fieldArrangement: PropTypes.array.isRequired,
   endpoint: PropTypes.string,
-  onDismiss: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
   onError: PropTypes.func,
   maxWidth: PropTypes.string,
   representedObject: PropTypes.object,

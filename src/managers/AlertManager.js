@@ -161,7 +161,7 @@ class AlertManager extends React.PureComponent {
     this.setState({ promptQueue: updatedQueue });
   };
 
-  handleFormDialogDismiss = (promptInfo) => (formData) => {
+  handleFormDialogClose = (promptInfo) => (formData) => {
     if (promptInfo) {
       promptInfo.onDismiss(formData);
     }
@@ -234,7 +234,7 @@ class AlertManager extends React.PureComponent {
         <FormDialog
           fieldArrangement={[fieldName]}
           key={key}
-          onDismiss={this.handleFormDialogDismiss(promptInfo)}
+          onClose={this.handleFormDialogClose(promptInfo)}
           title={title}
         />
       );
