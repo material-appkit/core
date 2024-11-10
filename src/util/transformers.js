@@ -74,3 +74,9 @@ export function toFloat(value) {
   floatValue = parseFloat(floatValue);
   return Number.isNaN(floatValue) ? 0 : floatValue;
 }
+
+
+export function toBoolean(value) {
+  const falsyValues = new Set(['False', 'false', '0', '', 0, undefined, null]);
+  return !falsyValues.has(value);
+}
