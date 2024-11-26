@@ -47,6 +47,27 @@ export function slugify(str) {
  * @returns {String}
  * The given `string` without suffix `value`
  */
+export function lstrip(str, value) {
+  const index = str.indexOf(value);
+  if (index === -1) {
+    return str;
+  }
+
+  return str.substring(value.length);
+}
+
+
+/**
+ *
+ * @param {String} str
+ * String to remove suffix `value` from
+ *
+ * @param {String} value
+ * Suffix to be removed from `string`
+ *
+ * @returns {String}
+ * The given `string` without suffix `value`
+ */
 export function rstrip(str, value) {
   const lastIndex = str.lastIndexOf(value);
   if (lastIndex === -1) {

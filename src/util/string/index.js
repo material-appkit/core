@@ -16,6 +16,13 @@ Object.defineProperty(exports, "slugify", {
   },
 });
 
+Object.defineProperty(exports, "lstrip", {
+  enumerable: true,
+  get: function get() {
+    return _string.lstrip;
+  },
+});
+
 Object.defineProperty(exports, "rstrip", {
   enumerable: true,
   get: function get() {
