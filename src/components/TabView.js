@@ -14,6 +14,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { lstrip, rstrip } from '../util/string';
+
+
 const styles = makeStyles((theme) => ({
   container: {
     display: 'flex',
@@ -50,7 +53,6 @@ function TabView(props) {
   const [searchParams] = useSearchParams();
 
   const {
-    basePath,
     onMount,
     onUnmount,
     onTabMount,
@@ -63,6 +65,8 @@ function TabView(props) {
     ...rest
   } = props;
 
+  // ASSUME: the first tab is the index route
+  const basePath = tabArrangement[0].path;
   const currentLocationPath = location.pathname;
 
   const [selectedTabIndex, setSelectedTabIndex] = useState(false);
@@ -82,14 +86,11 @@ function TabView(props) {
 
   useEffect(() => {
     tabArrangement.forEach((tabConfig, tabIndex) => {
-      if ((tabConfig.index && currentLocationPath === basePath) ||
-          (`${basePath}/${tabConfig.path}` === currentLocationPath)
-      ) {
+      if (tabConfig.path === currentLocationPath) {
         setSelectedTabIndex(tabIndex);
       }
     });
-  }, [basePath, currentLocationPath, tabArrangement]);
-
+  }, [currentLocationPath, tabArrangement]);
 
   const activeTabConfig = useMemo(() => {
     if (selectedTabIndex === false) {
@@ -102,7 +103,7 @@ function TabView(props) {
 
   const handleTabChange = useCallback((e, tabIndex) => {
     const tabInfo = tabArrangement[tabIndex];
-    const pathname = tabInfo.index ? basePath : `${basePath}/${tabInfo.path}`;
+    const pathname = rstrip(tabInfo.path, '*');
     navigate(`${pathname}?${searchParams.toString()}`);
 
     if (onTabChange) {
@@ -113,7 +114,6 @@ function TabView(props) {
       onTabConfig(tabInfo);
     }
   }, [
-    basePath,
     onTabChange,
     onTabConfig,
     navigate,
@@ -165,7 +165,7 @@ function TabView(props) {
         {tabArrangement.map((tabConfig) => (
           <Tab
             className={classes.tab}
-            key={tabConfig.index ? basePath : tabConfig.path}
+            key={tabConfig.path}
             label={tabConfig.label}
           />
         ))}
@@ -183,11 +183,11 @@ function TabView(props) {
         {tabArrangement.map((tabConfig) => {
           const Component = tabConfig.component;
           const componentProps = tabConfig.componentProps || {};
-          let routeProps;
+          const routeProps = { key: tabConfig.path };
           if (tabConfig.index) {
-            routeProps = { key: basePath, index: true };
+            routeProps.index = true;
           } else {
-            routeProps = { key: tabConfig.path, path: tabConfig.path };
+            routeProps.path = lstrip(lstrip(tabConfig.path, basePath), '/');
           }
 
           return (
@@ -213,7 +213,6 @@ function TabView(props) {
 }
 
 TabView.propTypes = {
-  basePath: PropTypes.string.isRequired,
   onUpdate: PropTypes.func,
   onMount: PropTypes.func,
   onUnmount: PropTypes.func,
