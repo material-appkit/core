@@ -85,11 +85,14 @@ function TabView(props) {
   }, [onMount, onUnmount]);
 
   useEffect(() => {
-    tabArrangement.forEach((tabConfig, tabIndex) => {
-      if (tabConfig.path === currentLocationPath) {
+    let tabIndex = 0;
+    for (const tabConfig of tabArrangement) {
+      if (tabConfig.path.startsWith(currentLocationPath)) {
         setSelectedTabIndex(tabIndex);
+        return;
       }
-    });
+      tabIndex++;
+    }
   }, [currentLocationPath, tabArrangement]);
 
   const activeTabConfig = useMemo(() => {
