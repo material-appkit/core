@@ -105,6 +105,10 @@ function TabView(props) {
 
 
   const handleTabChange = useCallback((e, tabIndex) => {
+    if (tabIndex === selectedTabIndex) {
+      return;
+    }
+
     const tabInfo = tabArrangement[tabIndex];
     const pathname = rstrip(tabInfo.path, '*');
     navigate(`${pathname}?${searchParams.toString()}`);
@@ -121,6 +125,7 @@ function TabView(props) {
     onTabConfig,
     navigate,
     searchParams,
+    selectedTabIndex,
     tabArrangement
   ]);
 
