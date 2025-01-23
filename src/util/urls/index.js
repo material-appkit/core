@@ -9,13 +9,6 @@ Object.defineProperty(exports, "reverse", {
   },
 });
 
-Object.defineProperty(exports, "matchPath", {
-  enumerable: true,
-  get: function get() {
-    return _urls.matchPath;
-  },
-});
-
 Object.defineProperty(exports, "matchesForPath", {
   enumerable: true,
   get: function get() {
