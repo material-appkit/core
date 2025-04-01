@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { withSnackbar } from 'notistack';
+import { enqueueSnackbar } from 'notistack';
 
 /**
  * A higher-order component used to simplify usage of the notistack library.
@@ -43,10 +43,8 @@ class SnackbarManager extends React.PureComponent {
   }
 
 
-  __notify = (messageInfo) => {
-    this.props.enqueueSnackbar(messageInfo.message, {
-      variant: messageInfo.variant
-    });
+  __notify = ({ message, variant }) => {
+    enqueueSnackbar(message, { variant });
   };
 
 
@@ -57,4 +55,4 @@ class SnackbarManager extends React.PureComponent {
 }
 
 
-export default withSnackbar(SnackbarManager);
+export default SnackbarManager;
