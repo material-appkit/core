@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import React, {
   useCallback,
   useEffect,
-  useMemo,
-  useRef,
   useState,
 } from 'react';
 import { Outlet, Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
@@ -69,8 +67,8 @@ function TabView(props) {
   const basePath = tabArrangement[0].path;
   const currentLocationPath = location.pathname;
 
-  const [selectedTabIndex, setSelectedTabIndex] = useState(false);
-  const activeTabViewRef = useRef(null);
+  const [selectedTabIndex, setSelectedTabIndex] = useState();
+  const [activeTabConfig, setActiveTabConfig] = useState();
 
   useEffect(() => {
     if (onMount) {
@@ -89,19 +87,12 @@ function TabView(props) {
     for (const tabConfig of tabArrangement) {
       if (tabConfig.path.startsWith(currentLocationPath)) {
         setSelectedTabIndex(tabIndex);
+        setActiveTabConfig(tabConfig);
         return;
       }
       tabIndex++;
     }
   }, [currentLocationPath, tabArrangement]);
-
-  const activeTabConfig = useMemo(() => {
-    if (selectedTabIndex === false) {
-      return null;
-    }
-
-    return tabArrangement[selectedTabIndex];
-  }, [selectedTabIndex, tabArrangement]);
 
 
   const handleTabChange = useCallback((e, tabIndex) => {
@@ -159,6 +150,10 @@ function TabView(props) {
     tabContainerClasses.push(activeTabConfig.containerClassName);
   }
 
+  if (selectedTabIndex === undefined) {
+    return null;
+  }
+
   const tabViewContainer = (
     <div className={classes.container}>
       <Tabs
@@ -195,14 +190,13 @@ function TabView(props) {
           if (tabConfig.index) {
             routeProps.index = true;
           } else {
-            routeProps.path = lstrip(lstrip(tabConfig.path, basePath), '/');
+            routeProps.path = lstrip(tabConfig.path, basePath);
           }
 
           return (
             <Route
               element={(
                 <Component
-                  containerRef={activeTabViewRef}
                   onConfig={handleTabConfig}
                   onMount={handleTabMount}
                   onUnmount={handleTabUnmount}
