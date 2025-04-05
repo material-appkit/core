@@ -124,8 +124,6 @@ function SwipeView(props) {
         },
       });
 
-      handleFocusIndexChange(startSlide);
-
       if (onSwipeUpdate) {
         onSwipeUpdate(swipeRef.current);
       }
@@ -189,6 +187,11 @@ function Slideshow(props) {
 
   const [focusIndex, setFocusIndex] = useState(startSlide);
 
+  useEffect(() => {
+    setFocusIndex(startSlide);
+  }, [startSlide]);
+
+
   const handleSwipeFocusChange = useCallback((frameIndex, frame) => {
     setFocusIndex(frameIndex);
 
@@ -196,6 +199,7 @@ function Slideshow(props) {
       onFocusChange(frameIndex, frame);
     }
   }, [onFocusChange]);
+
 
   return (
     <div className={classes.root}>
@@ -205,18 +209,19 @@ function Slideshow(props) {
         startSlide={startSlide}
       />
 
-      <MobileStepper
-        classes={{
-          root: classes.mobileStepper,
-          dots: classes.mobileStepperDots,
-          dotActive: classes.mobileStepperDotActive,
-        }}
+      {frames.length && (
+        <MobileStepper
+          classes={{
+            root: classes.mobileStepper,
+            dots: classes.mobileStepperDots,
+            dotActive: classes.mobileStepperDotActive,
+          }}
 
-        position="static"
-        activeStep={focusIndex}
-        steps={frames.length}
-        style={{ visibility: frames.length > 1 ? 'visible' : 'hidden' }}
-      />
+          position="static"
+          activeStep={focusIndex}
+          steps={frames.length}
+        />
+      )}
     </div>
   );
 }
