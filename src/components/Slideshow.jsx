@@ -209,7 +209,7 @@ function Slideshow(props) {
         startSlide={startSlide}
       />
 
-      {frames.length && (
+      {frames.length > 1 && (
         <MobileStepper
           classes={{
             root: classes.mobileStepper,
