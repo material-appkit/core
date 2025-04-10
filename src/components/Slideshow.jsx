@@ -11,6 +11,7 @@ const swipeViewStyles = makeStyles({
     position: 'relative',
     height: '100%',
   },
+
   swipeWrap: {
     overflow: 'hidden',
     position: 'relative',
@@ -170,8 +171,11 @@ const slideshowViewStyles = makeStyles({
   },
 
   mobileStepperDots: {
+    display: 'grid',
+    gap: 5,
+    gridAutoFlow: 'dense',
+    gridTemplateColumns: 'repeat(auto-fit, 6px)',
     width: '100%',
-    justifyContent: 'center',
   },
 
   mobileStepperDotActive: {
