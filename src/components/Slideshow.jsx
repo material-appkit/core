@@ -172,6 +172,7 @@ const slideshowViewStyles = makeStyles({
 
   mobileStepperDots: {
     display: 'grid',
+    justifyContent: 'center',
     gap: 5,
     gridAutoFlow: 'dense',
     gridTemplateColumns: 'repeat(auto-fit, 6px)',
