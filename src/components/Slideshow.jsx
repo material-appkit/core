@@ -125,6 +125,10 @@ function SwipeView(props) {
         },
       });
 
+      if (frameCount) {
+        loadFrameAtIndex(0);
+      }
+
       if (onSwipeUpdate) {
         onSwipeUpdate(swipeRef.current);
       }
