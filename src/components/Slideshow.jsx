@@ -126,7 +126,7 @@ function SwipeView(props) {
       });
 
       if (frameCount) {
-        loadFrameAtIndex(0);
+        loadFrameAtIndex(startSlide);
       }
 
       if (onSwipeUpdate) {
