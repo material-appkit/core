@@ -34,7 +34,7 @@ function SwipeView(props) {
 
   const {
     active = true,
-    keyboardDisabled = false,
+    keyboardEnabled = false,
     frames,
     onFocusChange,
     onSwipeUpdate,
@@ -44,7 +44,7 @@ function SwipeView(props) {
   const swipeRef = useRef(undefined);
 
   const handleKeyDown = useCallback((e) => {
-    if (keyboardDisabled || !swipeRef.current) {
+    if (!(keyboardEnabled && swipeRef.current)) {
       return;
     }
 
@@ -60,7 +60,7 @@ function SwipeView(props) {
       default:
         return;
     }
-  }, [keyboardDisabled]);
+  }, [keyboardEnabled]);
 
 
   useEffect(() => {
@@ -152,7 +152,7 @@ function SwipeView(props) {
 
 SwipeView.propTypes = {
   active: PropTypes.bool,
-  keyboardDisabled: PropTypes.bool,
+  keyboardEnabled: PropTypes.bool,
   frames: PropTypes.array.isRequired,
   onFocusChange: PropTypes.func,
   onSwipeUpdate: PropTypes.func,
