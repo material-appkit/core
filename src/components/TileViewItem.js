@@ -70,7 +70,6 @@ function TileViewItem(props) {
     selectionControl,
     selectionDisabled,
     selectionMode,
-    selectOnClick,
     secondaryActionControl,
     sizes,
     ...rest
@@ -138,7 +137,6 @@ export const commonPropTypes = {
   onSelectionChange: PropTypes.func,
   selected: PropTypes.bool,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  selectOnClick: PropTypes.bool,
   sizes: PropTypes.object,
 };
 

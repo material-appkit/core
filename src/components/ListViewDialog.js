@@ -234,7 +234,6 @@ function ListViewDialog(props) {
           paginationControlProps={paginationControlProps}
           selectionDisabled={false}
           selectionMode={commitOnSelect ? 'single' : selectionMode}
-          selectOnClick
         />
       </SimpleDialog>
 

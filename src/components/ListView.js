@@ -144,7 +144,6 @@ function ListView(props) {
     paginationListControlProps,
     PlaceholderComponent,
     responseTransformer,
-    selectOnClick,
     selection,
     selectionInitializer,
     selectionMode,
@@ -286,7 +285,6 @@ function ListView(props) {
       item,
       onSelectionChange: (item) => updateSelection(item),
       selected,
-      selectOnClick,
       selectionMode,
       selectionDisabled,
       to: pathForItem(item),
@@ -926,7 +924,6 @@ ListView.propTypes = {
   selectionDisabled: PropTypes.bool,
   selectionInitializer: PropTypes.func,
   selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  selectOnClick: PropTypes.bool,
 
   src: PropTypes.string,
 
@@ -950,7 +947,7 @@ ListView.defaultProps = {
   loadingVariant: 'linear',
   orderingParamName: 'order',
   paginationControlProps: {
-    pageSizeChoices: [10, 20, 50, 100],
+    pageSizeChoices: [12, 24, 48, 96, 120],
   },
   paginationListControlProps: {
     shape: 'rounded',
@@ -958,7 +955,6 @@ ListView.defaultProps = {
   },
 
   selectionDisabled: true,
-  selectOnClick: false,
   subsetParamName: 'subset',
   windowed: false,
   windowedListItemHeight: 0,
