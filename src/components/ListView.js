@@ -87,7 +87,8 @@ const listViewStyles = makeStyles((theme) => ({
     width: '100%',
   },
 
-  tileView: {
+  gridView: {
+    overflow: 'auto',
     padding: theme.spacing(1),
   }
 }));
@@ -147,8 +148,8 @@ function ListView(props) {
     searchParams,
     setSearchParams,
     src,
-    tileItemComponent,
-    tileItemComponentFunc,
+    gridItemComponent,
+    gridItemComponentFunc,
   } = props;
 
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
@@ -694,11 +695,11 @@ function ListView(props) {
    * @param itemIndex: Array index of item being rendered
    * @returns {JSX.Element}
    */
-  const renderTileItem = (item, itemIndex) => {
-    const TileItemComponent = tileItemComponentFunc ? tileItemComponentFunc(item) : tileItemComponent;
+  const renderGridItem = (item, itemIndex) => {
+    const GridItemComponent = gridItemComponentFunc ? gridItemComponentFunc(item) : gridItemComponent;
 
     return (
-      <TileItemComponent
+      <GridItemComponent
         {...itemProps(item, itemIndex)}
       />
     );
@@ -779,10 +780,18 @@ function ListView(props) {
     );
 
   } else {
+    const gridViewClassNames = [styles.gridView];
+    if (loading) {
+      gridViewClassNames.push(classes.listViewLoading);
+    }
     view = (
-      <Grid container className={styles.tileView}>
+      <Grid
+        container
+        className={clsx(gridViewClassNames)}
+        spacing={2}
+      >
         {renderedItems.map(
-          (item, itemIndex) => renderTileItem(item, itemIndex)
+          (item, itemIndex) => renderGridItem(item, itemIndex)
         )}
       </Grid>
     );
@@ -850,8 +859,8 @@ ListView.propTypes = {
 
   subsetParamName: PropTypes.string,
 
-  tileItemComponent: PropTypes.elementType,
-  tileItemComponentFunc: PropTypes.func,
+  gridItemComponent: PropTypes.elementType,
+  gridItemComponentFunc: PropTypes.func,
 };
 
 ListView.defaultProps = {

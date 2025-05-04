@@ -1,21 +1,32 @@
 import clsx from 'clsx';
 
 import PropTypes from 'prop-types';
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
+
 import ContextMenuButton from './ContextMenuButton';
 
-
 const styles = makeStyles((theme) => ({
+  gridItem: {
+    position: 'relative',
+  },
+
+  itemControl: {
+    position: 'absolute',
+    right: theme.spacing(1.5),
+    top: theme.spacing(1.5),
+  },
+
   selectionEnabled: {
+    cursor: 'pointer',
+
     '& > *': {
       pointerEvents: 'none',
     }
@@ -32,16 +43,10 @@ const styles = makeStyles((theme) => ({
   deselected: {
     color: theme.palette.action.active,
   },
-
-  topSecondaryAction: {
-    right: theme.spacing(1),
-    top: theme.spacing(1),
-    transform: 'initial',
-  },
 }));
 
-// -----------------------------------------------------------------------------
-function ListViewItem(props) {
+
+function GridViewItem(props) {
   const classes = styles();
 
   const {
@@ -59,32 +64,31 @@ function ListViewItem(props) {
     selectionDisabled,
     selectionMode,
     secondaryActionControl,
-    ...listItemProps
+    sizes,
+    ...gridItemProps
   } = props;
 
-  const listItemRef = useRef(null);
+  const gridItemRef = useRef(null);
 
+
+  
   useEffect(() => {
     if (onMount) {
-      onMount(listItemRef.current, item);
+      onMount(gridItemRef.current, item);
     }
 
     return () => {
       if (onUnmount) {
-        onUnmount(listItemRef.current, item);
+        onUnmount(gridItemRef.current, item);
       }
     }
   }, [item, onMount, onUnmount]);
-
-
-  if (props.to) {
-    listItemProps.button = true;
-  }
-
+  
+  
   if (selectionMode && !selectionDisabled) {
-    listItemProps.button = true;
-    listItemProps.disableRipple = true;
-    listItemProps.onMouseDown = (e) => {
+    gridItemProps.button = true;
+    gridItemProps.disableRipple = true;
+    gridItemProps.onMouseDown = (e) => {
       e.preventDefault();
       e.stopPropagation();
 
@@ -102,11 +106,12 @@ function ListViewItem(props) {
       }
     }
   } else if (onItemClick) {
-    listItemProps.button = true;
-    listItemProps.onClick = () => {
+    gridItemProps.button = true;
+    gridItemProps.onClick = () => {
       onItemClick(item);
     }
   }
+
 
 
   const selectionControl = useMemo(() => {
@@ -114,60 +119,44 @@ function ListViewItem(props) {
       return null;
     }
 
-    return (
-      <ListItemSecondaryAction
-        className={secondaryActionPlacement === 'top' ? classes.topSecondaryAction : null}
-      >
-        {selectionMode === 'multiple' ? (
-          selected ? (
-            <CheckBoxIcon className={classes.selected} />
-          ) : (
-            <CheckBoxOutlineBlankIcon className={classes.deselected} />
-          )
-        ) : (
-          selected ? (
-            <RadioButtonCheckedIcon className={classes.selected} />
-          ) : (
-            <RadioButtonUncheckedIcon className={classes.deselected} />
-          )
-        )}
-      </ListItemSecondaryAction>
+    if (selectionMode === 'multiple') {
+      return selected ? (
+        <CheckBoxIcon className={classes.selected} />
+      ) : (
+        <CheckBoxOutlineBlankIcon className={classes.deselected} />
+      );
+    }
+
+    return selected ? (
+      <RadioButtonCheckedIcon className={classes.selected} />
+    ) : (
+      <RadioButtonUncheckedIcon className={classes.deselected} />
     );
   }, [classes, item, onSelectionChange, selectionMode, selected]);
 
 
-  const secondaryListItemAction = useMemo(() => {
-    let secondaryActionContent = secondaryActionControl;
-    if (!secondaryActionContent && contextMenuItemArrangement) {
-      secondaryActionContent = (
-        <ContextMenuButton
-          buttonProps={{ size: 'small' }}
-          representedObject={item}
-          menuItemArrangement={contextMenuItemArrangement}
-        />
-      );
-    }
-
-    if (!secondaryActionContent) {
+  const actionControl = useMemo(() => {
+    if (!contextMenuItemArrangement) {
       return null;
     }
 
-    return (
-      <ListItemSecondaryAction
-        className={secondaryActionPlacement === 'top' ? classes.topSecondaryAction : null}
-      >
-        {secondaryActionContent}
-      </ListItemSecondaryAction>
-    );
-  }, [
-    contextMenuItemArrangement,
-    item,
-    secondaryActionControl,
-    secondaryActionPlacement
-  ]);
+      let menuItemArrangement = contextMenuItemArrangement;
+      if (typeof(menuItemArrangement) === 'function') {
+        menuItemArrangement = menuItemArrangement(item);
+      }
+
+      return (
+        <ContextMenuButton
+          buttonProps={{ size: 'small' }}
+          representedObject={item}
+          menuItemArrangement={menuItemArrangement}
+        />
+      );
+  }, [contextMenuItemArrangement, item]);
 
 
-  const classNames = [className];
+
+  const classNames = [classes.gridItem, className];
   if (selectionMode && !selectionDisabled) {
     classNames.push(classes.selectionEnabled);
   }
@@ -176,23 +165,27 @@ function ListViewItem(props) {
   }
 
   return (
-    <ListItem
+    <Grid
+      item
       className={clsx(classNames)}
-      ref={listItemRef}
-      {...listItemProps}
+      ref={gridItemRef}
+      {...sizes}
+      {...gridItemProps}
     >
       {children}
 
-      {(selectionMode && !selectionDisabled) ? (
-        selectionControl
-      ) : (
-        secondaryListItemAction
-      )}
-    </ListItem>
+      <span className={classes.itemControl}>
+        {(selectionMode && !selectionDisabled) ? (
+          selectionControl
+        ) : (
+          actionControl
+        )}
+      </span>
+    </Grid>
   );
 }
 
-ListViewItem.propTypes = {
+export const commonPropTypes = {
   children: PropTypes.node,
   secondaryActionControl: PropTypes.element,
   secondaryActionPlacement: PropTypes.string,
@@ -206,10 +199,12 @@ ListViewItem.propTypes = {
   to: PropTypes.string,
 };
 
-export default ListViewItem;
+GridViewItem.propTypes = commonPropTypes;
 
-
-export const commonPropTypes = {
-  item: PropTypes.object,
-  onItemUpdate: PropTypes.func,
+GridViewItem.defaultProps = {
+  component: 'span',
+  sizes: { xs: 12, sm: 6, md: 4, lg: 3 },
 };
+
+export default React.memo(GridViewItem);
+
