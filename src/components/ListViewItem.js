@@ -212,4 +212,6 @@ export default ListViewItem;
 export const commonPropTypes = {
   item: PropTypes.object,
   onItemUpdate: PropTypes.func,
+  onMount: PropTypes.func,
+  onUnmount: PropTypes.func,
 };
