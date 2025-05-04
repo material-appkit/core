@@ -4,9 +4,6 @@ import PropTypes from 'prop-types';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { VariableSizeList } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
-
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
@@ -152,8 +149,6 @@ function ListView(props) {
     src,
     tileItemComponent,
     tileItemComponentFunc,
-    windowed,
-    windowedListItemHeight,
   } = props;
 
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
@@ -677,45 +672,16 @@ function ListView(props) {
   };
 
   // ---------------------------------------------------------------------------
-
-  /**
-   * When in windowed mode, setting the 'measuring' flag causes the list
-   * items to be rendered into a hidden container so their individual
-   * heights can be determined.
-   * After all items have been measured the hidden container is unmounted
-   * and a VariableSizedList / VariableSizedGrid is displayed
-   */
-  useEffect(() => {
-    if (windowed) {
-      if (renderedItems && renderedItems.length) {
-        itemHeights.current = new Array(renderedItems.length).fill(windowedListItemHeight);
-        if (!windowedListItemHeight) {
-          setMeasuring(true);
-        }
-      } else {
-        itemHeights.current = [];
-      }
-    } else {
-      itemHeights.current = null;
-    }
-  }, [windowed, renderedItems]);
-
-  //----------------------------------------------------------------------------
-
   /**
    * Produce a list item from the given item
    * @param item: Item to be rendered
    * @param itemIndex: Array index of item being rendered
-   * @param style: Additional style params (primarily used in windowed mode)
-   * @param onMount: Optional callback to be invoked when the list item mounts
    */
-  const renderListItem = (item, itemIndex, style, onMount) => {
+  const renderListItem = (item, itemIndex) => {
     const ListItemComponent = listItemComponentFunc ? listItemComponentFunc(item) : listItemComponent;
 
     return (
       <ListItemComponent
-        onMount={onMount}
-        style={style}
         divider={listItemDivider}
         {...itemProps(item, itemIndex)}
       />
@@ -726,17 +692,13 @@ function ListView(props) {
    * Produce a grid cell from the given item
    * @param item: Item to be rendered
    * @param itemIndex: Array index of item being rendered
-   * @param style: Additional style params (primarily used in windowed mode)
-   * @param onMount: Optional callback to be invoked when the list item mounts
    * @returns {JSX.Element}
    */
-  const renderTileItem = (item, itemIndex, style, onMount) => {
+  const renderTileItem = (item, itemIndex) => {
     const TileItemComponent = tileItemComponentFunc ? tileItemComponentFunc(item) : tileItemComponent;
 
     return (
       <TileItemComponent
-        onMount={onMount}
-        style={style}
         {...itemProps(item, itemIndex)}
       />
     );
@@ -805,66 +767,25 @@ function ListView(props) {
       listViewClassNames.push(classes.listViewLoading);
     }
 
-    if (windowed) {
-      const itemCount = renderedItems.length;
-      view = measuring ? (
-        <List disablePadding style={{ visibility: 'hidden' }}>
-          {renderedItems.map(
-            (item, itemIndex) => renderListItem(item, itemIndex, null, (element) => {
-               // Callback invoked when a list item is first mounted.
-               // When in windowed mode, whereby a height must be specified for each list item,
-               // this routine is used to initially determine that height.
-              const listItemRect = element.getBoundingClientRect();
-              itemHeights.current[itemIndex] = listItemRect.height;
-              if (itemIndex === itemCount - 1) {
-                setMeasuring(false);
-              }
-            })
-          )}
-        </List>
-      ) : (
-        <AutoSizer>
-          {({ width, height }) => (
-            <VariableSizeList
-              className={clsx(listViewClassNames)}
-              height={height}
-              innerElementType={List}
-              itemData={{ renderedItems }}
-              itemCount={renderedItems.length}
-              itemSize={(index) => itemHeights.current[index]}
-              width={width}
-            >
-              {({ data, index, style }) => (
-                renderListItem(data.renderedItems[index], index, style)
-              )}
-            </VariableSizeList>
-          )}
-        </AutoSizer>
-      );
-    } else {
-      view = (
-        <List
-          className={clsx(listViewClassNames)}
-          disablePadding
-        >
-          {renderedItems.map(
-            (item, itemIndex) => renderListItem(item, itemIndex)
-          )}
-        </List>
-      );
-    }
+    view = (
+      <List
+        className={clsx(listViewClassNames)}
+        disablePadding
+      >
+        {renderedItems.map(
+          (item, itemIndex) => renderListItem(item, itemIndex)
+        )}
+      </List>
+    );
+
   } else {
-    if (windowed) {
-      console.log('TODO: Implement windowed grid view!');
-    } else {
-      view = (
-        <Grid container className={styles.tileView}>
-          {renderedItems.map(
-            (item, itemIndex) => renderTileItem(item, itemIndex)
-          )}
-        </Grid>
-      );
-    }
+    view = (
+      <Grid container className={styles.tileView}>
+        {renderedItems.map(
+          (item, itemIndex) => renderTileItem(item, itemIndex)
+        )}
+      </Grid>
+    );
   }
 
   return view;
@@ -931,9 +852,6 @@ ListView.propTypes = {
 
   tileItemComponent: PropTypes.elementType,
   tileItemComponentFunc: PropTypes.func,
-
-  windowed: PropTypes.bool,
-  windowedListItemHeight: PropTypes.number,
 };
 
 ListView.defaultProps = {
@@ -956,8 +874,6 @@ ListView.defaultProps = {
 
   selectionDisabled: true,
   subsetParamName: 'subset',
-  windowed: false,
-  windowedListItemHeight: 0,
 };
 
 export default ListView;
