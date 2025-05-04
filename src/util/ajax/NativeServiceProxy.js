@@ -61,7 +61,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       if (response.ok) {
         resolve(response);
       } else {
-        const error = new Error('Network response was not ok');
+        const error = new Error(jsonData.detail);
         error.response = response;
         reject(error);
       }
