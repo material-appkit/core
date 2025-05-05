@@ -87,8 +87,6 @@ function GridViewItem(props) {
   
   
   if (selectionMode && !selectionDisabled) {
-    gridItemProps.button = true;
-    gridItemProps.disableRipple = true;
     gridItemProps.onMouseDown = (e) => {
       e.preventDefault();
       e.stopPropagation();
