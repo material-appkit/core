@@ -118,6 +118,7 @@ function ListView(props) {
     displaySelectionCount,
     filterParams,
     filterParamTransformer,
+    gridItemSizes,
     itemIdKey,
     itemLinkKey,
     items,
@@ -701,7 +702,7 @@ function ListView(props) {
     return (
       <GridItemComponent
         {...itemProps(item, itemIndex)}
-        sizes={{ xs: 12, sm: 6, md: 4, lg: 3 }}
+        sizes={gridItemSizes}
       />
     );
   };
@@ -813,6 +814,8 @@ ListView.propTypes = {
   filterParams: PropTypes.object,
   filterParamTransformer: PropTypes.func,
 
+  gridItemSizes: PropTypes.object,
+
   items: PropTypes.array,
   itemContextMenuArrangement: PropTypes.func,
   itemContextProvider: PropTypes.func,
@@ -869,6 +872,7 @@ ListView.defaultProps = {
   displaySelectionCount: true,
   emptyListPlaceholderText: 'No items to display',
   filterParams: {},
+  gridItemSizes: { xs: 12, sm: 6, md: 4, lg: 3 },
   items: null,
   itemIdKey: 'id',
   listItemDivider: true,
