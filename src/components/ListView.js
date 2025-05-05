@@ -701,6 +701,7 @@ function ListView(props) {
     return (
       <GridItemComponent
         {...itemProps(item, itemIndex)}
+        sizes={{ xs: 12, sm: 6, md: 4, lg: 3 }}
       />
     );
   };
@@ -883,6 +884,22 @@ ListView.defaultProps = {
 
   selectionDisabled: true,
   subsetParamName: 'subset',
+};
+
+
+export const commonListItemPropTypes = {
+  children: PropTypes.node,
+  secondaryActionControl: PropTypes.element,
+  contextMenuItemArrangement: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
+  item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
+  onItemClick: PropTypes.func,
+  onMount: PropTypes.func,
+  onUnmount: PropTypes.func,
+  onSelectionChange: PropTypes.func,
+  selected: PropTypes.bool,
+  selectionMode: PropTypes.oneOf(['single', 'multiple']),
+  selectionDisabled: PropTypes.bool.isRequired,
+  to: PropTypes.string,
 };
 
 export default ListView;

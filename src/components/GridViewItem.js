@@ -12,6 +12,7 @@ import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
 
 import ContextMenuButton from './ContextMenuButton';
+import { commonListItemPropTypes } from "./ListView";
 
 const styles = makeStyles((theme) => ({
   gridItem: {
@@ -185,26 +186,13 @@ function GridViewItem(props) {
   );
 }
 
-export const commonPropTypes = {
-  children: PropTypes.node,
-  secondaryActionControl: PropTypes.element,
-  secondaryActionPlacement: PropTypes.string,
-  contextMenuItemArrangement: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
-  item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
-  onItemClick: PropTypes.func,
-  onSelectionChange: PropTypes.func,
-  selected: PropTypes.bool,
-  selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  selectionDisabled: PropTypes.bool.isRequired,
-  to: PropTypes.string,
+
+GridViewItem.propTypes = {
+  ...commonListItemPropTypes,
+  sizes: PropTypes.object.isRequired,
 };
 
-GridViewItem.propTypes = commonPropTypes;
 
-GridViewItem.defaultProps = {
-  component: 'span',
-  sizes: { xs: 12, sm: 6, md: 4, lg: 3 },
-};
 
 export default React.memo(GridViewItem);
 

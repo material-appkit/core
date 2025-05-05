@@ -13,6 +13,7 @@ import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
 import ContextMenuButton from './ContextMenuButton';
 
+import { commonListItemPropTypes } from "./ListView";
 
 const styles = makeStyles((theme) => ({
   selectionEnabled: {
@@ -193,25 +194,8 @@ function ListViewItem(props) {
 }
 
 ListViewItem.propTypes = {
-  children: PropTypes.node,
-  secondaryActionControl: PropTypes.element,
+  ...commonListItemPropTypes,
   secondaryActionPlacement: PropTypes.string,
-  contextMenuItemArrangement: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
-  item: PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired,
-  onItemClick: PropTypes.func,
-  onSelectionChange: PropTypes.func,
-  selected: PropTypes.bool,
-  selectionMode: PropTypes.oneOf(['single', 'multiple']),
-  selectionDisabled: PropTypes.bool.isRequired,
-  to: PropTypes.string,
 };
 
 export default ListViewItem;
-
-
-export const commonPropTypes = {
-  item: PropTypes.object,
-  onItemUpdate: PropTypes.func,
-  onMount: PropTypes.func,
-  onUnmount: PropTypes.func,
-};

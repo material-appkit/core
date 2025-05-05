@@ -9,7 +9,8 @@ import Typography from '@material-ui/core/Typography';
 
 import { valueForKeyPath } from '../util/object';
 
-import ListViewItem, { commonPropTypes } from './ListViewItem';
+import ListViewItem from './ListViewItem';
+import { commonListItemPropTypes } from './ListView';
 
 
 function SimpleListItem(props) {
@@ -101,7 +102,7 @@ function SimpleListItem(props) {
   );
 }
 SimpleListItem.propTypes = {
-  ...commonPropTypes,
+  ...commonListItemPropTypes,
 
   avatarProps: PropTypes.object,
   avatarField: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
