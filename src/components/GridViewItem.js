@@ -10,9 +10,9 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 
-
 import ContextMenuButton from './ContextMenuButton';
 import { commonListItemPropTypes } from "./ListView";
+
 
 const styles = makeStyles((theme) => ({
   gridItem: {
@@ -47,7 +47,7 @@ const styles = makeStyles((theme) => ({
 }));
 
 
-function GridViewItem(props) {
+const GridViewItem = React.forwardRef((props, ref) => {
   const classes = styles();
 
   const {
@@ -69,18 +69,15 @@ function GridViewItem(props) {
     ...gridItemProps
   } = props;
 
-  const gridItemRef = useRef(null);
 
-
-  
   useEffect(() => {
     if (onMount) {
-      onMount(gridItemRef.current, item);
+      onMount(ref.current, item);
     }
 
     return () => {
       if (onUnmount) {
-        onUnmount(gridItemRef.current, item);
+        onUnmount(ref.current, item);
       }
     }
   }, [item, onMount, onUnmount]);
@@ -167,7 +164,7 @@ function GridViewItem(props) {
     <Grid
       item
       className={clsx(classNames)}
-      ref={gridItemRef}
+      ref={ref}
       {...sizes}
       {...gridItemProps}
     >
@@ -182,15 +179,13 @@ function GridViewItem(props) {
       </span>
     </Grid>
   );
-}
+});
 
 
 GridViewItem.propTypes = {
   ...commonListItemPropTypes,
   sizes: PropTypes.object.isRequired,
 };
-
-
 
 export default React.memo(GridViewItem);
 
