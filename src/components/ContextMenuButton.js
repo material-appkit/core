@@ -57,18 +57,13 @@ function ContextMenuButton(props) {
     menuAnchorEl,
     representedObject
   ]);
-
-
-  if (!menuItemArrangement) {
-    return null;
-  }
-
+  
   let control;
   if (label) {
     control = (
       <Button
         endIcon={<ExpandMoreIcon />}
-        onClick={() => setMenuIsOpen(true)}
+        onClick={(e) => setMenuAnchorEl(e.target)}
         ref={menuAnchorRef}
         {...buttonProps}
       >
@@ -80,7 +75,7 @@ function ContextMenuButton(props) {
   } else {
     control = (
       <IconButton
-        onClick={(e) => setMenuAnchorEl(menuAnchorEl ? null : e.target)}
+        onClick={(e) => setMenuAnchorEl(e.target)}
         {...buttonProps}
       >
         <Icon className={iconClassName} />
@@ -104,7 +99,10 @@ ContextMenuButton.propTypes = {
   Icon: PropTypes.elementType,
   iconClassName: PropTypes.string,
   label: PropTypes.string,
-  menuItemArrangement: PropTypes.oneOfType([PropTypes.func, PropTypes.array]),
+  menuItemArrangement: PropTypes.oneOfType([
+    PropTypes.array,
+    PropTypes.func,
+  ]),
   representedObject: PropTypes.object,
   transformOrigin: PropTypes.object,
 };
