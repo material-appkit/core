@@ -136,18 +136,13 @@ const GridViewItem = React.forwardRef((props, ref) => {
       return null;
     }
 
-      let menuItemArrangement = contextMenuItemArrangement;
-      if (typeof(menuItemArrangement) === 'function') {
-        menuItemArrangement = menuItemArrangement(item);
-      }
-
-      return (
-        <ContextMenuButton
-          buttonProps={{ size: 'small' }}
-          representedObject={item}
-          menuItemArrangement={menuItemArrangement}
-        />
-      );
+    return (
+      <ContextMenuButton
+        buttonProps={{ size: 'small' }}
+        representedObject={item}
+        menuItemArrangement={contextMenuItemArrangement}
+      />
+    );
   }, [contextMenuItemArrangement, item]);
 
 
