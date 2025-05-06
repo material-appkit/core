@@ -21,6 +21,9 @@ import ListViewActionMenuControl from "./ListViewActionMenuControl";
 import SortControl from './SortControl';
 import PaginationControl from './PaginationControl';
 
+export const PAGE_PARAM_NAME = 'page';
+export const PAGE_SIZE_PARAM_NAME = 'page_size';
+export const ORDERING_PARAM_NAME = 'order';
 
 //------------------------------------------------------------------------------
 // Utility Functions
@@ -44,6 +47,28 @@ const transformFetchItemsResponse = (res, itemTransformer) => {
   return transformedData;
 };
 
+/**
+ * @param item
+ * @param itemIdKey Accessor used to extract a unique identifier from the given item
+ * @returns {*} Unique identifier of given item
+ */
+const keyForItem = (item, itemIdKey) => {
+  return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
+};
+
+/**
+ *
+ * @param item
+ * @param itemLinkKey Accessor used to extract a path string from the given item
+ * @returns {*} Path item should link to
+ */
+const pathForItem = (item, itemLinkKey) => {
+  if (!itemLinkKey) {
+    return null;
+  }
+  return (typeof itemLinkKey === 'function') ? itemLinkKey(item) : item[itemLinkKey];
+};
+
 
 //------------------------------------------------------------------------------
 function PaginationListControl(props) {
@@ -52,7 +77,7 @@ function PaginationListControl(props) {
 
   const handlePaginationChange = useCallback((e, value) => {
     const updatedSearchParams = new URLSearchParams(searchParams);
-    updatedSearchParams.set('page', value);
+    updatedSearchParams.set(PAGE_PARAM_NAME, value);
     setSearchParams(updatedSearchParams);
   }, [searchParams, setSearchParams]);
 
@@ -118,6 +143,8 @@ function ListView(props) {
     displaySelectionCount,
     filterParams,
     filterParamTransformer,
+    gridItemComponent,
+    gridItemComponentFunc,
     gridItemSizes,
     itemIdKey,
     itemLinkKey,
@@ -138,7 +165,6 @@ function ListView(props) {
     onPageSizeChange,
     onSelectionChange,
     orderingFields,
-    orderingParamName,
     paginationControlProps,
     paginationListControlProps,
     PlaceholderComponent,
@@ -149,8 +175,6 @@ function ListView(props) {
     searchParams,
     setSearchParams,
     src,
-    gridItemComponent,
-    gridItemComponentFunc,
   } = props;
 
   const [appliedFilterParams, setAppliedFilterParams] = useState(null);
@@ -198,8 +222,8 @@ function ListView(props) {
 
 
   const updateSelection = useCallback((item) => {
-    const itemId = keyForItem(item);
-    const selectedItem = setFind(selectedItems, (i) => keyForItem(i) === itemId);
+    const itemId = keyForItem(item, itemIdKey);
+    const selectedItem = setFind(selectedItems, (i) => keyForItem(i, itemIdKey) === itemId);
 
     let newSelection;
     if (selectionMode === 'single') {
@@ -216,7 +240,7 @@ function ListView(props) {
       }
     }
     setSelection(newSelection);
-  }, [selectedItems]);
+  }, [itemIdKey, selectedItems, setSelection]);
 
 
   /**
@@ -244,51 +268,39 @@ function ListView(props) {
   // ---------------------------------------------------------------------------
 
   /**
-   * @param item
-   * @returns {*} Unique identifier of given item
-   */
-  const keyForItem = useCallback((item) => {
-    return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
-  }, [itemIdKey]);
-
-  /**
-   *
-   * @param item
-   * @returns {*} Path item should link to
-   */
-  const pathForItem = useCallback((item) => {
-    if (!itemLinkKey) {
-      return null;
-    }
-    return (typeof itemLinkKey === 'function') ? itemLinkKey(item) : item[itemLinkKey];
-  }, [itemLinkKey]);
-
-
-  /**
    * Function to generate the ListItem props for a given item
    * @param item
    * @returns Object containing properties to supply to the list item
    */
-  const itemProps = (item) => {
-    const itemKey = keyForItem(item);
+  const itemProps = useCallback((item) => {
+    const itemKey = keyForItem(item, itemIdKey);
 
     const itemContext = itemContextProvider ? itemContextProvider(item) : {};
 
-    const selected = Boolean(setFind(selectedItems, (i) => keyForItem(i) === itemKey));
+    const selected = Boolean(setFind(selectedItems, (i) => keyForItem(i, itemIdKey) === itemKey));
 
     return {
       contextMenuItemArrangement: itemContextMenuArrangement,
       key: itemKey,
       item,
-      onSelectionChange: (item) => updateSelection(item),
+      onSelectionChange: updateSelection,
       selected,
       selectionMode,
       selectionDisabled,
-      to: pathForItem(item),
+      to: pathForItem(item, itemLinkKey),
       ...itemContext,
       ...listItemProps,
     };
-  };
+  }, [
+    itemContextMenuArrangement,
+    itemContextProvider,
+    itemIdKey,
+    itemLinkKey,
+    listItemProps,
+    selectedItems,
+    selectionMode,
+    selectionDisabled,
+  ]);
 
 
   /**
@@ -297,12 +309,12 @@ function ListView(props) {
    * Helper function to locate the index of the given item
    */
   const findItemIndex = useCallback((sourceItem) => {
-    const sourceItemKey = keyForItem(sourceItem);
+    const sourceItemKey = keyForItem(sourceItem, itemIdKey);
 
     return renderedItems.findIndex((targetItem) => (
-      keyForItem(targetItem) === sourceItemKey
+      keyForItem(targetItem, itemIdKey) === sourceItemKey
     ));
-  }, [renderedItems]);
+  }, [itemIdKey, renderedItems]);
 
 
   /**
@@ -430,12 +442,28 @@ function ListView(props) {
     // Let the filter params be transformed before they're committed
     params = coerceFilterParams(params);
 
-    if (!isEqual(params, appliedFilterParams)) {
-      setAppliedFilterParams(params);
+    setAppliedFilterParams((currentFilterParams) => {
+      if (isEqual(currentFilterParams, params)) {
+        console.log('no change');
+        return currentFilterParams;
+      }
 
-      // Clear selection whenever we alter the filter params
-      setSelection(new Set());
-    }
+      if (currentFilterParams) {
+        // Clear selection whenever we alter the filter params
+        // (other than those used to control pagination & sorting)
+        const newFilterParamsKeys = new Set(Object.keys(params));
+        const currentFilterParamsKeys = new Set(Object.keys(currentFilterParams));
+        const differentFilterParamKeys = newFilterParamsKeys.difference(currentFilterParamsKeys);
+        for (const paramName of [PAGE_PARAM_NAME, PAGE_SIZE_PARAM_NAME, ORDERING_PARAM_NAME]) {
+          differentFilterParamKeys.delete(paramName);
+        }
+        if (differentFilterParamKeys.size) {
+          setSelection(new Set());
+        }
+      }
+
+      return params;
+    });
   }, [filterParams, filterParamTransformer]);
 
 
@@ -577,7 +605,6 @@ function ListView(props) {
           <SortControl
             choices={orderingFields}
             key="sort-control"
-            orderingParamName={orderingParamName}
             {...commonToolbarItemProps}
           />
         );
@@ -593,7 +620,6 @@ function ListView(props) {
     orderingFields,
     onPageChange,
     onPageSizeChange,
-    orderingParamName,
     paginationInfo,
     paginationControlProps,
     paginationListControlProps,
@@ -676,8 +702,8 @@ function ListView(props) {
   // ---------------------------------------------------------------------------
   /**
    * Produce a list item from the given item
-   * @param item: Item to be rendered
-   * @param itemIndex: Array index of item being rendered
+   * @param item Item to be rendered
+   * @param itemIndex Array index of item being rendered
    */
   const renderListItem = (item, itemIndex) => {
     const ListItemComponent = listItemComponentFunc ? listItemComponentFunc(item) : listItemComponent;
@@ -692,9 +718,8 @@ function ListView(props) {
 
   /**
    * Produce a grid cell from the given item
-   * @param item: Item to be rendered
-   * @param itemIndex: Array index of item being rendered
-   * @returns {JSX.Element}
+   * @param item Item to be rendered
+   * @param itemIndex Array index of item being rendered
    */
   const renderGridItem = (item, itemIndex) => {
     const GridItemComponent = gridItemComponentFunc ? gridItemComponentFunc(item) : gridItemComponent;
@@ -706,7 +731,6 @@ function ListView(props) {
       />
     );
   };
-
 
   const createPlaceholderComponent = () => {
     if (loadingVariant === 'circular') {
@@ -844,7 +868,6 @@ ListView.propTypes = {
   onSelectionChange: PropTypes.func,
 
   orderingFields: PropTypes.array,
-  orderingParamName: PropTypes.string,
   paginationListControlProps: PropTypes.object,
 
   PlaceholderComponent: PropTypes.elementType,
@@ -877,7 +900,6 @@ ListView.defaultProps = {
   itemIdKey: 'id',
   listItemDivider: true,
   loadingVariant: 'linear',
-  orderingParamName: 'order',
   paginationControlProps: {
     pageSizeChoices: [12, 24, 48, 96, 120],
   },

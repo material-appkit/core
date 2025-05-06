@@ -11,6 +11,7 @@ import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import SortIcon from '@material-ui/icons/Sort';
 
+import { ORDERING_PARAM_NAME } from "./ListView";
 
 import { makeChoices } from "../util/array";
 
@@ -18,14 +19,13 @@ import { makeChoices } from "../util/array";
 function SortControl(props) {
   const {
     choices,
-    orderingParamName,
     searchParams,
     setSearchParams,
   } = props;
 
   let activeOrdering = undefined;
   if (searchParams) {
-    activeOrdering = searchParams.get(orderingParamName);
+    activeOrdering = searchParams.get(ORDERING_PARAM_NAME);
   }
 
   const [sortControlEl, setSortControlEl] = useState(null);
@@ -33,11 +33,11 @@ function SortControl(props) {
   const dismissMenu = useCallback((choice) => (e) => {
     if (choice) {
       const updatedSearchParams = new URLSearchParams(searchParams);
-      updatedSearchParams.set(orderingParamName, choice.value);
+      updatedSearchParams.set(ORDERING_PARAM_NAME, choice.value);
       setSearchParams(updatedSearchParams);
     }
     setSortControlEl(null);
-  }, [orderingParamName, searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams]);
 
   return (
     <>
@@ -87,7 +87,6 @@ function SortControl(props) {
 
 SortControl.propTypes = {
   choices: PropTypes.array.isRequired,
-  orderingParamName: PropTypes.string.isRequired,
   searchParams: PropTypes.object,
   setSearchParams: PropTypes.func,
 };

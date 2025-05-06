@@ -12,6 +12,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
+import {
+  PAGE_PARAM_NAME,
+  PAGE_SIZE_PARAM_NAME,
+} from './ListView';
+
 const styles = makeStyles((theme) => ({
   label: {
     color: theme.palette.text.secondary,
@@ -90,8 +95,8 @@ function PaginationControl(props) {
     if (value) {
       if (searchParams && setSearchParams) {
         const updatedSearchParams = new URLSearchParams(searchParams);
-        updatedSearchParams.set('page', 1);
-        updatedSearchParams.set('page_size', value);
+        updatedSearchParams.set(PAGE_PARAM_NAME, 1);
+        updatedSearchParams.set(PAGE_SIZE_PARAM_NAME, value);
         setSearchParams(updatedSearchParams);
       } else if (onPageSizeChange) {
         onPageSizeChange(value);
