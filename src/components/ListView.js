@@ -13,7 +13,7 @@ import Pagination from '@material-ui/lab/Pagination';
 import { makeStyles } from '@material-ui/core/styles';
 
 import ServiceAgent from '../util/ServiceAgent';
-import { filterEmptyValues } from '../util/object';
+import { deepDiff, filterEmptyValues } from '../util/object';
 import { find as setFind } from '../util/set';
 
 import ListViewSelectionControl from "./ListViewSelectionControl";
@@ -444,20 +444,19 @@ function ListView(props) {
 
     setAppliedFilterParams((currentFilterParams) => {
       if (isEqual(currentFilterParams, params)) {
-        console.log('no change');
         return currentFilterParams;
       }
 
       if (currentFilterParams) {
+        const differentFilterParams = deepDiff(params, currentFilterParams);
+
         // Clear selection whenever we alter the filter params
         // (other than those used to control pagination & sorting)
-        const newFilterParamsKeys = new Set(Object.keys(params));
-        const currentFilterParamsKeys = new Set(Object.keys(currentFilterParams));
-        const differentFilterParamKeys = newFilterParamsKeys.difference(currentFilterParamsKeys);
         for (const paramName of [PAGE_PARAM_NAME, PAGE_SIZE_PARAM_NAME, ORDERING_PARAM_NAME]) {
-          differentFilterParamKeys.delete(paramName);
+          delete differentFilterParams[paramName];
         }
-        if (differentFilterParamKeys.size) {
+        if (Object.keys(differentFilterParams).length) {
+          console.log('clear selection');
           setSelection(new Set());
         }
       }
