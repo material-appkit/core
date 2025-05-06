@@ -1,6 +1,7 @@
 "use strict";
 
 const _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+const {deepDiff} = require("./object");
 
 Object.defineProperty(exports, "filterByKeys", {
   enumerable: true,
@@ -41,6 +42,13 @@ Object.defineProperty(exports, "setValueForKeyPath", {
   enumerable: true,
   get: function get() {
     return _object.setValueForKeyPath;
+  },
+});
+
+Object.defineProperty(exports, "deepDiff", {
+  enumerable: true,
+  get: function get() {
+    return _object.deepDiff;
   },
 });
 

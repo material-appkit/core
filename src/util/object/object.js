@@ -113,3 +113,35 @@ export function setValueForKeyPath(obj, keyPath, value) {
     }
   }
 }
+
+
+/**
+ * This function recursively compares the properties of two objects.
+ * If it finds a difference (including differences in nested objects or arrays),
+ * it records the old and new values in the diff object,
+ * using the property path as the key.
+ */
+export function deepDiff(obj1, obj2) {
+  const diff = {};
+
+  function compare(item1, item2, keyPath = '') {
+    if (typeof item1 !== 'object' || item1 === null || typeof item2 !== 'object' || item2 === null) {
+      if (item1 !== item2) {
+        diff[keyPath] = { old: item1, new: item2 };
+      }
+      return;
+    }
+
+    const keys1 = Object.keys(item1);
+    const keys2 = Object.keys(item2);
+    const allKeys = new Set([...keys1, ...keys2]);
+
+    for (const key of allKeys) {
+      const newKeyPath = keyPath ? `${keyPath}.${key}` : key;
+      compare(item1[key], item2[key], newKeyPath);
+    }
+  }
+
+  compare(obj1, obj2);
+  return diff;
+}
