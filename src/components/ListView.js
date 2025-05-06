@@ -44,6 +44,28 @@ const transformFetchItemsResponse = (res, itemTransformer) => {
   return transformedData;
 };
 
+/**
+ * @param item
+ * @param itemIdKey Accessor used to extract a unique identifier from the given item
+ * @returns {*} Unique identifier of given item
+ */
+const keyForItem = (item, itemIdKey) => {
+  return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
+};
+
+/**
+ *
+ * @param item
+ * @param itemLinkKey Accessor used to extract a path string from the given item
+ * @returns {*} Path item should link to
+ */
+const pathForItem = (item, itemLinkKey) => {
+  if (!itemLinkKey) {
+    return null;
+  }
+  return (typeof itemLinkKey === 'function') ? itemLinkKey(item) : item[itemLinkKey];
+};
+
 
 //------------------------------------------------------------------------------
 function PaginationListControl(props) {
@@ -198,8 +220,8 @@ function ListView(props) {
 
 
   const updateSelection = useCallback((item) => {
-    const itemId = keyForItem(item);
-    const selectedItem = setFind(selectedItems, (i) => keyForItem(i) === itemId);
+    const itemId = keyForItem(item, itemIdKey);
+    const selectedItem = setFind(selectedItems, (i) => keyForItem(i, itemIdKey) === itemId);
 
     let newSelection;
     if (selectionMode === 'single') {
@@ -216,7 +238,7 @@ function ListView(props) {
       }
     }
     setSelection(newSelection);
-  }, [selectedItems]);
+  }, [itemIdKey, selectedItems]);
 
 
   /**
@@ -244,37 +266,16 @@ function ListView(props) {
   // ---------------------------------------------------------------------------
 
   /**
-   * @param item
-   * @returns {*} Unique identifier of given item
-   */
-  const keyForItem = useCallback((item) => {
-    return (typeof itemIdKey === 'function') ? itemIdKey(item) : item[itemIdKey];
-  }, [itemIdKey]);
-
-  /**
-   *
-   * @param item
-   * @returns {*} Path item should link to
-   */
-  const pathForItem = useCallback((item) => {
-    if (!itemLinkKey) {
-      return null;
-    }
-    return (typeof itemLinkKey === 'function') ? itemLinkKey(item) : item[itemLinkKey];
-  }, [itemLinkKey]);
-
-
-  /**
    * Function to generate the ListItem props for a given item
    * @param item
    * @returns Object containing properties to supply to the list item
    */
-  const itemProps = (item) => {
-    const itemKey = keyForItem(item);
+  const itemProps = useCallback((item) => {
+    const itemKey = keyForItem(item, itemIdKey);
 
     const itemContext = itemContextProvider ? itemContextProvider(item) : {};
 
-    const selected = Boolean(setFind(selectedItems, (i) => keyForItem(i) === itemKey));
+    const selected = Boolean(setFind(selectedItems, (i) => keyForItem(i, itemIdKey) === itemKey));
 
     return {
       contextMenuItemArrangement: itemContextMenuArrangement,
@@ -284,11 +285,20 @@ function ListView(props) {
       selected,
       selectionMode,
       selectionDisabled,
-      to: pathForItem(item),
+      to: pathForItem(item, itemLinkKey),
       ...itemContext,
       ...listItemProps,
     };
-  };
+  }, [
+    itemContextMenuArrangement,
+    itemContextProvider,
+    itemIdKey,
+    itemLinkKey,
+    listItemProps,
+    selectedItems,
+    selectionMode,
+    selectionDisabled,
+  ]);
 
 
   /**
@@ -297,12 +307,12 @@ function ListView(props) {
    * Helper function to locate the index of the given item
    */
   const findItemIndex = useCallback((sourceItem) => {
-    const sourceItemKey = keyForItem(sourceItem);
+    const sourceItemKey = keyForItem(sourceItem, itemIdKey);
 
     return renderedItems.findIndex((targetItem) => (
-      keyForItem(targetItem) === sourceItemKey
+      keyForItem(targetItem, itemIdKey) === sourceItemKey
     ));
-  }, [renderedItems]);
+  }, [itemIdKey, renderedItems]);
 
 
   /**
