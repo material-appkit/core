@@ -1,4 +1,4 @@
-import isEqual from 'lodash.isequal';
+import isEqual from 'fast-deep-equal';
 import cloneDeep from 'lodash.clonedeep';
 
 import PropTypes from 'prop-types';

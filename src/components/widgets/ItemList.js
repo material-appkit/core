@@ -1,4 +1,4 @@
-import isEqual from 'lodash.isequal';
+import isEqual from 'fast-deep-equal';
 
 import React from 'react';
 import PropTypes from 'prop-types';

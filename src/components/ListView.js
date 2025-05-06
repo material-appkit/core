@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import isEqual from 'lodash.isequal';
+import isEqual from 'fast-deep-equal';
 import PropTypes from 'prop-types';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
