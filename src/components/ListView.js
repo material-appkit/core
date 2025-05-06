@@ -456,7 +456,6 @@ function ListView(props) {
           delete differentFilterParams[paramName];
         }
         if (Object.keys(differentFilterParams).length) {
-          console.log('clear selection');
           setSelection(new Set());
         }
       }
