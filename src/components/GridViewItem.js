@@ -34,7 +34,7 @@ const styles = makeStyles((theme) => ({
   },
 
   selectedListItem: {
-    backgroundColor: 'rgb(255 228 163 / 25%) !important',
+    backgroundColor: 'rgb(60 59 110 / 50%) !important',
   },
 
   selected: {
