@@ -197,15 +197,15 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
   /**
    *
    * @param endpoint
-   * @param filesInfoList
+   * @param fileInfoList
    * @param params
    * @param context
    * @param headers
    * @returns {Promise}
    */
-  upload(endpoint, filesInfoList, params, context, headers) {
-    if (!Array.isArray(filesInfoList)) {
-      throw new Error('Expecting "files" to be an array');
+  upload(endpoint, fileInfoList, params, context, headers) {
+    if (!Array.isArray(fileInfoList)) {
+      throw new Error('Expecting `fileInfoList` to be an array');
     }
 
     const formData = new FormData();
@@ -216,7 +216,7 @@ export default class NativeServiceProxy extends AbstractServiceProxy {
       })
     }
 
-    for (const fileInfo of filesInfoList) {
+    for (const fileInfo of fileInfoList) {
       formData.append(fileInfo.fieldName, fileInfo.file, fileInfo.fileName);
     }
 
