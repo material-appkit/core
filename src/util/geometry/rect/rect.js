@@ -19,8 +19,19 @@ export function intersection(r1, r2) {
   };
 }
 
+
 export function containsPoint(rect, point) {
   const x = point.x - rect.left;
   const y = point.y - rect.top;
   return (x >= 0 && y >= 0 && x <= rect.width && y <= rect.height);
+}
+
+
+export function containsRect(rect, otherRect) {
+  return !(
+    rect.right < otherRect.left ||
+    rect.left > otherRect.right ||
+    rect.bottom < otherRect.top ||
+    rect.top > otherRect.bottom
+  );
 }

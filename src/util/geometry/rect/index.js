@@ -16,4 +16,11 @@ Object.defineProperty(exports, "containsPoint", {
   },
 });
 
+Object.defineProperty(exports, "containsRect", {
+  enumerable: true,
+  get: function get() {
+    return _rect.containsRect;
+  },
+});
+
 const _rect = _interopRequireDefault(require("./rect"));
