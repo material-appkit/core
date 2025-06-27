@@ -51,6 +51,7 @@ function ListViewItem(props) {
     commitOnSelect,
     secondaryActionPlacement,
     contextMenuItemArrangement,
+    id,
     item,
     onItemClick,
     onMount,
@@ -179,6 +180,7 @@ function ListViewItem(props) {
   return (
     <ListItem
       className={clsx(classNames)}
+      data-id={id}
       ref={listItemRef}
       {...listItemProps}
     >

@@ -282,6 +282,7 @@ function ListView(props) {
     return {
       contextMenuItemArrangement: itemContextMenuArrangement,
       key: itemKey,
+      id: itemKey,
       item,
       onSelectionChange: updateSelection,
       selected,
@@ -895,7 +896,7 @@ ListView.defaultProps = {
   filterParams: {},
   gridItemSizes: { xs: 12, sm: 6, md: 4, lg: 3 },
   items: null,
-  itemIdKey: 'id',
+  itemIdKey: 'uuid',
   listItemDivider: true,
   loadingVariant: 'linear',
   paginationControlProps: {

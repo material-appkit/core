@@ -56,6 +56,7 @@ const GridViewItem = React.forwardRef((props, ref) => {
     commitOnSelect,
     secondaryActionPlacement,
     contextMenuItemArrangement,
+    id,
     item,
     onItemClick,
     onMount,
@@ -68,7 +69,6 @@ const GridViewItem = React.forwardRef((props, ref) => {
     sizes,
     ...gridItemProps
   } = props;
-
 
   useEffect(() => {
     if (onMount) {
@@ -159,6 +159,7 @@ const GridViewItem = React.forwardRef((props, ref) => {
     <Grid
       item
       className={clsx(classNames)}
+      data-id={id}
       ref={ref}
       {...sizes}
       {...gridItemProps}
