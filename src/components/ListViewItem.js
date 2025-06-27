@@ -34,6 +34,10 @@ const styles = makeStyles((theme) => ({
     color: theme.palette.action.active,
   },
 
+  selectionActionControl: {
+    pointerEvents: 'none',
+  },
+
   topSecondaryAction: {
     right: theme.spacing(1),
     top: theme.spacing(1),
@@ -116,10 +120,12 @@ function ListViewItem(props) {
       return null;
     }
 
+    const selectionControlClasses = [classes.selectionActionControl];
+    if (secondaryActionPlacement === 'top') {
+      selectionControlClasses.push(classes.topSecondaryAction);
+    }
     return (
-      <ListItemSecondaryAction
-        className={secondaryActionPlacement === 'top' ? classes.topSecondaryAction : null}
-      >
+      <ListItemSecondaryAction className={clsx(selectionControlClasses)}>
         {selectionMode === 'multiple' ? (
           selected ? (
             <CheckBoxIcon className={classes.selected} />
