@@ -27,6 +27,7 @@ const styles = makeStyles((theme) => ({
 
   menuButton: {
     borderColor: `${theme.palette.grey[400]} !important`,
+    marginRight: theme.spacing(1.5),
     minWidth: 0,
     padding: 0,
   },

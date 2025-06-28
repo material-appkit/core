@@ -22,7 +22,6 @@ const styles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
     fontSize: 'inherit',
     fontWeight: 500,
-    padding: theme.spacing(0, 2),
   },
 
   pageSizeSelectButton: {
@@ -147,7 +146,7 @@ function PaginationControl(props) {
   let pageControl;
   if (pageSize && pageSizeChoices && pageSizeChoices.length > 1) {
     pageControl = (
-      <Fragment>
+      <>
         <ButtonBase
           aria-haspopup="true"
           onClick={handlePageSizeButtonClick}
@@ -173,7 +172,7 @@ function PaginationControl(props) {
             </MenuItem>
           ))}
         </Menu>
-      </Fragment>
+      </>
     );
   } else {
     pageControl = (
