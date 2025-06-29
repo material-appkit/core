@@ -39,7 +39,7 @@ const styles = makeStyles((theme) => ({
   },
 
   topSecondaryAction: {
-    right: theme.spacing(1),
+    right: theme.spacing(0.5),
     top: theme.spacing(1),
     transform: 'initial',
   },
