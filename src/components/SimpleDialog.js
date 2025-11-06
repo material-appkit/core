@@ -83,7 +83,7 @@ function SimpleDialog(props) {
             </Typography>
 
             {subtitle && (
-              <Typography className={coreClasses.dialogSubtitle}>
+              <Typography className={clsx(coreClasses.dialogSubtitle, classes.dialogSubtitle)}>
                 {subtitle}
               </Typography>
             )}
